@@ -45,8 +45,8 @@ export function Program() {
         </h2>
 
         <p className="mb-16 max-w-2xl text-base leading-relaxed text-fg-muted sm:text-lg">
-          4주 강의 + 수료증 + 네트워킹이 본 프로그램. 출석률 90% 이상
-          수료자에게만 별도로 열리는 K-pop 공연 현장 실무 체험까지 이어진다.
+          4주 강의 + 수료증 + 네트워킹이 본 프로그램.
+          <br />출석률 90% 이상 수료자에게만 별도로 열리는 K-pop 공연 현장 실무 체험까지 이어지다.
         </p>
 
         <ol className="grid grid-cols-1 gap-px overflow-hidden border border-border bg-border md:grid-cols-2">
