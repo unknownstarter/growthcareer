@@ -83,10 +83,10 @@ export function Hero() {
 
           <ul className="grid max-w-3xl grid-cols-1 gap-x-8 gap-y-3 border-t border-border pt-12 sm:grid-cols-2">
             {[
-              "실제 K-pop 공연 프로젝트 참여",
-              "포트폴리오 + 이력서 + 면접 코칭",
-              "현직 멘토와 함께 네트워킹",
-              "K-POP 엔터테인먼트 직무 수료증",
+              "주말 4주 · 총 8회 현업 강의",
+              "유니온 픽처스 발급 수료증",
+              "현직 멘토 3인 + 동기 네트워킹",
+              "출석률 90%+ 시 K-pop 공연 현장 실무 체험",
             ].map((item) => (
               <li
                 key={item}

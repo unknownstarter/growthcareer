@@ -19,9 +19,9 @@ export function Pricing() {
           className="mb-12 max-w-4xl font-black text-display-lg"
           style={{ lineHeight: 1.05, letterSpacing: "-0.04em" }}
         >
-          단 한 번.
+          한 달.
           <br />
-          한 시즌.
+          단 한 번.
         </h2>
 
         <p className="mb-16 max-w-2xl text-base leading-relaxed text-fg/90 sm:text-lg">
@@ -37,7 +37,7 @@ export function Pricing() {
               className="mb-3 text-fg-subtle text-xs uppercase"
               style={{ letterSpacing: "0.3em" }}
             >
-              한 시즌 풀 패키지
+              4주 정규 + 수료 혜택
             </p>
 
             <div className="mb-8 flex flex-wrap items-end gap-4">

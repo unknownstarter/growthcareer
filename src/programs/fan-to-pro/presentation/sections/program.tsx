@@ -7,25 +7,26 @@ const PHASES = [
     n: "01",
     title: "Class",
     kr: "1개월 현업 강의",
-    body: "현업 전문가가 직접 진행하는 4주 집중 강의. 무대 음향 · 비주얼 · 스테이지 매니지먼트 · 아티스트 운영의 실무를 한국어/영어 혼용으로 압축.",
+    body: "토 · 일 주말반 · 총 8회 · 4주 진행. 현업 전문가가 무대 음향 · 비주얼 · 스테이지 매니지먼트 · 아티스트 운영의 실무를 한국어로 압축해 전달.",
   },
   {
     n: "02",
-    title: "Career Set",
-    kr: "포트폴리오 + 면접",
-    body: "결과물 큐레이션, 이력서 작성, 모의 면접. 유니온 픽처스 수료증 발급으로 이력서에 한 줄 추가.",
+    title: "Certificate",
+    kr: "교육 수료증",
+    body: "강의 종료 시 유니온 픽처스 명의 수료증 발급. 결과물 큐레이션 · 이력서 작성 · 모의 면접 워크북이 함께 제공.",
   },
   {
     n: "03",
     title: "Network",
     kr: "현업 네트워킹",
-    body: "현직 멘토 3인 + 동기와 카카오톡 오픈채팅으로 연결. 업계 행사 · 소개 라인이 수강 이후에도 이어진다.",
+    body: "수료생 + 현직 멘토 3인 카카오톡 오픈채팅 입장. 업계 행사 · 소개 라인이 강의가 끝난 뒤에도 이어진다.",
   },
   {
     n: "04",
     title: "On Stage",
-    kr: "공연 프로젝트 합류",
-    body: "실제 K-pop 공연 한 시즌에 합류. 무대 음향 / 비주얼 / 스테이지 매니지먼트 중 역할 배정. 리허설부터 본 공연까지 풀 사이클.",
+    kr: "공연 프로젝트 실무 체험",
+    body: "출석률 90% 이상 수료자에게만 열리는 별도 혜택. 실제 K-pop 공연 현장에 동행해 무대 음향 / 비주얼 / 스테이지 매니지먼트 실무를 가까이서 체험. 별도 결제 없음.",
+    note: "조건부 · 별도 신청",
   },
 ];
 
@@ -39,13 +40,13 @@ export function Program() {
           className="mb-12 max-w-4xl font-black text-display-lg"
           style={{ lineHeight: 1.05, letterSpacing: "-0.04em" }}
         >
-          한 시즌.
-          <br />풀 사이클.
+          한 달.
+          <br />그리고 무대.
         </h2>
 
         <p className="mb-16 max-w-2xl text-base leading-relaxed text-fg-muted sm:text-lg">
-          1개월 현업 강의로 시작해 포트폴리오 · 네트워킹 · 실제 공연 프로젝트까지
-          4단계로 끝까지 같이 만든다.
+          4주 강의 + 수료증 + 네트워킹이 본 프로그램. 출석률 90% 이상
+          수료자에게만 별도로 열리는 K-pop 공연 현장 실무 체험까지 이어진다.
         </p>
 
         <ol className="grid grid-cols-1 gap-px overflow-hidden border border-border bg-border md:grid-cols-2">
@@ -64,6 +65,14 @@ export function Program() {
                 >
                   {p.title}
                 </p>
+                {"note" in p && p.note ? (
+                  <span
+                    className="ml-auto inline-flex items-center border border-brand-pink/40 bg-brand-pink/10 px-2 py-1 font-black text-brand-pink text-[10px] uppercase"
+                    style={{ letterSpacing: "0.2em" }}
+                  >
+                    {p.note}
+                  </span>
+                ) : null}
               </div>
 
               <h3
