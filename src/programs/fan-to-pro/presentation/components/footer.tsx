@@ -1,4 +1,3 @@
-import { CERTIFICATE_ISSUER } from "@/src/programs/fan-to-pro/domain/program";
 import { Container } from "../ui/container";
 
 const COMPANY = {
@@ -9,7 +8,6 @@ const COMPANY = {
   ecommerceNo: "제2026-서울송파-0882호",
   address: "서울특별시 송파구 중대로 207, 2층 201-J554호 (가락동, 대명빌딩)",
   email: "hello@dropdown.xyz",
-  threads: "https://www.threads.net/",
 } as const;
 
 const POLICY_LINKS = [
@@ -25,11 +23,6 @@ const NAV_LINKS = [
   { label: "후기", href: "#testimonials" },
   { label: "FAQ", href: "#faq" },
   { label: "신청", href: "#apply" },
-];
-
-const SOCIAL_LINKS = [
-  { label: "Threads", href: COMPANY.threads, external: true },
-  { label: "Email", href: `mailto:${COMPANY.email}`, external: false },
 ];
 
 export function Footer() {
@@ -57,26 +50,11 @@ export function Footer() {
               한국 엔터테인먼트 업계 진입을 위한 외국인 유학생 전용 부트캠프.
               실제 K-pop 공연 프로젝트로 경력을 만든다.
             </p>
-            <ul className="mb-6 flex flex-wrap items-center gap-4 text-sm">
-              {SOCIAL_LINKS.map((s) => (
-                <li key={s.label}>
-                  <a
-                    href={s.href}
-                    target={s.external ? "_blank" : undefined}
-                    rel={s.external ? "noopener noreferrer" : undefined}
-                    className="transition-colors hover:text-brand-pink"
-                  >
-                    {s.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
             <p
               className="text-fg-subtle text-xs uppercase"
               style={{ letterSpacing: "0.2em" }}
             >
-              Powered by {CERTIFICATE_ISSUER.name} ·{" "}
-              {CERTIFICATE_ISSUER.nameEn}
+              Powered by {COMPANY.nameEn}
             </p>
           </div>
 
