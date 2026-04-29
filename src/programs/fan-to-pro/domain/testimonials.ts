@@ -1,7 +1,6 @@
 /**
- * Testimonials — 이전 강의 수강생 인터뷰 발췌 (변형·익명화).
+ * Testimonials — 동일 커리큘럼으로 진행된 이전 강의 수강생 인터뷰 발췌 (변형·익명화).
  * Sage 규칙: 풀네임 금지, 이니셜 + 국적 + 지망 직군만. 디스클로저 의무.
- * Fan to Pro 는 이번이 1기이므로 본 프로그램 자체의 후기는 아직 없음.
  */
 export type Testimonial = {
   id: string;
@@ -70,7 +69,7 @@ export const TESTIMONIALS: readonly Testimonial[] = [
 ] as const;
 
 export const TESTIMONIAL_DISCLOSURE =
-  "이전에 진행된 동일 커리큘럼 강의 수강생 인터뷰 발췌 (개인정보 보호를 위해 익명화·요약했습니다). 만족도 점수는 해당 강의 종료 설문 기준이며, 정확한 표본 수는 결과 정리 완료 시 갱신. Fan to Pro 는 이번이 1기.";
+  "이전에 진행된 동일 커리큘럼 강의 수강생 인터뷰 발췌 (개인정보 보호를 위해 익명화·요약했습니다). 만족도 점수는 해당 강의 종료 설문 기준이며, 정확한 표본 수는 결과 정리 완료 시 갱신.";
 
 export const SATISFACTION = {
   score: "4.9",
