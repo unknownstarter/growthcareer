@@ -26,9 +26,34 @@ export const CAREER_SUPPORT = [
   "면접 시뮬레이션",
 ] as const;
 
+/**
+ * 학원법 시행령 별표 4 + 공정위 소비자분쟁해결기준(교육서비스) 기준.
+ * 1개월 이내 강좌의 의무 환불 비율을 그대로 따른다.
+ * 추가로 전자상거래법 §17 청약철회권(결제 후 7일)을 명시적으로 보장.
+ */
 export const REFUND_POLICY = {
   fullRefundDays: 7,
-  fullRefundLabel: "수강 시작 7일 이내 100% 환불",
+  fullRefundLabel: "결제 후 7일 이내 또는 수강 시작 전 100% 환불",
+  schedule: [
+    { phase: "결제 후 7일 이내", refund: "100%" },
+    { phase: "수강 시작 전", refund: "100%" },
+    { phase: "수강 시작 후 1/3 경과 전", refund: "2/3 환불" },
+    { phase: "수강 시작 후 1/2 경과 전", refund: "1/2 환불" },
+    { phase: "1/2 경과 후", refund: "환불 없음" },
+  ] as const,
+  legalBasis:
+    "학원의 설립·운영 및 과외교습에 관한 법률 시행령 별표 4 · 공정위 소비자분쟁해결기준",
+} as const;
+
+/**
+ * 모집 정원 가드. 시작일 7일 전 시점 신청자 < 최소 인원이면 강좌를 취소하고 전액 자동 환불.
+ */
+export const ENROLLMENT_CAP = {
+  totalSeats: 30,
+  minToProceed: 20,
+  cutoffDaysBeforeStart: 7,
+  autoRefundNote:
+    "본 강좌는 총 30인 모집이며, 수강 시작일 7일 전 시점에 신청자가 20명 미만이면 강좌가 취소되고 결제 금액은 전액 자동 환불됩니다.",
 } as const;
 
 export const CERTIFICATE_ISSUER = {

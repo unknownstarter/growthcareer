@@ -1,5 +1,8 @@
 import { PRICING, discountRate, formatKRW } from "@/src/programs/fan-to-pro/domain/pricing";
-import { REFUND_POLICY } from "@/src/programs/fan-to-pro/domain/program";
+import {
+  ENROLLMENT_CAP,
+  REFUND_POLICY,
+} from "@/src/programs/fan-to-pro/domain/program";
 import { Button } from "../ui/button";
 import { Container } from "../ui/container";
 import { Eyebrow } from "../ui/eyebrow";
@@ -84,6 +87,14 @@ export function Pricing() {
                 </li>
               ))}
             </ul>
+
+            <p
+              id="enrollment-cap"
+              className="mt-8 border-t border-border pt-4 text-fg-subtle text-[11px] leading-relaxed"
+              style={{ letterSpacing: "0.02em" }}
+            >
+              * {ENROLLMENT_CAP.autoRefundNote}
+            </p>
           </div>
 
           {/* 결제 안내 카드 */}
