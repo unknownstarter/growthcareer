@@ -47,10 +47,10 @@ export function Hero() {
           </h1>
 
           <p className="max-w-2xl text-lg leading-snug text-fg-muted sm:text-2xl">
-            한국 엔터테인먼트 업계 취업.
+            K-POP 엔터테인먼트 직무 취업
             <br />
             <span className="font-bold text-fg">실제 K-pop 공연 프로젝트</span>
-            로 경력을 만든다.
+            로 경력을 만들다!
           </p>
 
           <div className="flex flex-col gap-6 sm:flex-row sm:items-end">
@@ -73,7 +73,7 @@ export function Hero() {
                 </span>
               </div>
               <p className="mt-1 text-sm font-bold text-brand-pink">
-                VAT 포함 · 계좌이체 결제만 가능
+                VAT 포함 · 결제는 계좌이체만 가능
               </p>
             </div>
             <Button href="#apply" variant="primary" size="xl">
@@ -85,8 +85,8 @@ export function Hero() {
             {[
               "실제 K-pop 공연 프로젝트 참여",
               "포트폴리오 + 이력서 + 면접 코칭",
-              "현직 멘토 3인 네트워킹",
-              "유니온 픽처스 수료증",
+              "현직 멘토와 함께 네트워킹",
+              "K-POP 엔터테인먼트 직무 수료증",
             ].map((item) => (
               <li
                 key={item}

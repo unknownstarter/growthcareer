@@ -16,14 +16,15 @@ export function Mentor() {
           className="mb-12 max-w-4xl font-black text-display-lg"
           style={{ lineHeight: 1.05, letterSpacing: "-0.04em" }}
         >
-          현장이 만드는
+          현장을 만드는
           <br />
-          <span className="text-brand-pink">가장 정확한</span> 멘토.
+          <span className="text-brand-pink">진짜 전문가</span> 멘토.
         </h2>
 
         <p className="mb-16 max-w-2xl text-base leading-relaxed text-fg-muted sm:text-lg">
-          교수가 아닌 *현직*. K-pop 공연 현장에서 활동 중인 감독 2인 + 업계
-          네트워킹 멘토 1인이 한 시즌을 같이 만든다.
+          교수가 아닌 실제 K-pop 공연 현장에서 활동 중인 감독 2인 + 
+          <br />
+          업계 네트워킹 멘토가 한 시즌을 같이 만듭니다.
         </p>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-8">
