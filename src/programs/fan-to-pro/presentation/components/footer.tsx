@@ -1,6 +1,17 @@
 import { CERTIFICATE_ISSUER } from "@/src/programs/fan-to-pro/domain/program";
 import { Container } from "../ui/container";
 
+const COMPANY = {
+  nameKr: "드롭다운",
+  nameEn: "Dropdown",
+  ceo: "황재하",
+  bizNo: "154-28-02110",
+  ecommerceNo: "제2026-서울송파-0882호",
+  address: "서울특별시 송파구 중대로 207, 2층 201-J554호 (가락동, 대명빌딩)",
+  email: "hello@dropdown.xyz",
+  threads: "https://www.threads.net/",
+} as const;
+
 const POLICY_LINKS = [
   { label: "환불 정책", href: "#refund-policy" },
   { label: "결제 안내", href: "#payment" },
@@ -14,6 +25,11 @@ const NAV_LINKS = [
   { label: "후기", href: "#testimonials" },
   { label: "FAQ", href: "#faq" },
   { label: "신청", href: "#apply" },
+];
+
+const SOCIAL_LINKS = [
+  { label: "Threads", href: COMPANY.threads, external: true },
+  { label: "Email", href: `mailto:${COMPANY.email}`, external: false },
 ];
 
 export function Footer() {
@@ -41,6 +57,20 @@ export function Footer() {
               한국 엔터테인먼트 업계 진입을 위한 외국인 유학생 전용 부트캠프.
               실제 K-pop 공연 프로젝트로 경력을 만든다.
             </p>
+            <ul className="mb-6 flex flex-wrap items-center gap-4 text-sm">
+              {SOCIAL_LINKS.map((s) => (
+                <li key={s.label}>
+                  <a
+                    href={s.href}
+                    target={s.external ? "_blank" : undefined}
+                    rel={s.external ? "noopener noreferrer" : undefined}
+                    className="transition-colors hover:text-brand-pink"
+                  >
+                    {s.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
             <p
               className="text-fg-subtle text-xs uppercase"
               style={{ letterSpacing: "0.2em" }}
@@ -96,35 +126,57 @@ export function Footer() {
         </div>
 
         {/* Business info */}
-        <div className="mt-16 border-border border-t pt-8 text-fg-subtle text-xs">
-          <dl className="grid grid-cols-1 gap-x-8 gap-y-2 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-16 border-border border-t pt-8 text-fg-subtle text-xs leading-relaxed">
+          <dl className="grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <dt className="font-black uppercase" style={{ letterSpacing: "0.2em" }}>
                 상호
               </dt>
-              <dd className="mt-1">유니온 픽처스</dd>
+              <dd className="mt-1">
+                {COMPANY.nameKr}({COMPANY.nameEn})
+              </dd>
             </div>
             <div>
               <dt className="font-black uppercase" style={{ letterSpacing: "0.2em" }}>
-                대표
+                대표자
               </dt>
-              <dd className="mt-1">—</dd>
+              <dd className="mt-1">{COMPANY.ceo}</dd>
             </div>
             <div>
               <dt className="font-black uppercase" style={{ letterSpacing: "0.2em" }}>
                 사업자등록번호
               </dt>
-              <dd className="mt-1">—</dd>
+              <dd className="mt-1">{COMPANY.bizNo}</dd>
             </div>
             <div>
               <dt className="font-black uppercase" style={{ letterSpacing: "0.2em" }}>
                 통신판매업 신고
               </dt>
-              <dd className="mt-1">—</dd>
+              <dd className="mt-1">{COMPANY.ecommerceNo}</dd>
             </div>
           </dl>
+
+          <dl className="mt-6 grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-[auto_1fr]">
+            <dt className="font-black uppercase" style={{ letterSpacing: "0.2em" }}>
+              주소
+            </dt>
+            <dd>{COMPANY.address}</dd>
+
+            <dt className="font-black uppercase" style={{ letterSpacing: "0.2em" }}>
+              이메일
+            </dt>
+            <dd>
+              <a
+                href={`mailto:${COMPANY.email}`}
+                className="transition-colors hover:text-brand-pink"
+              >
+                {COMPANY.email}
+              </a>
+            </dd>
+          </dl>
+
           <p className="mt-8">
-            © {new Date().getFullYear()} Growth Career. All rights reserved.
+            © {new Date().getFullYear()} {COMPANY.nameEn}. All rights reserved.
           </p>
         </div>
       </Container>
