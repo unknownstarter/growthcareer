@@ -18,7 +18,7 @@ export function Mentor() {
         >
           현장을 만드는
           <br />
-          <span className="text-brand-pink">진짜 전문가</span> 멘토.
+          <span className="text-brand-pink">진짜 전문가</span>.
         </h2>
 
         <p className="mb-16 max-w-2xl text-base leading-relaxed text-fg-muted sm:text-lg">

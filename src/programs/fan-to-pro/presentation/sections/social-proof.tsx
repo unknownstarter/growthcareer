@@ -5,7 +5,7 @@ import { StatCard } from "../ui/stat-card";
 
 const STATS = [
   { value: "+300건", label: "누적 공연 진행", hint: "운영팀 누적 시즌 기준 (집계 중)" },
-  { value: "+50,000명+", label: "누적 관객", hint: "전 시즌 합산" },
+  { value: "+50,000명", label: "누적 관객", hint: "전 시즌 합산" },
   { value: "3인", label: "현직 멘토", hint: "음향감독 · 비주얼디렉터 · 네트워킹" },
   { value: "4.9 / 5.0", label: "수강생 만족도", hint: "이전 강의 종료 설문 (N=30)" },
 ];
@@ -37,7 +37,7 @@ export function SocialProof() {
             <span className="text-brand-pink">진짜.</span>
           </h2>
 
-          <div className="grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-4">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-12 lg:grid-cols-4">
             {STATS.map((s) => (
               <StatCard
                 key={s.label}

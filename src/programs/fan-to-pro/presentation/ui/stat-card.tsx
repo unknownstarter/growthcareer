@@ -15,7 +15,7 @@ export function StatCard({ value, label, hint, className }: Props) {
   return (
     <div className={cn("flex flex-col gap-2", className)}>
       <p
-        className="font-black text-fg text-5xl leading-none sm:text-6xl"
+        className="font-black text-fg whitespace-nowrap leading-none text-[clamp(1.75rem,7vw,3.75rem)]"
         style={{ letterSpacing: "-0.04em" }}
       >
         {value}
