@@ -11,10 +11,10 @@ const COMPANY = {
 } as const;
 
 const POLICY_LINKS = [
-  { label: "환불 정책", href: "#refund-policy" },
-  { label: "결제 안내", href: "#payment" },
-  { label: "개인정보 처리방침", href: "#privacy" },
-  { label: "이용약관", href: "#terms" },
+  { label: "환불 정책", href: "/terms#refund-policy" },
+  { label: "결제 안내", href: "/terms#payment" },
+  { label: "개인정보 처리방침", href: "/privacy" },
+  { label: "이용약관", href: "/terms" },
 ];
 
 const NAV_LINKS = [
