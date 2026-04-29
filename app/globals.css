@@ -1,0 +1,92 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css");
+@import "tailwindcss";
+
+@theme {
+  /* === Color tokens (use DISTINCTLY — no blending by default) === */
+  --color-bg: #0a0a0f;
+  --color-surface: #14141b;
+  --color-surface-elevated: #1c1c26;
+  --color-border: #27272f;
+  --color-border-strong: #3f3f48;
+
+  --color-fg: #fafafa;
+  --color-fg-muted: #a1a1aa;
+  --color-fg-subtle: #71717a;
+
+  /* Brand: each color used as a STANDALONE solid block. Not mixed. */
+  --color-brand-indigo: #6366f1;     /* 남보라 */
+  --color-brand-violet: #8b5cf6;
+  --color-brand-purple: #a855f7;     /* 퍼플 */
+  --color-brand-pink: #ec4899;       /* 핑크 */
+  --color-brand-fuchsia: #d946ef;
+
+  /* === Typography === */
+  --font-sans:
+    "Pretendard Variable", "Pretendard", system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+
+  /* Display scale — fluid, massive, IMPACT */
+  --text-display-2xl: clamp(5rem, 22vw, 18rem);
+  --text-display-xl: clamp(4rem, 16vw, 12rem);
+  --text-display-lg: clamp(3rem, 10vw, 7rem);
+  --text-display-md: clamp(2.25rem, 6vw, 4.5rem);
+  --text-display-sm: clamp(1.75rem, 4vw, 3rem);
+
+  /* Tracking */
+  --tracking-display: -0.05em;
+  --tracking-impact: -0.04em;
+  --tracking-eyebrow: 0.4em;
+
+  /* Layout */
+  --container-content: 1280px;
+  --container-narrow: 720px;
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+  }
+
+  ::selection {
+    background-color: var(--color-brand-pink);
+    color: var(--color-fg);
+  }
+
+  *:focus-visible {
+    outline: 2px solid var(--color-brand-purple);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+}
+
+/* === Distinct full-bleed color blocks (impact sections) === */
+@utility section-purple {
+  background-color: var(--color-brand-purple);
+  color: var(--color-fg);
+}
+@utility section-pink {
+  background-color: var(--color-brand-pink);
+  color: var(--color-fg);
+}
+@utility section-indigo {
+  background-color: var(--color-brand-indigo);
+  color: var(--color-fg);
+}
+@utility section-violet {
+  background-color: var(--color-brand-violet);
+  color: var(--color-fg);
+}
