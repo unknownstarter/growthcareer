@@ -4,10 +4,10 @@ import { Eyebrow } from "../ui/eyebrow";
 import { StatCard } from "../ui/stat-card";
 
 const STATS = [
-  { value: "—건", label: "누적 공연 진행", hint: "1기 종료 시점 기준 (집계 중)" },
+  { value: "—건", label: "누적 공연 진행", hint: "운영팀 누적 시즌 기준 (집계 중)" },
   { value: "—명+", label: "누적 관객", hint: "전 시즌 합산" },
   { value: "3인", label: "현직 멘토", hint: "음향감독 · 비주얼디렉터 · 네트워킹" },
-  { value: "4.9 / 5.0", label: "1기 만족도", hint: "12월 1기 종료 설문 (N=—)" },
+  { value: "4.9 / 5.0", label: "수강생 만족도", hint: "이전 강의 종료 설문 (N=—)" },
 ];
 
 export function SocialProof() {
@@ -52,7 +52,7 @@ export function SocialProof() {
             className="mt-12 max-w-2xl text-fg-subtle text-xs"
             style={{ letterSpacing: "0.1em" }}
           >
-            * 정확한 수치는 1기 결과 정리 완료 시 갱신. 개별 공연·아티스트
+            * 정확한 수치는 시즌 결과 정리 완료 시 갱신. 개별 공연·아티스트
             식별 정보는 보호를 위해 비공개.
           </p>
         </Container>

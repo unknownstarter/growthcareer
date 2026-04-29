@@ -84,7 +84,7 @@ export function Outcome() {
           className="mt-6 text-fg-subtle text-xs"
           style={{ letterSpacing: "0.1em" }}
         >
-          * 이미지는 분위기 참고용. 실제 1기 공연 사진은 입학 후 공유.
+          * 이미지는 분위기 참고용. 실제 본 시즌 공연 사진은 수강 시작 후 공유.
         </p>
       </Container>
     </Section>
