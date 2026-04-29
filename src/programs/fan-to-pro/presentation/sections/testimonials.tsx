@@ -18,9 +18,9 @@ export function Testimonials() {
             className="max-w-3xl font-black text-display-lg"
             style={{ lineHeight: 1.05, letterSpacing: "-0.04em" }}
           >
-            이전 강의 수강생이
+            이전 수강생들이
             <br />
-            <span className="text-brand-pink">직접 남긴 것.</span>
+            <span className="text-brand-pink">남긴 후기.</span>
           </h2>
 
           <div className="border-l-2 border-brand-pink pl-6">
