@@ -29,21 +29,12 @@ export const metadata: Metadata = {
       "한국 엔터테인먼트 업계 취업. 실제 K-pop 공연 프로젝트로 경력을 만든다. 880,000원 · 선착순 마감.",
     siteName: "Growth Career",
     locale: "ko_KR",
-    images: [
-      {
-        url: "/brand/logo-black.png",
-        width: 600,
-        height: 600,
-        alt: "Fan to Pro · Growth Career",
-      },
-    ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Fan to Pro · Growth Career",
     description:
       "한국 엔터테인먼트 업계 취업. 실제 K-pop 공연 프로젝트로 경력을 만든다. 880,000원 · 선착순 마감.",
-    images: ["/brand/logo-black.png"],
   },
 };
 

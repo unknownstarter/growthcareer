@@ -18,21 +18,12 @@ export const metadata: Metadata = {
     title: "Growth Career",
     description:
       "글로벌 커리어를 위한 실무 트랙. 첫 트랙은 K-엔터테인먼트 업계 취업 — Fan to Pro.",
-    images: [
-      {
-        url: "/brand/logo-black.png",
-        width: 600,
-        height: 600,
-        alt: "Growth Career",
-      },
-    ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Growth Career",
     description:
       "글로벌 커리어를 위한 실무 트랙. 첫 트랙은 K-엔터테인먼트 업계 취업 — Fan to Pro.",
-    images: ["/brand/logo-black.png"],
   },
   robots: {
     index: true,
