@@ -102,3 +102,23 @@ UI 변경은 항상 `pnpm preview` 로 **자체 캡처 → Read → 사용자에
 - 환경 변수: `vercel env` (커밋 금지)
 - 설정: `vercel.ts` 우선, `vercel.json` 지양
 - AI: `vercel:ai-gateway` 통한 `provider/model` 문자열 우선
+
+---
+
+## 8. 외부 리소스 — 명명 불일치 주의
+
+브랜드/우산명을 여러 번 바꾼 흔적이 외부 리소스에 일부 남아 있음. **이름은 그대로 두지만 매핑은 명확히 인지해야 함.**
+
+| 외부 리소스 | 이름 | 실제 의미 |
+|---|---|---|
+| Supabase 프로젝트 | **`fantopro`** (ref `rykqzenbjcggzrruryeq`, Seoul) | Growth Career / Fan to Pro 의 신청 데이터 저장소. `applicants` 테이블 + RLS. 리네임 비용 vs 이득 작아 그대로 유지. |
+| GitHub 레포 | `unknownstarter/growthcareer` | 신규. 우산 브랜드와 일치. |
+| Vercel 프로젝트 | `hello-4833s-projects/growthcareer` | 신규. 우산 브랜드와 일치. |
+| 도메인 | `growthcareer.xyz` | 우산 브랜드. apex + www 모두 부착. |
+| 운영 법인 | **Dropdown** (드롭다운, 사업자번호 154-28-02110) | growthcareer.xyz 의 개발·운영 주체. Footer · 약관 · 개인정보처리방침에 표기. |
+| 결제 수령자 | **DEEPI** | Fan to Pro 강의 공동 운영 + 수강료 입금 예금주. 유니온 픽처스의 자회사. |
+| 수료증 발급 + 공연 프로젝트 | **유니온 픽처스 (Union Pictures)** | DEEPI 의 모회사. 출석률 90%+ 수료자에게 K-pop 공연 실무 체험 기회 제공. |
+
+**Why**: 단일 브랜드 → 우산 브랜드 + 트랙 구조로 리포지셔닝하는 과정에서 Supabase 프로젝트만 옛 이름을 유지. 새 프로젝트로 옮기는 비용(다운타임 + env 6개 교체 + 마이그레이션) 대비 이득이 작다고 판단.
+
+**How to apply**: Supabase 대시보드/메모리/코드 어디서든 `fantopro` 가 보이면 = 본 프로젝트의 신청 DB. 헷갈릴 때는 ref `rykqzenbjcggzrruryeq` 로 식별. 향후 다른 프로그램 트랙 추가 시 이 단일 프로젝트 안에 새 테이블만 추가하는 방식 권장.
