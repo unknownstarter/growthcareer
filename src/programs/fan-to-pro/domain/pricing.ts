@@ -8,9 +8,9 @@ export const PRICING = {
   vatIncluded: true,
   paymentMethod: "bank_transfer" as const,
   bank: {
-    accountHolder: "DEEPI",
-    bankName: null as string | null, // TBD — 사용자 추후 입력
-    accountNumber: null as string | null, // TBD
+    accountHolder: "Dropdown",
+    bankName: "토스뱅크" as string | null,
+    accountNumber: "1002-4759-1521" as string | null,
   },
   scarcity: "first_come_first_served" as const,
 } as const;

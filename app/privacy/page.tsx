@@ -117,16 +117,9 @@ export default function PrivacyPage() {
                   <td className="border border-border p-3">글로벌 CDN</td>
                 </tr>
                 <tr>
-                  <td className="border border-border p-3">DEEPI</td>
-                  <td className="border border-border p-3">
-                    Fan to Pro 강의 공동 운영, 수강료 결제 수령
-                  </td>
-                  <td className="border border-border p-3">대한민국</td>
-                </tr>
-                <tr>
                   <td className="border border-border p-3">유니온 픽처스</td>
                   <td className="border border-border p-3">
-                    수료증 발급, 공연 프로젝트 매칭 (DEEPI 의 모회사)
+                    공연 프로젝트 매칭, 공연 프로젝트 참여 확인서 발급 (출석률 90% 이상 수료자 한정)
                   </td>
                   <td className="border border-border p-3">대한민국</td>
                 </tr>

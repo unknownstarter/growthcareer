@@ -371,7 +371,7 @@ function SuccessBlock({
       <ul className="mb-2 grid grid-cols-1 gap-2 text-left text-fg-muted text-sm">
         <li className="flex items-start gap-2">
           <span className="mt-1 block h-1 w-1 shrink-0 bg-brand-pink" />
-          예금주 <span className="font-black text-fg">DEEPI</span> 계좌로 입금
+          예금주 <span className="font-black text-fg">Dropdown</span> · 토스뱅크 1002-4759-1521 로 입금
         </li>
         <li className="flex items-start gap-2">
           <span className="mt-1 block h-1 w-1 shrink-0 bg-brand-pink" />

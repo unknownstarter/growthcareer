@@ -58,12 +58,11 @@ export default function TermsPage() {
               </li>
               <li>
                 <strong className="text-fg">&ldquo;프로그램&rdquo;</strong> —
-                Fan to Pro. 회사와 DEEPI 가 공동으로 운영하는 K-pop 엔터테인먼트
-                직무 교육 프로그램.
+                Fan to Pro. 회사가 운영하는 K-pop 엔터테인먼트 직무 교육 프로그램.
               </li>
               <li>
-                <strong className="text-fg">&ldquo;DEEPI&rdquo;</strong> — 프로그램의
-                강의 운영 파트너이자 수강료 결제 수령자. 유니온 픽처스의 자회사.
+                <strong className="text-fg">&ldquo;DEEPI&rdquo;</strong> — 강사 섭외
+                등 프로그램 운영을 지원하는 협력 파트너. 유니온 픽처스의 자회사.
               </li>
               <li>
                 <strong className="text-fg">&ldquo;유니온 픽처스&rdquo;</strong> —
@@ -91,17 +90,17 @@ export default function TermsPage() {
             <ul className="list-disc pl-6 space-y-1">
               <li>
                 <strong className="text-fg">회사 (Dropdown)</strong> — 사이트 개발
-                및 운영, 신청 접수 및 데이터 관리, 이용자 응대, 약관·개인정보
-                처리방침 책임.
+                및 운영, 신청 접수, 수강료 결제 수령(예금주), 강의 일정 및 수료
+                관리, 데이터 관리, 이용자 응대, 약관·개인정보 처리방침 책임.
               </li>
               <li>
-                <strong className="text-fg">DEEPI</strong> — 프로그램 강의 공동 운영,
-                수강료 결제 수령(예금주), 강의 일정 및 수료 관리.
+                <strong className="text-fg">DEEPI</strong> — 강사 섭외 등 프로그램
+                운영을 지원하는 협력 파트너. 수강생 개인정보는 위탁받지 않음.
               </li>
               <li>
-                <strong className="text-fg">유니온 픽처스</strong> — 수료증 명의
-                발급 기관. 출석률 90% 이상 수료자에게 K-pop 공연 프로젝트 실무 체험
-                기회 제공.
+                <strong className="text-fg">유니온 픽처스</strong> — 출석률 90%
+                이상 수료자에게 K-pop 공연 프로젝트 실무 체험 기회 제공 및 공연
+                프로젝트 참여 확인서 발급.
               </li>
             </ul>
           </Section>
@@ -109,7 +108,7 @@ export default function TermsPage() {
           <Section n="05" title="신청 절차">
             <ol className="list-decimal pl-6 space-y-1">
               <li>사이트의 신청 폼 작성 및 약관·개인정보 처리방침 동의</li>
-              <li>회사가 24시간 이내 결제 안내 메일 발송 (예금주: DEEPI)</li>
+              <li>회사가 24시간 이내 결제 안내 메일 발송 (예금주: Dropdown · 토스뱅크 1002-4759-1521)</li>
               <li>이용자가 안내된 계좌로 수강료 입금</li>
               <li>입금 확인 후 자리 확정 및 카카오톡 오픈채팅 입장 안내</li>
               <li>오리엔테이션 및 강의 일정 공지</li>
@@ -201,8 +200,8 @@ export default function TermsPage() {
             <p>
               본 프로그램의 정규 구성은 <strong className="text-fg">4주 강의 +
               수료증 + 네트워킹</strong>입니다. K-pop 공연 프로젝트 실무 체험은
-              회사·DEEPI 가 제공하는 정규 교육의 일부가 아니며, 유니온 픽처스가
-              운영하는 별도 프로젝트입니다.
+              회사가 제공하는 정규 교육의 일부가 아니며, 유니온 픽처스가 운영하는
+              별도 프로젝트입니다.
             </p>
             <p>
               체험 자격은 <strong className="text-fg">강의 출석률 90% 이상의
@@ -246,7 +245,7 @@ export default function TermsPage() {
           <Section n="12" title="지적재산권">
             <p>
               사이트 및 프로그램에서 제공되는 강의 자료, 영상, 텍스트, 디자인,
-              로고, 수료증 디자인 등 일체의 저작권은 회사 및 파트너(DEEPI, 유니온
+              로고, 수료증 디자인 등 일체의 저작권은 회사 및 파트너(유니온
               픽처스)에게 귀속됩니다. 이용자는 사적 학습 목적 이외의 용도로 이를
               복제·전송·배포·공연·전시할 수 없습니다.
             </p>
