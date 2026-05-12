@@ -7,7 +7,7 @@ export function FAQ() {
   return (
     <Section id="faq" tone="bg">
       <Container>
-        <Eyebrow n="12">FAQ</Eyebrow>
+        <Eyebrow n="13">FAQ</Eyebrow>
 
         <h2
           className="mb-12 max-w-4xl font-black text-display-lg"

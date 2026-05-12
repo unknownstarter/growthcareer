@@ -45,7 +45,7 @@ export function ValueCards() {
   return (
     <Section tone="bg">
       <Container>
-        <Eyebrow n="03">Core Value</Eyebrow>
+        <Eyebrow n="04">Core Value</Eyebrow>
 
         <h2
           className="mb-16 max-w-4xl font-black text-display-lg"

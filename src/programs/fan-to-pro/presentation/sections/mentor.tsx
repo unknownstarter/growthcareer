@@ -1,16 +1,15 @@
-import { MENTORS } from "@/src/programs/fan-to-pro/domain/program";
-import { Avatar } from "../ui/avatar";
+import Image from "next/image";
+import { INSTRUCTORS } from "@/src/programs/fan-to-pro/domain/program";
+import { Chip } from "../ui/chip";
 import { Container } from "../ui/container";
 import { Eyebrow } from "../ui/eyebrow";
 import { Section } from "../ui/section";
-
-const TINTS = ["indigo", "purple", "pink"] as const;
 
 export function Mentor() {
   return (
     <Section id="mentor" tone="surface">
       <Container>
-        <Eyebrow n="04">Mentor</Eyebrow>
+        <Eyebrow n="05">Faculty</Eyebrow>
 
         <h2
           className="mb-12 max-w-4xl font-black text-display-lg"
@@ -22,64 +21,121 @@ export function Mentor() {
         </h2>
 
         <p className="mb-16 max-w-2xl text-base leading-relaxed text-fg-muted sm:text-lg">
-          교수가 아닌 실제 K-pop 공연 현장에서 활동 중인 감독 2인 + 
-          <br />
-          업계 네트워킹 멘토가 한 시즌을 같이 만듭니다.
+          교수가 아닙니다. 지금 이 순간에도 K-pop 공연 현장과 음반 비즈니스 한복판에서
+          일하고 있는 두 명의 현직 디렉터가 4주를 같이 만듭니다.
         </p>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-8">
-          {MENTORS.map((m, i) => (
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
+          {INSTRUCTORS.map((instructor) => (
             <article
-              key={m.id}
-              className="flex flex-col gap-6 border border-border bg-bg p-8 transition-colors hover:border-brand-purple"
+              key={instructor.id}
+              className="flex flex-col border border-border bg-bg transition-colors hover:border-brand-pink"
             >
-              <div className="flex items-center justify-between">
-                <Avatar
-                  initials={m.roleEn
-                    .split(" ")
-                    .map((w) => w[0])
-                    .join("")
-                    .slice(0, 2)}
-                  tint={TINTS[i % TINTS.length]}
-                  size={72}
+              {/* Photo */}
+              <div className="relative aspect-[4/5] w-full overflow-hidden bg-surface">
+                <Image
+                  src={instructor.photo}
+                  alt={instructor.photoAlt}
+                  fill
+                  sizes="(min-width: 1024px) 50vw, 100vw"
+                  className="object-cover"
                 />
-                {m.status === "pending" && (
-                  <span
-                    className="border border-fg-subtle/40 bg-bg px-2 py-1 text-[10px] font-bold uppercase text-fg-subtle"
-                    style={{ letterSpacing: "0.2em" }}
+                <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-transparent" />
+                <div className="absolute left-5 top-5">
+                  <Chip variant="accent">{instructor.day} 강사</Chip>
+                </div>
+                <div className="absolute bottom-5 left-5 right-5">
+                  <p
+                    className="font-black text-fg text-4xl sm:text-5xl"
+                    style={{ letterSpacing: "-0.04em" }}
                   >
-                    확정 예정
-                  </span>
-                )}
+                    {instructor.name}
+                  </p>
+                  {instructor.nameSub ? (
+                    <p
+                      className="mt-1 text-fg/80 text-base font-bold"
+                      style={{ letterSpacing: "0.05em" }}
+                    >
+                      {instructor.nameSub}
+                    </p>
+                  ) : null}
+                </div>
               </div>
 
-              <div>
+              {/* Body */}
+              <div className="flex flex-col gap-8 p-8 sm:p-10">
+                {/* Affiliation */}
+                <div className="flex flex-wrap gap-2">
+                  {instructor.affiliation.map((a) => (
+                    <Chip key={a} variant="default">
+                      {a}
+                    </Chip>
+                  ))}
+                </div>
+
+                {/* One-liner */}
                 <p
-                  className="text-fg-subtle text-xs uppercase"
-                  style={{ letterSpacing: "0.3em" }}
+                  className="text-base leading-relaxed text-fg sm:text-lg"
+                  style={{ letterSpacing: "-0.01em" }}
                 >
-                  {m.roleEn}
+                  {instructor.oneLiner}
                 </p>
-                <h3
-                  className="mt-2 font-black text-2xl text-fg sm:text-3xl"
-                  style={{ letterSpacing: "-0.03em" }}
-                >
-                  {m.role}
-                </h3>
+
+                {/* Curriculum */}
+                <div className="border-t border-border pt-6">
+                  <p
+                    className="mb-4 text-fg-subtle text-xs uppercase"
+                    style={{ letterSpacing: "0.3em" }}
+                  >
+                    담당 커리큘럼 (4주)
+                  </p>
+                  <ol className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    {instructor.curriculum.map((c, i) => (
+                      <li
+                        key={c}
+                        className="flex items-start gap-3 text-base text-fg"
+                      >
+                        <span
+                          className="mt-1 font-black text-brand-pink text-sm"
+                          style={{ letterSpacing: "0.1em" }}
+                        >
+                          W{i + 1}
+                        </span>
+                        <span style={{ letterSpacing: "-0.01em" }}>{c}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+
+                {/* Career groups */}
+                <div className="border-t border-border pt-6">
+                  <p
+                    className="mb-6 text-fg-subtle text-xs uppercase"
+                    style={{ letterSpacing: "0.3em" }}
+                  >
+                    주요 경력
+                  </p>
+                  <div className="flex flex-col gap-6">
+                    {instructor.careerGroups.map((g) => (
+                      <div key={g.label}>
+                        <p
+                          className="mb-3 font-black text-brand-pink text-sm uppercase sm:text-base"
+                          style={{ letterSpacing: "0.15em" }}
+                        >
+                          {g.label}
+                        </p>
+                        <ul className="flex flex-wrap gap-2">
+                          {g.items.map((item) => (
+                            <li key={item}>
+                              <Chip variant="subtle">{item}</Chip>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
-
-              <p className="text-base leading-relaxed text-fg-muted">
-                {m.bio ?? "현직 K-pop 공연 현장에서 활동 중. 상세 프로필은 곧 공개."}
-              </p>
-
-              <p
-                className="mt-auto text-fg text-base"
-                style={{ letterSpacing: "-0.02em" }}
-              >
-                <span className="text-brand-pink font-black">
-                  {m.name ?? "—"}
-                </span>
-              </p>
             </article>
           ))}
         </div>

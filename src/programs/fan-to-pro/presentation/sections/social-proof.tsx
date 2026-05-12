@@ -26,7 +26,7 @@ export function SocialProof() {
 
       <div className="relative z-10 px-6 py-24 sm:px-10 sm:py-32">
         <Container>
-          <Eyebrow n="07">Real</Eyebrow>
+          <Eyebrow n="08">Real</Eyebrow>
 
           <h2
             className="mb-16 max-w-4xl font-black text-display-lg"

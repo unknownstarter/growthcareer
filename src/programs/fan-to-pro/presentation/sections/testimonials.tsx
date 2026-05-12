@@ -11,7 +11,7 @@ export function Testimonials() {
   return (
     <Section id="testimonials" tone="surface">
       <Container>
-        <Eyebrow n="11">Voices</Eyebrow>
+        <Eyebrow n="12">Voices</Eyebrow>
 
         <div className="mb-12 grid grid-cols-1 items-end gap-8 lg:grid-cols-[1.6fr_1fr]">
           <h2

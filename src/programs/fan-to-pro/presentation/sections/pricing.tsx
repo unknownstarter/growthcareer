@@ -13,7 +13,7 @@ export function Pricing() {
   return (
     <section className="section-pink px-6 py-28 sm:px-10 sm:py-36">
       <Container>
-        <Eyebrow n="10">Pricing</Eyebrow>
+        <Eyebrow n="11">Pricing</Eyebrow>
 
         <h2
           className="mb-12 max-w-4xl font-black text-display-lg"

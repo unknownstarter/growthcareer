@@ -61,7 +61,7 @@ export function ApplyForm() {
     return (
       <Section id="apply" tone="bg">
         <Container>
-          <Eyebrow n="13">Apply</Eyebrow>
+          <Eyebrow n="14">Apply</Eyebrow>
           <SuccessBlock id={state.id} email={step1.email} name={step1.name} />
         </Container>
       </Section>
@@ -74,7 +74,7 @@ export function ApplyForm() {
   return (
     <Section id="apply" tone="bg">
       <Container>
-        <Eyebrow n="13">Apply</Eyebrow>
+        <Eyebrow n="14">Apply</Eyebrow>
 
         <h2
           className="mb-12 max-w-4xl font-black text-display-lg"

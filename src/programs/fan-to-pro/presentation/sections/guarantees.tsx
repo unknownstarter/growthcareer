@@ -7,7 +7,7 @@ export function Guarantees() {
   return (
     <Section tone="indigo">
       <Container>
-        <Eyebrow n="08">Guarantee</Eyebrow>
+        <Eyebrow n="09">Guarantee</Eyebrow>
 
         <h2
           className="mb-12 font-black text-display-lg"

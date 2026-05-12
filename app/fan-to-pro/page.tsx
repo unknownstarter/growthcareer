@@ -11,6 +11,7 @@ import { Outcome } from "@/src/programs/fan-to-pro/presentation/sections/outcome
 import { Pricing } from "@/src/programs/fan-to-pro/presentation/sections/pricing";
 import { Problem } from "@/src/programs/fan-to-pro/presentation/sections/problem";
 import { Program } from "@/src/programs/fan-to-pro/presentation/sections/program";
+import { Recruitment } from "@/src/programs/fan-to-pro/presentation/sections/recruitment";
 import { SocialProof } from "@/src/programs/fan-to-pro/presentation/sections/social-proof";
 import { Solution } from "@/src/programs/fan-to-pro/presentation/sections/solution";
 import { Testimonials } from "@/src/programs/fan-to-pro/presentation/sections/testimonials";
@@ -44,6 +45,7 @@ export default function FanToProPage() {
       <Hero />
       <Problem />
       <Solution />
+      <Recruitment />
       <ValueCards />
       <Mentor />
       <Program />

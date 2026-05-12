@@ -7,7 +7,7 @@ const PHASES = [
     n: "01",
     title: "Class",
     kr: "1개월 현업 강의",
-    body: "토 · 일 주말반 · 총 8회 · 4주 진행. 현업 전문가가 무대 음향 · 비주얼 · 스테이지 매니지먼트 · 아티스트 운영의 실무를 한국어로 압축해 전달.",
+    body: "토 · 일 주말반 · 총 8회 · 4주. 토요일은 공연 제작 구조 · 음악 디렉팅 · 플레이백/타임코드 · 현장 실무를, 일요일은 Music Business · 음반 기획·제작 전략 · A&R · Visual Director 를 한국어로 압축해 전달.",
   },
   {
     n: "02",
@@ -34,7 +34,7 @@ export function Program() {
   return (
     <Section id="program" tone="bg">
       <Container>
-        <Eyebrow n="05">Program</Eyebrow>
+        <Eyebrow n="06">Program</Eyebrow>
 
         <h2
           className="mb-12 max-w-4xl font-black text-display-lg"

@@ -33,7 +33,7 @@ export function Bonus() {
   return (
     <Section tone="surface">
       <Container>
-        <Eyebrow n="09">Bonus</Eyebrow>
+        <Eyebrow n="10">Bonus</Eyebrow>
 
         <h2
           className="mb-12 max-w-4xl font-black text-display-lg"

@@ -66,38 +66,128 @@ export const COMMUNITY = {
   joinTimingNote: "수강 확정 시 안내",
 } as const;
 
-export type Mentor = {
-  id: string;
-  role: string;
-  roleEn: string;
-  name: string | null;
-  bio: string | null;
-  status: "confirmed" | "pending";
+export type CareerGroup = {
+  label: string;
+  items: readonly string[];
 };
 
-export const MENTORS: readonly Mentor[] = [
+export type Instructor = {
+  id: string;
+  day: "토요일" | "일요일";
+  name: string;
+  nameSub: string | null;
+  affiliation: readonly string[];
+  oneLiner: string;
+  photo: string;
+  photoAlt: string;
+  curriculum: readonly string[];
+  careerGroups: readonly CareerGroup[];
+};
+
+export const INSTRUCTORS: readonly Instructor[] = [
   {
-    id: "audio",
-    role: "무대 음향 감독",
-    roleEn: "Stage Audio Director",
-    name: null,
-    bio: null,
-    status: "confirmed",
+    id: "oh-beomjun",
+    day: "토요일",
+    name: "오범준",
+    nameSub: null,
+    affiliation: ["유니온픽쳐스 소속감독", "레솔트뮤지끄 음악감독"],
+    oneLiner:
+      "광고와 방송 음악감독으로 입봉, 현재 여러 아티스트의 공연 음향과 콘서트 진행을 맡고 있습니다.",
+    photo: "/images/instructors/oh-beomjun.jpg",
+    photoAlt: "오범준 강사 프로필",
+    curriculum: [
+      "공연 제작 구조 이해",
+      "음악 디렉팅 · 편곡 실무",
+      "플레이백 · 타임코드 개론",
+      "현장 실무 · 커리어",
+    ],
+    careerGroups: [
+      {
+        label: "광고 음악",
+        items: [
+          "티머니 모바일 (박보영) 작곡",
+          "신한증권 (장나라) 징글 작곡",
+          "코웨이 (아이콘) 작곡",
+          "VOGO 라이브쇼핑 (돌고래유괴단 · 김범수) 편곡",
+          "셀렉스 (정동원) 작곡",
+          "뉴트리원 더생알파 (임영웅) 작곡",
+          "LG Waschmaschine (독일 · 유럽) 작곡",
+          "Blackpink × Tokopedia (인도네시아) 작곡",
+          "설화수 자음생 작곡",
+          "아큐브 디파인 작곡",
+        ],
+      },
+      {
+        label: "드라마 · 방송",
+        items: [
+          "채널A 〈무물쭈물〉 OST 작곡",
+          "2026 KIA BOOTCAMP WORLDWIDE 음악감독",
+          "Modoofind — The Beginning / First Flight / Go Higher 작곡",
+        ],
+      },
+      {
+        label: "콘서트",
+        items: [
+          "2025 손동운 콘서트 — 음악감독팀",
+          "2026 더보이즈 콘서트 — 음향팀",
+          "2026 QQQ (KB · 지성 · NINE) 한국 투어 — 진행팀",
+        ],
+      },
+    ],
   },
   {
-    id: "visual",
-    role: "비주얼 디렉터",
-    roleEn: "Visual Director",
-    name: null,
-    bio: null,
-    status: "confirmed",
-  },
-  {
-    id: "network",
-    role: "현업 네트워킹 멘토",
-    roleEn: "Industry Network Mentor",
-    name: null,
-    bio: null,
-    status: "pending",
+    id: "nino-lee",
+    day: "일요일",
+    name: "Nino",
+    nameSub: "이세환",
+    affiliation: ["Sherpa Music CEO", "Creative Director"],
+    oneLiner:
+      "1999년 1세대 언더래퍼로 시작해 소니뮤직, CJ E&M 을 거쳐 현재 Sherpa Music Creative Director 로 27년째 뮤직 비즈니스를 하고 있습니다.",
+    photo: "/images/instructors/nino-lee.jpg",
+    photoAlt: "Nino (이세환) 강사 프로필",
+    curriculum: [
+      "Music Business",
+      "음반 기획 · 제작 전략",
+      "A&R",
+      "Visual Director",
+    ],
+    careerGroups: [
+      {
+        label: "CJ ENM A&R",
+        items: [
+          "프로듀스 101 시즌1 · 2 · X · Japan 시즌1 · 2",
+          "프로듀스 48",
+          "I.O.I — 미니 1·2집 / 싱글 1·2집",
+          "JBJ — 미니 1·2집 / 디럭스 1집",
+          "워너원 미니 1집 [1×1=1]",
+          "아이즈원 — 미니 1·2·3·4집 / 정규 1집 [Bloom*IZ]",
+          "JO1 (Japan) — 미니 1·2·3집 / 정규 1집 [The STAR]",
+          "INI — 미니 1·2·3집",
+          "중국 청춘유니2 타이틀 [YES! OK!]",
+        ],
+      },
+      {
+        label: "HI-HAT Producer · Publishing",
+        items: [
+          "키스식스센스 OST Producer",
+          "변론을 시작하겠습니다 OST Producer",
+          "카지노 OST Producer",
+          "사랑이라 말해요 OST Producer",
+          "남남 OST Producer",
+          "트랜드지 3·4집 Producer",
+          "국내외 100여팀 작가 계약",
+          "비비지 · 황민현 · 소유 · 템페스트 · 보이즈플래닛 · 트랜드지 곡 셀링",
+        ],
+      },
+      {
+        label: "Sherpa Music CEO · Creative Director",
+        items: [
+          "STARSHIP New Kids On The STARSHIP A&R",
+          "JTBC Project7 해외 연습생 오디션 — 1위 마징시앙 데뷔",
+          "이승윤 3rd Album Visual Director — 2025 한국대중음악상 2관왕",
+          "Sherpa Music Publishing 국내외 290여팀 작가 계약",
+        ],
+      },
+    ],
   },
 ] as const;
