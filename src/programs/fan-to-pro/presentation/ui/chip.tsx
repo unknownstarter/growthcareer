@@ -10,19 +10,28 @@ const VARIANT: Record<Variant, string> = {
   solid: "border-fg bg-fg text-bg",
 };
 
+type Size = "sm" | "md";
+const SIZE: Record<Size, string> = {
+  sm: "px-2.5 py-1 text-[11px]",
+  md: "px-3 py-1.5 text-xs",
+};
+
 export function Chip({
   children,
   variant = "default",
+  size = "sm",
   className,
 }: {
   children: ReactNode;
   variant?: Variant;
+  size?: Size;
   className?: string;
 }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center border px-2.5 py-1 text-[11px] font-bold uppercase",
+        "inline-flex items-center border font-black uppercase",
+        SIZE[size],
         VARIANT[variant],
         className,
       )}

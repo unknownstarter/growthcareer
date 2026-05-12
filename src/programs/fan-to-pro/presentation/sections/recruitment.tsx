@@ -53,16 +53,16 @@ export function Recruitment() {
           </p>
         </div>
 
-        <ol className="border border-fg/20 bg-bg/15 backdrop-blur-sm">
+        <ol className="border border-border bg-bg">
           {QUALIFICATIONS.map((q, i) => (
             <li
               key={q.title}
-              className="grid grid-cols-[auto_1fr] gap-6 border-fg/15 border-b p-6 last:border-b-0 sm:grid-cols-[140px_1fr_auto] sm:gap-10 sm:p-10"
+              className="grid grid-cols-[auto_1fr] gap-6 border-border border-b p-6 last:border-b-0 sm:grid-cols-[140px_1fr_auto] sm:gap-10 sm:p-10"
             >
               {/* Required + number */}
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 border-l-2 border-brand-pink pl-4 sm:border-l-4 sm:pl-5">
                 <span
-                  className="text-fg/70 text-[10px] font-black uppercase"
+                  className="text-brand-pink text-[10px] font-black uppercase sm:text-xs"
                   style={{ letterSpacing: "0.3em" }}
                 >
                   Required
@@ -83,13 +83,13 @@ export function Recruitment() {
                 >
                   {q.title}
                 </h3>
-                <p className="max-w-xl text-base leading-relaxed text-fg/85">
+                <p className="max-w-xl text-base leading-relaxed text-fg-muted">
                   {q.body}
                 </p>
                 {/* Chips — mobile only (below body) */}
                 <div className="mt-2 flex flex-wrap gap-2 sm:hidden">
                   {q.chips.map((c) => (
-                    <Chip key={c} variant="accent">
+                    <Chip key={c} variant="accent" size="md">
                       {c}
                     </Chip>
                   ))}
@@ -99,7 +99,7 @@ export function Recruitment() {
               {/* Chips — desktop only (right column) */}
               <div className="hidden flex-col items-end gap-2 sm:flex">
                 {q.chips.map((c) => (
-                  <Chip key={c} variant="accent">
+                  <Chip key={c} variant="accent" size="md">
                     {c}
                   </Chip>
                 ))}
