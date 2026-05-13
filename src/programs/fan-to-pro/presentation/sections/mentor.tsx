@@ -33,16 +33,40 @@ export function Mentor() {
             >
               {/* Photo */}
               <div className="relative aspect-[4/5] w-full overflow-hidden bg-surface">
-                <Image
-                  src={instructor.photo}
-                  alt={instructor.photoAlt}
-                  fill
-                  sizes="(min-width: 1024px) 50vw, 100vw"
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-transparent" />
-                <div className="absolute left-5 top-5">
+                {instructor.photo ? (
+                  <>
+                    <Image
+                      src={instructor.photo}
+                      alt={instructor.photoAlt}
+                      fill
+                      sizes="(min-width: 1024px) 50vw, 100vw"
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-transparent" />
+                  </>
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center bg-surface">
+                    <div
+                      aria-hidden
+                      className="absolute inset-0 opacity-30"
+                      style={{
+                        backgroundImage:
+                          "repeating-linear-gradient(45deg, transparent 0 14px, rgba(255,255,255,0.04) 14px 28px)",
+                      }}
+                    />
+                    <span
+                      className="relative font-black text-fg-subtle text-xs uppercase"
+                      style={{ letterSpacing: "0.4em" }}
+                    >
+                      Profile · Pending
+                    </span>
+                  </div>
+                )}
+                <div className="absolute left-5 top-5 flex gap-2">
                   <Chip variant="accent">{instructor.day} 강사</Chip>
+                  {instructor.status === "pending" ? (
+                    <Chip variant="default">확정 예정</Chip>
+                  ) : null}
                 </div>
                 <div className="absolute bottom-5 left-5 right-5">
                   <p
@@ -65,13 +89,15 @@ export function Mentor() {
               {/* Body */}
               <div className="flex flex-col gap-8 p-8 sm:p-10">
                 {/* Affiliation */}
-                <div className="flex flex-wrap gap-2">
-                  {instructor.affiliation.map((a) => (
-                    <Chip key={a} variant="default">
-                      {a}
-                    </Chip>
-                  ))}
-                </div>
+                {instructor.affiliation.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {instructor.affiliation.map((a) => (
+                      <Chip key={a} variant="default">
+                        {a}
+                      </Chip>
+                    ))}
+                  </div>
+                ) : null}
 
                 {/* One-liner */}
                 <p
@@ -108,33 +134,35 @@ export function Mentor() {
                 </div>
 
                 {/* Career groups */}
-                <div className="border-t border-border pt-6">
-                  <p
-                    className="mb-6 text-fg-subtle text-xs uppercase"
-                    style={{ letterSpacing: "0.3em" }}
-                  >
-                    주요 경력
-                  </p>
-                  <div className="flex flex-col gap-6">
-                    {instructor.careerGroups.map((g) => (
-                      <div key={g.label}>
-                        <p
-                          className="mb-3 font-black text-brand-pink text-sm uppercase sm:text-base"
-                          style={{ letterSpacing: "0.15em" }}
-                        >
-                          {g.label}
-                        </p>
-                        <ul className="flex flex-wrap gap-2">
-                          {g.items.map((item) => (
-                            <li key={item}>
-                              <Chip variant="subtle">{item}</Chip>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
+                {instructor.careerGroups.length > 0 ? (
+                  <div className="border-t border-border pt-6">
+                    <p
+                      className="mb-6 text-fg-subtle text-xs uppercase"
+                      style={{ letterSpacing: "0.3em" }}
+                    >
+                      주요 경력
+                    </p>
+                    <div className="flex flex-col gap-6">
+                      {instructor.careerGroups.map((g) => (
+                        <div key={g.label}>
+                          <p
+                            className="mb-3 font-black text-brand-pink text-sm uppercase sm:text-base"
+                            style={{ letterSpacing: "0.15em" }}
+                          >
+                            {g.label}
+                          </p>
+                          <ul className="flex flex-wrap gap-2">
+                            {g.items.map((item) => (
+                              <li key={item}>
+                                <Chip variant="subtle">{item}</Chip>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                ) : null}
               </div>
             </article>
           ))}

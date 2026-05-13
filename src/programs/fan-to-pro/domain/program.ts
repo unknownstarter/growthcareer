@@ -74,11 +74,12 @@ export type CareerGroup = {
 export type Instructor = {
   id: string;
   day: "토요일" | "일요일";
+  status: "confirmed" | "pending";
   name: string;
   nameSub: string | null;
   affiliation: readonly string[];
   oneLiner: string;
-  photo: string;
+  photo: string | null;
   photoAlt: string;
   curriculum: readonly string[];
   careerGroups: readonly CareerGroup[];
@@ -86,58 +87,28 @@ export type Instructor = {
 
 export const INSTRUCTORS: readonly Instructor[] = [
   {
-    id: "oh-beomjun",
+    id: "saturday-tbd",
     day: "토요일",
-    name: "오범준",
+    status: "pending",
+    name: "확정 예정",
     nameSub: null,
-    affiliation: ["유니온픽쳐스 소속감독", "레솔트뮤지끄 음악감독"],
+    affiliation: [],
     oneLiner:
-      "광고와 방송 음악감독으로 입봉, 현재 여러 아티스트의 공연 음향과 콘서트 진행을 맡고 있습니다.",
-    photo: "/images/instructors/oh-beomjun.jpg",
-    photoAlt: "오범준 강사 프로필",
+      "공연 제작 · 음악 디렉팅 · 플레이백 · 현장 운영 분야의 현직 디렉터를 섭외 중입니다. 강사 확정 후 프로필을 공개합니다.",
+    photo: null,
+    photoAlt: "",
     curriculum: [
       "공연 제작 구조 이해",
       "음악 디렉팅 · 편곡 실무",
       "플레이백 · 타임코드 개론",
       "현장 실무 · 커리어",
     ],
-    careerGroups: [
-      {
-        label: "광고 음악",
-        items: [
-          "티머니 모바일 (박보영) 작곡",
-          "신한증권 (장나라) 징글 작곡",
-          "코웨이 (아이콘) 작곡",
-          "VOGO 라이브쇼핑 (돌고래유괴단 · 김범수) 편곡",
-          "셀렉스 (정동원) 작곡",
-          "뉴트리원 더생알파 (임영웅) 작곡",
-          "LG Waschmaschine (독일 · 유럽) 작곡",
-          "Blackpink × Tokopedia (인도네시아) 작곡",
-          "설화수 자음생 작곡",
-          "아큐브 디파인 작곡",
-        ],
-      },
-      {
-        label: "드라마 · 방송",
-        items: [
-          "채널A 〈무물쭈물〉 OST 작곡",
-          "2026 KIA BOOTCAMP WORLDWIDE 음악감독",
-          "Modoofind — The Beginning / First Flight / Go Higher 작곡",
-        ],
-      },
-      {
-        label: "콘서트",
-        items: [
-          "2025 손동운 콘서트 — 음악감독팀",
-          "2026 더보이즈 콘서트 — 음향팀",
-          "2026 QQQ (KB · 지성 · NINE) 한국 투어 — 진행팀",
-        ],
-      },
-    ],
+    careerGroups: [],
   },
   {
     id: "nino-lee",
     day: "일요일",
+    status: "confirmed",
     name: "Nino",
     nameSub: "이세환",
     affiliation: ["Sherpa Music CEO", "Creative Director"],
