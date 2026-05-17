@@ -32,6 +32,7 @@ yarn-error.log*
 
 # Claude Code (per-developer permissions)
 .claude/settings.local.json
+.claude/scheduled_tasks.lock
 docs/screenshots/
 
 # Supabase CLI runtime artifacts
