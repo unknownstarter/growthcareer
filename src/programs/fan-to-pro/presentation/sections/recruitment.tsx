@@ -41,9 +41,9 @@ export function Recruitment() {
             className="max-w-3xl font-black text-display-lg"
             style={{ lineHeight: 1.05, letterSpacing: "-0.04em" }}
           >
-            실제 전문가들과
+            실제 전문가들에게
             <br />
-            만나는 4주!
+            배우는 4주!
             <br />
             <span className="text-black">수강 신청 자격</span>
           </h2>
