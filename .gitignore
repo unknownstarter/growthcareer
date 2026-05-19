@@ -48,3 +48,9 @@ next-env.d.ts
 .vscode/
 *.swp
 *.swo
+
+# 강사 원본 프로필 자료 (개인정보 — 로컬 보관, 가공된 사진만 public/ 에 커밋)
+src/programs/fan-to-pro/*.pdf
+src/programs/fan-to-pro/*.xlsx
+src/programs/fan-to-pro/준컴퍼니_*.png
+src/programs/fan-to-pro/준컴퍼니_*.jpeg

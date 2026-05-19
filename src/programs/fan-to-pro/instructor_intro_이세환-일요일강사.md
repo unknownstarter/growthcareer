@@ -64,3 +64,4 @@ JTBC Project7 해외연습생오디션및관리운영-1위마징시앙데뷔
 SHERPA MUSIC Publishing C.E.O
 국내외 290여팀 작가 계약
 
+

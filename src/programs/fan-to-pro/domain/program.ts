@@ -77,33 +77,108 @@ export type Instructor = {
   status: "confirmed" | "pending";
   name: string;
   nameSub: string | null;
+  initials: string;
+  tint: "indigo" | "purple" | "pink";
   affiliation: readonly string[];
   oneLiner: string;
   photo: string | null;
   photoAlt: string;
+  photoPosition: string | null;
   curriculum: readonly string[];
   careerGroups: readonly CareerGroup[];
 };
 
 export const INSTRUCTORS: readonly Instructor[] = [
   {
-    id: "saturday-tbd",
+    id: "park-sungcheol",
     day: "토요일",
-    status: "pending",
-    name: "확정 예정",
-    nameSub: null,
-    affiliation: [],
+    status: "confirmed",
+    name: "박성철",
+    nameSub: "Park, Sung-Cheol",
+    initials: "박",
+    tint: "pink",
+    affiliation: ["(주)그린음향 기술부", "현장 음향 디렉터"],
     oneLiner:
-      "공연 제작 · 음악 디렉팅 · 플레이백 · 현장 운영 분야의 현직 디렉터를 섭외 중입니다. 강사 확정 후 프로필을 공개합니다.",
-    photo: null,
-    photoAlt: "",
-    curriculum: [
-      "공연 제작 구조 이해",
-      "음악 디렉팅 · 편곡 실무",
-      "플레이백 · 타임코드 개론",
-      "현장 실무 · 커리어",
+      "2005년부터 20년간 MBC 음악중심·가요대제전·나는 가수다 등 메이저 무대의 현장 음향을 디렉팅해 온 베테랑 사운드 디렉터입니다.",
+    photo: "/images/instructors/park-sungcheol.png",
+    photoAlt: "박성철 강사 프로필",
+    photoPosition: "center top",
+    curriculum: [],
+    careerGroups: [
+      {
+        label: "Live Sound Director",
+        items: [
+          "MBC 음악중심 (전 음악캠프) 2005~현재",
+          "MBC 가요대제전 2005~현재",
+          "MBC 듀엣가요제 FOH 엔지니어",
+          "MBC 마이리틀텔레비전",
+          "MBC 나는 가수다 1기 (2011~2012)",
+          "MBC 코리안뮤직 웨이브 국내·해외 투어 2011~현재",
+          "KBS 열린음악회(야외) 2008~2014",
+          "SBS 강심장 (2009~2013)",
+          "SBS·MBC 라디오 공개방송 2009~현재",
+        ],
+      },
+      {
+        label: "Recent Stage (2025)",
+        items: [
+          "SBS 25년 가요대전 썸머 유니팝",
+          "사운드베리 페스타 25",
+          "MBC 버추얼 라이브 페스티벌",
+          "MBC 대학가요제",
+          "화성 경기인디뮤직 페스티벌",
+          "SBS 21대 대선방송",
+        ],
+      },
     ],
-    careerGroups: [],
+  },
+  {
+    id: "lee-jehyang",
+    day: "토요일",
+    status: "confirmed",
+    name: "이제향",
+    nameSub: "Lee, Je-Hyang",
+    initials: "제",
+    tint: "indigo",
+    affiliation: ["(주)준컴퍼니 기술부", "현장 음향 감독 · 믹싱 엔지니어"],
+    oneLiner:
+      "SBS 라디오·KBS 6시내고향에서 시작해 MBC 음악중심·가요대제전, SBS 가요대전 UNIPOP 까지 현장 음향 감독·믹싱 엔지니어로 활동 중인 현직 사운드 디렉터입니다.",
+    photo: "/images/instructors/lee-jehyang.jpeg",
+    photoAlt: "이제향 강사 콘솔 작업 사진",
+    photoPosition: "62% 30%",
+    curriculum: [],
+    careerGroups: [
+      {
+        label: "Live Mixing · Sound Director",
+        items: [
+          "MBC 음악중심 울산특집 — 현장 믹싱 엔지니어",
+          "MBC 가요대제전 — 현장 믹싱 엔지니어",
+          "SBS 가요대전 UNIPOP 2025 — 현장 음향 감독",
+        ],
+      },
+      {
+        label: "공개방송 · 녹화",
+        items: [
+          "SBS 라디오 공개방송 2022~현재",
+          "KBS 6시내고향 공개방송 2024~현재",
+          "KBS 아침마당 녹화",
+          "TV조선 싱코리아 녹화",
+        ],
+      },
+      {
+        label: "Festival (2025~26)",
+        items: [
+          "사운드베리 페스타 25",
+          "동두천 락페스티벌",
+          "MBC 대학가요제",
+          "MBC 버추얼 라이브 페스티벌",
+          "화성 인디뮤직 페스티벌",
+          "OBS 토토로파티",
+          "웨스터심포니오케스트라",
+          "서울 히어로락페스티벌 (2026.4)",
+        ],
+      },
+    ],
   },
   {
     id: "nino-lee",
@@ -111,11 +186,14 @@ export const INSTRUCTORS: readonly Instructor[] = [
     status: "confirmed",
     name: "Nino",
     nameSub: "이세환",
+    initials: "Ni",
+    tint: "purple",
     affiliation: ["Sherpa Music CEO", "Creative Director"],
     oneLiner:
       "1999년 1세대 언더래퍼로 시작해 소니뮤직, CJ E&M 을 거쳐 현재 Sherpa Music Creative Director 로 27년째 뮤직 비즈니스를 하고 있습니다.",
     photo: "/images/instructors/nino-lee.jpg",
     photoAlt: "Nino (이세환) 강사 프로필",
+    photoPosition: null,
     curriculum: [
       "Music Business",
       "음반 기획 · 제작 전략",
