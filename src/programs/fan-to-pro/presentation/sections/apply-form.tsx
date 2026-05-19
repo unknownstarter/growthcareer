@@ -360,9 +360,23 @@ function PaymentNotice() {
         </dd>
       </dl>
 
-      <p className="mt-4 text-fg-muted text-xs leading-relaxed sm:text-sm">
-        입금자명은 신청자 본인 이름과 동일하게 보내주세요. 입금이 확인되면
-        카카오톡 오픈채팅 안내가 발송됩니다.
+      <p className="mt-4 border border-brand-pink/40 bg-bg p-3 text-fg text-xs leading-relaxed sm:text-sm">
+        <span
+          className="mr-2 inline-block bg-brand-pink px-2 py-0.5 align-middle text-fg text-[10px] font-black uppercase"
+          style={{ letterSpacing: "0.2em" }}
+        >
+          필수
+        </span>
+        입금자명은{" "}
+        <span className="font-black text-brand-pink">
+          수강 신청서에 적은 본인 이름과 동일하게
+        </span>{" "}
+        보내주세요. 입금자명이 다르면 입금 확인이 지연되거나 자리 배정이
+        보류될 수 있습니다.
+      </p>
+
+      <p className="mt-3 text-fg-muted text-xs leading-relaxed sm:text-sm">
+        입금 확인 후 카카오톡 오픈채팅 안내가 발송됩니다.
       </p>
     </div>
   );
