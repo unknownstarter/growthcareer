@@ -8,6 +8,7 @@ import {
   type ApplicationActionState,
 } from "@/src/programs/fan-to-pro/domain/application";
 import { PRICING, formatKRW } from "@/src/programs/fan-to-pro/domain/pricing";
+import { SCHEDULE } from "@/src/programs/fan-to-pro/domain/program";
 import { Container } from "../ui/container";
 import { Eyebrow } from "../ui/eyebrow";
 import { Section } from "../ui/section";
@@ -85,9 +86,22 @@ export function ApplyForm() {
           <span className="text-brand-pink">시작.</span>
         </h2>
 
-        <p className="mb-12 max-w-2xl text-base leading-relaxed text-fg-muted sm:text-lg">
+        <p className="mb-6 max-w-2xl text-base leading-relaxed text-fg-muted sm:text-lg">
           입금 순서대로 자리가 확정됩니다. 폼 제출 후 24시간 이내 입금 안내 메일.
         </p>
+
+        <div className="mx-auto mb-12 grid max-w-3xl grid-cols-1 gap-px border border-fg/20 bg-fg/20 sm:grid-cols-2">
+          <ScheduleCallout
+            label="첫 강의 시작"
+            value={SCHEDULE.firstSessionLabel}
+            sub={SCHEDULE.durationLabel}
+          />
+          <ScheduleCallout
+            label="강의 장소"
+            value={SCHEDULE.locationLabel}
+            sub="수강 신청 완료자에게 개별 공지"
+          />
+        </div>
 
         <div className="mx-auto max-w-3xl border border-border bg-surface p-6 sm:p-10">
           <StepIndicator step={step} />
@@ -198,6 +212,8 @@ export function ApplyForm() {
                 required
               />
 
+              <PaymentNotice />
+
               <label className="mt-2 flex items-start gap-3 border border-border bg-bg p-4 text-fg-muted text-sm">
                 <input
                   type="checkbox"
@@ -206,8 +222,11 @@ export function ApplyForm() {
                   className="mt-1 h-4 w-4 accent-brand-pink"
                 />
                 <span>
-                  개인정보 수집·이용에 동의합니다. 신청 처리 및 입금 안내 목적
-                  외 사용되지 않으며, 신청 처리 종료 후 1년 내 파기됩니다.
+                  개인정보 수집·이용에 동의합니다. 입력하신 연락처와 개인정보는{" "}
+                  <span className="font-black text-fg">
+                    교육 프로그램 안내 및 긴급 연락
+                  </span>{" "}
+                  목적으로만 사용되며, 수강 처리 종료 후 1년 내 파기됩니다.
                 </span>
               </label>
               {fieldErrors.consent?.[0] && (
@@ -222,17 +241,7 @@ export function ApplyForm() {
                 </p>
               )}
 
-              <div className="mt-2 grid grid-cols-1 gap-3 border-border border-t pt-6 text-sm sm:grid-cols-[1fr_auto] sm:items-center">
-                <p className="text-fg-muted">
-                  결제 금액{" "}
-                  <span className="font-black text-fg">
-                    {formatKRW(PRICING.discounted)}
-                  </span>{" "}
-                  / 예금주{" "}
-                  <span className="font-black text-fg">
-                    {PRICING.bank.accountHolder}
-                  </span>
-                </p>
+              <div className="mt-2 flex justify-end border-border border-t pt-6 text-sm">
                 <button
                   type="button"
                   onClick={() => setStep(1)}
@@ -256,6 +265,106 @@ export function ApplyForm() {
         </div>
       </Container>
     </Section>
+  );
+}
+
+function ScheduleCallout({
+  label,
+  value,
+  sub,
+}: {
+  label: string;
+  value: string;
+  sub?: string;
+}) {
+  return (
+    <div className="flex flex-col gap-2 bg-bg p-5 sm:p-6">
+      <span
+        className="text-fg-subtle text-[10px] font-black uppercase sm:text-xs"
+        style={{ letterSpacing: "0.3em" }}
+      >
+        {label}
+      </span>
+      <p
+        className="font-black text-fg text-lg leading-tight sm:text-xl"
+        style={{ letterSpacing: "-0.03em" }}
+      >
+        {value}
+      </p>
+      {sub ? (
+        <p className="text-fg-muted text-xs leading-relaxed">{sub}</p>
+      ) : null}
+    </div>
+  );
+}
+
+function PaymentNotice() {
+  return (
+    <div className="mt-2 border-2 border-brand-pink bg-brand-pink/5 p-5 sm:p-6">
+      <p
+        className="mb-4 text-brand-pink text-[10px] font-black uppercase sm:text-xs"
+        style={{ letterSpacing: "0.3em" }}
+      >
+        Payment · 수강신청 완료 기준
+      </p>
+
+      <p
+        className="mb-5 font-black text-fg text-xl leading-snug sm:text-2xl"
+        style={{ letterSpacing: "-0.03em" }}
+      >
+        아래 계좌로{" "}
+        <span className="text-brand-pink">
+          {formatKRW(PRICING.discounted)}
+        </span>{" "}
+        입금이 확인되어야{" "}
+        <br className="hidden sm:block" />
+        수강 신청이{" "}
+        <span className="text-brand-pink">최종 완료</span>됩니다.
+      </p>
+
+      <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 border-brand-pink/40 border-t pt-4 text-sm sm:text-base">
+        <dt
+          className="text-fg-subtle text-xs uppercase"
+          style={{ letterSpacing: "0.2em" }}
+        >
+          은행
+        </dt>
+        <dd className="font-black text-fg">{PRICING.bank.bankName}</dd>
+
+        <dt
+          className="text-fg-subtle text-xs uppercase"
+          style={{ letterSpacing: "0.2em" }}
+        >
+          계좌
+        </dt>
+        <dd className="font-black text-fg tracking-wider">
+          {PRICING.bank.accountNumber}
+        </dd>
+
+        <dt
+          className="text-fg-subtle text-xs uppercase"
+          style={{ letterSpacing: "0.2em" }}
+        >
+          예금주
+        </dt>
+        <dd className="font-black text-fg">{PRICING.bank.accountHolder}</dd>
+
+        <dt
+          className="text-fg-subtle text-xs uppercase"
+          style={{ letterSpacing: "0.2em" }}
+        >
+          금액
+        </dt>
+        <dd className="font-black text-brand-pink">
+          {formatKRW(PRICING.discounted)}
+        </dd>
+      </dl>
+
+      <p className="mt-4 text-fg-muted text-xs leading-relaxed sm:text-sm">
+        입금자명은 신청자 본인 이름과 동일하게 보내주세요. 입금이 확인되면
+        카카오톡 오픈채팅 안내가 발송됩니다.
+      </p>
+    </div>
   );
 }
 

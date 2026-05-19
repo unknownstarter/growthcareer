@@ -1,4 +1,7 @@
-import { ENROLLMENT_CAP } from "@/src/programs/fan-to-pro/domain/program";
+import {
+  ENROLLMENT_CAP,
+  SCHEDULE,
+} from "@/src/programs/fan-to-pro/domain/program";
 import { Chip } from "../ui/chip";
 import { Container } from "../ui/container";
 import { Eyebrow } from "../ui/eyebrow";
@@ -6,8 +9,8 @@ import { Section } from "../ui/section";
 
 const QUALIFICATIONS = [
   {
-    title: "외국인 유학생",
-    body: "한국 거주 중인 외국 국적 학습자를 위한 프로그램입니다. 국적은 무관합니다.",
+    title: "외국 국적의 학생 또는 취업 준비생",
+    body: "한국 거주 중인 외국 국적자를 위한 프로그램입니다. 국적은 무관합니다.",
     chips: ["국적 무관", "한국 거주"],
   },
   {
@@ -38,11 +41,11 @@ export function Recruitment() {
             className="max-w-3xl font-black text-display-lg"
             style={{ lineHeight: 1.05, letterSpacing: "-0.04em" }}
           >
-            이 4주는,
+            실제 현업 전문가들을
             <br />
-            아무에게나
+            만나는 4주!
             <br />
-            <span className="text-brand-pink">열리지 않습니다.</span>
+            <span className="text-brand-pink">수강 신청 자격</span>
           </h2>
 
           <p className="text-base leading-relaxed text-fg/90 sm:text-lg">
@@ -108,8 +111,28 @@ export function Recruitment() {
           ))}
         </ol>
 
+        {/* Schedule strip */}
+        <div className="mt-8 grid grid-cols-1 gap-px border border-fg/20 bg-fg/20 sm:grid-cols-3">
+          <ScheduleCell
+            label="첫 강의"
+            value={SCHEDULE.firstSessionLabel}
+            sub={SCHEDULE.durationLabel}
+          />
+          <ScheduleCell
+            label="강의 장소"
+            value={SCHEDULE.locationLabel}
+            sub="보안·안내 효율을 위해 수강 확정자만 공유"
+          />
+          <ScheduleCell
+            label="모집 마감"
+            value={SCHEDULE.enrollmentCutoffLabel}
+            sub={`이때까지 ${ENROLLMENT_CAP.minToProceed}명 미만이면 전액 자동 환불`}
+            accent
+          />
+        </div>
+
         {/* Capacity strip */}
-        <div className="mt-8 flex flex-col gap-6 border border-fg/20 bg-bg p-6 sm:flex-row sm:items-center sm:justify-between sm:gap-10 sm:p-10">
+        <div className="mt-px flex flex-col gap-6 border border-fg/20 bg-bg p-6 sm:flex-row sm:items-center sm:justify-between sm:gap-10 sm:p-10">
           <div className="flex flex-col gap-2">
             <span
               className="text-fg-subtle text-[10px] font-black uppercase"
@@ -130,18 +153,51 @@ export function Recruitment() {
           </div>
 
           <p className="max-w-md text-sm leading-relaxed text-fg-muted sm:text-base">
-            시작일{" "}
             <span className="font-black text-fg">
-              {ENROLLMENT_CAP.cutoffDaysBeforeStart}일 전
+              {SCHEDULE.enrollmentCutoffLabel}
             </span>{" "}
-            신청자{" "}
+            기준 신청자{" "}
             <span className="font-black text-fg">
               {ENROLLMENT_CAP.minToProceed}명
-            </span>
-            {" "}미만 시 강좌 취소 · 전액 자동 환불.
+            </span>{" "}
+            미만 시 강좌 취소 · 전액 자동 환불.
           </p>
         </div>
       </Container>
     </Section>
+  );
+}
+
+function ScheduleCell({
+  label,
+  value,
+  sub,
+  accent = false,
+}: {
+  label: string;
+  value: string;
+  sub?: string;
+  accent?: boolean;
+}) {
+  return (
+    <div className="flex flex-col gap-2 bg-bg p-6 sm:p-8">
+      <span
+        className="text-fg-subtle text-[10px] font-black uppercase sm:text-xs"
+        style={{ letterSpacing: "0.3em" }}
+      >
+        {label}
+      </span>
+      <p
+        className={`font-black text-xl leading-tight sm:text-2xl ${
+          accent ? "text-brand-pink" : "text-fg"
+        }`}
+        style={{ letterSpacing: "-0.03em" }}
+      >
+        {value}
+      </p>
+      {sub ? (
+        <p className="text-fg-muted text-xs leading-relaxed sm:text-sm">{sub}</p>
+      ) : null}
+    </div>
   );
 }

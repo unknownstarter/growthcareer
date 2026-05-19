@@ -46,14 +46,26 @@ export const REFUND_POLICY = {
 } as const;
 
 /**
- * 모집 정원 가드. 시작일 7일 전 시점 신청자 < 최소 인원이면 강좌를 취소하고 전액 자동 환불.
+ * 모집 정원 가드. 모집 마감일 기준 신청자 < 최소 인원이면 강좌를 취소하고 전액 자동 환불.
  */
 export const ENROLLMENT_CAP = {
   totalSeats: 30,
   minToProceed: 20,
   cutoffDaysBeforeStart: 7,
   autoRefundNote:
-    "본 강좌는 총 30인 모집이며, 수강 시작일 7일 전 시점에 신청자가 20명 미만이면 강좌가 취소되고 결제 금액은 전액 자동 환불됩니다.",
+    "본 강좌는 총 30인 모집이며, 2026년 6월 7일까지 신청자가 20명 미만일 경우 강좌가 취소되고 결제 금액은 전액 자동 환불됩니다.",
+} as const;
+
+/**
+ * 1기 강의 일정. 강의장은 보안·안내 효율을 위해 수강 확정자에게만 개별 공지.
+ */
+export const SCHEDULE = {
+  cohort: "1기",
+  firstSessionDate: "2026-06-13",
+  firstSessionLabel: "2026년 6월 13일 (토)",
+  enrollmentCutoffLabel: "2026년 6월 7일 (일)",
+  locationLabel: "수강 신청 완료 시 개별 공지",
+  durationLabel: "토 · 일 4주 · 총 8회",
 } as const;
 
 export const CERTIFICATE_ISSUER = {
