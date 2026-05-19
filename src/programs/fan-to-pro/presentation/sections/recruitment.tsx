@@ -45,7 +45,7 @@ export function Recruitment() {
             <br />
             만나는 4주!
             <br />
-            <span className="text-red-500">수강 신청 자격</span>
+            <span className="text-black">수강 신청 자격</span>
           </h2>
 
           <p className="text-base leading-relaxed text-fg/90 sm:text-lg">
