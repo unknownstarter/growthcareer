@@ -1,5 +1,8 @@
 import type { Metadata, Viewport } from "next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
+
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 export const metadata: Metadata = {
   title: {
@@ -52,6 +55,7 @@ export default function RootLayout({
   return (
     <html lang="ko" className="dark">
       <body className="bg-bg text-fg min-h-screen antialiased">{children}</body>
+      {GA_ID ? <GoogleAnalytics gaId={GA_ID} /> : null}
     </html>
   );
 }
