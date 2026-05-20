@@ -8,7 +8,13 @@ import {
   type ApplicationActionState,
 } from "@/src/programs/fan-to-pro/domain/application";
 import { PRICING, formatKRW } from "@/src/programs/fan-to-pro/domain/pricing";
-import { SCHEDULE } from "@/src/programs/fan-to-pro/domain/program";
+import {
+  ENROLLMENT_CAP,
+  OPERATOR,
+  REFUND_POLICY,
+  SCHEDULE,
+} from "@/src/programs/fan-to-pro/domain/program";
+import { Chip } from "../ui/chip";
 import { Container } from "../ui/container";
 import { Eyebrow } from "../ui/eyebrow";
 import { Section } from "../ui/section";
@@ -73,34 +79,59 @@ export function ApplyForm() {
     state.status === "error" ? state.errors : ({} as Record<string, string[]>);
 
   return (
-    <Section id="apply" tone="bg">
+    <Section id="apply" tone="surface">
       <Container>
-        <Eyebrow n="14">Apply</Eyebrow>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Eyebrow n="14">Apply</Eyebrow>
+          <Chip variant="accent" size="md">
+            선착순 {ENROLLMENT_CAP.totalSeats}석 · 마감 {SCHEDULE.enrollmentCutoffLabel}
+          </Chip>
+        </div>
 
         <h2
-          className="mb-12 max-w-4xl font-black text-display-lg"
-          style={{ lineHeight: 1.05, letterSpacing: "-0.04em" }}
+          className="mt-6 mb-4 font-black text-fg text-4xl sm:text-5xl"
+          style={{ letterSpacing: "-0.04em", lineHeight: 1.1 }}
         >
-          지금
-          <br />
-          <span className="text-brand-pink">시작.</span>
+          신청 · 결제
         </h2>
 
-        <p className="mb-6 max-w-2xl text-base leading-relaxed text-fg-muted sm:text-lg">
-          입금 순서대로 자리가 확정됩니다. 폼 제출 후 24시간 이내 입금 안내 메일.
+        <p className="mb-12 max-w-2xl text-base leading-relaxed text-fg-muted sm:text-lg">
+          <span className="font-black text-fg">{formatKRW(PRICING.discounted)}</span>{" "}
+          · 토 · 일 각 2시간 × 4주 · 입금 선착순으로 자리가 확정됩니다.
+          폼 제출 후 24시간 이내 입금 안내 메일이 발송됩니다.
         </p>
 
-        <div className="mx-auto mb-12 grid max-w-3xl grid-cols-1 gap-px border border-fg/20 bg-fg/20 sm:grid-cols-2">
-          <ScheduleCallout
+        {/* Summary Grid — 4칸: 첫 강의 / 장소 / 기간 / 결제 */}
+        <div className="mx-auto mb-px grid max-w-3xl grid-cols-1 gap-px border border-fg/20 bg-fg/20 sm:grid-cols-2 lg:grid-cols-4">
+          <SummaryCell
             label="첫 강의 시작"
             value={SCHEDULE.firstSessionLabel}
             sub={SCHEDULE.durationLabel}
           />
-          <ScheduleCallout
+          <SummaryCell
             label="강의 장소"
             value={SCHEDULE.locationLabel}
-            sub="수강 신청 완료자에게 개별 공지"
+            sub="신청 완료자에게 개별 공지"
           />
+          <SummaryCell
+            label="모집 마감"
+            value={SCHEDULE.enrollmentCutoffLabel}
+            sub={`이때까지 ${ENROLLMENT_CAP.minToProceed}명 미만 시 전액 환불`}
+            accent
+          />
+          <SummaryCell
+            label="결제 금액"
+            value={formatKRW(PRICING.discounted)}
+            sub="토스뱅크 계좌이체 (일시납)"
+          />
+        </div>
+
+        {/* Trust Strip — 4칸: 수료증·참여확인서·환불·문의 */}
+        <div className="mx-auto mb-12 grid max-w-3xl grid-cols-2 gap-px border border-fg/20 bg-fg/20 lg:grid-cols-4">
+          <TrustCell label="수료증 발급" value={OPERATOR.legalName} />
+          <TrustCell label="공연 참여 확인서" value="유니온 픽처스" />
+          <TrustCell label="환불" value="결제 후 7일 이내 100%" />
+          <TrustCell label="문의" value="신청 후 메일 안내" />
         </div>
 
         <div className="mx-auto max-w-3xl border border-border bg-surface p-6 sm:p-10">
@@ -214,26 +245,39 @@ export function ApplyForm() {
 
               <PaymentNotice />
 
-              <label className="mt-2 flex items-start gap-3 border border-border bg-bg p-4 text-fg-muted text-sm">
-                <input
-                  type="checkbox"
-                  name="consent"
-                  required
-                  className="mt-1 h-4 w-4 accent-brand-pink"
-                />
-                <span>
-                  개인정보 수집·이용에 동의합니다. 입력하신 연락처와 개인정보는{" "}
-                  <span className="font-black text-fg">
-                    교육 프로그램 안내 및 긴급 연락
-                  </span>{" "}
-                  목적으로만 사용되며, 수강 처리 종료 후 1년 내 파기됩니다.
-                </span>
-              </label>
-              {fieldErrors.consent?.[0] && (
-                <p className="text-brand-pink text-xs">
-                  {fieldErrors.consent[0]}
-                </p>
-              )}
+              <RefundSummary />
+
+              <ConsentRow
+                name="consent"
+                label="개인정보 수집·이용 동의"
+                body={
+                  <>
+                    입력하신 연락처와 개인정보는{" "}
+                    <span className="font-black text-fg">
+                      교육 프로그램 안내 및 긴급 연락
+                    </span>{" "}
+                    목적으로만 사용되며, 수강 처리 종료 후 1년 내 파기됩니다.
+                  </>
+                }
+                error={fieldErrors.consent?.[0]}
+              />
+
+              <ConsentRow
+                name="consent_attendance"
+                label="출석 약속 · 환불 정책 확인"
+                body={
+                  <>
+                    {SCHEDULE.attendanceCommitment}{" "}
+                    출석률 90% 미만 시 유니온 픽처스 공연 프로젝트 참여 확인서가
+                    발급되지 않으며, 출석 미달은 환불 사유에 해당하지 않습니다.
+                  </>
+                }
+                error={fieldErrors.consent_attendance?.[0]}
+              />
+
+              <p className="-mt-2 text-fg-subtle text-xs leading-relaxed">
+                {SCHEDULE.contentUseNote}
+              </p>
 
               {fieldErrors._form?.[0] && (
                 <p className="border border-brand-pink bg-brand-pink/10 px-4 py-3 text-brand-pink text-sm">
@@ -268,14 +312,16 @@ export function ApplyForm() {
   );
 }
 
-function ScheduleCallout({
+function SummaryCell({
   label,
   value,
   sub,
+  accent = false,
 }: {
   label: string;
   value: string;
   sub?: string;
+  accent?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-2 bg-bg p-5 sm:p-6">
@@ -286,7 +332,9 @@ function ScheduleCallout({
         {label}
       </span>
       <p
-        className="font-black text-fg text-lg leading-tight sm:text-xl"
+        className={`font-black text-lg leading-tight sm:text-xl ${
+          accent ? "text-brand-pink" : "text-fg"
+        }`}
         style={{ letterSpacing: "-0.03em" }}
       >
         {value}
@@ -294,6 +342,90 @@ function ScheduleCallout({
       {sub ? (
         <p className="text-fg-muted text-xs leading-relaxed">{sub}</p>
       ) : null}
+    </div>
+  );
+}
+
+function TrustCell({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col gap-1 bg-bg p-4 sm:p-5">
+      <span
+        className="text-fg-subtle text-[10px] uppercase"
+        style={{ letterSpacing: "0.3em" }}
+      >
+        {label}
+      </span>
+      <p
+        className="font-black text-fg text-sm leading-tight sm:text-base"
+        style={{ letterSpacing: "-0.02em" }}
+      >
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function RefundSummary() {
+  return (
+    <div className="mt-2 border border-border bg-bg p-4 sm:p-5">
+      <p
+        className="mb-3 text-fg-subtle text-[10px] font-black uppercase sm:text-xs"
+        style={{ letterSpacing: "0.3em" }}
+      >
+        Refund · 환불 정책 요약
+      </p>
+      <ul className="grid grid-cols-1 gap-1 text-fg-muted text-xs leading-relaxed sm:text-sm">
+        {REFUND_POLICY.schedule.map((row) => (
+          <li
+            key={row.phase}
+            className="flex items-start justify-between gap-3 border-border/60 border-b py-1.5 last:border-b-0"
+          >
+            <span>{row.phase}</span>
+            <span className="font-black text-fg">{row.refund}</span>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-3 text-fg-subtle text-[11px] leading-relaxed">
+        {REFUND_POLICY.legalBasis} 기준 · {ENROLLMENT_CAP.autoRefundNote}
+      </p>
+    </div>
+  );
+}
+
+function ConsentRow({
+  name,
+  label,
+  body,
+  error,
+}: {
+  name: string;
+  label: string;
+  body: React.ReactNode;
+  error?: string;
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <label className="flex items-start gap-3 border border-border bg-bg p-4 text-fg-muted text-sm">
+        <input
+          type="checkbox"
+          name={name}
+          required
+          className="mt-1 h-4 w-4 shrink-0 accent-brand-pink"
+        />
+        <span className="flex flex-col gap-1.5">
+          <span className="flex items-center gap-2">
+            <span
+              className="inline-block bg-brand-pink px-2 py-0.5 text-fg text-[10px] font-black uppercase"
+              style={{ letterSpacing: "0.2em" }}
+            >
+              필수
+            </span>
+            <span className="font-black text-fg">{label}</span>
+          </span>
+          <span className="leading-relaxed">{body}</span>
+        </span>
+      </label>
+      {error ? <p className="text-brand-pink text-xs">{error}</p> : null}
     </div>
   );
 }
@@ -377,6 +509,12 @@ function PaymentNotice() {
 
       <p className="mt-3 text-fg-muted text-xs leading-relaxed sm:text-sm">
         입금 확인 후 카카오톡 오픈채팅 안내가 발송됩니다.
+      </p>
+
+      <p className="mt-4 border-brand-pink/20 border-t pt-3 text-fg-subtle text-[11px] leading-relaxed">
+        결제 수령 · {OPERATOR.certificateIssuer} · 사업자등록번호{" "}
+        {OPERATOR.businessNumber}. {OPERATOR.performanceProjectPartner} ·{" "}
+        {OPERATOR.faculty}.
       </p>
     </div>
   );

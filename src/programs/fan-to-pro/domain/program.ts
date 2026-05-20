@@ -65,7 +65,24 @@ export const SCHEDULE = {
   firstSessionLabel: "2026년 6월 13일 (토)",
   enrollmentCutoffLabel: "2026년 6월 7일 (일)",
   locationLabel: "수강 신청 완료 시 개별 공지",
-  durationLabel: "토 · 일 4주 · 총 8회",
+  durationLabel: "토 · 일 각 2시간 · 4주 / 총 8회 · 16시간",
+  durationShort: "총 8회 · 16시간",
+  attendanceCommitment:
+    "2026년 6월 13일(토)부터 토 · 일 각 2시간씩 총 8회 진행되는 본 프로그램에 참여하는 것에 동의합니다.",
+  contentUseNote:
+    "수강 신청을 완료한 시점부터, 본 프로그램 중 촬영·녹화되는 영상·이미지가 Growth Career·Dropdown·DEEPI·유니온 픽처스의 (1) 프로그램 홍보 (2) 차기 기수 모집 콘텐츠 (3) 수강생 본인 포트폴리오 목적으로 활용되는 것에 동의한 것으로 간주됩니다. 거부 의사가 있는 경우 운영진에게 통보 시 얼굴 후처리·블러 처리 후 활용합니다.",
+} as const;
+
+/**
+ * 운영 주체 · 신뢰 시그널. Trust Strip · Footer 미니 푸터에서 단일 진실 소스로 사용.
+ */
+export const OPERATOR = {
+  legalName: "Dropdown",
+  businessNumber: "154-28-02110",
+  certificateIssuer: "Dropdown (수료증)",
+  performanceProjectPartner: "유니온 픽처스 (공연 프로젝트 참여 확인서)",
+  faculty: "DEEPI (강사 섭외 · 운영 협력)",
+  inquiryNote: "문의: 카카오톡 채널 또는 신청 후 안내 메일",
 } as const;
 
 export const CERTIFICATE_ISSUER = {

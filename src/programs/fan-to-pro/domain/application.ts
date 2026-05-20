@@ -28,6 +28,10 @@ export const VISA_OPTIONS = [
   "기타/없음",
 ] as const;
 
+const checkboxBool = z
+  .union([z.literal("on"), z.literal("true"), z.boolean(), z.literal("")])
+  .transform((v) => v === "on" || v === "true" || v === true);
+
 export const Step2Schema = z.object({
   birthdate: z
     .string()
@@ -35,10 +39,14 @@ export const Step2Schema = z.object({
   university: z.string().trim().min(2, "재학/졸업 대학을 입력해주세요.").max(120),
   visa: z.enum(VISA_OPTIONS, { message: "비자 상태를 선택해주세요." }),
   address: z.string().trim().min(2, "거주지를 입력해주세요.").max(200),
-  consent: z
-    .union([z.literal("on"), z.literal("true"), z.boolean()])
-    .transform((v) => v === "on" || v === "true" || v === true)
-    .refine((v) => v === true, "약관에 동의해야 신청할 수 있습니다."),
+  consent: checkboxBool.refine(
+    (v) => v === true,
+    "개인정보 수집·이용에 동의해야 신청할 수 있습니다.",
+  ),
+  consent_attendance: checkboxBool.refine(
+    (v) => v === true,
+    "출석 약속 · 환불 정책에 동의해야 신청할 수 있습니다.",
+  ),
 });
 
 export const ApplicationSchema = Step1Schema.extend(Step2Schema.shape);
