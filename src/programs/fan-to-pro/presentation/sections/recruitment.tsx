@@ -15,8 +15,8 @@ const QUALIFICATIONS = [
   },
   {
     title: "학생 또는 취업 비자 보유",
-    body: "유학(D-2 / D-4) 또는 취업 비자(E-시리즈)를 보유하고 있어야 합니다. 신청 시 비자 상태를 확인합니다.",
-    chips: ["D-2", "D-4", "E-시리즈"],
+    body: "유학(D-2 / D-4), 구직(D-10), 취업(E-시리즈) 등 한국 체류 자격이 있어야 합니다. 신청 시 비자 상태를 확인합니다.",
+    chips: ["D-2", "D-4", "D-10", "E-시리즈"],
   },
   {
     title: "한국어 강의 이해",
@@ -25,8 +25,8 @@ const QUALIFICATIONS = [
   },
   {
     title: "주말 4주 출석",
-    body: "토 · 일 양일, 총 8회 출석이 기본입니다. 출석률 90% 이상 수료자에게만 별도 K-pop 공연 현장 체험 기회가 열립니다.",
-    chips: ["토 · 일", "4주 · 8회", "출석률 90%+"],
+    body: "토 · 일 양일, 총 8회 강의가 기본 구성입니다. 수료자 전원에게 K-pop 공연 현장 실무 체험 기회가 제공됩니다.",
+    chips: ["토 · 일", "4주 · 8회", "공연 체험 전원"],
   },
 ];
 
@@ -34,7 +34,7 @@ export function Recruitment() {
   return (
     <Section id="recruitment" tone="violet">
       <Container>
-        <Eyebrow n="03">Eligibility</Eyebrow>
+        <Eyebrow n="11">Eligibility</Eyebrow>
 
         <div className="mb-12 grid grid-cols-1 items-end gap-8 lg:grid-cols-[1.6fr_1fr]">
           <h2

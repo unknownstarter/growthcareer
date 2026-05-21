@@ -10,7 +10,7 @@ export function Mentor() {
   return (
     <Section id="mentor" tone="surface">
       <Container>
-        <Eyebrow n="05">Faculty</Eyebrow>
+        <Eyebrow n="06">Faculty</Eyebrow>
 
         <h2
           className="mb-12 max-w-4xl font-black text-display-lg"

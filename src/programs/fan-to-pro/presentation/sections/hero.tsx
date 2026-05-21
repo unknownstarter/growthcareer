@@ -84,9 +84,9 @@ export function Hero() {
           <ul className="grid max-w-3xl grid-cols-1 gap-x-8 gap-y-3 border-t border-border pt-12 sm:grid-cols-2">
             {[
               "주말 4주 · 총 8회 현업 강의",
-              "유니온 픽처스 발급 수료증",
+              "Dropdown 명의 수료증",
               "현직 멘토 3인 + 동기 네트워킹",
-              "출석률 90%+ 시 K-pop 공연 현장 실무 체험",
+              "수료자 전원 K-pop 공연 현장 실무 체험",
             ].map((item) => (
               <li
                 key={item}

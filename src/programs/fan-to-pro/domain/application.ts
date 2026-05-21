@@ -5,6 +5,7 @@
 import { z } from "zod";
 
 const phoneRegex = /^[+0-9\s\-()]{8,20}$/;
+const digitCount = (s: string) => (s.match(/\d/g) ?? []).length;
 
 export const Step1Schema = z.object({
   name: z
@@ -16,12 +17,15 @@ export const Step1Schema = z.object({
   phone: z
     .string()
     .trim()
-    .regex(phoneRegex, "유효한 연락처를 입력해주세요. (숫자, +, -, 공백)"),
+    .regex(phoneRegex, "유효한 연락처를 입력해주세요. (숫자, +, -, 공백)")
+    .refine((v) => digitCount(v) >= 8, "연락처에 숫자가 8개 이상 포함되어야 합니다."),
 });
 
 export const VISA_OPTIONS = [
   "D-2",
   "D-4",
+  "D-10",
+  "E-7",
   "F-2",
   "F-4",
   "F-6",
@@ -30,6 +34,10 @@ export const VISA_OPTIONS = [
 
 const checkboxBool = z
   .union([z.literal("on"), z.literal("true"), z.boolean(), z.literal("")])
+  .transform((v) => v === "on" || v === "true" || v === true);
+
+const optionalCheckboxBool = z
+  .union([z.literal("on"), z.literal("true"), z.boolean(), z.literal(""), z.undefined()])
   .transform((v) => v === "on" || v === "true" || v === true);
 
 export const Step2Schema = z.object({
@@ -43,10 +51,11 @@ export const Step2Schema = z.object({
     (v) => v === true,
     "개인정보 수집·이용에 동의해야 신청할 수 있습니다.",
   ),
-  consent_attendance: checkboxBool.refine(
+  consent_operations: checkboxBool.refine(
     (v) => v === true,
-    "출석 약속 · 환불 정책에 동의해야 신청할 수 있습니다.",
+    "운영·환불 정책 확인에 동의해야 신청할 수 있습니다.",
   ),
+  consent_marketing: optionalCheckboxBool.optional().default(false),
 });
 
 export const ApplicationSchema = Step1Schema.extend(Step2Schema.shape);

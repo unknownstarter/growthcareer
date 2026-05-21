@@ -3,6 +3,7 @@ import Link from "next/link";
 import {
   ENROLLMENT_CAP,
   REFUND_POLICY,
+  SCHEDULE,
 } from "@/src/programs/fan-to-pro/domain/program";
 import { PRICING, formatKRW } from "@/src/programs/fan-to-pro/domain/pricing";
 
@@ -66,7 +67,8 @@ export default function TermsPage() {
               </li>
               <li>
                 <strong className="text-fg">&ldquo;유니온 픽처스&rdquo;</strong> —
-                Union Pictures. 수료증 발급 주체이자 K-pop 공연 프로젝트 운영사.
+                Union Pictures. K-pop 공연 프로젝트 운영사이자 공연 참여자
+                대상 공연 프로젝트 참여 확인서 발급 주체.
                 일정 기준을 충족한 수료자에게 공연 프로젝트 실무 체험 기회를
                 제공합니다.
               </li>
@@ -98,9 +100,9 @@ export default function TermsPage() {
                 운영을 지원하는 협력 파트너. 수강생 개인정보는 위탁받지 않음.
               </li>
               <li>
-                <strong className="text-fg">유니온 픽처스</strong> — 출석률 90%
-                이상 수료자에게 K-pop 공연 프로젝트 실무 체험 기회 제공 및 공연
-                프로젝트 참여 확인서 발급.
+                <strong className="text-fg">유니온 픽처스</strong> — 수료자 전원
+                대상 K-pop 공연 프로젝트 실무 체험 기회 제공 및 실제 공연 참여자
+                대상 공연 프로젝트 참여 확인서 발급.
               </li>
             </ul>
           </Section>
@@ -187,28 +189,27 @@ export default function TermsPage() {
           <Section n="08" title="강좌 자동 취소 (정원 미달)">
             <p>
               본 프로그램은 총 <strong className="text-fg">{ENROLLMENT_CAP.totalSeats}인</strong>{" "}
-              모집이며, 수강 시작일{" "}
-              <strong className="text-fg">{ENROLLMENT_CAP.cutoffDaysBeforeStart}일 전</strong>{" "}
-              시점에 결제 완료 신청자가{" "}
+              모집이며, <strong className="text-fg">{SCHEDULE.enrollmentCutoffLabel}</strong>{" "}
+              모집 마감 시점에 결제 완료 신청자가{" "}
               <strong className="text-fg">{ENROLLMENT_CAP.minToProceed}명 미만</strong>이면
               회사는 강좌를 취소하고, 이미 결제한 이용자에게 결제 금액을 전액 자동
               환불합니다. 이 경우 환불 송금 수수료는 회사가 부담합니다.
             </p>
           </Section>
 
-          <Section n="09" title="출석률 조건부 공연 프로젝트 체험">
+          <Section n="09" title="수료증 · 공연 프로젝트 실무 체험">
             <p>
               본 프로그램의 정규 구성은 <strong className="text-fg">4주 강의 +
-              수료증 + 네트워킹</strong>입니다. K-pop 공연 프로젝트 실무 체험은
-              회사가 제공하는 정규 교육의 일부가 아니며, 유니온 픽처스가 운영하는
-              별도 프로젝트입니다.
+              수료증 + 네트워킹</strong>이며, 수료자 전원에게 K-pop 공연 프로젝트
+              실무 체험 기회가 제공됩니다. 별도 결제는 발생하지 않습니다.
             </p>
             <p>
-              체험 자격은 <strong className="text-fg">강의 출석률 90% 이상의
-              수료자</strong>에 한해 부여되며, 별도 신청 의사를 밝힌 이용자를
-              대상으로 유니온 픽처스가 매칭을 진행합니다. 별도 결제는 발생하지
-              않습니다. 체험 일정·역할·인원은 유니온 픽처스의 운영 사정에 따라
-              조정될 수 있습니다.
+              4주 교육 수료증은 <strong className="text-fg">Dropdown</strong>{" "}
+              명의로 수료자 전원에게 발급되며, 공연 프로젝트에 실제 참여한
+              이용자에 한해 <strong className="text-fg">유니온 픽처스</strong>{" "}
+              명의의 공연 프로젝트 참여 확인서가 별도로 발급됩니다. 공연 프로젝트
+              실무 체험은 유니온 픽처스가 운영하며, 체험 일정·역할·인원은 운영
+              사정에 따라 조정될 수 있습니다.
             </p>
           </Section>
 

@@ -46,7 +46,8 @@ export async function submitApplication(
       visa: parsed.data.visa,
       address: parsed.data.address,
       consent: parsed.data.consent,
-      consent_attendance: parsed.data.consent_attendance,
+      consent_operations: parsed.data.consent_operations,
+      consent_marketing: parsed.data.consent_marketing,
       // 콘텐츠 활용 동의 — 수강 신청 완료 시 동의 간주 (회색 안내로 고지).
       // 향후 사용자가 운영진에 철회 의사 통보 시 별도로 false 업데이트.
       consent_content_use: true,

@@ -5,14 +5,28 @@ import { Button } from "../ui/button";
 import { Container } from "../ui/container";
 
 export function StickyCTA() {
-  const [show, setShow] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [applyInView, setApplyInView] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setShow(window.scrollY > 600);
+    const onScroll = () => setScrolled(window.scrollY > 600);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    const target = document.getElementById("apply");
+    if (!target || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setApplyInView(entry.isIntersecting),
+      { rootMargin: "0px 0px -20% 0px", threshold: 0 },
+    );
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, []);
+
+  const show = scrolled && !applyInView;
 
   return (
     <div

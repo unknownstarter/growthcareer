@@ -16,7 +16,7 @@ export const GUARANTEES = [
   {
     id: "certificate",
     title: "수료증",
-    body: "유니온 픽처스 발급. 이력서에 한 줄 추가되는 신뢰 신호.",
+    body: "Dropdown 명의로 발급. 이력서에 한 줄 추가되는 신뢰 신호.",
   },
 ] as const;
 

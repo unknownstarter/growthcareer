@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useCallback, useRef, useState } from "react";
 import { submitApplication } from "@/src/programs/fan-to-pro/application/submit-application";
 import {
   Step1Schema,
@@ -27,14 +27,41 @@ type Step1Data = {
   phone: string;
 };
 
+type Step2Data = {
+  birthdate: string;
+  university: string;
+  visa: string;
+  address: string;
+};
+
 const EMPTY_STEP1: Step1Data = { name: "", email: "", phone: "" };
+const EMPTY_STEP2: Step2Data = {
+  birthdate: "",
+  university: "",
+  visa: "",
+  address: "",
+};
+
+type Step1Field = keyof Step1Data;
+const STEP1_FIELD_ORDER: readonly Step1Field[] = ["name", "email", "phone"];
 
 export function ApplyForm() {
   const [step, setStep] = useState<1 | 2>(1);
   const [step1, setStep1] = useState<Step1Data>(EMPTY_STEP1);
+  const [step2, setStep2] = useState<Step2Data>(EMPTY_STEP2);
   const [step1Errors, setStep1Errors] = useState<
-    Partial<Record<keyof Step1Data, string>>
+    Partial<Record<Step1Field, string>>
   >({});
+
+  const step1Refs = useRef<Record<Step1Field, HTMLInputElement | null>>({
+    name: null,
+    email: null,
+    phone: null,
+  });
+
+  const setStep1Ref = (field: Step1Field) => (el: HTMLInputElement | null) => {
+    step1Refs.current[field] = el;
+  };
 
   const [state, formAction, pending] = useActionState(
     submitApplication,
@@ -52,16 +79,55 @@ export function ApplyForm() {
     const parsed = Step1Schema.safeParse(data);
     if (!parsed.success) {
       const flat = parsed.error.flatten().fieldErrors;
-      setStep1Errors({
+      const errors: Partial<Record<Step1Field, string>> = {
         name: flat.name?.[0],
         email: flat.email?.[0],
         phone: flat.phone?.[0],
-      });
+      };
+      setStep1Errors(errors);
+      setStep1(data);
+      const firstErrorField = STEP1_FIELD_ORDER.find((f) => errors[f]);
+      if (firstErrorField) {
+        const el = step1Refs.current[firstErrorField];
+        if (el) {
+          el.focus({ preventScroll: true });
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }
       return;
     }
     setStep1Errors({});
     setStep1(parsed.data);
     setStep(2);
+  };
+
+  const step2FormRef = useRef<HTMLFormElement | null>(null);
+
+  const readStep2FromDom = useCallback(() => {
+    const form = step2FormRef.current;
+    if (!form) return;
+    const fd = new FormData(form);
+    setStep2({
+      birthdate: String(fd.get("birthdate") ?? ""),
+      university: String(fd.get("university") ?? ""),
+      visa: String(fd.get("visa") ?? ""),
+      address: String(fd.get("address") ?? ""),
+    });
+  }, []);
+
+  const captureStep2 = (e: React.FormEvent<HTMLFormElement>) => {
+    const fd = new FormData(e.currentTarget);
+    setStep2({
+      birthdate: String(fd.get("birthdate") ?? ""),
+      university: String(fd.get("university") ?? ""),
+      visa: String(fd.get("visa") ?? ""),
+      address: String(fd.get("address") ?? ""),
+    });
+  };
+
+  const handleBackToStep1 = () => {
+    readStep2FromDom();
+    setStep(1);
   };
 
   if (state.status === "ok" || state.status === "ok_local") {
@@ -151,6 +217,7 @@ export function ApplyForm() {
                 error={step1Errors.name}
                 autoComplete="name"
                 required
+                inputRef={setStep1Ref("name")}
               />
               <Field
                 label="이메일"
@@ -161,6 +228,7 @@ export function ApplyForm() {
                 error={step1Errors.email}
                 autoComplete="email"
                 required
+                inputRef={setStep1Ref("email")}
               />
               <Field
                 label="연락처"
@@ -171,6 +239,7 @@ export function ApplyForm() {
                 error={step1Errors.phone}
                 autoComplete="tel"
                 required
+                inputRef={setStep1Ref("phone")}
               />
 
               <button
@@ -182,7 +251,13 @@ export function ApplyForm() {
               </button>
             </form>
           ) : (
-            <form action={formAction} className="grid grid-cols-1 gap-5" noValidate>
+            <form
+              ref={step2FormRef}
+              action={formAction}
+              onSubmit={captureStep2}
+              className="grid grid-cols-1 gap-5"
+              noValidate
+            >
               <input type="hidden" name="name" value={step1.name} />
               <input type="hidden" name="email" value={step1.email} />
               <input type="hidden" name="phone" value={step1.phone} />
@@ -191,14 +266,18 @@ export function ApplyForm() {
                 label="생년월일"
                 name="birthdate"
                 type="date"
+                defaultValue={step2.birthdate}
                 error={fieldErrors.birthdate?.[0]}
                 autoComplete="bday"
+                min="1960-01-01"
+                max="2010-12-31"
                 required
               />
               <Field
                 label="재학 / 졸업 대학"
                 name="university"
                 placeholder="OO대학교 / OO Department"
+                defaultValue={step2.university}
                 error={fieldErrors.university?.[0]}
                 required
               />
@@ -215,7 +294,9 @@ export function ApplyForm() {
                   id="visa"
                   name="visa"
                   required
-                  defaultValue=""
+                  defaultValue={step2.visa}
+                  aria-invalid={fieldErrors.visa?.[0] ? true : undefined}
+                  aria-describedby={fieldErrors.visa?.[0] ? "visa-error" : undefined}
                   className="border border-border bg-bg px-4 py-4 font-black text-fg outline-none focus:border-brand-pink"
                 >
                   <option value="" disabled>
@@ -228,7 +309,7 @@ export function ApplyForm() {
                   ))}
                 </select>
                 {fieldErrors.visa?.[0] && (
-                  <p className="text-brand-pink text-xs">
+                  <p id="visa-error" className="text-brand-pink text-xs">
                     {fieldErrors.visa[0]}
                   </p>
                 )}
@@ -237,7 +318,8 @@ export function ApplyForm() {
               <Field
                 label="현재 거주지 (시/구)"
                 name="address"
-                placeholder="서울시 마포구"
+                placeholder="서울시 마포구 / Seoul, Mapo-gu"
+                defaultValue={step2.address}
                 error={fieldErrors.address?.[0]}
                 autoComplete="address-level2"
                 required
@@ -249,6 +331,7 @@ export function ApplyForm() {
 
               <ConsentRow
                 name="consent"
+                variant="required"
                 label="개인정보 수집·이용 동의"
                 body={
                   <>
@@ -263,16 +346,32 @@ export function ApplyForm() {
               />
 
               <ConsentRow
-                name="consent_attendance"
-                label="출석 약속 · 환불 정책 확인"
+                name="consent_operations"
+                variant="required"
+                label="운영·환불 정책 확인"
                 body={
                   <>
                     {SCHEDULE.attendanceCommitment}{" "}
-                    출석률 90% 미만 시 유니온 픽처스 공연 프로젝트 참여 확인서가
-                    발급되지 않으며, 출석 미달은 환불 사유에 해당하지 않습니다.
+                    환불은 결제 후 7일 이내 또는 수강 시작 전까지 100% 가능하며,
+                    수강 시작 후에는 학원법 시행령 별표 4 및 공정위
+                    소비자분쟁해결기준에 따라 비례 적용됩니다.
                   </>
                 }
-                error={fieldErrors.consent_attendance?.[0]}
+                error={fieldErrors.consent_operations?.[0]}
+              />
+
+              <ConsentRow
+                name="consent_marketing"
+                variant="optional"
+                label="마케팅 정보 수신 동의 (선택)"
+                body={
+                  <>
+                    차기 기수 모집·할인 안내, 업계 행사 소식 등을 이메일·카카오톡으로
+                    수신합니다. 동의하지 않아도 신청에는 영향이 없으며, 언제든 수신
+                    거부할 수 있습니다.
+                  </>
+                }
+                error={fieldErrors.consent_marketing?.[0]}
               />
 
               <p className="-mt-2 text-fg-subtle text-xs leading-relaxed">
@@ -288,7 +387,7 @@ export function ApplyForm() {
               <div className="mt-2 flex justify-end border-border border-t pt-6 text-sm">
                 <button
                   type="button"
-                  onClick={() => setStep(1)}
+                  onClick={handleBackToStep1}
                   className="text-fg-subtle text-xs uppercase hover:text-fg"
                   style={{ letterSpacing: "0.2em" }}
                 >
@@ -397,28 +496,36 @@ function ConsentRow({
   label,
   body,
   error,
+  variant,
 }: {
   name: string;
   label: string;
   body: React.ReactNode;
   error?: string;
+  variant: "required" | "optional";
 }) {
+  const isRequired = variant === "required";
   return (
     <div className="flex flex-col gap-1">
       <label className="flex items-start gap-3 border border-border bg-bg p-4 text-fg-muted text-sm">
         <input
           type="checkbox"
           name={name}
-          required
+          required={isRequired}
+          aria-invalid={error ? true : undefined}
           className="mt-1 h-4 w-4 shrink-0 accent-brand-pink"
         />
         <span className="flex flex-col gap-1.5">
           <span className="flex items-center gap-2">
             <span
-              className="inline-block bg-brand-pink px-2 py-0.5 text-fg text-[10px] font-black uppercase"
+              className={`inline-block px-2 py-0.5 text-[10px] font-black uppercase ${
+                isRequired
+                  ? "bg-brand-pink text-fg"
+                  : "border border-border bg-bg text-fg-subtle"
+              }`}
               style={{ letterSpacing: "0.2em" }}
             >
-              필수
+              {isRequired ? "필수" : "선택"}
             </span>
             <span className="font-black text-fg">{label}</span>
           </span>
@@ -560,6 +667,9 @@ function Field({
   error,
   autoComplete,
   required,
+  min,
+  max,
+  inputRef,
 }: {
   label: string;
   name: string;
@@ -569,7 +679,11 @@ function Field({
   error?: string;
   autoComplete?: string;
   required?: boolean;
+  min?: string;
+  max?: string;
+  inputRef?: (el: HTMLInputElement | null) => void;
 }) {
+  const errorId = error ? `${name}-error` : undefined;
   return (
     <div className="flex flex-col gap-2">
       <label
@@ -587,9 +701,18 @@ function Field({
         defaultValue={defaultValue}
         autoComplete={autoComplete}
         required={required}
+        min={min}
+        max={max}
+        ref={inputRef}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={errorId}
         className="border border-border bg-bg px-4 py-4 font-medium text-fg placeholder:text-fg-subtle outline-none focus:border-brand-pink"
       />
-      {error && <p className="text-brand-pink text-xs">{error}</p>}
+      {error && (
+        <p id={errorId} className="text-brand-pink text-xs">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

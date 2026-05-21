@@ -33,7 +33,7 @@ export function Outcome() {
   return (
     <Section tone="bg">
       <Container>
-        <Eyebrow n="07">Outcome</Eyebrow>
+        <Eyebrow n="04">Outcome</Eyebrow>
 
         <h2
           className="mb-12 max-w-4xl font-black text-display-lg"

@@ -45,16 +45,16 @@ export default function FanToProPage() {
       <Hero />
       <Problem />
       <Solution />
-      <Recruitment />
       <ValueCards />
+      <Outcome />
+      <Testimonials />
       <Mentor />
       <Program />
-      <Outcome />
       <SocialProof />
       <Guarantees />
       <Bonus />
+      <Recruitment />
       <Pricing />
-      <Testimonials />
       <FAQ />
       <ApplyForm />
       <Footer />

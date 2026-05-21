@@ -13,7 +13,7 @@ export function Pricing() {
   return (
     <section className="section-pink px-6 py-28 sm:px-10 sm:py-36">
       <Container>
-        <Eyebrow n="11">Pricing</Eyebrow>
+        <Eyebrow n="12">Pricing</Eyebrow>
 
         <h2
           className="mb-12 max-w-4xl font-black text-display-lg"
@@ -124,9 +124,8 @@ export function Pricing() {
                 {PRICING.bank.accountHolder}
               </p>
               <p className="mt-4 text-fg-muted text-sm leading-relaxed">
-                {PRICING.bank.bankName && PRICING.bank.accountNumber
-                  ? `${PRICING.bank.bankName} · ${PRICING.bank.accountNumber}`
-                  : "은행명 · 계좌번호는 신청 폼 제출 후 24시간 이내 안내 메일에서 확인할 수 있습니다."}
+                은행명 · 계좌번호는 신청 폼 제출 후 안내 메일과 결제 페이지에서
+                확인할 수 있습니다.
               </p>
             </div>
 

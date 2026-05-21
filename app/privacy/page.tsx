@@ -74,7 +74,7 @@ export default function PrivacyPage() {
               <li>프로그램 신청 접수, 본인 확인, 자격 검토</li>
               <li>결제 안내, 입금 확인, 환불 처리</li>
               <li>강의 일정·자료·수료증 안내, 공지 발송</li>
-              <li>출석률 산정 및 공연 프로젝트 체험 자격 매칭</li>
+              <li>공연 프로젝트 매칭 및 공연 참여자 대상 공연 참여 확인서 발급</li>
               <li>고객 응대, 문의 회신, 분쟁 해결</li>
               <li>비식별 통계 분석 및 서비스 개선</li>
               <li>법령상 의무 이행 (사업자 보존 의무 등)</li>
@@ -119,7 +119,8 @@ export default function PrivacyPage() {
                 <tr>
                   <td className="border border-border p-3">유니온 픽처스</td>
                   <td className="border border-border p-3">
-                    공연 프로젝트 매칭, 공연 프로젝트 참여 확인서 발급 (출석률 90% 이상 수료자 한정)
+                    공연 프로젝트 매칭 및 실제 공연 참여자 대상 공연 프로젝트
+                    참여 확인서 발급
                   </td>
                   <td className="border border-border p-3">대한민국</td>
                 </tr>
@@ -140,9 +141,9 @@ export default function PrivacyPage() {
               </li>
             </ul>
             <p className="mt-4">
-              출석률 90% 이상 수료자 중 공연 프로젝트 실무 체험 참여 의사를 밝힌
-              이용자에 한해, 매칭 목적으로 이름·연락처·비자 상태가 유니온 픽처스에
-              제공됩니다. 이는 별도 동의 절차를 거쳐 진행됩니다.
+              공연 프로젝트 실무 체험 참여 의사를 밝힌 이용자에 한해, 매칭
+              목적으로 이름·연락처·비자 상태가 유니온 픽처스에 제공됩니다. 이는
+              별도 동의 절차를 거쳐 진행됩니다.
             </p>
           </Section>
 

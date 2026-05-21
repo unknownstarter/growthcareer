@@ -13,7 +13,7 @@ const PHASES = [
     n: "02",
     title: "Certificate",
     kr: "교육 수료증",
-    body: "강의 종료 시 유니온 픽처스 명의 수료증 발급. 결과물 큐레이션 · 이력서 작성 · 모의 면접 워크북이 함께 제공.",
+    body: "강의 종료 시 Dropdown 명의 4주 교육 수료증 발급. 결과물 큐레이션 · 이력서 작성 · 모의 면접 워크북이 함께 제공.",
   },
   {
     n: "03",
@@ -25,8 +25,8 @@ const PHASES = [
     n: "04",
     title: "On Stage",
     kr: "공연 프로젝트 실무 체험",
-    body: "출석률 90% 이상 수료자에게만 열리는 별도 혜택. 실제 K-pop 공연 현장에 동행해 무대 음향 / 비주얼 / 스테이지 매니지먼트 실무를 가까이서 체험. 별도 결제 없음.",
-    note: "조건부 · 별도 신청",
+    body: "수료자 전원에게 제공되는 추가 기회. 실제 K-pop 공연 현장에 동행해 무대 음향 / 비주얼 / 스테이지 매니지먼트 실무를 가까이서 체험. 별도 결제 없음. 실제 공연에 참여한 분께는 유니온 픽처스 명의의 공연 참여 확인서가 발급됩니다.",
+    note: "전원 · 별도 신청",
   },
 ];
 
@@ -34,7 +34,7 @@ export function Program() {
   return (
     <Section id="program" tone="bg">
       <Container>
-        <Eyebrow n="06">Program</Eyebrow>
+        <Eyebrow n="07">Program</Eyebrow>
 
         <h2
           className="mb-12 max-w-4xl font-black text-display-lg"
@@ -46,7 +46,7 @@ export function Program() {
 
         <p className="mb-16 max-w-2xl text-base leading-relaxed text-fg-muted sm:text-lg">
           4주 강의 + 수료증 + 네트워킹이 본 프로그램.
-          <br />출석률 90% 이상 수료자에게만 별도로 열리는 K-pop 공연 현장 실무 체험까지 이어지다.
+          <br />수료자 전원에게 K-pop 공연 현장 실무 체험까지 이어집니다.
         </p>
 
         <ol className="grid grid-cols-1 gap-px overflow-hidden border border-border bg-border md:grid-cols-2">
