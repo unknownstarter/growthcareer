@@ -18,24 +18,24 @@ import { Testimonials } from "@/src/programs/fan-to-pro/presentation/sections/te
 import { ValueCards } from "@/src/programs/fan-to-pro/presentation/sections/value-cards";
 
 export const metadata: Metadata = {
-  title: "Fan to Pro · Growth Career",
+  title: "Fan to Pro · 외국인 유학생을 위한 K-pop 업계 취업 트랙",
   description:
-    "한국 엔터테인먼트 업계 취업. 실제 K-pop 공연 프로젝트로 경력을 만든다. 880,000원 · 선착순 마감.",
+    "한국 거주 외국인 유학생을 위한 K-pop 엔터테인먼트 업계 취업 트랙. 실제 K-pop 공연 프로젝트로 경력을 만든다. 880,000원 · 선착순 마감.",
   alternates: { canonical: "/fan-to-pro" },
   openGraph: {
     type: "article",
     url: "https://growthcareer.xyz/fan-to-pro",
-    title: "Fan to Pro · Growth Career",
+    title: "Fan to Pro · 외국인 유학생을 위한 K-pop 업계 취업 트랙",
     description:
-      "한국 엔터테인먼트 업계 취업. 실제 K-pop 공연 프로젝트로 경력을 만든다. 880,000원 · 선착순 마감.",
+      "한국 거주 외국인 유학생을 위한 K-pop 엔터테인먼트 업계 취업 트랙. 실제 K-pop 공연 프로젝트로 경력을 만든다. 880,000원 · 선착순 마감.",
     siteName: "Growth Career",
     locale: "ko_KR",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Fan to Pro · Growth Career",
+    title: "Fan to Pro · 외국인 유학생을 위한 K-pop 업계 취업 트랙",
     description:
-      "한국 엔터테인먼트 업계 취업. 실제 K-pop 공연 프로젝트로 경력을 만든다. 880,000원 · 선착순 마감.",
+      "한국 거주 외국인 유학생을 위한 K-pop 엔터테인먼트 업계 취업 트랙. 실제 K-pop 공연 프로젝트로 경력을 만든다. 880,000원 · 선착순 마감.",
   },
 };
 

@@ -161,11 +161,28 @@ export function ApplyForm() {
           신청 · 결제
         </h2>
 
-        <p className="mb-12 max-w-2xl text-base leading-relaxed text-fg-muted sm:text-lg">
+        <p className="mb-6 max-w-2xl text-base leading-relaxed text-fg-muted sm:text-lg">
           <span className="font-black text-fg">{formatKRW(PRICING.discounted)}</span>{" "}
           · 토 · 일 각 2시간 × 4주 · 입금 선착순으로 자리가 확정됩니다.
           폼 제출 후 24시간 이내 입금 안내 메일이 발송됩니다.
         </p>
+
+        <div className="mx-auto mb-12 flex max-w-3xl flex-col gap-2 border-2 border-brand-pink bg-brand-pink/5 p-4 sm:flex-row sm:items-center sm:gap-4 sm:p-5">
+          <span
+            className="inline-flex shrink-0 items-center bg-brand-pink px-2.5 py-1 font-black text-fg text-[10px] uppercase sm:text-xs"
+            style={{ letterSpacing: "0.2em" }}
+          >
+            For International Students
+          </span>
+          <p className="text-fg text-sm leading-relaxed sm:text-base">
+            본 프로그램은{" "}
+            <span className="font-black text-brand-pink">
+              한국 거주 외국인 유학생 · 취업 준비생 전용
+            </span>{" "}
+            입니다. D-2 / D-4 / D-10 / E-시리즈 등 한국 체류 자격을 보유한 분에
+            한해 신청이 가능합니다.
+          </p>
+        </div>
 
         {/* Summary Grid — 4칸: 첫 강의 / 장소 / 기간 / 결제 */}
         <div className="mx-auto mb-px grid max-w-3xl grid-cols-1 gap-px border border-fg/20 bg-fg/20 sm:grid-cols-2 lg:grid-cols-4">

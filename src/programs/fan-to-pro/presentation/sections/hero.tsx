@@ -31,6 +31,12 @@ export function Hero() {
               Fan to Pro · Growth Career · 2026
             </span>
             <ScarcityBadge>선착순 마감</ScarcityBadge>
+            <span
+              className="inline-flex items-center border border-brand-pink bg-brand-pink/10 px-3 py-1 font-black text-brand-pink text-[10px] uppercase sm:text-xs"
+              style={{ letterSpacing: "0.2em" }}
+            >
+              For International Students in Korea
+            </span>
           </div>
 
           <h1
@@ -47,7 +53,9 @@ export function Hero() {
           </h1>
 
           <p className="max-w-2xl text-lg leading-snug text-fg-muted sm:text-2xl">
-            K-POP 엔터테인먼트 직무 취업
+            한국 거주{" "}
+            <span className="font-bold text-fg">외국인 유학생</span>을 위한
+            K-POP 엔터테인먼트 직무 취업 트랙
             <br />
             <span className="font-bold text-fg">실제 K-pop 공연 프로젝트</span>
             로 경력을 만들다!
@@ -83,6 +91,7 @@ export function Hero() {
 
           <ul className="grid max-w-3xl grid-cols-1 gap-x-8 gap-y-3 border-t border-border pt-12 sm:grid-cols-2">
             {[
+              "한국 거주 외국인 유학생 전용 (D-2 / D-4 / D-10 / E-시리즈)",
               "주말 4주 · 총 8회 현업 강의",
               "Dropdown 명의 수료증",
               "현직 멘토 3인 + 동기 네트워킹",
