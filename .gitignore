@@ -54,3 +54,7 @@ src/programs/fan-to-pro/*.pdf
 src/programs/fan-to-pro/*.xlsx
 src/programs/fan-to-pro/준컴퍼니_*.png
 src/programs/fan-to-pro/준컴퍼니_*.jpeg
+
+# 내부 손익 분석 / 사업 문서 (노션 임포트용 — 레포에 커밋 금지)
+Fan to Pro 1기 손익분석.md
+*손익분석*.md
