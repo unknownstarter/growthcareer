@@ -51,9 +51,9 @@ export const REFUND_POLICY = {
 export const ENROLLMENT_CAP = {
   totalSeats: 30,
   minToProceed: 20,
-  cutoffDaysBeforeStart: 7,
+  cutoffDaysBeforeStart: 5,
   autoRefundNote:
-    "본 강좌는 총 30인 모집이며, 2026년 6월 7일까지 신청자가 20명 미만일 경우 강좌가 취소되고 결제 금액은 전액 자동 환불됩니다.",
+    "본 강좌는 총 30인 모집이며, 2026년 6월 15일까지 신청자가 20명 미만일 경우 강좌가 취소되고 결제 금액 전액이 자동 환불된 후 차기 기수로 재모집을 진행합니다.",
 } as const;
 
 /**
@@ -61,14 +61,14 @@ export const ENROLLMENT_CAP = {
  */
 export const SCHEDULE = {
   cohort: "1기",
-  firstSessionDate: "2026-06-13",
-  firstSessionLabel: "2026년 6월 13일 (토)",
-  enrollmentCutoffLabel: "2026년 6월 7일 (일)",
+  firstSessionDate: "2026-06-20",
+  firstSessionLabel: "2026년 6월 20일 (토)",
+  enrollmentCutoffLabel: "2026년 6월 15일 (월)",
   locationLabel: "수강 신청 완료 시 개별 공지",
   durationLabel: "토 · 일 각 2시간 · 4주 / 총 8회 · 16시간",
   durationShort: "총 8회 · 16시간",
   attendanceCommitment:
-    "2026년 6월 13일(토)부터 토 · 일 각 2시간씩 총 8회 진행되는 본 프로그램에 참여하는 것에 동의합니다.",
+    "2026년 6월 20일(토)부터 토 · 일 각 2시간씩 총 8회 진행되는 본 프로그램에 참여하는 것에 동의합니다.",
   contentUseNote:
     "수강 신청을 완료한 시점부터, 본 프로그램 중 촬영·녹화되는 영상·이미지가 Growth Career·Dropdown·DEEPI·유니온 픽처스의 (1) 프로그램 홍보 (2) 차기 기수 모집 콘텐츠 (3) 수강생 본인 포트폴리오 목적으로 활용되는 것에 동의한 것으로 간주됩니다. 거부 의사가 있는 경우 운영진에게 통보 시 얼굴 후처리·블러 처리 후 활용합니다.",
 } as const;
