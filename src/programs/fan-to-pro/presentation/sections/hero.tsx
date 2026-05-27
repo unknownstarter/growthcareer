@@ -91,7 +91,6 @@ export function Hero() {
 
           <ul className="grid max-w-3xl grid-cols-1 gap-x-8 gap-y-3 border-t border-border pt-12 sm:grid-cols-2">
             {[
-              "한국 거주 외국인 유학생 전용 (D-2 / D-4 / D-10 / E-시리즈)",
               "주말 4주 · 총 8회 현업 강의",
               "Dropdown 명의 수료증",
               "현직 멘토 3인 + 동기 네트워킹",
@@ -106,6 +105,24 @@ export function Hero() {
               </li>
             ))}
           </ul>
+
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <span
+              className="mr-1 text-fg-subtle text-[10px] font-black uppercase sm:text-xs"
+              style={{ letterSpacing: "0.3em" }}
+            >
+              수강 자격 비자
+            </span>
+            {["D-2", "D-4", "D-10", "E-시리즈"].map((visa) => (
+              <span
+                key={visa}
+                className="inline-flex items-center rounded-full border border-brand-pink/40 bg-brand-pink/10 px-3 py-1 font-black text-brand-pink text-xs sm:text-sm"
+                style={{ letterSpacing: "0.05em" }}
+              >
+                {visa}
+              </span>
+            ))}
+          </div>
         </div>
       </Container>
     </section>
