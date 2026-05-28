@@ -30,105 +30,117 @@ export function Pricing() {
           <span className="font-black">선착순 입금 순서</span>로 자리가 확정된다.
         </p>
 
-        {/* 단일 컬럼 가격 카드 — 옵션 B (스택형) */}
-        <div className="mx-auto max-w-3xl bg-bg p-8 text-fg sm:p-14">
-          <p
-            className="mb-4 text-fg-subtle text-xs uppercase"
-            style={{ letterSpacing: "0.3em" }}
-          >
-            4주 정규 + 수료 혜택
-          </p>
-
-          <div className="mb-6 flex flex-wrap items-end gap-4">
-            <span
-              className="text-fg-subtle text-2xl line-through sm:text-3xl"
-              aria-label={`정가 ${formatKRW(PRICING.original)}`}
-            >
-              {formatKRW(PRICING.original)}
-            </span>
-            <span className="bg-brand-pink px-2 py-1 font-black text-fg text-sm">
-              {off}% OFF
-            </span>
-          </div>
-
-          <p
-            className="mb-3 font-black text-fg leading-none"
-            style={{
-              fontSize: "var(--text-display-lg)",
-              letterSpacing: "-0.05em",
-            }}
-          >
-            {formatKRW(PRICING.discounted)}
-          </p>
-          <p className="mb-10 text-fg-muted text-sm sm:text-base">
-            VAT 포함 · 계좌이체 (국내 원화) · 1인 1회 결제 · 분할 결제 X
-          </p>
-
-          <Button
-            href="#apply"
-            variant="primary"
-            size="xl"
-            className="w-full"
-          >
-            지금 신청 →
-          </Button>
-
-          {/* 환불 보장 — 푸터 위치 */}
-          <div className="mt-10 border-t border-border pt-8">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.4fr_1fr]">
+          {/* 가격 카드 */}
+          <div className="bg-bg p-8 text-fg sm:p-12">
             <p
-              className="mb-5 text-fg-subtle text-[10px] font-black uppercase sm:text-xs"
+              className="mb-3 text-fg-subtle text-xs uppercase"
               style={{ letterSpacing: "0.3em" }}
             >
-              환불 보장
+              4주 정규 + 수료 혜택
             </p>
-            <ul className="grid grid-cols-1 gap-3 text-sm text-fg-muted sm:text-base">
-              <li className="flex items-start gap-3">
-                <span className="mt-1.5 block h-1.5 w-1.5 shrink-0 bg-brand-pink" />
-                <span>{REFUND_POLICY.fullRefundLabel}</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="mt-1.5 block h-1.5 w-1.5 shrink-0 bg-brand-pink" />
-                <span>{ENROLLMENT_CAP.autoRefundNote}</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="mt-1.5 block h-1.5 w-1.5 shrink-0 bg-brand-pink" />
-                <span>입금 순서대로 자리 확정 / 정원 마감 시 다음 기수 대기열</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="mt-1.5 block h-1.5 w-1.5 shrink-0 bg-brand-pink" />
-                <span>입금 확인 후 카카오톡 오픈채팅 자동 입장</span>
-              </li>
+
+            <div className="mb-8 flex flex-wrap items-end gap-4">
+              <span
+                className="text-fg-subtle text-2xl line-through sm:text-3xl"
+                aria-label={`정가 ${formatKRW(PRICING.original)}`}
+              >
+                {formatKRW(PRICING.original)}
+              </span>
+              <span className="bg-brand-pink px-2 py-1 font-black text-fg text-sm">
+                {off}% OFF
+              </span>
+            </div>
+
+            <p
+              className="mb-2 font-black text-fg leading-none"
+              style={{
+                fontSize: "var(--text-display-md)",
+                letterSpacing: "-0.05em",
+              }}
+            >
+              {formatKRW(PRICING.discounted)}
+            </p>
+            <p className="mb-10 text-fg-muted text-sm">
+              VAT 포함 · 1인 1회 결제 · 분할 결제 X
+            </p>
+
+            <Button
+              href="#apply"
+              variant="primary"
+              size="xl"
+              className="w-full"
+            >
+              지금 신청 →
+            </Button>
+
+            <ul className="mt-8 grid grid-cols-1 gap-2 text-sm text-fg-muted sm:grid-cols-2">
+              {[
+                "정원 마감 시 즉시 다음 기수 대기열",
+                "입금 순서대로 자리 확정",
+                `${REFUND_POLICY.fullRefundLabel}`,
+                "입금 후 카카오톡 오픈채팅 자동 입장",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-2">
+                  <span className="mt-1 block h-1 w-1 shrink-0 bg-brand-pink" />
+                  <span>{item}</span>
+                </li>
+              ))}
             </ul>
+
+            <p
+              id="enrollment-cap"
+              className="mt-8 border-t border-border pt-4 text-fg-subtle text-[11px] leading-relaxed"
+              style={{ letterSpacing: "0.02em" }}
+            >
+              * {ENROLLMENT_CAP.autoRefundNote}
+            </p>
           </div>
 
-          {/* 결제 안내 — 미니 메타 */}
-          <div className="mt-8 grid grid-cols-1 gap-6 border-border border-t pt-6 sm:grid-cols-2">
+          {/* 결제 안내 카드 */}
+          <div className="flex flex-col gap-6 bg-bg p-8 text-fg sm:p-10">
             <div>
               <p
-                className="mb-2 text-fg-subtle text-[10px] font-black uppercase sm:text-xs"
+                className="mb-3 text-fg-subtle text-xs uppercase"
                 style={{ letterSpacing: "0.3em" }}
               >
-                결제 안내
+                결제 방식
               </p>
-              <p className="text-fg-muted text-xs leading-relaxed sm:text-sm">
-                예금주{" "}
-                <span className="font-black text-fg">
-                  {PRICING.bank.accountHolder}
-                </span>
-                . 은행명 · 계좌번호는 신청 폼 제출 후 안내 메일과 결제 페이지에서
-                확인 가능.
+              <p className="font-black text-2xl sm:text-3xl">
+                계좌이체
+                <br />
+                <span className="text-brand-pink">국내 원화 한정</span>
               </p>
             </div>
-            <div>
+
+            <div className="border-t border-border pt-6">
               <p
-                className="mb-2 text-fg-subtle text-[10px] font-black uppercase sm:text-xs"
+                className="mb-2 text-fg-subtle text-xs uppercase"
+                style={{ letterSpacing: "0.3em" }}
+              >
+                예금주
+              </p>
+              <p className="font-black text-fg text-xl">
+                {PRICING.bank.accountHolder}
+              </p>
+              <p className="mt-4 text-fg-muted text-sm leading-relaxed">
+                은행명 · 계좌번호는 신청 폼 제출 후 안내 메일과 결제 페이지에서
+                확인할 수 있습니다.
+              </p>
+            </div>
+
+            <div className="mt-auto border-border border-t pt-6">
+              <p
+                className="mb-2 text-fg-subtle text-xs uppercase"
                 style={{ letterSpacing: "0.3em" }}
               >
                 지원되지 않는 결제 수단
               </p>
-              <p className="text-fg-muted text-xs leading-relaxed sm:text-sm">
-                신용 · 체크 · 해외 발급 카드 / 페이팔 · USD · 암호화폐
-              </p>
+              <ul className="text-fg-muted text-sm">
+                <li>· 신용카드 / 체크카드</li>
+                <li>· 해외 발급 카드</li>
+                <li>· 페이팔 · USD · 암호화폐</li>
+              </ul>
             </div>
           </div>
         </div>
