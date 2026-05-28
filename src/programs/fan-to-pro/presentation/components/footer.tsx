@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Container } from "../ui/container";
 
 const COMPANY = {
@@ -103,8 +104,36 @@ export function Footer() {
           </div>
         </div>
 
+        {/* Partnership */}
+        <div className="mt-16 border-border border-t pt-10">
+          <p
+            className="mb-5 text-fg-subtle text-[10px] font-black uppercase sm:text-xs"
+            style={{ letterSpacing: "0.35em" }}
+          >
+            Official Partner
+          </p>
+          <div className="flex flex-wrap items-center gap-8">
+            <a
+              href="https://deepishop.com/?currency=KRW"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="DEEPI 공식 파트너 (새 창에서 deepishop.com 열기)"
+              className="inline-flex items-center opacity-70 transition-opacity hover:opacity-100"
+            >
+              <Image
+                src="/images/partners/deepi.png"
+                alt="DEEPI"
+                width={160}
+                height={18}
+                className="h-auto w-auto"
+                style={{ filter: "invert(1)" }}
+              />
+            </a>
+          </div>
+        </div>
+
         {/* Business info */}
-        <div className="mt-16 border-border border-t pt-8 text-fg-subtle text-xs leading-relaxed">
+        <div className="mt-12 border-border border-t pt-8 text-fg-subtle text-xs leading-relaxed">
           <dl className="grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <dt className="font-black uppercase" style={{ letterSpacing: "0.2em" }}>
