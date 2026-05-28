@@ -118,7 +118,7 @@ export function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="DEEPI 공식 파트너 (새 창에서 deepishop.com 열기)"
-              className="inline-flex items-center opacity-70 transition-opacity hover:opacity-100"
+              className="inline-flex items-center bg-fg px-6 py-4 transition-opacity hover:opacity-85"
             >
               <Image
                 src="/images/partners/deepi.png"
@@ -126,7 +126,6 @@ export function Footer() {
                 width={160}
                 height={18}
                 className="h-auto w-auto"
-                style={{ filter: "invert(1)" }}
               />
             </a>
           </div>
