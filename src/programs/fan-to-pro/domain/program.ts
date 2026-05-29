@@ -120,7 +120,7 @@ export type Instructor = {
 export const INSTRUCTORS: readonly Instructor[] = [
   {
     id: "park-sungcheol",
-    day: "토요일",
+    day: "일요일",
     status: "confirmed",
     name: "박성철",
     nameSub: "Park, Sung-Cheol",
