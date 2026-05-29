@@ -38,3 +38,10 @@
 - `prd/fan-to-pro.md` — 기존 `kenterbootcamp_prd.md` 의 위치·이름 정리 (HANDOFF 권장 사항 미실행 분).
 - `docs/dev-rules.md` 신규 — 코딩 컨벤션 + a11y/타이포/접근성 가드.
 - `docs/design-system.md` 신규 — 토큰·컴포넌트·tone 카탈로그.
+
+---
+
+## [2026-05-30]
+
+### Changed — 변경
+- **박성철 강사 요일 재배정** — 토요일 → **일요일**. `domain/program.ts` 의 `INSTRUCTORS[park-sungcheol].day` 갱신. Faculty 카드 칩 *"일요일 강사"* 로 노출. PHASE 01 설명 텍스트(`presentation/sections/program.tsx` 의 토일 주제 매핑)는 의도적으로 그대로 유지.
