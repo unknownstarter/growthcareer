@@ -1,32 +1,41 @@
-import { FAQS } from "@/src/programs/fan-to-pro/domain/faq";
+import { useTranslations } from "next-intl";
 import { Container } from "../ui/container";
 import { Eyebrow } from "../ui/eyebrow";
 import { Section } from "../ui/section";
 
+type FAQItem = { q: string; a: string };
+
 export function FAQ() {
+  const t = useTranslations("faq");
+  const items = t.raw("items") as FAQItem[];
+
   return (
     <Section id="faq" tone="bg">
       <Container>
-        <Eyebrow n="13">FAQ</Eyebrow>
+        <Eyebrow n="13">{t("eyebrow")}</Eyebrow>
 
         <h2
           className="mb-12 max-w-4xl font-black text-display-lg"
-          style={{ lineHeight: 1.05, letterSpacing: "-0.04em" }}
+          style={{
+            lineHeight: 1.05,
+            letterSpacing: "-0.04em",
+            textWrap: "balance",
+          }}
         >
-          자주 묻는
+          {t("headlineLine1")}
           <br />
-          <span className="text-brand-pink">질문.</span>
+          <span className="text-brand-pink">{t("headlineEmphasis")}</span>
         </h2>
 
         <p className="mb-16 max-w-2xl text-base leading-relaxed text-fg-muted sm:text-lg">
-          답이 안 보이면 아래 신청 폼 하단 메모란에 직접 적어주세요. 개별 회신.
+          {t("intro")}
         </p>
 
         <ul className="divide-y divide-border border-border border-y">
-          {FAQS.map((item, i) => (
+          {items.map((item, i) => (
             <li key={item.q}>
               <details className="group">
-                <summary className="flex cursor-pointer list-none items-start gap-6 py-6 sm:py-8">
+                <summary className="flex cursor-pointer list-none items-start gap-4 sm:gap-6 py-6 sm:py-8">
                   <span
                     className="shrink-0 font-black text-brand-pink text-sm sm:text-base"
                     style={{ letterSpacing: "0.2em" }}
@@ -35,7 +44,11 @@ export function FAQ() {
                   </span>
                   <span
                     className="flex-1 font-black text-fg text-xl sm:text-2xl"
-                    style={{ letterSpacing: "-0.02em", lineHeight: 1.3 }}
+                    style={{
+                      letterSpacing: "-0.02em",
+                      lineHeight: 1.3,
+                      textWrap: "balance",
+                    }}
                   >
                     {item.q}
                   </span>
@@ -46,7 +59,7 @@ export function FAQ() {
                     +
                   </span>
                 </summary>
-                <p className="pb-8 pl-12 pr-12 text-base leading-relaxed text-fg-muted sm:text-lg">
+                <p className="pb-8 pl-10 pr-4 sm:pl-12 sm:pr-12 text-base leading-relaxed text-fg-muted sm:text-lg max-w-prose">
                   {item.a}
                 </p>
               </details>

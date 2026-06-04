@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { hasLocale } from "next-intl";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Footer } from "@/src/programs/fan-to-pro/presentation/components/footer";
 import { StickyCTA } from "@/src/programs/fan-to-pro/presentation/components/sticky-cta";
 import { ApplyForm } from "@/src/programs/fan-to-pro/presentation/sections/apply-form";
@@ -16,30 +19,61 @@ import { SocialProof } from "@/src/programs/fan-to-pro/presentation/sections/soc
 import { Solution } from "@/src/programs/fan-to-pro/presentation/sections/solution";
 import { Testimonials } from "@/src/programs/fan-to-pro/presentation/sections/testimonials";
 import { ValueCards } from "@/src/programs/fan-to-pro/presentation/sections/value-cards";
+import { routing } from "@/src/i18n/routing";
 
-export const metadata: Metadata = {
-  title: "Fan to Pro · 외국인 유학생을 위한 K-pop 업계 취업 트랙",
-  description:
-    "한국 거주 외국인 유학생을 위한 K-pop 엔터테인먼트 업계 취업 트랙. 실제 K-pop 공연 프로젝트로 경력을 만든다. 880,000원 · 선착순 마감.",
-  alternates: { canonical: "/fan-to-pro" },
-  openGraph: {
-    type: "article",
-    url: "https://growthcareer.xyz/fan-to-pro",
-    title: "Fan to Pro · 외국인 유학생을 위한 K-pop 업계 취업 트랙",
-    description:
-      "한국 거주 외국인 유학생을 위한 K-pop 엔터테인먼트 업계 취업 트랙. 실제 K-pop 공연 프로젝트로 경력을 만든다. 880,000원 · 선착순 마감.",
-    siteName: "Growth Career",
-    locale: "ko_KR",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Fan to Pro · 외국인 유학생을 위한 K-pop 업계 취업 트랙",
-    description:
-      "한국 거주 외국인 유학생을 위한 K-pop 엔터테인먼트 업계 취업 트랙. 실제 K-pop 공연 프로젝트로 경력을 만든다. 880,000원 · 선착순 마감.",
-  },
-};
+const SITE_URL = "https://growthcareer.xyz";
 
-export default function FanToProPage() {
+type Params = { locale: string };
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<Params>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  if (!hasLocale(routing.locales, locale)) notFound();
+
+  const t = await getTranslations({ locale, namespace: "meta.fanToPro" });
+  const ogLocale = locale === "ko" ? "ko_KR" : "en_US";
+  const canonical =
+    locale === routing.defaultLocale ? "/fan-to-pro" : `/${locale}/fan-to-pro`;
+
+  return {
+    title: t("title"),
+    description: t("description"),
+    alternates: {
+      canonical,
+      languages: {
+        en: "/fan-to-pro",
+        ko: "/ko/fan-to-pro",
+        "x-default": "/fan-to-pro",
+      },
+    },
+    openGraph: {
+      type: "article",
+      url: `${SITE_URL}${canonical}`,
+      title: t("ogTitle"),
+      description: t("ogDescription"),
+      siteName: t("siteName"),
+      locale: ogLocale,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: t("ogTitle"),
+      description: t("ogDescription"),
+    },
+  };
+}
+
+export default async function FanToProPage({
+  params,
+}: {
+  params: Promise<Params>;
+}) {
+  const { locale } = await params;
+  if (!hasLocale(routing.locales, locale)) notFound();
+  setRequestLocale(locale);
+
   return (
     <main className="relative">
       <Hero />

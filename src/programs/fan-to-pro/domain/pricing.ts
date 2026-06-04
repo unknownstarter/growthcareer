@@ -15,8 +15,20 @@ export const PRICING = {
   scarcity: "first_come_first_served" as const,
 } as const;
 
-export const formatKRW = (value: number): string =>
-  `${value.toLocaleString("ko-KR")}원`;
+/**
+ * Locale-aware KRW 포맷터.
+ * - ko: `880,000원`
+ * - en (그 외 모든 로케일): `880,000 KRW`
+ *
+ * 시그니처 변경 — locale 인자 필수. 호출부는 `useLocale()` 또는
+ * `getLocale()` 결과를 주입. 누락 시 안전한 기본값으로 ko 사용.
+ */
+export const formatKRW = (value: number, locale: string = "ko"): string => {
+  const formatted = value.toLocaleString(
+    locale === "ko" ? "ko-KR" : "en-US",
+  );
+  return locale === "ko" ? `${formatted}원` : `${formatted} KRW`;
+};
 
 export const discountRate = (original: number, discounted: number): number =>
   Math.round(((original - discounted) / original) * 100);

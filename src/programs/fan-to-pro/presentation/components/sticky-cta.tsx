@@ -1,10 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { PRICING, formatKRW } from "@/src/programs/fan-to-pro/domain/pricing";
 import { Button } from "../ui/button";
 import { Container } from "../ui/container";
 
 export function StickyCTA() {
+  const t = useTranslations("stickyCta");
+  const locale = useLocale();
   const [scrolled, setScrolled] = useState(false);
   const [applyInView, setApplyInView] = useState(false);
 
@@ -40,15 +43,15 @@ export function StickyCTA() {
           <div className="flex items-center justify-between gap-3 py-3 sm:py-4">
             <div className="hidden sm:block">
               <p
-                className="text-fg-subtle text-[10px] uppercase"
+                className="text-fg-subtle text-[10px] uppercase whitespace-nowrap"
                 style={{ letterSpacing: "0.3em" }}
               >
-                선착순 마감
+                {t("scarcity")}
               </p>
               <p className="font-black text-fg text-lg sm:text-xl">
-                {formatKRW(PRICING.discounted)}
+                {formatKRW(PRICING.discounted, locale)}
                 <span className="ml-2 text-xs font-normal text-fg-subtle sm:text-sm">
-                  VAT 포함
+                  {t("vatNote")}
                 </span>
               </p>
             </div>
@@ -58,7 +61,7 @@ export function StickyCTA() {
               size="lg"
               className="ml-auto w-full sm:w-auto"
             >
-              지금 신청 →
+              {t("cta")}
             </Button>
           </div>
         </Container>

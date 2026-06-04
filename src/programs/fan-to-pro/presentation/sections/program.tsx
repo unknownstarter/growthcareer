@@ -1,58 +1,48 @@
+import { useTranslations } from "next-intl";
 import { Container } from "../ui/container";
 import { Eyebrow } from "../ui/eyebrow";
 import { Section } from "../ui/section";
 
-const PHASES = [
-  {
-    n: "01",
-    title: "Class",
-    kr: "1개월 현업 강의",
-    body: "토 · 일 주말반 · 총 8회 · 4주. 토요일은 공연 제작 구조 · 음악 디렉팅 · 플레이백/타임코드 · 현장 실무를, 일요일은 Music Business · 음반 기획·제작 전략 · A&R · Visual Director 를 한국어로 압축해 전달.",
-  },
-  {
-    n: "02",
-    title: "Certificate",
-    kr: "교육 수료증",
-    body: "강의 종료 시 Dropdown 명의 4주 교육 수료증 발급. 결과물 큐레이션 · 이력서 작성 · 모의 면접 워크북이 함께 제공.",
-  },
-  {
-    n: "03",
-    title: "Network",
-    kr: "현업 네트워킹",
-    body: "수료생 + 현직 멘토 3인 카카오톡 오픈채팅 입장. 업계 행사 · 소개 라인이 강의가 끝난 뒤에도 이어진다.",
-  },
-  {
-    n: "04",
-    title: "On Stage",
-    kr: "공연 프로젝트 실무 체험",
-    body: "수료자 전원에게 제공되는 추가 기회. 실제 K-pop 공연 현장에 동행해 무대 음향 / 비주얼 / 스테이지 매니지먼트 실무를 가까이서 체험. 별도 결제 없음. 실제 공연에 참여한 분께는 유니온 픽처스 명의의 공연 참여 확인서가 발급됩니다.",
-    note: "전원 · 별도 신청",
-  },
-];
+type Phase = {
+  n: string;
+  title: string;
+  kr: string;
+  body: string;
+  note?: string;
+};
 
 export function Program() {
+  const t = useTranslations("program");
+  const phases = t.raw("phases") as Phase[];
+
   return (
     <Section id="program" tone="bg">
       <Container>
-        <Eyebrow n="07">Program</Eyebrow>
+        <Eyebrow n="07">{t("eyebrow")}</Eyebrow>
 
         <h2
           className="mb-12 max-w-4xl font-black text-display-lg"
-          style={{ lineHeight: 1.05, letterSpacing: "-0.04em" }}
+          style={{
+            lineHeight: 1.05,
+            letterSpacing: "-0.04em",
+            textWrap: "balance",
+          }}
         >
-          한 달.
-          <br />그리고 무대.
+          {t("headlineLine1")}
+          <br />
+          {t("headlineLine2")}
         </h2>
 
         <p className="mb-16 max-w-2xl text-base leading-relaxed text-fg-muted sm:text-lg">
-          4주 강의 + 수료증 + 네트워킹이 본 프로그램.
-          <br />수료자 전원에게 K-pop 공연 현장 실무 체험까지 이어집니다.
+          {t("intro1")}
+          <br />
+          {t("intro2")}
         </p>
 
         <ol className="grid grid-cols-1 gap-px overflow-hidden border border-border bg-border md:grid-cols-2">
-          {PHASES.map((p) => (
+          {phases.map((p) => (
             <li key={p.n} className="flex flex-col gap-5 bg-bg p-8 sm:p-10">
-              <div className="flex items-baseline gap-4">
+              <div className="flex flex-wrap items-baseline gap-4">
                 <span
                   className="font-black text-brand-purple text-6xl sm:text-7xl"
                   style={{ letterSpacing: "-0.04em" }}
@@ -65,9 +55,9 @@ export function Program() {
                 >
                   {p.title}
                 </p>
-                {"note" in p && p.note ? (
+                {p.note ? (
                   <span
-                    className="ml-auto inline-flex items-center border border-brand-pink/40 bg-brand-pink/10 px-2 py-1 font-black text-brand-pink text-[10px] uppercase"
+                    className="ml-auto inline-flex items-center border border-brand-pink/40 bg-brand-pink/10 px-2 py-1 font-black text-brand-pink text-[10px] uppercase whitespace-nowrap"
                     style={{ letterSpacing: "0.2em" }}
                   >
                     {p.note}
@@ -77,12 +67,17 @@ export function Program() {
 
               <h3
                 className="font-black text-2xl text-fg sm:text-3xl"
-                style={{ letterSpacing: "-0.03em" }}
+                style={{
+                  letterSpacing: "-0.03em",
+                  textWrap: "balance",
+                }}
               >
                 {p.kr}
               </h3>
 
-              <p className="text-base leading-relaxed text-fg-muted">{p.body}</p>
+              <p className="max-w-prose text-base leading-relaxed text-fg-muted">
+                {p.body}
+              </p>
             </li>
           ))}
         </ol>

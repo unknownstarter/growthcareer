@@ -1,26 +1,40 @@
-import {
-  SATISFACTION,
-  TESTIMONIALS,
-  TESTIMONIAL_DISCLOSURE,
-} from "@/src/programs/fan-to-pro/domain/testimonials";
+import { useTranslations } from "next-intl";
+import { SATISFACTION } from "@/src/programs/fan-to-pro/domain/testimonials";
 import { Container } from "../ui/container";
 import { Eyebrow } from "../ui/eyebrow";
 import { Section } from "../ui/section";
 
+type TestimonialItem = {
+  id: string;
+  initial: string;
+  age: number;
+  nationality: string;
+  aspiration: string;
+  quote: string;
+};
+
 export function Testimonials() {
+  const t = useTranslations("testimonials");
+  const items = t.raw("items") as TestimonialItem[];
+  const ageSuffix = t("ageSuffix");
+
   return (
     <Section id="testimonials" tone="surface">
       <Container>
-        <Eyebrow n="05">Voices</Eyebrow>
+        <Eyebrow n="05">{t("eyebrow")}</Eyebrow>
 
         <div className="mb-12 grid grid-cols-1 items-end gap-8 lg:grid-cols-[1.6fr_1fr]">
           <h2
             className="max-w-3xl font-black text-display-lg"
-            style={{ lineHeight: 1.05, letterSpacing: "-0.04em" }}
+            style={{
+              lineHeight: 1.05,
+              letterSpacing: "-0.04em",
+              textWrap: "balance",
+            }}
           >
-            이전 수강생들이
+            {t("headlineLine1")}
             <br />
-            <span className="text-brand-pink">남긴 후기.</span>
+            <span className="text-brand-pink">{t("headlineEmphasis")}</span>
           </h2>
 
           <div className="border-l-2 border-brand-pink pl-6">
@@ -28,7 +42,7 @@ export function Testimonials() {
               className="text-fg-subtle text-xs uppercase"
               style={{ letterSpacing: "0.3em" }}
             >
-              수강생 만족도
+              {t("satisfactionLabel")}
             </p>
             <p
               className="mt-2 font-black text-fg leading-none"
@@ -38,36 +52,50 @@ export function Testimonials() {
               }}
             >
               {SATISFACTION.score}
-              <span className="text-fg-subtle text-2xl">/{SATISFACTION.max}</span>
+              <span className="text-fg-subtle text-2xl">
+                /{SATISFACTION.max}
+              </span>
             </p>
             <p className="mt-2 text-fg-subtle text-xs">
-              종료 설문 기준 (N=
-              {SATISFACTION.sampleSize ?? "—"})
+              {SATISFACTION.sampleSize == null
+                ? t("satisfactionFallback")
+                : t("satisfactionFootnote", {
+                    sampleSize: SATISFACTION.sampleSize,
+                  })}
             </p>
           </div>
         </div>
 
-        <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
-          {TESTIMONIALS.map((t) => (
+        <ul
+          className="grid gap-4 md:gap-6"
+          style={{
+            gridTemplateColumns:
+              "repeat(auto-fit, minmax(min(100%, 280px), 1fr))",
+          }}
+        >
+          {items.map((it) => (
             <li
-              key={t.id}
+              key={it.id}
               className="flex flex-col gap-5 border border-border bg-bg p-6 sm:p-8"
             >
               <span
                 className="text-brand-pink text-xs font-black uppercase"
                 style={{ letterSpacing: "0.3em" }}
               >
-                {t.aspiration}
+                {it.aspiration}
               </span>
 
               <blockquote
                 className="text-fg text-lg leading-relaxed sm:text-xl"
-                style={{ letterSpacing: "-0.02em" }}
+                style={{
+                  letterSpacing: "-0.02em",
+                  textWrap: "pretty",
+                }}
               >
                 <span aria-hidden className="mr-1 text-brand-pink">
                   "
                 </span>
-                {t.quote}
+                {it.quote}
                 <span aria-hidden className="ml-1 text-brand-pink">
                   "
                 </span>
@@ -78,13 +106,14 @@ export function Testimonials() {
                   className="flex h-10 w-10 items-center justify-center bg-brand-indigo font-black text-fg"
                   aria-hidden
                 >
-                  {t.initial}
+                  {it.initial}
                 </span>
                 <div className="text-fg-muted text-sm">
                   <p className="font-black text-fg">
-                    {t.initial}, {t.age}세
+                    {it.initial}, {it.age}
+                    {ageSuffix}
                   </p>
-                  <p>{t.nationality}</p>
+                  <p>{it.nationality}</p>
                 </div>
               </footer>
             </li>
@@ -95,7 +124,7 @@ export function Testimonials() {
           className="mt-12 max-w-3xl text-fg-subtle text-xs leading-relaxed"
           style={{ letterSpacing: "0.05em" }}
         >
-          * {TESTIMONIAL_DISCLOSURE}
+          {t("disclosure")}
         </p>
       </Container>
     </Section>

@@ -1,13 +1,25 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
+import { getTranslations } from "next-intl/server";
 
 export const runtime = "nodejs";
-export const alt = "Fan to Pro · 세상에 없는 리얼 실무 교육 프로그램";
+export const alt = "Fan to Pro / K-Entertainment Track";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default async function Image() {
+export default async function Image({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslations({
+    locale,
+    namespace: "meta.fanToPro",
+  });
+  const trackLabel = "K-Entertainment Track";
+
   const root = process.cwd();
   const [heroBuf, blackFont, semiFont] = await Promise.all([
     readFile(join(root, "public/images/stock/boy-group-concert-stage-3.jpg")),
@@ -108,7 +120,7 @@ export default async function Image() {
                 textTransform: "uppercase",
               }}
             >
-              K-Entertainment Track
+              {trackLabel}
             </div>
           </div>
           <div
@@ -135,7 +147,7 @@ export default async function Image() {
               display: "flex",
             }}
           >
-            세상에 없는 리얼 실무 교육 프로그램
+            {t("ogAlt")}
           </div>
         </div>
       </div>

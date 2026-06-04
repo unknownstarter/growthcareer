@@ -53,7 +53,7 @@ export const ENROLLMENT_CAP = {
   minToProceed: 20,
   cutoffDaysBeforeStart: 6,
   autoRefundNote:
-    "본 강좌는 총 30인 모집이며, 2026년 6월 14일(일) 자정까지 신청자가 20명 미만일 경우 강좌가 취소되고 결제 금액 전액이 자동 환불된 후 차기 기수로 재모집을 진행합니다.",
+    "본 강좌는 총 30인 모집이며, 2026년 6월 21일(일) 자정까지 신청자가 20명 미만일 경우 강좌가 취소되고 결제 금액 전액이 자동 환불된 후 차기 기수로 재모집을 진행합니다.",
 } as const;
 
 /**
@@ -61,14 +61,16 @@ export const ENROLLMENT_CAP = {
  */
 export const SCHEDULE = {
   cohort: "1기",
-  firstSessionDate: "2026-06-20",
-  firstSessionLabel: "2026년 6월 20일 (토)",
-  enrollmentCutoffLabel: "2026년 6월 14일 (일) 자정",
+  firstSessionDate: "2026-06-27",
+  firstSessionLabel: "2026년 6월 27일 (토)",
+  lastSessionLabel: "2026년 7월 19일 (일)",
+  graduationLabel: "2026년 7월 25일 (토)",
+  enrollmentCutoffLabel: "2026년 6월 21일 (일) 자정",
   locationLabel: "수강 신청 완료 시 개별 공지",
-  durationLabel: "토 · 일 각 2시간 · 4주 / 총 8회 · 16시간",
-  durationShort: "총 8회 · 16시간",
+  durationLabel: "토요일과 일요일 각 2시간씩 4주, 총 8회 16시간 (6/27~7/19), 수료식 7/25 (토)",
+  durationShort: "총 8회 16시간",
   attendanceCommitment:
-    "2026년 6월 20일(토)부터 토 · 일 각 2시간씩 총 8회 진행되는 본 프로그램에 참여하는 것에 동의합니다.",
+    "2026년 6월 27일(토)부터 7월 19일(일)까지 토요일과 일요일 각 2시간씩 총 8회 진행되는 본 프로그램에 참여하는 것에 동의합니다.",
   contentUseNote:
     "수강 신청을 완료한 시점부터, 본 프로그램 중 촬영·녹화되는 영상·이미지가 Growth Career·Dropdown·DEEPI·유니온 픽처스의 (1) 프로그램 홍보 (2) 차기 기수 모집 콘텐츠 (3) 수강생 본인 포트폴리오 목적으로 활용되는 것에 동의한 것으로 간주됩니다. 거부 의사가 있는 경우 운영진에게 통보 시 얼굴 후처리·블러 처리 후 활용합니다.",
 } as const;
@@ -81,7 +83,7 @@ export const OPERATOR = {
   businessNumber: "154-28-02110",
   certificateIssuer: "Dropdown (수료증)",
   performanceProjectPartner: "유니온 픽처스 (공연 프로젝트 참여 확인서)",
-  faculty: "DEEPI (강사 섭외 · 운영 협력)",
+  faculty: "DEEPI (강사 섭외, 운영 협력)",
   inquiryNote: "문의: 카카오톡 채널 또는 신청 후 안내 메일",
 } as const;
 

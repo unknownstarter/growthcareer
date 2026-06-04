@@ -1,16 +1,15 @@
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { Container } from "../ui/container";
 import { Eyebrow } from "../ui/eyebrow";
 import { StatCard } from "../ui/stat-card";
 
-const STATS = [
-  { value: "+300건", label: "누적 공연 진행", hint: "운영팀 누적 시즌 기준 (집계 중)" },
-  { value: "+50,000명", label: "누적 관객", hint: "전 시즌 합산" },
-  { value: "3인", label: "현직 멘토", hint: "음향감독 · 비주얼디렉터 · 네트워킹" },
-  { value: "4.9 / 5.0", label: "수강생 만족도", hint: "이전 강의 종료 설문 (N=30)" },
-];
+type Stat = { value: string; label: string; hint: string };
 
 export function SocialProof() {
+  const t = useTranslations("socialProof");
+  const stats = t.raw("stats") as Stat[];
+
   return (
     <section className="relative overflow-hidden bg-bg text-fg">
       <div className="absolute inset-0 z-0">
@@ -26,19 +25,29 @@ export function SocialProof() {
 
       <div className="relative z-10 px-6 py-24 sm:px-10 sm:py-32">
         <Container>
-          <Eyebrow n="08">Real</Eyebrow>
+          <Eyebrow n="08">{t("eyebrow")}</Eyebrow>
 
           <h2
             className="mb-16 max-w-4xl font-black text-display-lg"
-            style={{ lineHeight: 1.05, letterSpacing: "-0.04em" }}
+            style={{
+              lineHeight: 1.05,
+              letterSpacing: "-0.04em",
+              textWrap: "balance",
+            }}
           >
-            수치로 보여주는
+            {t("headlineLine1")}
             <br />
-            <span className="text-brand-pink">진짜.</span>
+            <span className="text-brand-pink">{t("headlineEmphasis")}</span>
           </h2>
 
-          <div className="grid grid-cols-2 gap-x-6 gap-y-12 lg:grid-cols-4">
-            {STATS.map((s) => (
+          <div
+            className="grid gap-x-6 gap-y-12"
+            style={{
+              gridTemplateColumns:
+                "repeat(auto-fit, minmax(min(100%, 240px), 1fr))",
+            }}
+          >
+            {stats.map((s) => (
               <StatCard
                 key={s.label}
                 value={s.value}
@@ -52,7 +61,7 @@ export function SocialProof() {
             className="mt-12 max-w-2xl text-fg-subtle text-xs"
             style={{ letterSpacing: "0.1em" }}
           >
-            * 정확한 수치는 개별 공연·아티스트 식별 정보는 보호를 위해 비공개
+            {t("disclaimer")}
           </p>
         </Container>
       </div>

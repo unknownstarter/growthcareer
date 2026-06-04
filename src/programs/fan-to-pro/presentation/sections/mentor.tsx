@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { INSTRUCTORS } from "@/src/programs/fan-to-pro/domain/program";
 import { Avatar } from "../ui/avatar";
 import { Chip } from "../ui/chip";
@@ -6,24 +7,39 @@ import { Container } from "../ui/container";
 import { Eyebrow } from "../ui/eyebrow";
 import { Section } from "../ui/section";
 
+// The instructor domain stores days in Korean ("토요일"/"일요일") because the
+// roster is authoritative in Korean. For display we look up the matching
+// localized day string via `common.saturday/sunday`.
+const DAY_KEY: Record<string, "saturday" | "sunday"> = {
+  토요일: "saturday",
+  일요일: "sunday",
+};
+
 export function Mentor() {
+  const t = useTranslations("mentor");
+  const tCommon = useTranslations("common");
+
   return (
     <Section id="mentor" tone="surface">
       <Container>
-        <Eyebrow n="06">Faculty</Eyebrow>
+        <Eyebrow n="06">{t("eyebrow")}</Eyebrow>
 
         <h2
           className="mb-12 max-w-4xl font-black text-display-lg"
-          style={{ lineHeight: 1.05, letterSpacing: "-0.04em" }}
+          style={{
+            lineHeight: 1.05,
+            letterSpacing: "-0.04em",
+            textWrap: "balance",
+          }}
         >
-          현장을 만드는
+          {t("headlineLine1")}
           <br />
-          <span className="text-brand-pink">진짜 전문가</span>.
+          <span className="text-brand-pink">{t("headlineEmphasis")}</span>
+          {t("headlineLine2")}
         </h2>
 
         <p className="mb-16 max-w-2xl text-base leading-relaxed text-fg-muted sm:text-lg">
-          교수가 아닙니다. 지금 이 순간에도 K-pop 공연 현장과 음반 비즈니스
-          한복판에서 일하고 있는 현직 디렉터들이 4주를 같이 만듭니다.
+          {t("intro")}
         </p>
 
         <div className="flex flex-col gap-6 lg:gap-8">
@@ -61,9 +77,15 @@ export function Mentor() {
 
                 <div className="flex min-w-0 flex-1 flex-col gap-3">
                   <div className="flex flex-wrap items-center gap-2">
-                    <Chip variant="accent">{instructor.day} 강사</Chip>
+                    <Chip variant="accent">
+                      {t("labels.instructorOfDay", {
+                        day: tCommon(DAY_KEY[instructor.day] ?? "saturday"),
+                      })}
+                    </Chip>
                     {instructor.status === "pending" ? (
-                      <Chip variant="default">확정 예정</Chip>
+                      <Chip variant="default">
+                        {t("labels.pendingChip")}
+                      </Chip>
                     ) : null}
                   </div>
 
@@ -100,7 +122,7 @@ export function Mentor() {
               <div className="flex flex-col gap-8 p-8 sm:p-10">
                 {/* One-liner */}
                 <p
-                  className="text-base leading-relaxed text-fg sm:text-lg"
+                  className="max-w-prose text-base leading-relaxed text-fg sm:text-lg"
                   style={{ letterSpacing: "-0.01em" }}
                 >
                   {instructor.oneLiner}
@@ -113,7 +135,7 @@ export function Mentor() {
                       className="mb-4 text-fg-subtle text-xs uppercase"
                       style={{ letterSpacing: "0.3em" }}
                     >
-                      담당 커리큘럼 (4주)
+                      {t("labels.curriculumLabel")}
                     </p>
                     <ol className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                       {instructor.curriculum.map((c, i) => (
@@ -122,10 +144,11 @@ export function Mentor() {
                           className="flex items-start gap-3 text-base text-fg"
                         >
                           <span
-                            className="mt-1 font-black text-brand-pink text-sm"
+                            className="mt-1 font-black text-brand-pink text-sm whitespace-nowrap"
                             style={{ letterSpacing: "0.1em" }}
                           >
-                            W{i + 1}
+                            {t("labels.weekShort")}
+                            {i + 1}
                           </span>
                           <span style={{ letterSpacing: "-0.01em" }}>{c}</span>
                         </li>
@@ -141,7 +164,7 @@ export function Mentor() {
                       className="mb-6 text-fg-subtle text-xs uppercase"
                       style={{ letterSpacing: "0.3em" }}
                     >
-                      주요 경력
+                      {t("labels.careerLabel")}
                     </p>
                     <div className="flex flex-col gap-6">
                       {instructor.careerGroups.map((g) => (

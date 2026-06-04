@@ -1,32 +1,18 @@
 import Image from "next/image";
+import { useTranslations } from "next-intl";
+import { Link } from "@/src/i18n/navigation";
 import { Container } from "../ui/container";
 
-const COMPANY = {
-  nameKr: "드롭다운",
-  nameEn: "Dropdown",
-  ceo: "황재하",
-  bizNo: "154-28-02110",
-  ecommerceNo: "제2026-서울송파-0882호",
-  address: "서울특별시 송파구 중대로 207, 2층 201-J554호 (가락동, 대명빌딩)",
-  email: "hello@dropdown.xyz",
-} as const;
-
-const POLICY_LINKS = [
-  { label: "환불 정책", href: "/terms#refund-policy" },
-  { label: "결제 안내", href: "/terms#payment" },
-  { label: "개인정보 처리방침", href: "/privacy" },
-  { label: "이용약관", href: "/terms" },
-];
-
-const NAV_LINKS = [
-  { label: "프로그램", href: "#program" },
-  { label: "멘토", href: "#mentor" },
-  { label: "후기", href: "#testimonials" },
-  { label: "FAQ", href: "#faq" },
-  { label: "신청", href: "#apply" },
-];
+type NavItem = { label: string; href: string };
 
 export function Footer() {
+  const t = useTranslations("footer");
+  const tKakao = useTranslations("kakao");
+  const navItems = t.raw("navItems") as NavItem[];
+  const policyItems = t.raw("policyItems") as NavItem[];
+
+  const year = new Date().getFullYear();
+
   return (
     <footer className="border-border border-t bg-bg px-6 py-16 text-fg-muted sm:px-10">
       <Container>
@@ -35,27 +21,27 @@ export function Footer() {
           <div>
             <p
               className="mb-3 font-black text-fg text-2xl"
-              style={{ letterSpacing: "-0.04em" }}
+              style={{
+                letterSpacing: "-0.04em",
+                textWrap: "balance",
+              }}
             >
-              GROWTH
-              <span className="text-brand-pink">·</span>
-              CAREER
+              {t("brandHeadline")}
             </p>
             <p
               className="mb-3 text-fg-muted text-xs uppercase"
               style={{ letterSpacing: "0.25em" }}
             >
-              Fan to Pro · K-Entertainment Track
+              {t("brandEyebrow")}
             </p>
             <p className="mb-6 max-w-md text-sm leading-relaxed">
-              한국 엔터테인먼트 업계 진입을 위한 외국인 유학생 전용 부트캠프.
-              실제 K-pop 공연 프로젝트로 경력을 만든다.
+              {t("brandTagline")}
             </p>
             <p
               className="text-fg-subtle text-xs uppercase"
               style={{ letterSpacing: "0.2em" }}
             >
-              Powered by {COMPANY.nameEn}
+              {t("poweredBy")}
             </p>
           </div>
 
@@ -65,10 +51,10 @@ export function Footer() {
               className="mb-4 text-fg-subtle text-xs font-black uppercase"
               style={{ letterSpacing: "0.3em" }}
             >
-              Navigate
+              {t("navLabel")}
             </p>
             <ul className="grid grid-cols-1 gap-2 text-sm">
-              {NAV_LINKS.map((l) => (
+              {navItems.map((l) => (
                 <li key={l.href}>
                   <a
                     href={l.href}
@@ -87,17 +73,26 @@ export function Footer() {
               className="mb-4 text-fg-subtle text-xs font-black uppercase"
               style={{ letterSpacing: "0.3em" }}
             >
-              Policy
+              {t("policyLabel")}
             </p>
             <ul className="grid grid-cols-1 gap-2 text-sm">
-              {POLICY_LINKS.map((l) => (
+              {policyItems.map((l) => (
                 <li key={l.href}>
-                  <a
-                    href={l.href}
-                    className="transition-colors hover:text-brand-pink"
-                  >
-                    {l.label}
-                  </a>
+                  {l.href.startsWith("/") ? (
+                    <Link
+                      href={l.href}
+                      className="transition-colors hover:text-brand-pink"
+                    >
+                      {l.label}
+                    </Link>
+                  ) : (
+                    <a
+                      href={l.href}
+                      className="transition-colors hover:text-brand-pink"
+                    >
+                      {l.label}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>
@@ -110,14 +105,14 @@ export function Footer() {
             className="mb-5 text-fg-subtle text-[10px] font-black uppercase sm:text-xs"
             style={{ letterSpacing: "0.35em" }}
           >
-            Official Partner
+            {t("partnerLabel")}
           </p>
           <div className="flex flex-wrap items-center gap-8">
             <a
               href="https://deepishop.com/?currency=KRW"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="DEEPI 공식 파트너 (새 창에서 deepishop.com 열기)"
+              aria-label={t("partnerAriaLabel")}
               className="inline-flex items-center bg-fg px-5 py-3 transition-opacity hover:opacity-85"
             >
               <Image
@@ -133,59 +128,82 @@ export function Footer() {
 
         {/* Business info */}
         <div className="mt-12 border-border border-t pt-8 text-fg-subtle text-xs leading-relaxed">
-          <dl className="grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">
-            <div>
-              <dt className="font-black uppercase" style={{ letterSpacing: "0.2em" }}>
-                상호
-              </dt>
-              <dd className="mt-1">
-                {COMPANY.nameKr}({COMPANY.nameEn})
-              </dd>
-            </div>
-            <div>
-              <dt className="font-black uppercase" style={{ letterSpacing: "0.2em" }}>
-                대표자
-              </dt>
-              <dd className="mt-1">{COMPANY.ceo}</dd>
-            </div>
-            <div>
-              <dt className="font-black uppercase" style={{ letterSpacing: "0.2em" }}>
-                사업자등록번호
-              </dt>
-              <dd className="mt-1">{COMPANY.bizNo}</dd>
-            </div>
-            <div>
-              <dt className="font-black uppercase" style={{ letterSpacing: "0.2em" }}>
-                통신판매업 신고
-              </dt>
-              <dd className="mt-1">{COMPANY.ecommerceNo}</dd>
-            </div>
+          <dl
+            className="grid gap-x-8 gap-y-3"
+            style={{
+              gridTemplateColumns:
+                "repeat(auto-fit, minmax(min(100%, 180px), 1fr))",
+            }}
+          >
+            <BusinessField
+              label={t("business.company.label")}
+              value={t("business.company.value")}
+            />
+            <BusinessField
+              label={t("business.ceo.label")}
+              value={t("business.ceo.value")}
+            />
+            <BusinessField
+              label={t("business.bizNo.label")}
+              value={t("business.bizNo.value")}
+            />
+            <BusinessField
+              label={t("business.ecommerceNo.label")}
+              value={t("business.ecommerceNo.value")}
+            />
           </dl>
 
           <dl className="mt-6 grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-[auto_1fr]">
-            <dt className="font-black uppercase" style={{ letterSpacing: "0.2em" }}>
-              주소
+            <dt
+              className="font-black uppercase whitespace-nowrap"
+              style={{ letterSpacing: "0.2em" }}
+            >
+              {t("business.address.label")}
             </dt>
-            <dd>{COMPANY.address}</dd>
+            <dd className="max-w-prose">{t("business.address.value")}</dd>
 
-            <dt className="font-black uppercase" style={{ letterSpacing: "0.2em" }}>
-              이메일
+            <dt
+              className="font-black uppercase whitespace-nowrap"
+              style={{ letterSpacing: "0.2em" }}
+            >
+              {t("business.email.label")}
             </dt>
             <dd>
               <a
-                href={`mailto:${COMPANY.email}`}
+                href={`mailto:${t("business.email.value")}`}
                 className="transition-colors hover:text-brand-pink"
               >
-                {COMPANY.email}
+                {t("business.email.value")}
               </a>
             </dd>
           </dl>
 
-          <p className="mt-8">
-            © {new Date().getFullYear()} {COMPANY.nameEn}. All rights reserved.
-          </p>
+          <p className="mt-8">{t("copyright", { year })}</p>
         </div>
+
+        {/* Keep KakaoChannel aria-label translation referenced for tooling. */}
+        <span hidden>{tKakao("ariaLabel")}</span>
       </Container>
     </footer>
+  );
+}
+
+function BusinessField({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <div>
+      <dt
+        className="font-black uppercase whitespace-nowrap"
+        style={{ letterSpacing: "0.2em" }}
+      >
+        {label}
+      </dt>
+      <dd className="mt-1">{value}</dd>
+    </div>
   );
 }

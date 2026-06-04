@@ -1,0 +1,950 @@
+{
+  "common": {
+    "back": "Back",
+    "next": "Next step →",
+    "submit": "Submit application →",
+    "submitting": "Submitting...",
+    "applyCta": "Reserve your seat →",
+    "step": "Step {n} / {total}",
+    "required": "Required",
+    "optional": "Optional",
+    "openInNewTab": "Open in new tab",
+    "saturday": "Saturday",
+    "sunday": "Sunday"
+  },
+  "meta": {
+    "site": {
+      "title": "Growth Career",
+      "description": "Career tracks for a global future. The first track is Fan to Pro, a K-entertainment industry job track.",
+      "ogTitle": "Growth Career",
+      "ogDescription": "Career tracks for a global future. The first track is Fan to Pro, a K-entertainment industry job track."
+    },
+    "fanToPro": {
+      "title": "Fan to Pro, a K‑pop industry career track for international students in Korea",
+      "description": "A K‑pop entertainment industry career track for international students living in Korea. Build a real career on a real K‑pop concert project. 880,000 KRW, first-come-first-served.",
+      "ogTitle": "Fan to Pro, a K‑pop industry career track for international students in Korea",
+      "ogDescription": "A K‑pop entertainment industry career track for international students living in Korea. Build a real career on a real K‑pop concert project. 880,000 KRW, first-come-first-served.",
+      "ogAlt": "Fan to Pro, a hands-on industry training program you cannot find anywhere else",
+      "siteName": "Growth Career"
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "description": "Privacy policy for growthcareer.xyz and the Fan to Pro program, operated by Dropdown Co., Ltd."
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "description": "Terms of service for growthcareer.xyz and the Fan to Pro program, operated by Dropdown Co., Ltd."
+    }
+  },
+  "hero": {
+    "eyebrow": "Fan to Pro / Growth Career / 2026",
+    "badges": {
+      "scarcity": "Limited seats",
+      "audience": "FOR INTERNATIONAL STUDENTS IN KOREA"
+    },
+    "headline": { "first": "FAN.", "connector": "to", "second": "PRO." },
+    "subtitleA": "A K‑pop industry career track for",
+    "subtitleEmphasisA": "international students",
+    "subtitleB": "living in Korea.",
+    "subtitleEmphasisB": "A real K‑pop concert project",
+    "subtitleC": "puts your name on the record.",
+    "tuition": {
+      "label": "Tuition",
+      "note": "VAT included. Bank transfer in KRW only."
+    },
+    "cta": "Reserve your seat →",
+    "features": [
+      "Four weekends. Eight live sessions taught by working pros.",
+      "Certificate issued by Dropdown Co., Ltd.",
+      "Network with three working mentors and your cohort",
+      "Every graduate gets hands-on time at a real K‑pop concert"
+    ],
+    "visa": {
+      "label": "Eligible visas",
+      "items": ["D‑2", "D‑4", "D‑10", "E‑series"]
+    }
+  },
+  "problem": {
+    "eyebrow": "Problem",
+    "headlineLine1": "Your résumé is empty",
+    "headlineLine2": "where it counts.",
+    "items": [
+      {
+        "title": "No real-world reps",
+        "body": "Class projects don't move the needle in a K‑pop interview."
+      },
+      {
+        "title": "Portfolio gap",
+        "body": "Without work proven on a real stage, it is hard to convince a recruiter."
+      },
+      {
+        "title": "No network",
+        "body": "International students rarely get a foot in the K‑pop door."
+      }
+    ]
+  },
+  "solution": {
+    "eyebrow": "Solution",
+    "headlineLine1": "A real stage.",
+    "headlineLine2": "A real start.",
+    "body1": "This is not just another class.",
+    "body2": "You join a real K‑pop concert project and ship a full season with us.",
+    "bodyEmphasis": "Get in the room, leave proof of work, meet the fans.",
+    "points": [
+      "Mentorship from working stage sound and visual directors",
+      "Full-cycle participation in one real concert season",
+      "Résumé, portfolio, and interview coaching",
+      "K‑pop entertainment job track certificate"
+    ]
+  },
+  "value": {
+    "eyebrow": "Core Value",
+    "headlineLine1": "Experience",
+    "headlineEmphasis": "you can write down",
+    "headlineLine2": "on a résumé.",
+    "items": [
+      {
+        "number": "01",
+        "en": "REAL STAGE",
+        "kr": "On a real concert",
+        "body": "Run a full K‑pop concert season alongside your mentors. Photos, video, and show data all become assets you can use."
+      },
+      {
+        "number": "02",
+        "en": "PORTFOLIO",
+        "kr": "Portfolio and interviews",
+        "body": "Résumé, portfolio, and interview coaching included. We package the work in the format recruiters actually respond to."
+      },
+      {
+        "number": "03",
+        "en": "NETWORK",
+        "kr": "Industry network",
+        "body": "Three working mentors, your cohort, and a K‑pop entertainment certificate. The KakaoTalk open chat keeps going long after the season ends."
+      }
+    ]
+  },
+  "outcome": {
+    "eyebrow": "Outcome",
+    "headlineLine1": "Your next",
+    "headlineEmphasis": "new chapter.",
+    "items": [
+      "Full K‑pop concert participation. Photos, video, and show data become your assets.",
+      "Résumé, portfolio, and interview patterns. The way to win over recruiters.",
+      "Three working mentors and a cohort network. KakaoTalk open chat valid for life.",
+      "A job-experience letter. One line on your résumé that signals trust."
+    ],
+    "gallery": [
+      { "src": "/images/stock/concert-stage-from-behind-performer-3.jpg", "caption": "Live show" },
+      { "src": "/images/stock/concert-stage-from-behind-performer-4.jpg", "caption": "With the crowd" },
+      { "src": "/images/stock/stage-lights-purple-pink-3.jpg", "caption": "Stage setup" },
+      { "src": "/images/stock/male-singer-silhouette-stage-1.jpg", "caption": "Rehearsal details" }
+    ],
+    "disclaimer": "* Images are mood references only. Photos from your actual season will be shared after the program starts."
+  },
+  "testimonials": {
+    "eyebrow": "Voices",
+    "headlineLine1": "What past students",
+    "headlineEmphasis": "are saying.",
+    "satisfactionLabel": "Student satisfaction",
+    "satisfactionFootnote": "End-of-program survey (N={sampleSize})",
+    "satisfactionFallback": "No rating yet",
+    "disclosure": "Excerpts from interviews with students of the same curriculum run previously. Names are anonymized and quotes are condensed to protect privacy. Satisfaction scores are based on end-of-program surveys, with the exact sample size updated when final results are compiled.",
+    "ageSuffix": "",
+    "items": [
+      {
+        "id": "t-01",
+        "initial": "L.",
+        "age": 27,
+        "nationality": "Vietnam",
+        "aspiration": "K‑pop songwriter",
+        "quote": "It was my first time seeing how a concert actually runs from the inside. The real workflow nobody teaches you in school."
+      },
+      {
+        "id": "t-02",
+        "initial": "M.",
+        "age": 24,
+        "nationality": "Indonesia",
+        "aspiration": "Visual director",
+        "quote": "Having real stage footage in my portfolio made the biggest difference. One mentor's name on my résumé moved the interview."
+      },
+      {
+        "id": "t-03",
+        "initial": "K.",
+        "age": 26,
+        "nationality": "China",
+        "aspiration": "Concert planner",
+        "quote": "My visa status was complicated and I hesitated. The mentor mapped out my exact case. That was the tipping point."
+      },
+      {
+        "id": "t-04",
+        "initial": "S.",
+        "age": 25,
+        "nationality": "Thailand",
+        "aspiration": "Audio engineer",
+        "quote": "Studying alone on YouTube felt impossible. A full season on-site with hands on real gear made it click."
+      },
+      {
+        "id": "t-05",
+        "initial": "A.",
+        "age": 28,
+        "nationality": "Russia",
+        "aspiration": "Entertainment marketing",
+        "quote": "My cohort still shares industry tips daily on KakaoTalk. We got closer after the season ended."
+      },
+      {
+        "id": "t-06",
+        "initial": "P.",
+        "age": 23,
+        "nationality": "Philippines",
+        "aspiration": "K‑pop choreography",
+        "quote": "My Korean was rough, but the mentor mixed in English and kept coaching me. They really do not let you give up."
+      }
+    ]
+  },
+  "mentor": {
+    "eyebrow": "Faculty",
+    "headlineLine1": "The pros who build",
+    "headlineEmphasis": "the real shows",
+    "headlineLine2": ".",
+    "intro": "Not professors. Working directors who are inside K‑pop concerts and the music business right now, building these four weeks with you.",
+    "labels": {
+      "instructorOfDay": "{day} instructor",
+      "pendingChip": "To be announced",
+      "curriculumLabel": "Curriculum (4 weeks)",
+      "careerLabel": "Career highlights",
+      "weekShort": "W"
+    }
+  },
+  "program": {
+    "eyebrow": "Program",
+    "headlineLine1": "One month.",
+    "headlineLine2": "Then the stage.",
+    "intro1": "The core program is four weeks of classes, a certificate, and a network.",
+    "intro2": "Every graduate also gets hands-on experience at a real K‑pop concert.",
+    "phases": [
+      {
+        "n": "01",
+        "title": "Class",
+        "kr": "Four weeks of live industry sessions",
+        "body": "Weekend cohort on Saturday and Sunday, eight sessions over four weeks. Saturdays cover concert production structure, music direction, playback and timecode, and on-site execution. Sundays compress the music business, A&R, label strategy, and visual direction into Korean-language sessions."
+      },
+      {
+        "n": "02",
+        "title": "Certificate",
+        "kr": "Program certificate",
+        "body": "A four-week certificate issued by Dropdown Co., Ltd. on completion. Portfolio curation, a résumé builder, and a mock-interview workbook are included."
+      },
+      {
+        "n": "03",
+        "title": "Network",
+        "kr": "Industry network",
+        "body": "Graduates and three working mentors join a KakaoTalk open chat. Industry events and intros keep flowing after class ends."
+      },
+      {
+        "n": "04",
+        "title": "On Stage",
+        "kr": "Concert project field experience",
+        "body": "An extra opportunity offered to every graduate. Shadow a real K‑pop concert and get close to stage audio, visual, and stage management work. No extra payment. Those who actually work the show receive a concert participation letter issued by Union Pictures (K‑pop concert production studio).",
+        "note": "All graduates, separate sign-up"
+      }
+    ]
+  },
+  "socialProof": {
+    "eyebrow": "Real",
+    "headlineLine1": "The numbers",
+    "headlineEmphasis": "behind it.",
+    "stats": [
+      { "value": "300+ shows", "label": "Concerts produced", "hint": "Across all seasons run by the operating team (still counting)" },
+      { "value": "50,000+ fans", "label": "Total audience", "hint": "Across all past seasons" },
+      { "value": "3 mentors", "label": "Working pros", "hint": "Sound director, visual director, networking lead" },
+      { "value": "4.9 / 5.0", "label": "Student satisfaction", "hint": "Past cohort end-of-program survey (N=30)" }
+    ],
+    "disclaimer": "* Exact figures are private. Individual concerts and artist-identifying details are withheld for protection."
+  },
+  "guarantees": {
+    "eyebrow": "Guarantee",
+    "headlineLine1": "Three",
+    "headlineLine2": "guarantees.",
+    "intro": "We only promise what stays with you after the season ends. Real deliverables, not marketing copy.",
+    "promiseLabel": "Guaranteed.",
+    "items": [
+      {
+        "id": "portfolio",
+        "title": "Portfolio",
+        "body": "Work proven on a real stage. Packaged in the format recruiters trust."
+      },
+      {
+        "id": "network",
+        "title": "Industry network",
+        "body": "Three working mentors and your cohort. The KakaoTalk open chat keeps going after the season."
+      },
+      {
+        "id": "certificate",
+        "title": "Certificate",
+        "body": "Issued by Dropdown Co., Ltd. One line on your résumé that signals trust."
+      }
+    ]
+  },
+  "bonus": {
+    "eyebrow": "Bonus",
+    "headlineLine1": "Included the moment",
+    "headlineEmphasis": "you apply.",
+    "intro": "Extras that join the core program for free. No extra payment.",
+    "perkLabel": "Perk",
+    "items": [
+      {
+        "title": "KakaoTalk open chat",
+        "body": "Join the cohort and mentor group chat as soon as your seat is confirmed. Valid for life after the season ends."
+      },
+      {
+        "title": "1:1 mentor sessions",
+        "body": "Direct 1:1 time with a sound director and a visual director. Career track and technical track, both covered."
+      },
+      {
+        "title": "Mock interview simulation",
+        "body": "Practice with the real interview patterns used by K-entertainment companies. Includes video feedback."
+      },
+      {
+        "title": "Portfolio curation",
+        "body": "We polish your on-site work to match what recruiters look for. Résumé and cover letter included."
+      },
+      {
+        "title": "Visa guide",
+        "body": "A breakdown of employment paths by international student visa status (D‑2/D‑4/D‑10/E‑series, student/training/job-seeker/employment visas). Delivered as a separate document."
+      },
+      {
+        "title": "Alumni network",
+        "body": "Connects you with your cohort, future cohorts, and the operating mentor line. The door into the industry."
+      }
+    ]
+  },
+  "recruitment": {
+    "eyebrow": "Eligibility",
+    "headlineLine1": "Four weeks",
+    "headlineLine2": "with the real pros.",
+    "headlineLine3": "Who can apply",
+    "intro1": "A four-week weekend program designed for international students who are serious about breaking into the K‑pop entertainment industry.",
+    "introEmphasis": "All four criteria",
+    "intro2": "below must be met to apply.",
+    "requiredLabel": "Required",
+    "items": [
+      {
+        "title": "Foreign-national students or job seekers",
+        "body": "A program for foreign nationals currently living in Korea. Any nationality is welcome.",
+        "chips": ["Any nationality", "Resident in Korea"]
+      },
+      {
+        "title": "Student or work visa holder",
+        "body": "You need legal status to stay in Korea, such as D‑2 or D‑4 (student), D‑10 (job-seeker), or E‑series (employment). We confirm visa status during the application.",
+        "chips": ["D‑2", "D‑4", "D‑10", "E‑series"]
+      },
+      {
+        "title": "Can follow Korean-language lectures",
+        "body": "All sessions are delivered in Korean. No formal test score is required, but you must be comfortable enough in Korean to follow the lectures.",
+        "chips": ["Korean lectures", "No TOPIK required"]
+      },
+      {
+        "title": "Available for four weekends",
+        "body": "Eight sessions across Saturdays and Sundays make up the core program. Every graduate also gets hands-on time at a real K‑pop concert.",
+        "chips": ["Sat and Sun", "4 weeks, 8 sessions", "Concert access for all"]
+      }
+    ],
+    "schedule": {
+      "firstSessionLabel": "First session",
+      "firstSessionValue": "Saturday, June 27, 2026",
+      "durationValue": "Two hours on Saturdays and Sundays, four weeks, eight sessions (Jun 27 to Jul 19). Graduation Jul 25 (Sat).",
+      "locationLabel": "Venue",
+      "locationValue": "Shared individually with confirmed students",
+      "locationSub": "Shared only with confirmed students for security and clarity",
+      "cutoffLabel": "Application deadline",
+      "cutoffValue": "Midnight, Sunday, June 21, 2026",
+      "cutoffSubTemplate": "If fewer than {min} students by this date, full refund issued automatically"
+    },
+    "capacity": {
+      "eyebrow": "Capacity",
+      "lineTemplateA": "Cohort size",
+      "lineTemplateB": "students, first-come-first-served",
+      "noteTemplate": "If fewer than {min} students by {cutoff}, the cohort is canceled and full refunds are issued automatically."
+    }
+  },
+  "pricing": {
+    "eyebrow": "Pricing",
+    "headlineLine1": "One month.",
+    "headlineLine2": "One time.",
+    "intro1": "No credit cards. No foreign cards. No countdown timers.",
+    "introEmphasis": "Bank transfer order",
+    "intro2": "is what locks in your seat.",
+    "cardLabel": "Four weeks plus graduation benefits",
+    "originalAriaLabel": "Original price {price}",
+    "offBadge": "{off}% OFF",
+    "vatNote": "VAT included. One payment per person. No installments.",
+    "cta": "Reserve your seat →",
+    "bullets": [
+      "Cohort full? You join the waitlist for the next round immediately",
+      "Seats confirmed in order of bank transfer received",
+      "100% refund within 7 days of payment or before the program starts",
+      "KakaoTalk open chat auto-add after payment is confirmed"
+    ],
+    "footnote": "* This cohort enrolls a total of 30 students. If fewer than 20 students have paid by midnight on Sunday, June 21, 2026, the cohort is canceled and all payments are automatically refunded in full before the next cohort opens.",
+    "paymentSide": {
+      "methodLabel": "Payment method",
+      "methodTitleA": "Bank transfer",
+      "methodTitleB": "Domestic KRW only",
+      "holderLabel": "Account holder",
+      "holderNote": "The bank name and account number are shared via the confirmation email and payment page after you submit the application form.",
+      "unsupportedLabel": "Not supported",
+      "unsupportedItems": [
+        "Credit cards / debit cards",
+        "Foreign-issued cards",
+        "PayPal, USD, crypto"
+      ]
+    }
+  },
+  "faq": {
+    "eyebrow": "FAQ",
+    "headlineLine1": "Frequently asked",
+    "headlineEmphasis": "questions.",
+    "intro": "If you do not see your answer, write it in the notes field at the bottom of the form below. We reply individually.",
+    "items": [
+      {
+        "q": "I'm an international student. Does my visa affect eligibility?",
+        "a": "We can work with almost any visa case: D‑2 (student), D‑4 (training), F‑2, F‑4, F‑6, and more. A visa guide is included as a bonus, and during 1:1 mentoring we map out the employment paths that fit your specific status."
+      },
+      {
+        "q": "Can I keep up if my Korean is not strong?",
+        "a": "All lectures are delivered in Korean, so you need at least basic conversational Korean to follow along. Some support materials, like the visa guide, are provided in both Korean and English."
+      },
+      {
+        "q": "Can I take the program online?",
+        "a": "No online sessions. The point of this program is hands-on time at a real audio console and inside a real stage environment, which cannot be delivered through a screen. Only residents of Korea (D‑2, D‑4, D‑10, E‑series, etc.) can apply. Some support materials, like the visa guide, are provided separately as PDFs."
+      },
+      {
+        "q": "What is the refund policy?",
+        "a": "100% refund within 7 days of payment or before the program starts. After the program starts, refunds follow the Korean Private Education Act Enforcement Decree (Table 4) and the Fair Trade Commission consumer dispute guidelines: 2/3 before 1/3 of the program, 1/2 before halfway, no refund after halfway. This cohort recruits 30 students, and if fewer than 20 have paid by the deadline (Sunday, June 21, 2026, midnight), the cohort is canceled, all payments are refunded in full automatically, and we re-open recruitment for the next cohort."
+      },
+      {
+        "q": "How does payment work?",
+        "a": "Bank transfer only (domestic KRW). Credit cards and foreign-issued cards are not supported. After you submit the application form, you receive a confirmation email within 24 hours with the bank details (account holder: Dropdown Co., Ltd., Toss Bank 1002-4759-1521)."
+      },
+      {
+        "q": "How many seats are there in each cohort?",
+        "a": "Each cohort runs with a small group to keep the mentor-to-student ratio tight. Once seats are full, applications close immediately and the rest of the queue rolls into the next cohort."
+      },
+      {
+        "q": "Where does the certificate come from?",
+        "a": "Dropdown Co., Ltd. issues the four-week certificate. Students who actually work the K‑pop concert also receive a separate concert project participation letter issued by Union Pictures (K‑pop concert production studio). Both documents carry weight inside the Korean entertainment industry and can be used on your résumé."
+      },
+      {
+        "q": "How many 1:1 mentor sessions do I get during the program?",
+        "a": "You get 1:1 sessions with the three mentors (sound director, visual director, networking lead) during the four-week program. Both career and technical tracks are covered. The exact number is tailored to your track in coordination with the mentors."
+      },
+      {
+        "q": "Can everyone join the concert project field experience?",
+        "a": "Yes. Every graduate gets hands-on time at a real K‑pop concert. No extra payment, and the schedule is separate from the four weeks of classes. After you confirm interest, schedule, role, and headcount are matched. Those who actually work the show receive a concert project participation letter issued by Union Pictures."
+      },
+      {
+        "q": "Will I stay in touch with my cohort and mentors after the program?",
+        "a": "Yes. The moment your seat is confirmed, you join the KakaoTalk open chat, and it stays open for life. Future cohorts join too, so the alumni network keeps growing."
+      },
+      {
+        "q": "Is a job guaranteed?",
+        "a": "We do not guarantee a job. What we do guarantee: a portfolio and résumé recruiters trust, real interview patterns, and direct lines to the mentors. See the three guarantees section above."
+      },
+      {
+        "q": "What happens after I apply?",
+        "a": "Submit the form → receive a payment email within 24 hours → make the bank transfer → we confirm → join the KakaoTalk open chat → orientation details follow. Seats are confirmed in the order bank transfers are received."
+      }
+    ]
+  },
+  "applyForm": {
+    "eyebrow": "Apply",
+    "chipTemplate": "{seats} seats, first-come-first-served, deadline {cutoff}",
+    "headline": "Apply and pay",
+    "leadA": "{price}, two hours each Saturday and Sunday for four weeks. Seats are confirmed in the order bank transfers are received.",
+    "leadB": "A payment email is sent within 24 hours of form submission.",
+    "attendanceCommitment": "I agree to attend this program, which runs from Saturday, June 27, 2026 through Sunday, July 19, 2026, with two hours each on Saturdays and Sundays for a total of eight sessions.",
+    "contentUseNote": "Once your enrollment is complete, you agree that the video and photos captured during this program may be used by Growth Career, Dropdown Co., Ltd., DEEPI, and Union Pictures for (1) program promotion, (2) recruiting content for future cohorts, and (3) your own portfolio. If you object, tell the operations team and your face will be post-processed or blurred before any use.",
+    "audienceBanner": {
+      "badge": "For International Students",
+      "bodyA": "This program is for",
+      "bodyEmphasis": "international students and job seekers living in Korea",
+      "bodyB": "only. You need legal status to stay in Korea (D‑2, D‑4, D‑10, E‑series, etc.) to apply."
+    },
+    "summary": {
+      "firstSessionLabel": "First session",
+      "firstSessionValue": "Saturday, June 27, 2026",
+      "firstSessionSub": "Two hours on Saturdays and Sundays, four weeks, eight sessions (Jun 27 to Jul 19). Graduation Jul 25 (Sat).",
+      "locationLabel": "Venue",
+      "locationValue": "Shared individually with confirmed students",
+      "locationSub": "Shared individually with confirmed students",
+      "cutoffLabel": "Application deadline",
+      "cutoffValue": "Midnight, Sunday, June 21, 2026",
+      "cutoffSubTemplate": "Full refund if fewer than {min} students by this date",
+      "amountLabel": "Tuition",
+      "amountSub": "Toss Bank transfer (lump sum)"
+    },
+    "trust": {
+      "certificateLabel": "Certificate issued by",
+      "performanceLabel": "Concert participation letter",
+      "performanceValue": "Union Pictures",
+      "refundLabel": "Refund",
+      "refundValue": "100% within 7 days of payment",
+      "inquiryLabel": "Inquiries",
+      "inquiryValue": "Email after applying"
+    },
+    "step": "Step {step} / 2",
+    "step1NextCta": "Next step →",
+    "step2BackCta": "← Previous step",
+    "step2SubmitCta": "Submit application →",
+    "step2SubmittingCta": "Submitting...",
+    "fields": {
+      "name": {
+        "label": "Full legal name (as on passport)",
+        "placeholder": "John Doe"
+      },
+      "email": {
+        "label": "Email",
+        "placeholder": "you@example.com"
+      },
+      "phone": {
+        "label": "Phone",
+        "placeholder": "010-1234-5678"
+      },
+      "birthdate": {
+        "label": "Date of birth"
+      },
+      "university": {
+        "label": "University (current or graduated)",
+        "placeholder": "University name / Department"
+      },
+      "visa": {
+        "label": "Visa status",
+        "placeholder": "Please select"
+      },
+      "address": {
+        "label": "Current residence (city / district)",
+        "placeholder": "Seoul, Mapo-gu"
+      }
+    },
+    "errors": {
+      "nameMin": "Please enter at least 2 characters for your name.",
+      "nameMax": "Your name is too long.",
+      "emailInvalid": "Please enter a valid email address.",
+      "phoneInvalid": "Please enter a valid phone number (digits, +, -, spaces).",
+      "phoneDigits": "Your phone number must contain at least 8 digits.",
+      "birthdateFormat": "Date of birth must be in YYYY-MM-DD format.",
+      "universityMin": "Please enter your university.",
+      "visaRequired": "Please select your visa status.",
+      "addressMin": "Please enter your residence.",
+      "consentRequired": "You must agree to the collection and use of personal data to apply.",
+      "consentOperationsRequired": "You must confirm the operations and refund policy to apply.",
+      "submitFailed": "Something went wrong while processing your application. Please try again in a moment."
+    },
+    "consent": {
+      "required": {
+        "label": "Consent to collection and use of personal data",
+        "bodyA": "The contact details and personal data you submit are used only for",
+        "bodyEmphasis": "program guidance and urgent contact",
+        "bodyB": ", and are destroyed within 1 year of the end of your enrollment processing."
+      },
+      "operations": {
+        "label": "Confirm operations and refund policy",
+        "bodyTemplate": "{commitment} Refunds are 100% within 7 days of payment or before the program starts. After the program starts, refunds are prorated under the Korean Private Education Act Enforcement Decree (Table 4) and the Fair Trade Commission consumer dispute guidelines."
+      },
+      "marketing": {
+        "label": "Consent to marketing communications (optional)",
+        "body": "We send next-cohort recruiting and discount notices, plus industry event news, by email and KakaoTalk. Declining does not affect your application, and you can opt out at any time."
+      },
+      "requiredBadge": "Required",
+      "optionalBadge": "Optional"
+    },
+    "refundSummary": {
+      "label": "Refund policy summary",
+      "noteTemplate": "Based on {legalBasis}. {autoRefundNote}"
+    },
+    "paymentNotice": {
+      "eyebrow": "Payment, how your enrollment is finalized",
+      "headlineA": "Your enrollment is",
+      "headlineEmphasisA": "{price}",
+      "headlineB": "and is only finalized once",
+      "headlineC": "the bank transfer arrives at the account below.",
+      "headlineEmphasisB": "fully confirmed",
+      "headlineD": "",
+      "bankLabel": "Bank",
+      "accountLabel": "Account",
+      "holderLabel": "Account holder",
+      "amountLabel": "Amount",
+      "depositorNoticeBadge": "Required",
+      "depositorNoticeA": "Use the depositor name that",
+      "depositorNoticeEmphasis": "matches the name on your application",
+      "depositorNoticeB": ". A mismatched depositor name can delay confirmation or pause your seat assignment.",
+      "kakaoNote": "Once payment is confirmed, you receive KakaoTalk open chat details.",
+      "operatorNoteTemplate": "Payment received by {issuer}, business registration {bizNo}. {partner}, {faculty}.",
+      "operatorIssuer": "Dropdown Co., Ltd. (certificate)",
+      "operatorPartner": "Union Pictures (concert participation letter)",
+      "operatorFaculty": "DEEPI (instructor sourcing and operations partner)"
+    },
+    "success": {
+      "headerLabel": "Application received",
+      "headlineNameSuffix": ",",
+      "headlineEmphasis": "you're one step in.",
+      "fallbackName": "Applicant",
+      "bodyA": "Within 24 hours",
+      "fallbackEmail": "your registered email",
+      "bodyB": "you'll receive a payment email at {email}.",
+      "idLabel": "Application ID: {id}",
+      "checklist": [
+        "Send the bank transfer to Dropdown Co., Ltd., Toss Bank 1002-4759-1521",
+        "Once payment is confirmed, you're added to the KakaoTalk open chat automatically",
+        "Orientation schedule will be shared separately"
+      ]
+    }
+  },
+  "stickyCta": {
+    "scarcity": "Limited seats",
+    "vatNote": "VAT included",
+    "cta": "Reserve your seat →"
+  },
+  "footer": {
+    "brandHeadline": "GROWTH CAREER",
+    "brandEyebrow": "Fan to Pro, K-Entertainment Track",
+    "brandTagline": "An international student bootcamp built to break into the Korean entertainment industry. Build a real career on a real K‑pop concert project.",
+    "poweredBy": "Powered by Dropdown",
+    "navLabel": "Navigate",
+    "navItems": [
+      { "label": "Program", "href": "#program" },
+      { "label": "Mentors", "href": "#mentor" },
+      { "label": "Voices", "href": "#testimonials" },
+      { "label": "FAQ", "href": "#faq" },
+      { "label": "Apply", "href": "#apply" }
+    ],
+    "policyLabel": "Policy",
+    "policyItems": [
+      { "label": "Refund policy", "href": "/terms#refund-policy" },
+      { "label": "Payment", "href": "/terms#payment" },
+      { "label": "Privacy Policy", "href": "/privacy" },
+      { "label": "Terms of Service", "href": "/terms" }
+    ],
+    "partnerLabel": "Official Partner",
+    "partnerAriaLabel": "DEEPI official partner (opens deepishop.com in a new tab)",
+    "business": {
+      "company": { "label": "Company", "value": "Dropdown Co., Ltd." },
+      "ceo": { "label": "Representative", "value": "Hwang Jae-ha" },
+      "bizNo": { "label": "Business registration", "value": "154-28-02110" },
+      "ecommerceNo": { "label": "E-commerce registration", "value": "No. 2026-Seoul Songpa-0882" },
+      "address": { "label": "Address", "value": "201-J554, 2F, 207 Jungdae-ro, Songpa-gu, Seoul, Republic of Korea (Garak-dong, Daemyung Building)" },
+      "email": { "label": "Email", "value": "hello@dropdown.xyz" }
+    },
+    "copyright": "© {year} Dropdown. All rights reserved."
+  },
+  "kakao": {
+    "ariaLabel": "Contact us on KakaoTalk (opens in a new tab)"
+  },
+  "privacy": {
+    "eyebrow": "Privacy Policy",
+    "title": "Privacy Policy",
+    "effectiveLabelTemplate": "Effective and last updated: {date}",
+    "backToProgram": "← Back to program page",
+    "linkToTerms": "Terms of Service",
+    "sections": [
+      {
+        "n": "01",
+        "title": "General",
+        "paragraphs": [
+          "Dropdown Co., Ltd. (hereafter \"Company\") processes personal data collected through growthcareer.xyz (hereafter \"Site\") and the Fan to Pro program (hereafter \"Program\") offered through the Site, in accordance with this policy.",
+          "The Company complies with the Personal Information Protection Act, the Act on Promotion of Information and Communications Network Utilization and Information Protection, the Act on the Consumer Protection in Electronic Commerce, and other relevant laws of the Republic of Korea. The original Korean version of this policy is authoritative in case of any discrepancy."
+        ]
+      },
+      {
+        "n": "02",
+        "title": "Personal data we collect",
+        "subSections": [
+          {
+            "heading": "a. Provided directly by the user during application",
+            "items": [
+              "Name, email, mobile phone number",
+              "Date of birth",
+              "University (current or graduated)",
+              "Visa status (D‑2, D‑4, F‑2, F‑4, F‑6, other)",
+              "Residence",
+              "Consent status and timestamp"
+            ]
+          },
+          {
+            "heading": "b. Collected additionally during payment processing",
+            "items": [
+              "Depositor name, deposit date and time, deposit amount",
+              "Refund account information when refunds occur (bank name, account number, account holder)"
+            ]
+          },
+          {
+            "heading": "c. Automatically collected",
+            "items": [
+              "IP address, access logs, cookies, device info, browser info",
+              "Visit timestamps and page navigation paths"
+            ]
+          }
+        ]
+      },
+      {
+        "n": "03",
+        "title": "Purpose of processing",
+        "items": [
+          "Program application intake, identity verification, eligibility review",
+          "Payment guidance, deposit confirmation, refund processing",
+          "Class schedule, materials, certificate guidance, and announcements",
+          "Concert project matching and issuance of the concert participation letter to actual participants",
+          "Customer support, inquiry response, dispute resolution",
+          "De-identified statistical analysis and service improvement",
+          "Compliance with legal obligations (business record retention, etc.)"
+        ]
+      },
+      {
+        "n": "04",
+        "title": "Outsourcing of personal data processing",
+        "paragraphs": [
+          "To provide stable services, the Company outsources personal data processing to the following parties. The Company specifies the items required for safe processing in accordance with Article 26 of the Personal Information Protection Act."
+        ],
+        "tableHeaders": ["Processor", "Outsourced work", "Location"],
+        "tableRows": [
+          ["Supabase Inc.", "Database hosting, applicant data storage", "Seoul (ap-northeast-2)"],
+          ["Vercel Inc.", "Website hosting, serverless function execution", "Global CDN"],
+          ["Union Pictures", "Concert project matching and issuance of the concert project participation letter to actual participants", "Republic of Korea"]
+        ]
+      },
+      {
+        "n": "05",
+        "title": "Third-party provision of personal data",
+        "paragraphs": [
+          "The Company does not provide personal data to third parties without prior consent. The following are exceptions where separate consent may not be required.",
+          "Users who confirm interest in the concert project field experience have their name, contact, and visa status provided to Union Pictures for matching purposes. This is done through a separate consent process."
+        ],
+        "items": [
+          "When required by law or by a lawful request from an investigating authority",
+          "When processed in a form that does not identify any individual, for purposes such as statistics or academic research"
+        ]
+      },
+      {
+        "n": "06",
+        "title": "Retention and use period",
+        "items": [
+          "Application (before payment): 30 days from the date of application. Automatically discarded if no payment is made.",
+          "Enrollment record (payment complete): 1 year from the program start date. After that, identifying information is destroyed and only de-identified statistical data is kept.",
+          "Payment and refund records: kept for 5 years under Article 6 of the Act on Consumer Protection in Electronic Commerce.",
+          "Consumer complaint and dispute records: kept for 3 years under Article 6 of the Act on Consumer Protection in Electronic Commerce.",
+          "Access logs: kept for 3 months under the Protection of Communications Secrets Act."
+        ]
+      },
+      {
+        "n": "07",
+        "title": "Rights of the data subject and how to exercise them",
+        "paragraphs": [
+          "Users may exercise the following rights at any time.",
+          "Send requests to hello@dropdown.xyz. After identity verification, we respond within 10 days."
+        ],
+        "items": [
+          "Right to access personal data",
+          "Right to correction and deletion of personal data",
+          "Right to suspension of processing",
+          "Right to withdraw consent"
+        ]
+      },
+      {
+        "n": "08",
+        "title": "Cookies and automatically collected information",
+        "paragraphs": [
+          "The Company uses cookies to provide a personalized experience. You can refuse or delete cookies in your browser settings, although some features may not work fully as a result."
+        ]
+      },
+      {
+        "n": "09",
+        "title": "Safeguards",
+        "items": [
+          "TLS 1.3 encryption in transit",
+          "Row Level Security in Supabase, with service-role-only access at rest",
+          "Minimum admin access and regular reviews",
+          "Access logs for the personal data processing system"
+        ]
+      },
+      {
+        "n": "10",
+        "title": "Data protection officer",
+        "items": [
+          "Company: Dropdown Co., Ltd.",
+          "Representative: Hwang Jae-ha",
+          "Contact: hello@dropdown.xyz"
+        ]
+      },
+      {
+        "n": "11",
+        "title": "Remedies for rights violations",
+        "paragraphs": [
+          "If you need to report or consult about a personal data violation, you can contact the following organizations."
+        ],
+        "items": [
+          "Personal Information Infringement Report Center: dial 118 / privacy.kisa.or.kr",
+          "Personal Information Dispute Mediation Committee: 1833-6972 / kopico.go.kr",
+          "Supreme Prosecutors' Office Cyber Investigation: 1301 / spo.go.kr",
+          "National Police Agency Cyber Bureau: 182 / ecrm.cyber.go.kr"
+        ]
+      },
+      {
+        "n": "12",
+        "title": "Revision history",
+        "items": [
+          "2026-04-29: First effective version"
+        ]
+      }
+    ]
+  },
+  "terms": {
+    "eyebrow": "Terms of Service",
+    "title": "Terms of Service",
+    "effectiveLabelTemplate": "Effective and last updated: {date}",
+    "backToProgram": "← Back to program page",
+    "linkToPrivacy": "Privacy Policy",
+    "sections": [
+      {
+        "n": "01",
+        "title": "Purpose",
+        "paragraphs": [
+          "These Terms govern the rights, obligations, responsibilities, and other necessary matters between Dropdown Co., Ltd. (hereafter \"Company\") and users in connection with growthcareer.xyz (hereafter \"Site\") and the Fan to Pro program (hereafter \"Program\") offered through the Site. The original Korean version of these Terms is authoritative in case of any discrepancy."
+        ]
+      },
+      {
+        "n": "02",
+        "title": "Definitions",
+        "items": [
+          "\"Company\": Dropdown Co., Ltd. The party that develops and operates growthcareer.xyz.",
+          "\"Site\": all pages and features provided through the growthcareer.xyz domain.",
+          "\"Program\": Fan to Pro. The K‑pop entertainment job training program operated by the Company.",
+          "\"DEEPI\": a partner (production partner) that supports program operations, including instructor sourcing. A subsidiary of Union Pictures.",
+          "\"Union Pictures\": Union Pictures (K‑pop concert production studio). The party operating concert projects and the issuer of the concert project participation letter to actual participants. Provides concert project field experience to graduates who meet the operating criteria.",
+          "\"User\": any person who accesses the Site or applies for the Program."
+        ]
+      },
+      {
+        "n": "03",
+        "title": "Effect and changes to the Terms",
+        "paragraphs": [
+          "These Terms become effective upon posting on the Site. The Company may amend the Terms within the limits of applicable law, with notice on the Site at least 7 days before the effective date. For changes that are unfavorable to users, the Company gives notice at least 30 days in advance and notifies users individually via email or other means."
+        ]
+      },
+      {
+        "n": "04",
+        "title": "Roles of the Company and its partners",
+        "items": [
+          "Company (Dropdown Co., Ltd.): Site development and operation, application intake, tuition collection (account holder), class schedule and graduation management, data management, user support, responsibility for the Terms and Privacy Policy.",
+          "DEEPI: a partner that supports program operations including instructor sourcing. Does not receive student personal data.",
+          "Union Pictures: provides K‑pop concert project field experience to all graduates and issues the concert project participation letter to those who actually work the show."
+        ]
+      },
+      {
+        "n": "05",
+        "title": "Application process",
+        "items": [
+          "Complete the application form on the Site and consent to the Terms and Privacy Policy",
+          "Receive a payment email from the Company within 24 hours (account holder: Dropdown Co., Ltd., Toss Bank 1002-4759-1521)",
+          "Send the tuition via bank transfer to the account provided",
+          "Once payment is confirmed, your seat is locked in and KakaoTalk open chat details are shared",
+          "Orientation and class schedule are announced"
+        ],
+        "paragraphs": [
+          "Seats are confirmed in the order bank transfers are received. Once the cohort is full, applications automatically roll over to the next cohort waitlist."
+        ]
+      },
+      {
+        "n": "06",
+        "title": "Payment",
+        "idAnchor": "payment",
+        "items": [
+          "Tuition: 880,000 KRW (VAT included, one payment per person, no installments)",
+          "Payment method: domestic KRW bank transfer only. Credit cards, debit cards, foreign-issued cards, PayPal, USD, and crypto are not supported.",
+          "Account holder: Dropdown Co., Ltd. The bank name and account number are sent by email within 24 hours of form submission.",
+          "Cash receipts and tax invoices: reply to the payment email to request, if needed."
+        ]
+      },
+      {
+        "n": "07",
+        "title": "Refund policy",
+        "idAnchor": "refund-policy",
+        "paragraphs": [
+          "This refund policy follows the Korean Private Education Act Enforcement Decree (Table 4) and the Fair Trade Commission consumer dispute guidelines (education services). It also expressly preserves the right of withdrawal under Article 17 of the Act on Consumer Protection in Electronic Commerce.",
+          "Refund requests should be sent to hello@dropdown.xyz. After identity verification, refunds are processed to an account in your own name within 7 business days. Refund remittance fees are covered by the Company."
+        ],
+        "tableHeaders": ["Timing", "Refund rate"],
+        "tableRows": [
+          ["Within 7 days of payment", "100%"],
+          ["Before the program starts", "100%"],
+          ["Before 1/3 of the program elapses", "2/3 refund"],
+          ["Before 1/2 of the program elapses", "1/2 refund"],
+          ["After 1/2 of the program elapses", "No refund"]
+        ]
+      },
+      {
+        "n": "08",
+        "title": "Automatic cancellation if the cohort does not fill",
+        "paragraphs": [
+          "This cohort recruits a total of 30 students. If fewer than 20 students have paid by the application deadline of midnight on Sunday, June 21, 2026, the Company cancels the cohort and automatically refunds all payments in full. Refund remittance fees are covered by the Company."
+        ]
+      },
+      {
+        "n": "09",
+        "title": "Certificate and concert project field experience",
+        "paragraphs": [
+          "The core program consists of four weeks of classes, a certificate, and a network. Every graduate also receives the opportunity to take part in the K‑pop concert project field experience. No extra payment applies.",
+          "The four-week certificate is issued by Dropdown Co., Ltd. to every graduate. A concert project participation letter, issued by Union Pictures, is provided separately to users who actually take part in the concert project. The concert project field experience is operated by Union Pictures, and the schedule, role, and headcount may be adjusted based on operational considerations."
+        ]
+      },
+      {
+        "n": "10",
+        "title": "User obligations",
+        "items": [
+          "You must enter accurate personal information at the time of application.",
+          "Class materials, recordings, and mentoring materials may not be reproduced, distributed, or shared without permission outside of personal study.",
+          "Discrimination, harassment, or defamation directed at fellow students, mentors, or staff may result in immediate removal from the program. In that case, refunds are prorated under the Private Education Act Enforcement Decree (Table 4).",
+          "When taking part in the concert project field experience, you must follow the on-site safety rules and security obligations communicated separately by Union Pictures."
+        ]
+      },
+      {
+        "n": "11",
+        "title": "Company obligations",
+        "items": [
+          "The Company does its best to operate the Site and run the program reliably.",
+          "The Company protects user personal data in accordance with these Terms and the Privacy Policy.",
+          "The Company responds promptly to legitimate user feedback and complaints. If immediate handling is not possible, the Company shares the reason and an expected timeline."
+        ]
+      },
+      {
+        "n": "12",
+        "title": "Intellectual property",
+        "paragraphs": [
+          "All copyrights in class materials, video, text, design, logos, certificate design, and other content provided through the Site or Program belong to the Company and its partner (Union Pictures). Users may not reproduce, transmit, distribute, perform, or display this content outside of personal study."
+        ]
+      },
+      {
+        "n": "13",
+        "title": "Limitation of liability",
+        "items": [
+          "The Company is not liable for class schedule changes or interruptions due to force majeure, including natural disasters, war, government orders, or network failures. In such cases, remaining classes are made up on a separate schedule or refunded proportionally.",
+          "The Company is not liable for class disruptions caused by personal reasons such as visa changes, immigration matters, or academic schedules.",
+          "The Company expressly states that completion of the Program does not guarantee employment, visa extension, certification, or any similar outcome."
+        ]
+      },
+      {
+        "n": "14",
+        "title": "Dispute resolution and governing law",
+        "paragraphs": [
+          "In the event of any dispute arising from these Terms or use of the Program, the Company and the user shall first attempt to resolve it through mutual discussion. If discussion fails, the parties shall first attempt dispute resolution through the Korea Consumer Agency and the Fair Trade Commission. If the dispute remains unresolved, the court with jurisdiction over the location of the Company's head office shall be the court of first instance under the Korean Civil Procedure Act. These Terms are governed by the laws of the Republic of Korea."
+        ]
+      },
+      {
+        "n": "15",
+        "title": "Supplementary provisions",
+        "paragraphs": [
+          "These Terms take effect from {date}."
+        ]
+      }
+    ]
+  }
+}

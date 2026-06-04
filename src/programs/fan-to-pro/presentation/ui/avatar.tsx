@@ -9,7 +9,7 @@ const TINT: Record<Tint, string> = {
 };
 
 /**
- * 멘토·후기 placeholder 아바타.
+ * 멘토/후기 placeholder 아바타.
  * 실사 사진 없이 익명성 유지 + 톤 일관성.
  */
 export function Avatar({
