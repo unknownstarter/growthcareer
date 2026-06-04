@@ -21,7 +21,7 @@
   - ✅ 강사진 8명 재통보 완료 (사용자 수동)
   - 출처: [2026-06-04 코워크 미팅 §13](../research/cowork-partnership-tracking.md)
 
-- **B0006** · 사이트 영문 디폴트화 + 잘 보이는 위치 언어 토글 · status: **approved** · 2026-06-04 captured
+- **B0006** · 사이트 영문 디폴트화 + 잘 보이는 위치 언어 토글 · status: **done** · 2026-06-04 완료
   - 디폴트 locale `en`, 한국어는 `ko` 라우트
   - **헤더 first-fold (우상단 또는 네비)** 에 언어 전환 UI 노출 — 풋터 숨김 금지
   - 카드뉴스/FAQ/약관 다국어 카피 수급 필요 (B0009·B0010 와 연동)
@@ -35,7 +35,7 @@
   - 신청 폼에 카톡 ID 또는 휴대폰 번호 필드 추가 검토
   - 출처: 2026-06-04 코워크 미팅 §13
 
-- **B0008** · CS 카톡 플로팅 버튼 · status: **in-progress** · owner: Luna · 2026-06-04 captured
+- **B0008** · CS 카톡 플로팅 버튼 · status: **done** · 2026-06-04 완료
   - 우측 하단 fixed 단순 anchor → `https://pf.kakao.com/_nxhDGX/chat` 새창. **SDK 불필요**
   - 카카오 옐로우 `#FEE500` + 카톡 아이콘 + aria-label
   - 루트 layout 마운트, 모든 페이지 노출
@@ -57,10 +57,11 @@
   - 영문 FAQ 는 B0006 영문화에서 일괄 처리
   - 출처: 2026-06-04 코워크 미팅 §13
 
-- **B0011** · 모바일 카카오 플로터 ↔ sticky CTA ↔ 콘텐츠 z-index 재정렬 · status: **raw** · 2026-06-04 captured
+- **B0011** · 모바일 카카오 플로터 ↔ sticky CTA ↔ 콘텐츠 z-index 재정렬 · status: **done** · owner: Luna · 2026-06-04 완료
   - Mira Phase 5 검증에서 발견 — mobile-sm (360px) recruitment 첫 카드 / hero 배너 우측이 카카오 노란 버튼과 일시 겹침
-  - 정보 손실 0 (스크롤 시 사라짐) + 한·영 페이지 동일 이슈라 영문화 작업 범위 밖
-  - 권장: 카카오 우하단 16px+ 띄우기 또는 hero/recruitment 영역에서 일시 숨김 토글
+  - 적용: 모바일 한정 사이즈 56→48px 축소 + bottom offset 5rem→6.5rem 상향 (sm+ 는 기존 56px / 5rem 유지)
+  - 결과: recruitment 첫 카드 헤더 / hero 핑크 배너와 겹침 해소. 데스크탑·태블릿 regression 없음
+  - 캡처: `docs/screenshots/i18n/viewport/recruitment-en-mobile-sm.png` `switcher-en-mobile-sm.png` `polish-tablet-*` `polish-desktop-*`
 
 - **B0012** · `middleware → proxy` 컨벤션 마이그레이션 (Next.js 16.2.4 deprecation) · status: **deferred** · 2026-06-04 captured
   - build log 에 `The "middleware" file convention is deprecated. Please use "proxy" instead.` 출력
@@ -68,10 +69,12 @@
   - **블로커**: next-intl 4.14+ 필요 (현재 미발표). 라이브러리 릴리즈 후 작업
   - 출처: B0006 Phase 5 Mira QA
 
-- **B0013** · EN recruitment 헤로 폰트 한 단계 다운 검토 · status: **raw** · 2026-06-04 captured
-  - mobile-sm 에서 `"Four weeks with the real pros."` 5줄 차지 (큰 폰트 의도)
-  - 의도된 디자인이지만 한글 대비 시각 비중 큼 → 디자인 결정 필요
-  - 권장: `clamp()` 한 단계 낮춤 또는 `text-wrap: balance` 만 적용 (현재 적용 안 됨)
+- **B0013** · EN recruitment 헤로 폰트 한 단계 다운 검토 · status: **done** · owner: Luna · 2026-06-04 완료
+  - mobile-sm 에서 영문 헤로 5줄 → **4줄** (`Who can apply` 1줄로 통합)
+  - 적용: `html[lang="en"] .text-display-lg` `font-size: clamp(2.25rem, 8vw, 6.5rem)` + 동일 패턴으로 `text-display-md` 도 한 단계 다운 (`@layer utilities` 에 배치해 Tailwind utility 보다 specificity 우위)
+  - `text-wrap: balance` 는 globals.css 의 `h1,h2,h3` 룰로 이미 전역 적용 중. 별도 추가 불필요
+  - 한글 페이지 무영향 — `lang="ko"` 분기 적용 안 됨. 데스크탑은 clamp 상한이 7→6.5rem 으로 미세하게만 작아짐 (시각 변화 거의 없음)
+  - 캡처: `docs/screenshots/i18n/viewport/recruitment-en-mobile-sm.png` `polish-program-en-360.png` `polish-mentor-en-360.png`
 
 ---
 

@@ -18,12 +18,17 @@ export function KakaoChannelButton() {
         // Sit above the slide-up StickyCTA bar (~72-88px) on fan-to-pro page;
         // on other pages the button just floats a little higher than usual,
         // which is an acceptable trade-off for a single global mount point.
-        bottom: "calc(env(safe-area-inset-bottom, 0px) + 5rem)",
+        // Mobile (default) keeps a bigger gap from the StickyCTA so the
+        // button never grazes the recruitment card header or the hero
+        // pink pill on 360px viewports; sm+ keeps the original 5rem.
+        bottom:
+          "calc(env(safe-area-inset-bottom, 0px) + var(--kakao-floater-offset, 6.5rem))",
       }}
       className="
-        fixed right-5 z-[60]
-        sm:right-6
-        flex h-14 w-14 items-center justify-center
+        fixed right-4 z-[60]
+        sm:right-6 sm:[--kakao-floater-offset:5rem]
+        flex h-12 w-12 items-center justify-center
+        sm:h-14 sm:w-14
         rounded-full shadow-lg shadow-black/40
         ring-1 ring-black/10
         transition-transform duration-200 ease-out
@@ -37,7 +42,7 @@ export function KakaoChannelButton() {
         viewBox="0 0 24 24"
         aria-hidden="true"
         focusable="false"
-        className="h-7 w-7"
+        className="h-6 w-6 sm:h-7 sm:w-7"
       >
         <path
           fill="#181600"

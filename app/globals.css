@@ -102,3 +102,24 @@
   background-color: var(--color-brand-violet);
   color: var(--color-fg);
 }
+
+/* === Locale-scoped display tweaks ===
+   영문 헤드라인은 한글보다 단어가 길어 360px 모바일에서 5줄까지 늘어진다.
+   한글 페이지엔 영향 없게 lang="en" 일 때만 display-lg / display-md 한 단계 다운.
+   utilities layer 에 두어 Tailwind 의 .text-display-lg utility 보다 specificity
+   가 높도록 (html[lang="en"] .x = 0,1,1 > .text-display-lg = 0,1,0). */
+@layer utilities {
+  html[lang="en"] .text-display-lg {
+    /* before: clamp(3rem, 10vw, 7rem)  → 360px 모바일에서 48px (하한)
+       after:  clamp(2.25rem, 8vw, 6.5rem) → 360px 모바일에서 36px (하한)
+       Mira QA 에서 영문 헤로가 5줄까지 늘어진다고 지적. 하한을 25% 낮춰
+       시각적 임팩트는 유지하되 줄 수를 3-4줄로 압축. 데스크탑은 거의 동일. */
+    font-size: clamp(2.25rem, 8vw, 6.5rem);
+  }
+  html[lang="en"] .text-display-md {
+    /* before: clamp(2.25rem, 6vw, 4.5rem) → 360px 모바일 36px
+       after:  clamp(1.75rem, 5vw, 4rem)   → 360px 모바일 28px (하한)
+       capacity strip / 본문 sub-headlines 의 영문 줄바꿈 균형 개선. */
+    font-size: clamp(1.75rem, 5vw, 4rem);
+  }
+}
