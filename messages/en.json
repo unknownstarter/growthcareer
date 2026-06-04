@@ -21,9 +21,9 @@
     },
     "fanToPro": {
       "title": "Fan to Pro, a K‑pop industry career track for international students in Korea",
-      "description": "A K‑pop entertainment industry career track for international students living in Korea. Build a real career on a real K‑pop concert project. 880,000 KRW, first-come-first-served.",
+      "description": "A K‑pop career track for international students in Korea. Build a real career on a real concert project. 880,000 KRW.",
       "ogTitle": "Fan to Pro, a K‑pop industry career track for international students in Korea",
-      "ogDescription": "A K‑pop entertainment industry career track for international students living in Korea. Build a real career on a real K‑pop concert project. 880,000 KRW, first-come-first-served.",
+      "ogDescription": "A K‑pop career track for international students in Korea. Build a real career on a real concert project. 880,000 KRW.",
       "ogAlt": "Fan to Pro, a hands-on industry training program you cannot find anywhere else",
       "siteName": "Growth Career"
     },
@@ -43,10 +43,10 @@
       "audience": "FOR INTERNATIONAL STUDENTS IN KOREA"
     },
     "headline": { "first": "FAN.", "connector": "to", "second": "PRO." },
-    "subtitleA": "A K‑pop industry career track for",
+    "subtitleA": "A K‑pop career track for",
     "subtitleEmphasisA": "international students",
-    "subtitleB": "living in Korea.",
-    "subtitleEmphasisB": "A real K‑pop concert project",
+    "subtitleB": "in Korea.",
+    "subtitleEmphasisB": "A real concert project",
     "subtitleC": "puts your name on the record.",
     "tuition": {
       "label": "Tuition",
@@ -323,7 +323,7 @@
     "headlineLine1": "Four weeks",
     "headlineLine2": "with the real pros.",
     "headlineLine3": "Who can apply",
-    "intro1": "A four-week weekend program designed for international students who are serious about breaking into the K‑pop entertainment industry.",
+    "intro1": "A four-week weekend program for international students breaking into K‑pop.",
     "introEmphasis": "All four criteria",
     "intro2": "below must be met to apply.",
     "requiredLabel": "Required",
@@ -608,7 +608,7 @@
   "footer": {
     "brandHeadline": "GROWTH CAREER",
     "brandEyebrow": "Fan to Pro, K-Entertainment Track",
-    "brandTagline": "An international student bootcamp built to break into the Korean entertainment industry. Build a real career on a real K‑pop concert project.",
+    "brandTagline": "An international student bootcamp to break into K‑pop. Build a real career on a real concert project.",
     "poweredBy": "Powered by Dropdown",
     "navLabel": "Navigate",
     "navItems": [
