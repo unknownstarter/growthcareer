@@ -69,6 +69,20 @@
   - **블로커**: next-intl 4.14+ 필요 (현재 미발표). 라이브러리 릴리즈 후 작업
   - 출처: B0006 Phase 5 Mira QA
 
+- **B0014** · Hash anchor scroll 본질 검증 + cold visit fix · status: **in-progress** · owner: Luna · 2026-06-04 captured
+  - 외부 마케팅 (Cowork 카드뉴스·이메일·광고) 에서 `growthcareer.xyz/fan-to-pro#apply` cold 진입 시 hash 점프 동작 검증 필요
+  - 검증: Playwright cold visit 시뮬레이션 + viewport scroll y-position 측정
+  - fix 안: `scroll-behavior: smooth` + 섹션 `scroll-margin-top` + 필요시 layout useEffect
+  - Mira preview 도구 (`tools/preview-i18n.mjs`) timing fix 도 함께
+
+- **B0016** · 섹션 impression GA4 추적 · status: **in-progress** · owner: Luna · 2026-06-04 captured
+  - 목적: Cowork 마케팅 시작 전 funnel 추적 인프라 구축. 1기 마감(6/21) 전 데이터 수집
+  - 발화 정책: 첫 진입 1회 (impression 표준) / threshold 50% / debounce 500ms / 1회 dedup
+  - 이벤트: `section_view` (GA4 커스텀) · 파라미터: `section_id`, `section_name`, `section_order`, `locale`, `page_path`
+  - 구현: `useSectionImpression` hook 신규 (IntersectionObserver 기반) + Section 컴포넌트 enhance + 모든 섹션 적용
+  - GA4 셋업 이미 있음 (`NEXT_PUBLIC_GA_ID = G-6N0R68CH0D`)
+  - 검증: GA4 DebugView 또는 console wrapper
+
 - **B0013** · EN recruitment 헤로 폰트 한 단계 다운 검토 · status: **done** · owner: Luna · 2026-06-04 완료
   - mobile-sm 에서 영문 헤로 5줄 → **4줄** (`Who can apply` 1줄로 통합)
   - 적용: `html[lang="en"] .text-display-lg` `font-size: clamp(2.25rem, 8vw, 6.5rem)` + 동일 패턴으로 `text-display-md` 도 한 단계 다운 (`@layer utilities` 에 배치해 Tailwind utility 보다 specificity 우위)

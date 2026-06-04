@@ -26,7 +26,7 @@ export function ValueCards() {
   const items = t.raw("items") as Item[];
 
   return (
-    <Section tone="bg">
+    <Section id="value" tone="bg" trackingName="Value Cards" trackingOrder={4}>
       <Container>
         <Eyebrow n="03">{t("eyebrow")}</Eyebrow>
 

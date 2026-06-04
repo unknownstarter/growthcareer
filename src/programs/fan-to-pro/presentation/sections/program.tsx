@@ -16,7 +16,7 @@ export function Program() {
   const phases = t.raw("phases") as Phase[];
 
   return (
-    <Section id="program" tone="bg">
+    <Section id="program" tone="bg" trackingName="Program" trackingOrder={8}>
       <Container>
         <Eyebrow n="07">{t("eyebrow")}</Eyebrow>
 

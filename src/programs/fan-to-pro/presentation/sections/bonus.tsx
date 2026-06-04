@@ -10,7 +10,7 @@ export function Bonus() {
   const perks = t.raw("items") as Perk[];
 
   return (
-    <Section tone="surface">
+    <Section id="bonus" tone="surface" trackingName="Bonus" trackingOrder={11}>
       <Container>
         <Eyebrow n="10">{t("eyebrow")}</Eyebrow>
 

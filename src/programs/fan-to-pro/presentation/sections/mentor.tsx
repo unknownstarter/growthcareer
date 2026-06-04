@@ -20,7 +20,7 @@ export function Mentor() {
   const tCommon = useTranslations("common");
 
   return (
-    <Section id="mentor" tone="surface">
+    <Section id="mentor" tone="surface" trackingName="Mentor" trackingOrder={7}>
       <Container>
         <Eyebrow n="06">{t("eyebrow")}</Eyebrow>
 

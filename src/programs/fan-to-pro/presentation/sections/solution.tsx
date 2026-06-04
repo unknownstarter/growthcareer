@@ -8,7 +8,7 @@ export function Solution() {
   const points = t.raw("points") as string[];
 
   return (
-    <Section tone="purple">
+    <Section id="solution" tone="purple" trackingName="Solution" trackingOrder={3}>
       <Container>
         <Eyebrow n="02">{t("eyebrow")}</Eyebrow>
 

@@ -12,7 +12,7 @@ export function Outcome() {
   const gallery = t.raw("gallery") as GalleryItem[];
 
   return (
-    <Section tone="bg">
+    <Section id="outcome" tone="bg" trackingName="Outcome" trackingOrder={5}>
       <Container>
         <Eyebrow n="04">{t("eyebrow")}</Eyebrow>
 

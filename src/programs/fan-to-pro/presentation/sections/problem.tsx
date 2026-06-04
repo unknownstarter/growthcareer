@@ -10,7 +10,7 @@ export function Problem() {
   const items = t.raw("items") as Item[];
 
   return (
-    <Section tone="indigo">
+    <Section id="problem" tone="indigo" trackingName="Problem" trackingOrder={2}>
       <Container>
         <Eyebrow n="01">{t("eyebrow")}</Eyebrow>
 

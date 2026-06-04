@@ -16,7 +16,7 @@ export function Recruitment() {
   const items = t.raw("items") as Qualification[];
 
   return (
-    <Section id="recruitment" tone="violet">
+    <Section id="recruitment" tone="violet" trackingName="Recruitment" trackingOrder={12}>
       <Container>
         <Eyebrow n="11">{t("eyebrow")}</Eyebrow>
 

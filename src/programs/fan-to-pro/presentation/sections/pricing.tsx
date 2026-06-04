@@ -4,6 +4,7 @@ import {
   discountRate,
   formatKRW,
 } from "@/src/programs/fan-to-pro/domain/pricing";
+import { SectionTracker } from "../components/section-tracker";
 import { Button } from "../ui/button";
 import { Container } from "../ui/container";
 import { Eyebrow } from "../ui/eyebrow";
@@ -18,7 +19,8 @@ export function Pricing() {
   ) as string[];
 
   return (
-    <section className="section-pink px-6 py-28 sm:px-10 sm:py-36">
+    <section id="pricing" className="section-pink px-6 py-28 sm:px-10 sm:py-36">
+      <SectionTracker sectionId="pricing" sectionName="Pricing" sectionOrder={13} />
       <Container>
         <Eyebrow n="12">{t("eyebrow")}</Eyebrow>
 

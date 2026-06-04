@@ -153,7 +153,7 @@ export function ApplyForm() {
 
   if (state.status === "ok" || state.status === "ok_local") {
     return (
-      <Section id="apply" tone="bg">
+      <Section id="apply" tone="bg" trackingName="Apply Form" trackingOrder={15}>
         <Container>
           <Eyebrow n="14">{t("eyebrow")}</Eyebrow>
           <SuccessBlock id={state.id} email={step1.email} name={step1.name} />
@@ -187,7 +187,7 @@ export function ApplyForm() {
   };
 
   return (
-    <Section id="apply" tone="surface">
+    <Section id="apply" tone="surface" trackingName="Apply Form" trackingOrder={15}>
       <Container>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Eyebrow n="14">{t("eyebrow")}</Eyebrow>

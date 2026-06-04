@@ -10,7 +10,7 @@ export function Guarantees() {
   const items = t.raw("items") as Guarantee[];
 
   return (
-    <Section tone="indigo">
+    <Section id="guarantees" tone="indigo" trackingName="Guarantees" trackingOrder={10}>
       <Container>
         <Eyebrow n="09">{t("eyebrow")}</Eyebrow>
 

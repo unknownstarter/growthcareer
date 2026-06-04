@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { PRICING, formatKRW } from "@/src/programs/fan-to-pro/domain/pricing";
+import { SectionTracker } from "../components/section-tracker";
 import { Button } from "../ui/button";
 import { Container } from "../ui/container";
 import { ScarcityBadge } from "../ui/scarcity-badge";
@@ -14,7 +15,8 @@ export function Hero() {
   const visaItems = t.raw("visa.items") as string[];
 
   return (
-    <section className="relative flex min-h-screen flex-col justify-center overflow-hidden bg-bg">
+    <section id="hero" className="relative flex min-h-screen flex-col justify-center overflow-hidden bg-bg">
+      <SectionTracker sectionId="hero" sectionName="Hero" sectionOrder={1} />
       {/* Background — performer back-to-camera + crowd, b/w with dark gradient. */}
       <div className="absolute inset-0 z-0">
         <Image

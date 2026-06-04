@@ -10,7 +10,7 @@ export function FAQ() {
   const items = t.raw("items") as FAQItem[];
 
   return (
-    <Section id="faq" tone="bg">
+    <Section id="faq" tone="bg" trackingName="FAQ" trackingOrder={14}>
       <Container>
         <Eyebrow n="13">{t("eyebrow")}</Eyebrow>
 

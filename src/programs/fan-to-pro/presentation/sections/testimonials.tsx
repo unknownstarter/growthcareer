@@ -19,7 +19,7 @@ export function Testimonials() {
   const ageSuffix = t("ageSuffix");
 
   return (
-    <Section id="testimonials" tone="surface">
+    <Section id="testimonials" tone="surface" trackingName="Testimonials" trackingOrder={6}>
       <Container>
         <Eyebrow n="05">{t("eyebrow")}</Eyebrow>
 

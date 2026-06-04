@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { SectionTracker } from "../components/section-tracker";
 import { Container } from "../ui/container";
 import { Eyebrow } from "../ui/eyebrow";
 import { StatCard } from "../ui/stat-card";
@@ -11,7 +12,8 @@ export function SocialProof() {
   const stats = t.raw("stats") as Stat[];
 
   return (
-    <section className="relative overflow-hidden bg-bg text-fg">
+    <section id="social-proof" className="relative overflow-hidden bg-bg text-fg">
+      <SectionTracker sectionId="social-proof" sectionName="Social Proof" sectionOrder={9} />
       <div className="absolute inset-0 z-0">
         <Image
           src="/images/stock/korean-concert-audience-1.jpg"
