@@ -16,7 +16,7 @@
  *   PREVIEW_BASE_URL=http://localhost:3000 pnpm preview
  */
 import { spawn } from "node:child_process";
-import { mkdir, rm } from "node:fs/promises";
+import { mkdir, readdir, rm, stat } from "node:fs/promises";
 import { setTimeout as sleep } from "node:timers/promises";
 import path from "node:path";
 import { chromium } from "playwright";
@@ -74,9 +74,22 @@ async function ensureServer() {
   return { baseUrl, spawned: proc };
 }
 
+async function clearOutDirFiles(dir) {
+  // Only delete top-level files; preserve subdirectories so curated
+  // artifacts (e.g. docs/screenshots/kowork) survive preview runs.
+  await mkdir(dir, { recursive: true });
+  const entries = await readdir(dir);
+  await Promise.all(
+    entries.map(async (name) => {
+      const full = path.join(dir, name);
+      const st = await stat(full);
+      if (st.isFile()) await rm(full, { force: true });
+    }),
+  );
+}
+
 async function main() {
-  await rm(OUT_DIR, { recursive: true, force: true });
-  await mkdir(OUT_DIR, { recursive: true });
+  await clearOutDirFiles(OUT_DIR);
 
   const { baseUrl, spawned } = await ensureServer();
   const cleanup = () => {
