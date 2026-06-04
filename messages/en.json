@@ -42,7 +42,11 @@
       "scarcity": "Limited seats",
       "audience": "FOR INTERNATIONAL STUDENTS IN KOREA"
     },
-    "headline": { "first": "FAN.", "connector": "to", "second": "PRO." },
+    "headline": {
+      "first": "FAN.",
+      "connector": "to",
+      "second": "PRO."
+    },
     "subtitleA": "A K‑pop career track for",
     "subtitleEmphasisA": "international students",
     "subtitleB": "in Korea.",
@@ -56,12 +60,17 @@
     "features": [
       "Four weekends. Eight live sessions taught by working pros.",
       "Certificate issued by Dropdown Co., Ltd.",
-      "Network with three working mentors and your cohort",
+      "Network with three working mentors and your classmates",
       "Every graduate gets hands-on time at a real K‑pop concert"
     ],
     "visa": {
       "label": "Eligible visas",
-      "items": ["D‑2", "D‑4", "D‑10", "E‑series"]
+      "items": [
+        "D‑2",
+        "D‑4",
+        "D‑10",
+        "E‑series"
+      ]
     }
   },
   "problem": {
@@ -119,7 +128,7 @@
         "number": "03",
         "en": "NETWORK",
         "kr": "Industry network",
-        "body": "Three working mentors, your cohort, and a K‑pop entertainment certificate. The KakaoTalk open chat keeps going long after the season ends."
+        "body": "Three working mentors, your classmates, and a K‑pop entertainment certificate. The KakaoTalk open chat keeps going long after the season ends."
       }
     ]
   },
@@ -130,14 +139,26 @@
     "items": [
       "Full K‑pop concert participation. Photos, video, and show data become your assets.",
       "Résumé, portfolio, and interview patterns. The way to win over recruiters.",
-      "Three working mentors and a cohort network. KakaoTalk open chat valid for life.",
+      "Three working mentors and a class network. KakaoTalk open chat valid for life.",
       "A job-experience letter. One line on your résumé that signals trust."
     ],
     "gallery": [
-      { "src": "/images/stock/concert-stage-from-behind-performer-3.jpg", "caption": "Live show" },
-      { "src": "/images/stock/concert-stage-from-behind-performer-4.jpg", "caption": "With the crowd" },
-      { "src": "/images/stock/stage-lights-purple-pink-3.jpg", "caption": "Stage setup" },
-      { "src": "/images/stock/male-singer-silhouette-stage-1.jpg", "caption": "Rehearsal details" }
+      {
+        "src": "/images/stock/concert-stage-from-behind-performer-3.jpg",
+        "caption": "Live show"
+      },
+      {
+        "src": "/images/stock/concert-stage-from-behind-performer-4.jpg",
+        "caption": "With the crowd"
+      },
+      {
+        "src": "/images/stock/stage-lights-purple-pink-3.jpg",
+        "caption": "Stage setup"
+      },
+      {
+        "src": "/images/stock/male-singer-silhouette-stage-1.jpg",
+        "caption": "Rehearsal details"
+      }
     ],
     "disclaimer": "* Images are mood references only. Photos from your actual season will be shared after the program starts."
   },
@@ -189,7 +210,7 @@
         "age": 28,
         "nationality": "Russia",
         "aspiration": "Entertainment marketing",
-        "quote": "My cohort still shares industry tips daily on KakaoTalk. We got closer after the season ended."
+        "quote": "My classmates still share industry tips daily on KakaoTalk. We got closer after the season ended."
       },
       {
         "id": "t-06",
@@ -226,7 +247,7 @@
         "n": "01",
         "title": "Class",
         "kr": "Four weeks of live industry sessions",
-        "body": "Weekend cohort on Saturday and Sunday, eight sessions over four weeks. Saturdays cover concert production structure, music direction, playback and timecode, and on-site execution. Sundays compress the music business, A&R, label strategy, and visual direction into Korean-language sessions."
+        "body": "Weekend class on Saturday and Sunday, eight sessions over four weeks. Saturdays cover concert production structure, music direction, playback and timecode, and on-site execution. Sundays compress the music business, A&R, label strategy, and visual direction into Korean-language sessions."
       },
       {
         "n": "02",
@@ -254,10 +275,26 @@
     "headlineLine1": "The numbers",
     "headlineEmphasis": "behind it.",
     "stats": [
-      { "value": "300+ shows", "label": "Concerts produced", "hint": "Across all seasons run by the operating team (still counting)" },
-      { "value": "50,000+ fans", "label": "Total audience", "hint": "Across all past seasons" },
-      { "value": "3 mentors", "label": "Working pros", "hint": "Sound director, visual director, networking lead" },
-      { "value": "4.9 / 5.0", "label": "Student satisfaction", "hint": "Past cohort end-of-program survey (N=30)" }
+      {
+        "value": "300+",
+        "label": "Concerts produced",
+        "hint": "Across all seasons run by the operating team (still counting)"
+      },
+      {
+        "value": "50,000+",
+        "label": "Total audience",
+        "hint": "Across all past seasons"
+      },
+      {
+        "value": "3",
+        "label": "Working pros",
+        "hint": "Sound director, visual director, networking lead"
+      },
+      {
+        "value": "4.9 / 5.0",
+        "label": "Student satisfaction",
+        "hint": "Past class end-of-program survey (N=30)"
+      }
     ],
     "disclaimer": "* Exact figures are private. Individual concerts and artist-identifying details are withheld for protection."
   },
@@ -266,7 +303,6 @@
     "headlineLine1": "Three",
     "headlineLine2": "guarantees.",
     "intro": "We only promise what stays with you after the season ends. Real deliverables, not marketing copy.",
-    "promiseLabel": "Guaranteed.",
     "items": [
       {
         "id": "portfolio",
@@ -276,7 +312,7 @@
       {
         "id": "network",
         "title": "Industry network",
-        "body": "Three working mentors and your cohort. The KakaoTalk open chat keeps going after the season."
+        "body": "Three working mentors and your classmates. The KakaoTalk open chat keeps going after the season."
       },
       {
         "id": "certificate",
@@ -294,7 +330,7 @@
     "items": [
       {
         "title": "KakaoTalk open chat",
-        "body": "Join the cohort and mentor group chat as soon as your seat is confirmed. Valid for life after the season ends."
+        "body": "Join the class and mentor group chat as soon as your seat is confirmed. Valid for life after the season ends."
       },
       {
         "title": "1:1 mentor sessions",
@@ -314,7 +350,7 @@
       },
       {
         "title": "Alumni network",
-        "body": "Connects you with your cohort, future cohorts, and the operating mentor line. The door into the industry."
+        "body": "Connects you with your classmates, future classes, and the operating mentor line. The door into the industry."
       }
     ]
   },
@@ -331,22 +367,37 @@
       {
         "title": "Foreign-national students or job seekers",
         "body": "A program for foreign nationals currently living in Korea. Any nationality is welcome.",
-        "chips": ["Any nationality", "Resident in Korea"]
+        "chips": [
+          "Any nationality",
+          "Resident in Korea"
+        ]
       },
       {
         "title": "Student or work visa holder",
         "body": "You need legal status to stay in Korea, such as D‑2 or D‑4 (student), D‑10 (job-seeker), or E‑series (employment). We confirm visa status during the application.",
-        "chips": ["D‑2", "D‑4", "D‑10", "E‑series"]
+        "chips": [
+          "D‑2",
+          "D‑4",
+          "D‑10",
+          "E‑series"
+        ]
       },
       {
         "title": "Can follow Korean-language lectures",
         "body": "All sessions are delivered in Korean. No formal test score is required, but you must be comfortable enough in Korean to follow the lectures.",
-        "chips": ["Korean lectures", "No TOPIK required"]
+        "chips": [
+          "Korean lectures",
+          "No TOPIK required"
+        ]
       },
       {
         "title": "Available for four weekends",
         "body": "Eight sessions across Saturdays and Sundays make up the core program. Every graduate also gets hands-on time at a real K‑pop concert.",
-        "chips": ["Sat and Sun", "4 weeks, 8 sessions", "Concert access for all"]
+        "chips": [
+          "Sat and Sun",
+          "4 weeks, 8 sessions",
+          "Concert access for all"
+        ]
       }
     ],
     "schedule": {
@@ -362,9 +413,9 @@
     },
     "capacity": {
       "eyebrow": "Capacity",
-      "lineTemplateA": "Cohort size",
+      "lineTemplateA": "Class size",
       "lineTemplateB": "students, first-come-first-served",
-      "noteTemplate": "If fewer than {min} students by {cutoff}, the cohort is canceled and full refunds are issued automatically."
+      "noteTemplate": "If fewer than {min} students by {cutoff}, the class is canceled and full refunds are issued automatically."
     }
   },
   "pricing": {
@@ -380,12 +431,12 @@
     "vatNote": "VAT included. One payment per person. No installments.",
     "cta": "Reserve your seat →",
     "bullets": [
-      "Cohort full? You join the waitlist for the next round immediately",
+      "Class full? You join the waitlist for the next round immediately",
       "Seats confirmed in order of bank transfer received",
       "100% refund within 7 days of payment or before the program starts",
       "KakaoTalk open chat auto-add after payment is confirmed"
     ],
-    "footnote": "* This cohort enrolls a total of 30 students. If fewer than 20 students have paid by midnight on Sunday, June 21, 2026, the cohort is canceled and all payments are automatically refunded in full before the next cohort opens.",
+    "footnote": "* This class enrolls a total of 30 students. If fewer than 20 students have paid by midnight on Sunday, June 21, 2026, the class is canceled and all payments are automatically refunded in full before the next class opens.",
     "paymentSide": {
       "methodLabel": "Payment method",
       "methodTitleA": "Bank transfer",
@@ -420,15 +471,15 @@
       },
       {
         "q": "What is the refund policy?",
-        "a": "100% refund within 7 days of payment or before the program starts. After the program starts, refunds follow the Korean Private Education Act Enforcement Decree (Table 4) and the Fair Trade Commission consumer dispute guidelines: 2/3 before 1/3 of the program, 1/2 before halfway, no refund after halfway. This cohort recruits 30 students, and if fewer than 20 have paid by the deadline (Sunday, June 21, 2026, midnight), the cohort is canceled, all payments are refunded in full automatically, and we re-open recruitment for the next cohort."
+        "a": "100% refund within 7 days of payment or before the program starts. After the program starts, refunds follow the Korean Private Education Act Enforcement Decree (Table 4) and the Fair Trade Commission consumer dispute guidelines: 2/3 before 1/3 of the program, 1/2 before halfway, no refund after halfway. This class recruits 30 students, and if fewer than 20 have paid by the deadline (Sunday, June 21, 2026, midnight), the class is canceled, all payments are refunded in full automatically, and we re-open recruitment for the next class."
       },
       {
         "q": "How does payment work?",
         "a": "Bank transfer only (domestic KRW). Credit cards and foreign-issued cards are not supported. After you submit the application form, you receive a confirmation email within 24 hours with the bank details (account holder: Dropdown Co., Ltd., Toss Bank 1002-4759-1521)."
       },
       {
-        "q": "How many seats are there in each cohort?",
-        "a": "Each cohort runs with a small group to keep the mentor-to-student ratio tight. Once seats are full, applications close immediately and the rest of the queue rolls into the next cohort."
+        "q": "How many seats are there in each class?",
+        "a": "Each class runs with a small group to keep the mentor-to-student ratio tight. Once seats are full, applications close immediately and the rest of the queue rolls into the next class."
       },
       {
         "q": "Where does the certificate come from?",
@@ -443,8 +494,8 @@
         "a": "Yes. Every graduate gets hands-on time at a real K‑pop concert. No extra payment, and the schedule is separate from the four weeks of classes. After you confirm interest, schedule, role, and headcount are matched. Those who actually work the show receive a concert project participation letter issued by Union Pictures."
       },
       {
-        "q": "Will I stay in touch with my cohort and mentors after the program?",
-        "a": "Yes. The moment your seat is confirmed, you join the KakaoTalk open chat, and it stays open for life. Future cohorts join too, so the alumni network keeps growing."
+        "q": "Will I stay in touch with my class and mentors after the program?",
+        "a": "Yes. The moment your seat is confirmed, you join the KakaoTalk open chat, and it stays open for life. Future classes join too, so the alumni network keeps growing."
       },
       {
         "q": "Is a job guaranteed?",
@@ -463,7 +514,7 @@
     "leadA": "{price}, two hours each Saturday and Sunday for four weeks. Seats are confirmed in the order bank transfers are received.",
     "leadB": "A payment email is sent within 24 hours of form submission.",
     "attendanceCommitment": "I agree to attend this program, which runs from Saturday, June 27, 2026 through Sunday, July 19, 2026, with two hours each on Saturdays and Sundays for a total of eight sessions.",
-    "contentUseNote": "Once your enrollment is complete, you agree that the video and photos captured during this program may be used by Growth Career, Dropdown Co., Ltd., DEEPI, and Union Pictures for (1) program promotion, (2) recruiting content for future cohorts, and (3) your own portfolio. If you object, tell the operations team and your face will be post-processed or blurred before any use.",
+    "contentUseNote": "Once your enrollment is complete, you agree that the video and photos captured during this program may be used by Growth Career, Dropdown Co., Ltd., DEEPI, and Union Pictures for (1) program promotion, (2) recruiting content for future classes, and (3) your own portfolio. If you object, tell the operations team and your face will be post-processed or blurred before any use.",
     "audienceBanner": {
       "badge": "For International Students",
       "bodyA": "This program is for",
@@ -553,7 +604,7 @@
       },
       "marketing": {
         "label": "Consent to marketing communications (optional)",
-        "body": "We send next-cohort recruiting and discount notices, plus industry event news, by email and KakaoTalk. Declining does not affect your application, and you can opt out at any time."
+        "body": "We send next-class recruiting and discount notices, plus industry event news, by email and KakaoTalk. Declining does not affect your application, and you can opt out at any time."
       },
       "requiredBadge": "Required",
       "optionalBadge": "Optional"
@@ -612,28 +663,73 @@
     "poweredBy": "Powered by Dropdown",
     "navLabel": "Navigate",
     "navItems": [
-      { "label": "Program", "href": "#program" },
-      { "label": "Mentors", "href": "#mentor" },
-      { "label": "Voices", "href": "#testimonials" },
-      { "label": "FAQ", "href": "#faq" },
-      { "label": "Apply", "href": "#apply" }
+      {
+        "label": "Program",
+        "href": "#program"
+      },
+      {
+        "label": "Mentors",
+        "href": "#mentor"
+      },
+      {
+        "label": "Voices",
+        "href": "#testimonials"
+      },
+      {
+        "label": "FAQ",
+        "href": "#faq"
+      },
+      {
+        "label": "Apply",
+        "href": "#apply"
+      }
     ],
     "policyLabel": "Policy",
     "policyItems": [
-      { "label": "Refund policy", "href": "/terms#refund-policy" },
-      { "label": "Payment", "href": "/terms#payment" },
-      { "label": "Privacy Policy", "href": "/privacy" },
-      { "label": "Terms of Service", "href": "/terms" }
+      {
+        "label": "Refund policy",
+        "href": "/terms#refund-policy"
+      },
+      {
+        "label": "Payment",
+        "href": "/terms#payment"
+      },
+      {
+        "label": "Privacy Policy",
+        "href": "/privacy"
+      },
+      {
+        "label": "Terms of Service",
+        "href": "/terms"
+      }
     ],
     "partnerLabel": "Official Partner",
     "partnerAriaLabel": "DEEPI official partner (opens deepishop.com in a new tab)",
     "business": {
-      "company": { "label": "Company", "value": "Dropdown Co., Ltd." },
-      "ceo": { "label": "Representative", "value": "Hwang Jae-ha" },
-      "bizNo": { "label": "Business registration", "value": "154-28-02110" },
-      "ecommerceNo": { "label": "E-commerce registration", "value": "No. 2026-Seoul Songpa-0882" },
-      "address": { "label": "Address", "value": "201-J554, 2F, 207 Jungdae-ro, Songpa-gu, Seoul, Republic of Korea (Garak-dong, Daemyung Building)" },
-      "email": { "label": "Email", "value": "hello@dropdown.xyz" }
+      "company": {
+        "label": "Company",
+        "value": "Dropdown Co., Ltd."
+      },
+      "ceo": {
+        "label": "Representative",
+        "value": "Hwang Jae-ha"
+      },
+      "bizNo": {
+        "label": "Business registration",
+        "value": "154-28-02110"
+      },
+      "ecommerceNo": {
+        "label": "E-commerce registration",
+        "value": "No. 2026-Seoul Songpa-0882"
+      },
+      "address": {
+        "label": "Address",
+        "value": "201-J554, 2F, 207 Jungdae-ro, Songpa-gu, Seoul, Republic of Korea (Garak-dong, Daemyung Building)"
+      },
+      "email": {
+        "label": "Email",
+        "value": "hello@dropdown.xyz"
+      }
     },
     "copyright": "© {year} Dropdown. All rights reserved."
   },
@@ -705,11 +801,27 @@
         "paragraphs": [
           "To provide stable services, the Company outsources personal data processing to the following parties. The Company specifies the items required for safe processing in accordance with Article 26 of the Personal Information Protection Act."
         ],
-        "tableHeaders": ["Processor", "Outsourced work", "Location"],
+        "tableHeaders": [
+          "Processor",
+          "Outsourced work",
+          "Location"
+        ],
         "tableRows": [
-          ["Supabase Inc.", "Database hosting, applicant data storage", "Seoul (ap-northeast-2)"],
-          ["Vercel Inc.", "Website hosting, serverless function execution", "Global CDN"],
-          ["Union Pictures", "Concert project matching and issuance of the concert project participation letter to actual participants", "Republic of Korea"]
+          [
+            "Supabase Inc.",
+            "Database hosting, applicant data storage",
+            "Seoul (ap-northeast-2)"
+          ],
+          [
+            "Vercel Inc.",
+            "Website hosting, serverless function execution",
+            "Global CDN"
+          ],
+          [
+            "Union Pictures",
+            "Concert project matching and issuance of the concert project participation letter to actual participants",
+            "Republic of Korea"
+          ]
         ]
       },
       {
@@ -850,7 +962,7 @@
           "Orientation and class schedule are announced"
         ],
         "paragraphs": [
-          "Seats are confirmed in the order bank transfers are received. Once the cohort is full, applications automatically roll over to the next cohort waitlist."
+          "Seats are confirmed in the order bank transfers are received. Once the class is full, applications automatically roll over to the next class waitlist."
         ]
       },
       {
@@ -872,20 +984,38 @@
           "This refund policy follows the Korean Private Education Act Enforcement Decree (Table 4) and the Fair Trade Commission consumer dispute guidelines (education services). It also expressly preserves the right of withdrawal under Article 17 of the Act on Consumer Protection in Electronic Commerce.",
           "Refund requests should be sent to hello@dropdown.xyz. After identity verification, refunds are processed to an account in your own name within 7 business days. Refund remittance fees are covered by the Company."
         ],
-        "tableHeaders": ["Timing", "Refund rate"],
+        "tableHeaders": [
+          "Timing",
+          "Refund rate"
+        ],
         "tableRows": [
-          ["Within 7 days of payment", "100%"],
-          ["Before the program starts", "100%"],
-          ["Before 1/3 of the program elapses", "2/3 refund"],
-          ["Before 1/2 of the program elapses", "1/2 refund"],
-          ["After 1/2 of the program elapses", "No refund"]
+          [
+            "Within 7 days of payment",
+            "100%"
+          ],
+          [
+            "Before the program starts",
+            "100%"
+          ],
+          [
+            "Before 1/3 of the program elapses",
+            "2/3 refund"
+          ],
+          [
+            "Before 1/2 of the program elapses",
+            "1/2 refund"
+          ],
+          [
+            "After 1/2 of the program elapses",
+            "No refund"
+          ]
         ]
       },
       {
         "n": "08",
-        "title": "Automatic cancellation if the cohort does not fill",
+        "title": "Automatic cancellation if the class does not fill",
         "paragraphs": [
-          "This cohort recruits a total of 30 students. If fewer than 20 students have paid by the application deadline of midnight on Sunday, June 21, 2026, the Company cancels the cohort and automatically refunds all payments in full. Refund remittance fees are covered by the Company."
+          "This class recruits a total of 30 students. If fewer than 20 students have paid by the application deadline of midnight on Sunday, June 21, 2026, the Company cancels the class and automatically refunds all payments in full. Refund remittance fees are covered by the Company."
         ]
       },
       {

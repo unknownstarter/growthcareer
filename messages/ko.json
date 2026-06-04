@@ -42,7 +42,11 @@
       "scarcity": "선착순 마감",
       "audience": "FOR INTERNATIONAL STUDENTS IN KOREA"
     },
-    "headline": { "first": "FAN.", "connector": "to", "second": "PRO." },
+    "headline": {
+      "first": "FAN.",
+      "connector": "to",
+      "second": "PRO."
+    },
     "subtitleA": "한국 거주",
     "subtitleEmphasisA": "외국인 유학생",
     "subtitleB": "을 위한 K‑pop 엔터테인먼트 직무 취업 트랙",
@@ -61,7 +65,12 @@
     ],
     "visa": {
       "label": "수강 자격 비자",
-      "items": ["D‑2", "D‑4", "D‑10", "E‑시리즈"]
+      "items": [
+        "D‑2",
+        "D‑4",
+        "D‑10",
+        "E‑시리즈"
+      ]
     }
   },
   "problem": {
@@ -134,10 +143,22 @@
       "직무 경험 증명서. 이력서에 한 줄로 쓸 수 있는 신뢰 신호."
     ],
     "gallery": [
-      { "src": "/images/stock/concert-stage-from-behind-performer-3.jpg", "caption": "공연 현장" },
-      { "src": "/images/stock/concert-stage-from-behind-performer-4.jpg", "caption": "관객과의 호흡" },
-      { "src": "/images/stock/stage-lights-purple-pink-3.jpg", "caption": "무대 셋업" },
-      { "src": "/images/stock/male-singer-silhouette-stage-1.jpg", "caption": "리허설 디테일" }
+      {
+        "src": "/images/stock/concert-stage-from-behind-performer-3.jpg",
+        "caption": "공연 현장"
+      },
+      {
+        "src": "/images/stock/concert-stage-from-behind-performer-4.jpg",
+        "caption": "관객과의 호흡"
+      },
+      {
+        "src": "/images/stock/stage-lights-purple-pink-3.jpg",
+        "caption": "무대 셋업"
+      },
+      {
+        "src": "/images/stock/male-singer-silhouette-stage-1.jpg",
+        "caption": "리허설 디테일"
+      }
     ],
     "disclaimer": "* 이미지는 분위기 참고용. 실제 본 시즌 공연 사진은 수강 시작 후 공유."
   },
@@ -254,10 +275,26 @@
     "headlineLine1": "수치로 보여주는",
     "headlineEmphasis": "진짜.",
     "stats": [
-      { "value": "+300건", "label": "누적 공연 진행", "hint": "운영팀 누적 시즌 기준 (집계 중)" },
-      { "value": "+50,000명", "label": "누적 관객", "hint": "전 시즌 합산" },
-      { "value": "3인", "label": "현직 멘토", "hint": "음향감독, 비주얼디렉터, 네트워킹" },
-      { "value": "4.9 / 5.0", "label": "수강생 만족도", "hint": "이전 강의 종료 설문 (N=30)" }
+      {
+        "value": "+300건",
+        "label": "누적 공연 진행",
+        "hint": "운영팀 누적 시즌 기준 (집계 중)"
+      },
+      {
+        "value": "+50,000명",
+        "label": "누적 관객",
+        "hint": "전 시즌 합산"
+      },
+      {
+        "value": "3인",
+        "label": "현직 멘토",
+        "hint": "음향감독, 비주얼디렉터, 네트워킹"
+      },
+      {
+        "value": "4.9 / 5.0",
+        "label": "수강생 만족도",
+        "hint": "이전 강의 종료 설문 (N=30)"
+      }
     ],
     "disclaimer": "* 정확한 수치는 비공개. 개별 공연과 아티스트 식별 정보는 보호를 위해 비공개합니다."
   },
@@ -266,7 +303,6 @@
     "headlineLine1": "3가지",
     "headlineLine2": "보장.",
     "intro": "한 시즌이 끝나도 남는 것만 약속합니다. 마케팅 카피가 아니라 산출물.",
-    "promiseLabel": "보장합니다.",
     "items": [
       {
         "id": "portfolio",
@@ -331,22 +367,37 @@
       {
         "title": "외국 국적의 학생 또는 취업 준비생",
         "body": "한국 거주 중인 외국 국적자를 위한 프로그램입니다. 국적은 무관합니다.",
-        "chips": ["국적 무관", "한국 거주"]
+        "chips": [
+          "국적 무관",
+          "한국 거주"
+        ]
       },
       {
         "title": "학생 또는 취업 비자 보유",
         "body": "유학(D‑2, D‑4), 구직(D‑10), 취업(E‑시리즈) 등 한국 체류 자격이 있어야 합니다. 신청 시 비자 상태를 확인합니다.",
-        "chips": ["D‑2", "D‑4", "D‑10", "E‑시리즈"]
+        "chips": [
+          "D‑2",
+          "D‑4",
+          "D‑10",
+          "E‑시리즈"
+        ]
       },
       {
         "title": "한국어 강의 이해",
         "body": "강의는 100% 한국어로 진행됩니다. 공식 시험 점수는 요구하지 않지만, 한국어로 강의를 이해할 수 있는 수준이어야 합니다.",
-        "chips": ["한국어 강의", "TOPIK 점수 불필요"]
+        "chips": [
+          "한국어 강의",
+          "TOPIK 점수 불필요"
+        ]
       },
       {
         "title": "주말 4주 출석",
         "body": "토요일과 일요일 양일, 총 8회 강의가 기본 구성입니다. 수료자 전원에게 K‑pop 공연 현장 실무 체험 기회가 제공됩니다.",
-        "chips": ["토, 일", "4주, 8회", "공연 체험 전원"]
+        "chips": [
+          "토, 일",
+          "4주, 8회",
+          "공연 체험 전원"
+        ]
       }
     ],
     "schedule": {
@@ -612,28 +663,73 @@
     "poweredBy": "Powered by Dropdown",
     "navLabel": "Navigate",
     "navItems": [
-      { "label": "프로그램", "href": "#program" },
-      { "label": "멘토", "href": "#mentor" },
-      { "label": "후기", "href": "#testimonials" },
-      { "label": "FAQ", "href": "#faq" },
-      { "label": "신청", "href": "#apply" }
+      {
+        "label": "프로그램",
+        "href": "#program"
+      },
+      {
+        "label": "멘토",
+        "href": "#mentor"
+      },
+      {
+        "label": "후기",
+        "href": "#testimonials"
+      },
+      {
+        "label": "FAQ",
+        "href": "#faq"
+      },
+      {
+        "label": "신청",
+        "href": "#apply"
+      }
     ],
     "policyLabel": "Policy",
     "policyItems": [
-      { "label": "환불 정책", "href": "/terms#refund-policy" },
-      { "label": "결제 안내", "href": "/terms#payment" },
-      { "label": "개인정보 처리방침", "href": "/privacy" },
-      { "label": "이용약관", "href": "/terms" }
+      {
+        "label": "환불 정책",
+        "href": "/terms#refund-policy"
+      },
+      {
+        "label": "결제 안내",
+        "href": "/terms#payment"
+      },
+      {
+        "label": "개인정보 처리방침",
+        "href": "/privacy"
+      },
+      {
+        "label": "이용약관",
+        "href": "/terms"
+      }
     ],
     "partnerLabel": "Official Partner",
     "partnerAriaLabel": "DEEPI 공식 파트너 (새 창에서 deepishop.com 열기)",
     "business": {
-      "company": { "label": "상호", "value": "드롭다운(Dropdown)" },
-      "ceo": { "label": "대표자", "value": "황재하" },
-      "bizNo": { "label": "사업자등록번호", "value": "154-28-02110" },
-      "ecommerceNo": { "label": "통신판매업 신고", "value": "제2026-서울송파-0882호" },
-      "address": { "label": "주소", "value": "서울특별시 송파구 중대로 207, 2층 201-J554호 (가락동, 대명빌딩)" },
-      "email": { "label": "이메일", "value": "hello@dropdown.xyz" }
+      "company": {
+        "label": "상호",
+        "value": "드롭다운(Dropdown)"
+      },
+      "ceo": {
+        "label": "대표자",
+        "value": "황재하"
+      },
+      "bizNo": {
+        "label": "사업자등록번호",
+        "value": "154-28-02110"
+      },
+      "ecommerceNo": {
+        "label": "통신판매업 신고",
+        "value": "제2026-서울송파-0882호"
+      },
+      "address": {
+        "label": "주소",
+        "value": "서울특별시 송파구 중대로 207, 2층 201-J554호 (가락동, 대명빌딩)"
+      },
+      "email": {
+        "label": "이메일",
+        "value": "hello@dropdown.xyz"
+      }
     },
     "copyright": "© {year} Dropdown. All rights reserved."
   },
@@ -705,11 +801,27 @@
         "paragraphs": [
           "회사는 안정적인 서비스 제공을 위해 다음 수탁자에게 개인정보 처리를 위탁하며, 위탁 시 「개인정보 보호법」 제26조에 따라 안전한 처리를 위한 사항을 명시합니다."
         ],
-        "tableHeaders": ["수탁자", "위탁 업무", "소재지"],
+        "tableHeaders": [
+          "수탁자",
+          "위탁 업무",
+          "소재지"
+        ],
         "tableRows": [
-          ["Supabase Inc.", "데이터베이스 호스팅, 신청 정보 저장", "서울 (ap-northeast-2)"],
-          ["Vercel Inc.", "웹사이트 호스팅, 서버리스 함수 실행", "글로벌 CDN"],
-          ["유니온 픽처스", "공연 프로젝트 매칭 및 실제 공연 참여자 대상 공연 프로젝트 참여 확인서 발급", "대한민국"]
+          [
+            "Supabase Inc.",
+            "데이터베이스 호스팅, 신청 정보 저장",
+            "서울 (ap-northeast-2)"
+          ],
+          [
+            "Vercel Inc.",
+            "웹사이트 호스팅, 서버리스 함수 실행",
+            "글로벌 CDN"
+          ],
+          [
+            "유니온 픽처스",
+            "공연 프로젝트 매칭 및 실제 공연 참여자 대상 공연 프로젝트 참여 확인서 발급",
+            "대한민국"
+          ]
         ]
       },
       {
@@ -872,13 +984,31 @@
           "본 환불 기준은 「학원의 설립과 운영 및 과외교습에 관한 법률 시행령 별표 4」와 공정거래위원회 「소비자분쟁해결기준」(교육서비스 분야)을 따릅니다. 또한 「전자상거래 등에서의 소비자보호에 관한 법률」 제17조 청약철회권을 명시적으로 보장합니다.",
           "환불 요청은 hello@dropdown.xyz 로 본인 확인 후 진행되며, 본인 명의 계좌로 영업일 기준 7일 이내 처리됩니다. 환불 송금 수수료는 회사가 부담합니다."
         ],
-        "tableHeaders": ["시점", "환불 비율"],
+        "tableHeaders": [
+          "시점",
+          "환불 비율"
+        ],
         "tableRows": [
-          ["결제 후 7일 이내", "100%"],
-          ["수강 시작 전", "100%"],
-          ["수강 시작 후 1/3 경과 전", "2/3 환불"],
-          ["수강 시작 후 1/2 경과 전", "1/2 환불"],
-          ["1/2 경과 후", "환불 없음"]
+          [
+            "결제 후 7일 이내",
+            "100%"
+          ],
+          [
+            "수강 시작 전",
+            "100%"
+          ],
+          [
+            "수강 시작 후 1/3 경과 전",
+            "2/3 환불"
+          ],
+          [
+            "수강 시작 후 1/2 경과 전",
+            "1/2 환불"
+          ],
+          [
+            "1/2 경과 후",
+            "환불 없음"
+          ]
         ]
       },
       {

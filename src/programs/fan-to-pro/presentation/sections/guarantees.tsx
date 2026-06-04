@@ -68,13 +68,6 @@ export function Guarantees() {
               <p className="max-w-prose text-base leading-relaxed text-fg/90">
                 {g.body}
               </p>
-
-              <p
-                className="mt-auto pt-4 text-fg text-sm font-black uppercase"
-                style={{ letterSpacing: "0.2em" }}
-              >
-                {t("promiseLabel")}
-              </p>
             </article>
           ))}
         </div>

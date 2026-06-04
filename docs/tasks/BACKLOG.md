@@ -28,11 +28,15 @@
   - i18n 라이브러리 선택 (next-intl 우선 검토)
   - 출처: 2026-06-04 코워크 미팅 §13 — 타겟 = 한국 거주 외국인
 
-- **B0007** · 신청-입금 분리 플로우 + 입금 안내 자동화 · status: **raw** · 2026-06-04 captured
-  - 현재: 폼 제출 → 즉시 토스뱅크 계좌 표시
-  - 변경: 폼 제출 → 별도 채널(카톡/문자)로 입금 안내 발송 → 마감일(6/21) 전 입금 확인 → 미입금 시 자동 리마인드
-  - 자동화 후보: 카톡 알림톡(비즈채널 인증 필요) / SMS(별도 게이트웨이) / 수동 발송
-  - 신청 폼에 카톡 ID 또는 휴대폰 번호 필드 추가 검토
+- **B0007** · 신청-입금 분리 플로우 + 입금 안내 자동화 · status: **specced** · 2026-06-04 specced
+  - Spec: [`docs/specs/B0007-payment-flow-split.md`](../specs/B0007-payment-flow-split.md)
+  - ADR: [`docs/decisions/0003-payment-channel-and-refund-split.md`](../decisions/0003-payment-channel-and-refund-split.md)
+  - 채널: SMS (NaverCloud SENS) + 이메일 (Resend) 자동 이중 + 카톡 채널 1:1 폴백
+  - 컨펌 모달 신설 (체크박스 X, single-click) + 계좌번호 즉시 노출 폐지
+  - 환불 정책 2층 분리 (마케팅 단순화 vs 약관 본문 무수정)
+  - 리마인드 T+1 / D-3 / D-1 23:00 cron 3회
+  - 운영자 미니 페이지 `/admin/applicants` (Basic Auth)
+  - 작업 분해: T0~T12, 마일스톤 M1~M5, 마감 6/12 (금) 까지 배포 목표
   - 출처: 2026-06-04 코워크 미팅 §13
 
 - **B0008** · CS 카톡 플로팅 버튼 · status: **done** · 2026-06-04 완료
