@@ -45,3 +45,21 @@
 
 ### Changed — 변경
 - **박성철 강사 요일 재배정** — 토요일 → **일요일**. `domain/program.ts` 의 `INSTRUCTORS[park-sungcheol].day` 갱신. Faculty 카드 칩 *"일요일 강사"* 로 노출. PHASE 01 설명 텍스트(`presentation/sections/program.tsx` 의 토일 주제 매핑)는 의도적으로 그대로 유지.
+
+---
+
+## [2026-06-04]
+
+### Added — 신규 기능
+- **코워크 광고 배너 v2 4장** — 기존 6장(`pc-ko/en`, `mw-ko/en`, `app-ko/en`)에 더해 v2 4장(`mw-ko-v2/en-v2`, `app-ko-v2/en-v2`) 추가. **PC 시안의 디자인 언어**(우측 보이그룹 콘서트 이미지 + 강한 좌→우 검정 그라데이션 + 좌상단 회전 핑크 배지 + 인라인 핑크 separator)를 MW/App 사이즈로 일관 적용. 모든 SVG 는 배경 이미지를 base64 로 임베드해 피그마 단독 import 가능. 산출물 위치 `docs/screenshots/kowork/`. 파이프라인 `tools/kowork-banner-pc.html` → `tools/clip-kowork.mjs` → `tools/embed-kowork-images.mjs` → `tools/verify-kowork-svg.mjs`.
+
+### Changed — 변경
+- **강사 소개 순서 재배열** — `INSTRUCTORS` 배열을 **이제향 → Nino → 박성철** 순으로 변경. `src/programs/fan-to-pro/domain/program.ts` 한 곳만 수정 (배열을 iterate해서 노출하는 구조라 ID/인덱스 참조 없음 확인 완료). 박성철 강사를 마지막에 배치.
+
+### Fixed — 버그·결함
+- **`tools/preview.mjs` 가 `docs/screenshots/` 의 서브디렉터리까지 wipe 하던 문제** — `rm(OUT_DIR, { recursive: true, force: true })` 를 `clearOutDirFiles()` 로 교체. 이제 **top-level 파일만 삭제하고 서브디렉터리는 보존** → `kowork/`, `instructors/` 등 큐레이팅 산출물 폴더가 preview 실행에도 살아남음. 경위는 `docs/lessons/2026-06-04-preview-wipes-screenshots.md` 참조.
+
+### Docs
+- `docs/lessons/2026-06-04-preview-wipes-screenshots.md` 신규 — `pnpm preview` 가 코워크 배너 산출물 20장을 통째로 날린 사고의 사후 분석 + 재발 방지 룰.
+- `docs/lessons/` 디렉터리 신규 — 향후 사후 분석 문서 보관소.
+- `docs/research/kowork-banner-research.md` 보강 — 6월 3일 작성된 코워크 배너 리서치 노트. 매체 스펙·디자인 토큰·문구 안전 글자수·외부 레퍼런스 종합.
