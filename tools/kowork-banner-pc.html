@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>Growth Career · Kowork Banners</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
+    />
+    <style>
+      /* ───────────────────────────────────────────────
+         Reset + tokens (mirrors app/globals.css)
+         ─────────────────────────────────────────────── */
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      :root {
+        --bg: #0a0a0f;
+        --fg: #fafafa;
+        --fg-muted: #d4d4d8;
+        --fg-subtle: #a1a1aa;
+        --pink: #ec4899;
+      }
+
+      html, body {
+        background: #1f1f24;            /* page chrome — banners sit on top */
+        font-family:
+          "Pretendard Variable", "Pretendard",
+          system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        color: var(--fg);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+        /* 한국어 음절 중간 끊김 방지 — 사이트 globals.css 와 동일 */
+        word-break: keep-all;
+        overflow-wrap: anywhere;
+      }
+
+      body {
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+        align-items: flex-start;
+      }
+
+      .row-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        color: #71717a;
+        margin-bottom: 8px;
+      }
+
+      /* ───────────────────────────────────────────────
+         Banner — shared
+         ─────────────────────────────────────────────── */
+      .banner {
+        position: relative;
+        overflow: hidden;
+        background: var(--bg);
+        color: var(--fg);
+        font-family:
+          "Pretendard Variable", "Pretendard",
+          system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        word-break: keep-all;
+        overflow-wrap: normal;
+        isolation: isolate;
+      }
+
+      /* Signature 1: left pink vertical bar (matches OG / hero) */
+      .pink-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        background: var(--pink);
+        z-index: 3;
+      }
+
+      .img-layer {
+        position: absolute;
+        top: 0;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        z-index: 1;
+      }
+
+      .text-layer {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100%;
+      }
+
+      /* Eyebrow — 작고 핑크, OG / hero 패턴 */
+      .eyebrow {
+        font-weight: 700;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--pink);
+        white-space: nowrap;
+      }
+
+      .title {
+        font-weight: 900;          /* Pretendard Black — OG/hero 와 동일 */
+        color: var(--fg);
+      }
+
+      .sub {
+        font-weight: 400;
+        color: var(--fg-muted);
+      }
+
+      /* Signature 2: 핑크 강조 — 단 한 곳에만 사용 */
+      .pink { color: var(--pink); font-weight: 700; }
+
+      /* 서브 안 디바이더 — 얇은 핑크 세로 막대 */
+      .sep {
+        display: inline-block;
+        width: 1px;
+        height: 0.85em;
+        background: var(--pink);
+        opacity: 0.55;
+        margin: 0 0.7em;
+        vertical-align: -0.08em;
+      }
+
+      /* 마감 한정 라벨 — 핑크 아닌 fg 흰색 + medium weight */
+      .deadline {
+        color: var(--fg);
+        font-weight: 600;
+      }
+
+      /* 할인 배지 — 좌상단 핑크 칩, 살짝 회전 */
+      .discount-badge {
+        display: inline-block;
+        align-self: flex-start;
+        background: var(--pink);
+        color: var(--fg);
+        font-weight: 900;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        line-height: 1;
+        transform: rotate(-5deg);
+        transform-origin: left center;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+        position: relative;
+        z-index: 4;
+      }
+      .banner.pc  .discount-badge { padding: 7px 11px; font-size: 13px; margin-bottom: 8px; }
+      .banner.mw  .discount-badge { padding: 4px 8px;  font-size: 10px; margin-bottom: 4px; }
+      .banner.app .discount-badge { padding: 5px 9px;  font-size: 11px; margin-bottom: 6px; }
+
+      /* ───────────────────────────────────────────────
+         PC — 1080 × 136
+         좌 텍스트 ~588 / 우 이미지 480 / 좌 패딩 152
+         ─────────────────────────────────────────────── */
+      .banner.pc {
+        width: 1080px;
+        height: 136px;
+      }
+      .banner.pc .pink-bar {
+        width: 6px;
+      }
+      .banner.pc .img-layer {
+        right: 0;
+        width: 480px;
+        background-image:
+          linear-gradient(
+            to right,
+            #0a0a0f 0%,
+            rgba(10, 10, 15, 0.95) 20%,
+            rgba(10, 10, 15, 0.6) 55%,
+            rgba(10, 10, 15, 0.25) 100%
+          ),
+          url("../public/images/stock/boy-group-concert-stage-3.jpg");
+        background-size: cover, cover;
+        background-position: center, center;
+      }
+      .banner.pc .text-layer {
+        padding-left: 152px;
+        padding-right: 380px;       /* keep text away from image */
+        gap: 10px;
+      }
+      .banner.pc .eyebrow {
+        font-size: 10px;
+        margin-bottom: 2px;
+      }
+      .banner.pc .title {
+        font-size: 28px;
+        line-height: 1;
+        letter-spacing: -0.035em;
+        white-space: nowrap;
+      }
+      .banner.pc .sub {
+        font-size: 13px;
+        line-height: 1.3;
+        letter-spacing: -0.005em;
+        white-space: nowrap;
+      }
+
+      /* ───────────────────────────────────────────────
+         MW — 328 × 122
+         좌 텍스트 ~192 / 우 이미지 160 / 좌 패딩 16
+         ─────────────────────────────────────────────── */
+      .banner.mw {
+        width: 328px;
+        height: 122px;
+      }
+      .banner.mw .pink-bar {
+        width: 4px;
+      }
+      .banner.mw .img-layer {
+        right: 0;
+        width: 160px;
+        background-image:
+          linear-gradient(
+            to right,
+            #0a0a0f 0%,
+            rgba(10, 10, 15, 0.9) 22%,
+            rgba(10, 10, 15, 0.4) 70%,
+            rgba(10, 10, 15, 0.2) 100%
+          ),
+          url("../public/images/stock/stage-lights-purple-pink-2.jpg");
+      }
+      .banner.mw .text-layer {
+        padding-left: 16px;
+        padding-right: 130px;
+        gap: 6px;
+      }
+      .banner.mw .eyebrow {
+        font-size: 8px;
+        letter-spacing: 0.24em;
+        margin-bottom: 1px;
+      }
+      .banner.mw .title {
+        font-size: 17px;
+        line-height: 1.1;
+        letter-spacing: -0.035em;
+      }
+      .banner.mw .sub {
+        font-size: 10px;
+        line-height: 1.4;
+        letter-spacing: -0.005em;
+      }
+      .banner.mw .sub .sep {
+        margin: 0 0.45em;
+      }
+
+      /* ───────────────────────────────────────────────
+         App — 328 × 180
+         배경 풀-블리드 이미지 + 좌측 텍스트
+         ─────────────────────────────────────────────── */
+      .banner.app {
+        width: 328px;
+        height: 180px;
+      }
+      .banner.app .pink-bar {
+        width: 4px;
+      }
+      .banner.app .img-layer {
+        left: 0;
+        right: 0;
+        width: 100%;
+        background-image:
+          linear-gradient(
+            to right,
+            rgba(10, 10, 15, 0.95) 0%,
+            rgba(10, 10, 15, 0.82) 40%,
+            rgba(10, 10, 15, 0.55) 75%,
+            rgba(10, 10, 15, 0.35) 100%
+          ),
+          url("../public/images/stock/concert-stage-from-behind-performer-3.jpg");
+      }
+      .banner.app .text-layer {
+        padding: 18px 16px 18px 16px;
+        gap: 10px;
+        justify-content: center;
+      }
+      .banner.app .eyebrow {
+        font-size: 9px;
+        margin-bottom: 2px;
+      }
+      .banner.app .title {
+        font-size: 21px;
+        line-height: 1.08;
+        letter-spacing: -0.035em;
+      }
+      .banner.app .sub {
+        font-size: 12px;
+        line-height: 1.4;
+        letter-spacing: -0.005em;
+      }
+      .banner.app .sub .sep {
+        margin: 0 0.55em;
+      }
+
+      /* ───────────────────────────────────────────────
+         MW v2 — PC 스타일 (우측 보이그룹 이미지 + 강한 그라데이션)
+         328 × 122
+         ─────────────────────────────────────────────── */
+      .banner.mw-v2 {
+        width: 328px;
+        height: 122px;
+      }
+      .banner.mw-v2 .pink-bar {
+        width: 4px;
+      }
+      .banner.mw-v2 .img-layer {
+        right: 0;
+        width: 160px;
+        background-image:
+          linear-gradient(
+            to right,
+            #0a0a0f 0%,
+            rgba(10, 10, 15, 0.95) 22%,
+            rgba(10, 10, 15, 0.55) 70%,
+            rgba(10, 10, 15, 0.25) 100%
+          ),
+          url("../public/images/stock/boy-group-concert-stage-3.jpg");
+        background-size: cover, cover;
+        background-position: center, center;
+      }
+      .banner.mw-v2 .text-layer {
+        padding-left: 16px;
+        padding-right: 120px;
+        gap: 5px;
+      }
+      .banner.mw-v2 .eyebrow {
+        font-size: 8px;
+        letter-spacing: 0.24em;
+        margin-bottom: 1px;
+      }
+      .banner.mw-v2 .title {
+        font-size: 17px;
+        line-height: 1.1;
+        letter-spacing: -0.035em;
+      }
+      .banner.mw-v2 .sub {
+        font-size: 10px;
+        line-height: 1.4;
+        letter-spacing: -0.005em;
+        white-space: nowrap;
+      }
+      .banner.mw-v2 .sub .sep {
+        margin: 0 0.45em;
+      }
+      .banner.mw-v2 .discount-badge {
+        padding: 4px 8px;
+        font-size: 10px;
+        margin-bottom: 4px;
+      }
+
+      /* ───────────────────────────────────────────────
+         App v2 — PC 스타일 (우측 보이그룹 이미지 + 강한 그라데이션)
+         328 × 180
+         ─────────────────────────────────────────────── */
+      .banner.app-v2 {
+        width: 328px;
+        height: 180px;
+      }
+      .banner.app-v2 .pink-bar {
+        width: 4px;
+      }
+      .banner.app-v2 .img-layer {
+        right: 0;
+        width: 160px;
+        background-image:
+          linear-gradient(
+            to right,
+            #0a0a0f 0%,
+            rgba(10, 10, 15, 0.95) 22%,
+            rgba(10, 10, 15, 0.6) 60%,
+            rgba(10, 10, 15, 0.3) 100%
+          ),
+          url("../public/images/stock/boy-group-concert-stage-3.jpg");
+        background-size: cover, cover;
+        background-position: center, center;
+      }
+      .banner.app-v2 .text-layer {
+        padding-left: 16px;
+        padding-right: 120px;
+        gap: 8px;
+        justify-content: center;
+      }
+      .banner.app-v2 .eyebrow {
+        font-size: 9px;
+        letter-spacing: 0.26em;
+        margin-bottom: 2px;
+      }
+      .banner.app-v2 .title {
+        font-size: 21px;
+        line-height: 1.08;
+        letter-spacing: -0.035em;
+      }
+      .banner.app-v2 .sub {
+        font-size: 11px;
+        line-height: 1.4;
+        letter-spacing: -0.005em;
+        white-space: nowrap;
+      }
+      .banner.app-v2 .sub .sep {
+        margin: 0 0.5em;
+      }
+      .banner.app-v2 .discount-badge {
+        padding: 5px 9px;
+        font-size: 11px;
+        margin-bottom: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- PC · 1080 × 136 · 한국어 -->
+    <div>
+      <div class="row-label">PC · 1080 × 136 · KO</div>
+      <div id="pc-ko" class="banner pc">
+        <div class="pink-bar"></div>
+        <div class="img-layer"></div>
+        <div class="text-layer">
+          <div class="discount-badge">20% OFF</div>
+          <div class="eyebrow">K-엔터테인먼트 커리어 4주 교육 프로그램</div>
+          <div class="title">K-POP <span class="pink">팬</span>에서 K-POP을 <span class="pink">만드는 사람</span>으로</div>
+          <div class="sub">현직 K-POP 공연 디렉터의 4주 주말 수업<span class="sep"></span>실제 공연 프로젝트 참여 기회<span class="sep"></span><span class="pink">6월 14일 마감</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PC · 1080 × 136 · English -->
+    <div>
+      <div class="row-label">PC · 1080 × 136 · EN</div>
+      <div id="pc-en" class="banner pc">
+        <div class="pink-bar"></div>
+        <div class="img-layer"></div>
+        <div class="text-layer">
+          <div class="discount-badge">20% OFF</div>
+          <div class="eyebrow">4-Week K-Entertainment Career Track</div>
+          <div class="title">From K-Pop <span class="pink">fan</span> to K-Pop <span class="pink">maker</span></div>
+          <div class="sub">Train with industry directors<span class="sep"></span>Join a real concert project<span class="sep"></span><span class="pink">Apply by June 14</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MW · 328 × 122 · 한국어 -->
+    <div>
+      <div class="row-label">MW · 328 × 122 · KO</div>
+      <div id="mw-ko" class="banner mw">
+        <div class="pink-bar"></div>
+        <div class="img-layer"></div>
+        <div class="text-layer">
+          <div class="discount-badge">20% OFF</div>
+          <div class="eyebrow">K-엔터테인먼트 4주 교육</div>
+          <div class="title">K-POP <span class="pink">팬</span>에서<br />K-POP을 <span class="pink">만드는 사람</span>으로</div>
+          <div class="sub">현직 디렉터 4주 주말반<br />실제 공연 프로젝트 참여<span class="sep"></span><span class="pink">6/14 마감</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MW · 328 × 122 · English -->
+    <div>
+      <div class="row-label">MW · 328 × 122 · EN</div>
+      <div id="mw-en" class="banner mw">
+        <div class="pink-bar"></div>
+        <div class="img-layer"></div>
+        <div class="text-layer">
+          <div class="discount-badge">20% OFF</div>
+          <div class="eyebrow">4-Week K-Pop Intensive</div>
+          <div class="title">From K-Pop <span class="pink">fan</span> to<br />K-Pop <span class="pink">maker</span></div>
+          <div class="sub">Industry directors<span class="sep"></span>4-week class<br />Join a real concert<span class="sep"></span><span class="pink">Apply by Jun 14</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- App · 328 × 180 · 한국어 -->
+    <div>
+      <div class="row-label">APP · 328 × 180 · KO</div>
+      <div id="app-ko" class="banner app">
+        <div class="img-layer"></div>
+        <div class="pink-bar"></div>
+        <div class="text-layer">
+          <div class="discount-badge">20% OFF</div>
+          <div class="eyebrow">K-엔터테인먼트 커리어 4주 교육 프로그램</div>
+          <div class="title">K-POP <span class="pink">팬</span>에서<br />K-POP을 <span class="pink">만드는 사람</span>으로</div>
+          <div class="sub">현직 K-POP 공연 디렉터의 4주 주말 수업<br />실제 공연 프로젝트 참여 기회 제공<span class="sep"></span><span class="pink">6월 14일 마감</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- App · 328 × 180 · English -->
+    <div>
+      <div class="row-label">APP · 328 × 180 · EN</div>
+      <div id="app-en" class="banner app">
+        <div class="img-layer"></div>
+        <div class="pink-bar"></div>
+        <div class="text-layer">
+          <div class="discount-badge">20% OFF</div>
+          <div class="eyebrow">K-Entertainment Career Bootcamp</div>
+          <div class="title">From K-Pop <span class="pink">fan</span> to<br />K-Pop <span class="pink">maker</span></div>
+          <div class="sub">Industry directors<span class="sep"></span>4-week weekend training<br />Join a real concert project<span class="sep"></span><span class="pink">Apply by Jun 14</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MW v2 · 328 × 122 · 한국어 (PC 스타일) -->
+    <div>
+      <div class="row-label">MW v2 · 328 × 122 · KO (PC style)</div>
+      <div id="mw-ko-v2" class="banner mw-v2">
+        <div class="pink-bar"></div>
+        <div class="img-layer"></div>
+        <div class="text-layer">
+          <div class="discount-badge">20% OFF</div>
+          <div class="eyebrow">K-엔터테인먼트 커리어 4주</div>
+          <div class="title">K-POP <span class="pink">팬</span>에서<br />K-POP <span class="pink">메이커</span>로</div>
+          <div class="sub">현직 디렉터 주말반<span class="sep"></span><span class="pink">6/14 마감</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MW v2 · 328 × 122 · English (PC 스타일) -->
+    <div>
+      <div class="row-label">MW v2 · 328 × 122 · EN (PC style)</div>
+      <div id="mw-en-v2" class="banner mw-v2">
+        <div class="pink-bar"></div>
+        <div class="img-layer"></div>
+        <div class="text-layer">
+          <div class="discount-badge">20% OFF</div>
+          <div class="eyebrow">4-Week K-Pop Track</div>
+          <div class="title">From K-Pop <span class="pink">fan</span><br />to K-Pop <span class="pink">maker</span></div>
+          <div class="sub">Industry directors<span class="sep"></span><span class="pink">Apply by Jun 14</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- App v2 · 328 × 180 · 한국어 (PC 스타일) -->
+    <div>
+      <div class="row-label">APP v2 · 328 × 180 · KO (PC style)</div>
+      <div id="app-ko-v2" class="banner app-v2">
+        <div class="pink-bar"></div>
+        <div class="img-layer"></div>
+        <div class="text-layer">
+          <div class="discount-badge">20% OFF</div>
+          <div class="eyebrow">K-엔터테인먼트 커리어 4주</div>
+          <div class="title">K-POP <span class="pink">팬</span>에서<br />K-POP <span class="pink">메이커</span>로</div>
+          <div class="sub">현직 디렉터 4주 주말반<span class="sep"></span><span class="pink">6/14 마감</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- App v2 · 328 × 180 · English (PC 스타일) -->
+    <div>
+      <div class="row-label">APP v2 · 328 × 180 · EN (PC style)</div>
+      <div id="app-en-v2" class="banner app-v2">
+        <div class="pink-bar"></div>
+        <div class="img-layer"></div>
+        <div class="text-layer">
+          <div class="discount-badge">20% OFF</div>
+          <div class="eyebrow">4-Week K-Pop Track</div>
+          <div class="title">From K-Pop <span class="pink">fan</span><br />to K-Pop <span class="pink">maker</span></div>
+          <div class="sub">Industry directors<span class="sep"></span><span class="pink">Apply by Jun 14</span></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
