@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>Growth Career · Fan to Pro · Insta Cards 1080</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
+    />
+    <style>
+      /* ───────────────────────────────────────────────
+         Reset + tokens (mirrors app/globals.css)
+         ─────────────────────────────────────────────── */
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      :root {
+        --bg: #0a0a0f;
+        --fg: #fafafa;
+        --fg-muted: #d4d4d8;
+        --fg-subtle: #a1a1aa;
+        --pink: #ec4899;
+        --border: #27272f;
+      }
+
+      html, body {
+        background: #1f1f24;
+        font-family:
+          "Pretendard Variable", "Pretendard",
+          system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        color: var(--fg);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+        word-break: keep-all;
+        overflow-wrap: normal;
+      }
+
+      body {
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        align-items: flex-start;
+      }
+
+      .row-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        color: #71717a;
+        margin-bottom: 8px;
+      }
+
+      /* ───────────────────────────────────────────────
+         Card — 1080 square
+         ─────────────────────────────────────────────── */
+      .card {
+        position: relative;
+        width: 1080px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--bg);
+        color: var(--fg);
+        font-family:
+          "Pretendard Variable", "Pretendard",
+          system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        word-break: keep-all;
+        overflow-wrap: normal;
+        isolation: isolate;
+      }
+
+      /* Background image layer (cover) */
+      .bg-img {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+        z-index: 1;
+      }
+
+      /* Dark overlay 70 to 85 percent */
+      .bg-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+      }
+
+      /* Pink signature bar (left vertical) */
+      .pink-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 12px;
+        height: 100%;
+        background: var(--pink);
+        z-index: 4;
+      }
+
+      /* Content layer */
+      .content {
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        padding: 96px 96px 96px 120px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .eyebrow {
+        font-weight: 700;
+        font-size: 22px;
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        color: var(--pink);
+        white-space: nowrap;
+      }
+
+      .headline {
+        font-weight: 900;
+        color: var(--fg);
+        letter-spacing: -0.04em;
+        line-height: 0.98;
+      }
+
+      .sub {
+        font-weight: 400;
+        color: var(--fg-muted);
+        line-height: 1.45;
+      }
+
+      .pink { color: var(--pink); font-weight: 800; }
+
+      /* Wordmark — bottom left, small */
+      .wordmark {
+        position: absolute;
+        left: 120px;
+        bottom: 64px;
+        z-index: 5;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .wordmark .mark {
+        font-weight: 900;
+        font-size: 28px;
+        letter-spacing: -0.03em;
+        color: var(--fg);
+      }
+      .wordmark .mark .dot { color: var(--pink); }
+      .wordmark .umbrella {
+        font-weight: 700;
+        font-size: 11px;
+        letter-spacing: 0.36em;
+        text-transform: uppercase;
+        color: var(--fg-subtle);
+      }
+
+      /* Bullets shared */
+      .bullets {
+        display: flex;
+        flex-direction: column;
+        gap: 26px;
+        margin-top: 56px;
+      }
+      .bullet {
+        display: flex;
+        align-items: flex-start;
+        gap: 22px;
+        font-weight: 500;
+        font-size: 30px;
+        line-height: 1.32;
+        color: var(--fg);
+      }
+      .bullet .check {
+        flex: 0 0 auto;
+        width: 36px;
+        height: 36px;
+        border-radius: 999px;
+        background: var(--pink);
+        color: #0a0a0f;
+        font-weight: 900;
+        font-size: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 4px;
+      }
+
+      /* ───────────────────────────────────────────────
+         Card 01 — Hook
+         ─────────────────────────────────────────────── */
+      .card-hook .bg-img {
+        background-image: url("../public/images/stock/concert-stage-from-behind-performer-2.jpg");
+      }
+      .card-hook .bg-overlay {
+        background:
+          linear-gradient(180deg, rgba(10,10,15,0.55) 0%, rgba(10,10,15,0.90) 100%),
+          rgba(10,10,15,0.35);
+      }
+      .card-hook .content { justify-content: flex-end; padding-bottom: 200px; }
+      .card-hook .eyebrow { margin-bottom: 40px; }
+      .card-hook .headline { font-size: 132px; max-width: 880px; margin-bottom: 36px; }
+      .card-hook .sub { font-size: 30px; max-width: 760px; }
+
+      /* ───────────────────────────────────────────────
+         Card 02 — Benefits
+         ─────────────────────────────────────────────── */
+      .card-benefits .bg-img {
+        background-image: url("../public/images/stock/male-singer-silhouette-stage-2.jpg");
+      }
+      .card-benefits .bg-overlay {
+        background:
+          linear-gradient(135deg, rgba(10,10,15,0.92) 0%, rgba(10,10,15,0.78) 100%);
+      }
+      .card-benefits .content { justify-content: flex-start; padding-top: 110px; }
+      .card-benefits .eyebrow { margin-bottom: 32px; }
+      .card-benefits .headline { font-size: 104px; margin-bottom: 8px; }
+      .card-benefits .bullet { font-size: 28px; }
+
+      /* ───────────────────────────────────────────────
+         Card 03 — Mentorship
+         ─────────────────────────────────────────────── */
+      .card-mentors .bg-img {
+        background-image: url("../public/images/stock/concert-stage-from-behind-performer-3.jpg");
+      }
+      .card-mentors .bg-overlay {
+        background:
+          linear-gradient(180deg, rgba(10,10,15,0.78) 0%, rgba(10,10,15,0.92) 70%, rgba(10,10,15,0.95) 100%);
+      }
+      .card-mentors .content { justify-content: flex-start; padding-top: 110px; }
+      .card-mentors .eyebrow { margin-bottom: 32px; }
+      .card-mentors .headline { font-size: 78px; max-width: 880px; margin-bottom: 24px; }
+      .card-mentors .sub { font-size: 24px; margin-bottom: 50px; }
+
+      .mentor-list {
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+        margin-top: 8px;
+      }
+      .mentor {
+        border-left: 3px solid var(--pink);
+        padding: 4px 0 4px 24px;
+      }
+      .mentor .role {
+        font-weight: 900;
+        font-size: 30px;
+        color: var(--fg);
+        letter-spacing: -0.02em;
+        margin-bottom: 8px;
+      }
+      .mentor .desc {
+        font-weight: 500;
+        font-size: 22px;
+        color: var(--fg-muted);
+      }
+
+      /* ───────────────────────────────────────────────
+         Card 04 — CTA
+         ─────────────────────────────────────────────── */
+      .card-cta .bg-img {
+        background-image: url("../public/images/stock/stage-lights-purple-pink-1.jpg");
+      }
+      .card-cta .bg-overlay {
+        background:
+          linear-gradient(180deg, rgba(10,10,15,0.72) 0%, rgba(10,10,15,0.90) 60%, rgba(10,10,15,0.95) 100%);
+      }
+      .card-cta .content { justify-content: center; padding-top: 96px; padding-bottom: 200px; }
+      .card-cta .eyebrow { margin-bottom: 36px; }
+      .card-cta .headline { font-size: 168px; margin-bottom: 24px; color: var(--pink); }
+      /* EN price string is longer (₩880,000 KRW.) — scale down to keep single line. */
+      #card-04-en .headline { font-size: 110px; letter-spacing: -0.04em; white-space: nowrap; }
+      .card-cta .sub { font-size: 32px; margin-bottom: 56px; font-weight: 700; color: var(--fg); }
+      .card-cta .bullet { font-size: 26px; }
+      .card-cta .url-line {
+        margin-top: 18px;
+        font-weight: 800;
+        font-size: 26px;
+        color: var(--pink);
+        letter-spacing: -0.01em;
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- ═══════════════════════════════════════════════
+         CARD 01 — HOOK
+         ═══════════════════════════════════════════════ -->
+
+    <div class="row-label">CARD 01 / HOOK / EN</div>
+    <div id="card-01-en" class="card card-hook">
+      <div class="bg-img"></div>
+      <div class="bg-overlay"></div>
+      <div class="pink-bar"></div>
+      <div class="content">
+        <div class="eyebrow">FAN TO PRO / 2026 / COHORT 1</div>
+        <div class="headline">From K-pop fan<br />to <span class="pink">maker.</span></div>
+        <div class="sub">A 4-week industry bootcamp for international students in Korea.</div>
+      </div>
+      <div class="wordmark">
+        <div class="mark">FAN<span class="dot">.</span> TO PRO<span class="dot">.</span></div>
+        <div class="umbrella">GROWTH CAREER</div>
+      </div>
+    </div>
+
+    <div class="row-label">CARD 01 / HOOK / KO</div>
+    <div id="card-01-ko" class="card card-hook">
+      <div class="bg-img"></div>
+      <div class="bg-overlay"></div>
+      <div class="pink-bar"></div>
+      <div class="content">
+        <div class="eyebrow">FAN TO PRO / 2026 / 1기</div>
+        <div class="headline">K-pop 팬에서<br /><span class="pink">만드는 사람</span>으로.</div>
+        <div class="sub">한국 거주 외국인 유학생을 위한 4주 K-pop 산업 부트캠프.</div>
+      </div>
+      <div class="wordmark">
+        <div class="mark">FAN<span class="dot">.</span> TO PRO<span class="dot">.</span></div>
+        <div class="umbrella">GROWTH CAREER</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         CARD 02 — BENEFITS
+         ═══════════════════════════════════════════════ -->
+
+    <div class="row-label">CARD 02 / BENEFITS / EN</div>
+    <div id="card-02-en" class="card card-benefits">
+      <div class="bg-img"></div>
+      <div class="bg-overlay"></div>
+      <div class="pink-bar"></div>
+      <div class="content">
+        <div class="eyebrow">WHAT YOU GET</div>
+        <div class="headline">Real career<br /><span class="pink">assets.</span></div>
+        <div class="bullets">
+          <div class="bullet"><span class="check">✓</span><span>Real K-pop concert experience and paid project work</span></div>
+          <div class="bullet"><span class="check">✓</span><span>Mentorship from working industry pros</span></div>
+          <div class="bullet"><span class="check">✓</span><span>Dropdown certificate, Union Pictures letter</span></div>
+          <div class="bullet"><span class="check">✓</span><span>Lifetime KakaoTalk alumni network</span></div>
+        </div>
+      </div>
+      <div class="wordmark">
+        <div class="mark">FAN<span class="dot">.</span> TO PRO<span class="dot">.</span></div>
+        <div class="umbrella">GROWTH CAREER</div>
+      </div>
+    </div>
+
+    <div class="row-label">CARD 02 / BENEFITS / KO</div>
+    <div id="card-02-ko" class="card card-benefits">
+      <div class="bg-img"></div>
+      <div class="bg-overlay"></div>
+      <div class="pink-bar"></div>
+      <div class="content">
+        <div class="eyebrow">이걸 얻는다</div>
+        <div class="headline">진짜 커리어<br /><span class="pink">자산.</span></div>
+        <div class="bullets">
+          <div class="bullet"><span class="check">✓</span><span>실제 K-pop 공연 경험과 수당 받는 프로젝트</span></div>
+          <div class="bullet"><span class="check">✓</span><span>현직 업계 전문가 멘토링</span></div>
+          <div class="bullet"><span class="check">✓</span><span>Dropdown 수료증, 유니온픽처스 참여확인서</span></div>
+          <div class="bullet"><span class="check">✓</span><span>평생 유효한 카톡 동문 네트워크</span></div>
+        </div>
+      </div>
+      <div class="wordmark">
+        <div class="mark">FAN<span class="dot">.</span> TO PRO<span class="dot">.</span></div>
+        <div class="umbrella">GROWTH CAREER</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         CARD 03 — MENTORSHIP
+         ═══════════════════════════════════════════════ -->
+
+    <div class="row-label">CARD 03 / MENTORSHIP / EN</div>
+    <div id="card-03-en" class="card card-mentors">
+      <div class="bg-img"></div>
+      <div class="bg-overlay"></div>
+      <div class="pink-bar"></div>
+      <div class="content">
+        <div class="eyebrow">WHO YOU LEARN FROM</div>
+        <div class="headline">Learn the job from<br />the <span class="pink">pros doing it.</span></div>
+        <div class="sub">Real mentors. Real work. Real know-how.</div>
+        <div class="mentor-list">
+          <div class="mentor">
+            <div class="role">Live sound director</div>
+            <div class="desc">Major K-pop TV shows and festivals</div>
+          </div>
+          <div class="mentor">
+            <div class="role">A&amp;R + Visual director</div>
+            <div class="desc">K-pop label, 27 yrs</div>
+          </div>
+          <div class="mentor">
+            <div class="role">Sound director</div>
+            <div class="desc">Major K-pop stages, 20 yrs</div>
+          </div>
+        </div>
+      </div>
+      <div class="wordmark">
+        <div class="mark">FAN<span class="dot">.</span> TO PRO<span class="dot">.</span></div>
+        <div class="umbrella">GROWTH CAREER</div>
+      </div>
+    </div>
+
+    <div class="row-label">CARD 03 / MENTORSHIP / KO</div>
+    <div id="card-03-ko" class="card card-mentors">
+      <div class="bg-img"></div>
+      <div class="bg-overlay"></div>
+      <div class="pink-bar"></div>
+      <div class="content">
+        <div class="eyebrow">이들에게 배운다</div>
+        <div class="headline">현직 전문가에게<br /><span class="pink">직무를 그대로.</span></div>
+        <div class="sub">진짜 멘토. 진짜 업무. 진짜 노하우.</div>
+        <div class="mentor-list">
+          <div class="mentor">
+            <div class="role">현직 음향 감독</div>
+            <div class="desc">K-pop 메이저 방송, 페스티벌</div>
+          </div>
+          <div class="mentor">
+            <div class="role">A&amp;R + 비주얼 디렉터</div>
+            <div class="desc">K-pop 레이블, 27년</div>
+          </div>
+          <div class="mentor">
+            <div class="role">현직 사운드 디렉터</div>
+            <div class="desc">K-pop 메이저 무대, 20년</div>
+          </div>
+        </div>
+      </div>
+      <div class="wordmark">
+        <div class="mark">FAN<span class="dot">.</span> TO PRO<span class="dot">.</span></div>
+        <div class="umbrella">GROWTH CAREER</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         CARD 04 — CTA
+         ═══════════════════════════════════════════════ -->
+
+    <div class="row-label">CARD 04 / CTA / EN</div>
+    <div id="card-04-en" class="card card-cta">
+      <div class="bg-img"></div>
+      <div class="bg-overlay"></div>
+      <div class="pink-bar"></div>
+      <div class="content">
+        <div class="eyebrow">APPLY NOW</div>
+        <div class="headline">&#8361;880,000 KRW.</div>
+        <div class="sub">20% OFF / 30 seats / first-come, first-served</div>
+        <div class="bullets">
+          <div class="bullet"><span class="check">✓</span><span>Eligible: D‑2, D‑4, D‑10, E‑series (in Korea)</span></div>
+          <div class="bullet"><span class="check">✓</span><span>Deadline: Sunday, June 21, 2026 midnight</span></div>
+        </div>
+        <div class="url-line">growthcareer.xyz/fan-to-pro</div>
+      </div>
+      <div class="wordmark">
+        <div class="mark">FAN<span class="dot">.</span> TO PRO<span class="dot">.</span></div>
+        <div class="umbrella">GROWTH CAREER</div>
+      </div>
+    </div>
+
+    <div class="row-label">CARD 04 / CTA / KO</div>
+    <div id="card-04-ko" class="card card-cta">
+      <div class="bg-img"></div>
+      <div class="bg-overlay"></div>
+      <div class="pink-bar"></div>
+      <div class="content">
+        <div class="eyebrow">지금 신청</div>
+        <div class="headline">880,000원.</div>
+        <div class="sub">20% OFF / 30석 한정 / 선착순</div>
+        <div class="bullets">
+          <div class="bullet"><span class="check">✓</span><span>자격: D‑2, D‑4, D‑10, E‑시리즈 (한국 거주자)</span></div>
+          <div class="bullet"><span class="check">✓</span><span>마감: 2026년 6월 21일(일) 자정</span></div>
+        </div>
+        <div class="url-line">growthcareer.xyz/fan-to-pro</div>
+      </div>
+      <div class="wordmark">
+        <div class="mark">FAN<span class="dot">.</span> TO PRO<span class="dot">.</span></div>
+        <div class="umbrella">GROWTH CAREER</div>
+      </div>
+    </div>
+
+  </body>
+</html>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useCallback, useRef, useState } from "react";
+import { useActionState, useCallback, useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { submitApplication } from "@/src/programs/fan-to-pro/application/submit-application";
 import {
@@ -14,6 +14,7 @@ import {
   OPERATOR,
   REFUND_POLICY,
 } from "@/src/programs/fan-to-pro/domain/program";
+import { ApplyConfirmModal } from "../components/apply-confirm-modal";
 import { Chip } from "../ui/chip";
 import { Container } from "../ui/container";
 import { Eyebrow } from "../ui/eyebrow";
@@ -124,6 +125,14 @@ export function ApplyForm() {
 
   const step2FormRef = useRef<HTMLFormElement | null>(null);
 
+  // B0007 T3 — confirm modal gate between step 2 submit and the server action.
+  // `confirmedRef` flips true the moment the user clicks the modal's
+  // primary CTA, so the very next submit event (triggered programmatically
+  // via `requestSubmit`) is allowed through. We then reset it inside the
+  // submit handler so a subsequent retry has to re-confirm.
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const confirmedRef = useRef(false);
+
   const readStep2FromDom = useCallback(() => {
     const form = step2FormRef.current;
     if (!form) return;
@@ -144,12 +153,44 @@ export function ApplyForm() {
       visa: String(fd.get("visa") ?? ""),
       address: String(fd.get("address") ?? ""),
     });
+
+    // First submit attempt — intercept and show confirmation. The browser
+    // has already validated `required` fields by the time this fires, so
+    // landing in the modal implies the form is at least client-valid.
+    if (!confirmedRef.current) {
+      e.preventDefault();
+      setConfirmModalOpen(true);
+      return;
+    }
+    // Confirmed path — reset the gate so a retry after server error
+    // re-opens the modal on the next click. The action proceeds because
+    // we did not call preventDefault.
+    confirmedRef.current = false;
   };
 
   const handleBackToStep1 = () => {
     readStep2FromDom();
     setStep(1);
   };
+
+  const handleModalConfirm = useCallback(() => {
+    confirmedRef.current = true;
+    step2FormRef.current?.requestSubmit();
+  }, []);
+
+  const handleModalCancel = useCallback(() => {
+    setConfirmModalOpen(false);
+  }, []);
+
+  // Close the modal automatically once the server action succeeds — the
+  // success block replaces the whole form on the next render, so we only
+  // need this for the brief window between `pending=false` and the
+  // status flipping to ok.
+  useEffect(() => {
+    if (state.status === "ok" || state.status === "ok_local") {
+      setConfirmModalOpen(false);
+    }
+  }, [state.status]);
 
   if (state.status === "ok" || state.status === "ok_local") {
     return (
@@ -452,7 +493,7 @@ export function ApplyForm() {
                 {t("contentUseNote")}
               </p>
 
-              {fieldErrors._form && (
+              {fieldErrors._form && !confirmModalOpen && (
                 <p className="border border-brand-pink bg-brand-pink/10 px-4 py-3 text-brand-pink text-sm">
                   {fieldErrors._form}
                 </p>
@@ -484,6 +525,15 @@ export function ApplyForm() {
       {/* Keep the import referenced so the lint pass doesn't drop it. */}
       <span hidden>{tCommon("openInNewTab")}</span>
       <span hidden>{REFUND_POLICY.legalBasis}</span>
+
+      {/* B0007 T3 — confirmation modal sits above sticky CTA + locale switcher. */}
+      <ApplyConfirmModal
+        open={confirmModalOpen}
+        pending={pending}
+        errorMessage={fieldErrors._form}
+        onCancel={handleModalCancel}
+        onConfirm={handleModalConfirm}
+      />
     </Section>
   );
 }

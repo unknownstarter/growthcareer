@@ -1,6 +1,6 @@
 /**
- * Application — 신청 폼 도메인 모델 + zod 스키마.
- * 2-step 폼: Step1(연락처) → Step2(상세).
+ * Application - 신청 폼 도메인 모델 + zod 스키마.
+ * 2-step 폼: Step1(연락처) -> Step2(상세).
  *
  * i18n: 에러 메시지는 키만 발행한다 (`applyForm.errors.<key>` 형식). UI
  * 레이어에서 `useTranslations('applyForm.errors')` 로 해석하면 양 locale
@@ -12,7 +12,7 @@ import { z } from "zod";
 const phoneRegex = /^[+0-9\s\-()]{8,20}$/;
 const digitCount = (s: string) => (s.match(/\d/g) ?? []).length;
 
-// 메시지 키 상수 — 잘못된 키를 흘리지 않도록 단일 진실 소스로 묶는다.
+// 메시지 키 상수 - 잘못된 키를 흘리지 않도록 단일 진실 소스로 묶는다.
 export const ERROR_KEYS = {
   nameMin: "nameMin",
   nameMax: "nameMax",
@@ -100,3 +100,77 @@ export type ApplicationActionState =
     }
   | { status: "ok"; id: string }
   | { status: "ok_local"; id: string };
+
+/* ---------------------------------------------------------------------------
+ * Admin action contracts (B0007 T8)
+ *
+ * 운영자 페이지 /admin/applicants 의 server actions 가 사용하는 입력 스키마.
+ * 경계 검증 한 번 - 액션 내부에서는 zod 결과를 그대로 신뢰한다.
+ * 모든 액션은 uuid id 를 기본 요구하고, 액션별 추가 파라미터를 별도 스키마로 합친다.
+ * ------------------------------------------------------------------------- */
+
+export const ApplicantIdSchema = z.object({
+  id: z.string().uuid("invalidApplicantId"),
+});
+
+export const MarkAsPaidSchema = ApplicantIdSchema.extend({
+  amountKrw: z
+    .number({ invalid_type_error: "amountInvalid" })
+    .int("amountInteger")
+    .positive("amountPositive")
+    .max(10_000_000, "amountMax"),
+  depositorName: z
+    .string()
+    .trim()
+    .min(1, "depositorRequired")
+    .max(120, "depositorMax"),
+});
+
+export const MarkAsCancelledSchema = ApplicantIdSchema.extend({
+  reason: z
+    .string()
+    .trim()
+    .min(1, "reasonRequired")
+    .max(500, "reasonMax"),
+});
+
+export const MarkAsRefundedSchema = ApplicantIdSchema.extend({
+  txnId: z
+    .string()
+    .trim()
+    .min(1, "txnIdRequired")
+    .max(120, "txnIdMax"),
+});
+
+export type ApplicantId = z.infer<typeof ApplicantIdSchema>;
+export type MarkAsPaidInput = z.infer<typeof MarkAsPaidSchema>;
+export type MarkAsCancelledInput = z.infer<typeof MarkAsCancelledSchema>;
+export type MarkAsRefundedInput = z.infer<typeof MarkAsRefundedSchema>;
+
+/**
+ * Admin action 결과 - 클라이언트(운영자 페이지) UI 가 그대로 사용.
+ * throw 하지 않고 객체로 반환 - UI 가 분기 처리.
+ *   ok        : DB UPDATE 성공
+ *   stale     : optimistic concurrency 실패 (status 가 예상과 다름).
+ *               UI 는 row 를 refetch 하고 토글 상태 갱신.
+ *   error     : 입력 검증 실패 또는 DB 오류. error 문자열은 키 (i18n 용).
+ */
+export type AdminActionResult =
+  | { status: "ok" }
+  | { status: "stale"; error: "staleStatus" }
+  | { status: "error"; error: string };
+
+/**
+ * markAsEnrolled_batch 전용 결과 - 단일 row 가 아니라 일괄 결과.
+ *   ok       : Postgres 트랜잭션 성공
+ *   outcome  : enrolled = 정원 충족 -> paid 전원 enrolled
+ *              cancelled = 정원 미달 -> paid 전원 cancelled (환불 대상)
+ *   counts   : 영향받은 row 수
+ */
+export type BatchEnrollResult =
+  | {
+      status: "ok";
+      outcome: "enrolled" | "cancelled";
+      counts: { affected: number; threshold: number };
+    }
+  | { status: "error"; error: string };

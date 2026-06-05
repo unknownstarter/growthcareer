@@ -28,16 +28,18 @@
   - i18n 라이브러리 선택 (next-intl 우선 검토)
   - 출처: 2026-06-04 코워크 미팅 §13 — 타겟 = 한국 거주 외국인
 
-- **B0007** · 신청-입금 분리 플로우 + 입금 안내 자동화 · status: **specced** · 2026-06-04 specced
+- **B0007** · 신청-입금 분리 플로우 + 반자동 입금 안내 · status: **specced** · 2026-06-04 specced (rev 2 반자동 전환)
   - Spec: [`docs/specs/B0007-payment-flow-split.md`](../specs/B0007-payment-flow-split.md)
   - ADR: [`docs/decisions/0003-payment-channel-and-refund-split.md`](../decisions/0003-payment-channel-and-refund-split.md)
-  - 채널: SMS (NaverCloud SENS) + 이메일 (Resend) 자동 이중 + 카톡 채널 1:1 폴백
+  - 채널: **반자동 (운영자 dashboard 의 메시지 generate + 1-click 복사 + mailto/sms 링크 + 노아 본인 카톡/SMS/이메일 수동 발송)** + 카톡 채널 1:1 폴백
   - 컨펌 모달 신설 (체크박스 X, single-click) + 계좌번호 즉시 노출 폐지
   - 환불 정책 2층 분리 (마케팅 단순화 vs 약관 본문 무수정)
-  - 리마인드 T+1 / D-3 / D-1 23:00 cron 3회
-  - 운영자 미니 페이지 `/admin/applicants` (Basic Auth)
-  - 작업 분해: T0~T12, 마일스톤 M1~M5, 마감 6/12 (금) 까지 배포 목표
-  - 출처: 2026-06-04 코워크 미팅 §13
+  - 리마인드: cron 없이 dashboard side 색상 강조 (T+1 황색 / D-3 주황 / D-1 적색) + 노아가 보고 수동 발송
+  - 운영자 미니 페이지 `/admin/applicants` (Basic Auth) - 메시지 generate + 복사 + mailto + sms + 상태 토글 + 일괄 액션
+  - 작업 분해: T2 T3 T4 T7 T8 T10 T11 T12 (rev 1 의 T0 T1 T5 T6 T9 제거)
+  - 마일스톤: M2 코어 6/6 (금) · M3 운영자 페이지 6/7 (토) · M4 QA+배포 6/8 (일) · M5 첫 발송 6/9 (월)
+  - 인프라 도입 안 함: NaverCloud SENS, Resend, Vercel Cron 전부 제거
+  - 출처: 2026-06-04 코워크 미팅 §13 + 2026-06-04 노아 결정 변경 (반자동 전환)
 
 - **B0008** · CS 카톡 플로팅 버튼 · status: **done** · 2026-06-04 완료
   - 우측 하단 fixed 단순 anchor → `https://pf.kakao.com/_nxhDGX/chat` 새창. **SDK 불필요**

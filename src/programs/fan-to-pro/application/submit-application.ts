@@ -39,6 +39,10 @@ export async function submitApplication(
     };
   }
 
+  // B0007 반자동 모델: INSERT 시 status='pending' 명시. 입금 안내는
+  // 운영자(/admin/applicants) 가 발송 후 토글 → status='notified' 로 전환.
+  // 신규 payment_* / notified_at / reminder_count / last_reminder_at 컬럼은
+  // INSERT 시점 NULL (reminder_count 는 DB default 0). 자동 발송 없음.
   const { data, error } = await supabase
     .from(TABLE)
     .insert({
@@ -56,6 +60,7 @@ export async function submitApplication(
       // If the applicant later requests withdrawal, an operator updates this to false.
       consent_content_use: true,
       source: "fan-to-pro-landing",
+      status: "pending",
     })
     .select("id")
     .single();
@@ -68,5 +73,6 @@ export async function submitApplication(
     };
   }
 
+  // applicantId 는 운영자 페이지 row 식별용. 기존 호출부 호환을 위해 id 키 유지.
   return { status: "ok", id: String(data.id) };
 }

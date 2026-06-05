@@ -613,6 +613,31 @@
       "label": "Refund policy summary",
       "noteTemplate": "Based on {legalBasis}. {autoRefundNote}"
     },
+    "confirmModal": {
+      "title": "Quick check before you apply",
+      "subtitle": "Almost there. Here is what you are about to apply for.",
+      "priceLabel": "Tuition",
+      "priceOriginal": "KRW 1,100,000",
+      "priceDiscounted": "KRW 880,000",
+      "discountBadge": "20% OFF",
+      "paymentMethodLabel": "Payment method",
+      "paymentMethodValue": "Bank transfer (Toss Bank)",
+      "paymentMethodNote": "We will send the account number to the phone and email you entered, right after you apply.",
+      "scarcityLabel": "Seats / deadline",
+      "scarcityValue": "30 seats, first come first served",
+      "deadlineValue": "Applications close Sun Jun 21 2026 midnight (KST)",
+      "completionTitle": "Enrollment is locked when payment lands",
+      "completionBody": "Seats are confirmed in the order payments arrive.",
+      "noticeBody": "Right after you apply, we send the bank details and full guide by KakaoTalk, SMS, and email.",
+      "refundSimpleA": "100% refund any time before the deadline.",
+      "refundSimpleB": "Full automatic refund if the cohort is cancelled.",
+      "refundLinkText": "View full refund policy",
+      "trustFooter": "Dropdown Co., Ltd. / Business Reg. 154-28-02110 / Mail-order Reg. 2026-Seoul-Songpa-0882",
+      "cancelButton": "Cancel",
+      "submitButton": "Confirm and apply",
+      "submitting": "Submitting...",
+      "closeAriaLabel": "Close confirmation modal"
+    },
     "paymentNotice": {
       "eyebrow": "Payment, how your enrollment is finalized",
       "headlineA": "Your enrollment is",
@@ -640,13 +665,13 @@
       "headlineNameSuffix": ",",
       "headlineEmphasis": "you're one step in.",
       "fallbackName": "Applicant",
-      "bodyA": "Within 24 hours",
+      "bodyA": "Account details will be sent",
       "fallbackEmail": "your registered email",
-      "bodyB": "you'll receive a payment email at {email}.",
+      "bodyB": "to {email} and your phone via KakaoTalk, SMS, or email.",
       "idLabel": "Application ID: {id}",
       "checklist": [
-        "Send the bank transfer to Dropdown Co., Ltd., Toss Bank 1002-4759-1521",
-        "Once payment is confirmed, you're added to the KakaoTalk open chat automatically",
+        "Make the bank transfer using the account details we send",
+        "Once payment is confirmed, you join the KakaoTalk open chat automatically",
         "Orientation schedule will be shared separately"
       ]
     }
