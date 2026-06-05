@@ -7,8 +7,11 @@ import { resolve } from "node:path";
 const root = resolve(import.meta.dirname, "..");
 const targets = [
   "card-01-en",
+  "card-01-ko",
+  "card-03-en",
   "card-03-ko",
   "card-04-en",
+  "card-04-ko",
 ];
 
 const browser = await chromium.launch();
