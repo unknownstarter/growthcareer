@@ -28,10 +28,7 @@ export async function submitApplication(
 
   if (!supabase) {
     if (process.env.NODE_ENV !== "production") {
-      console.warn(
-        "[applicants] Supabase missing — local mock mode",
-        parsed.data,
-      );
+      console.warn("[applicants] Supabase missing, local mock mode");
     }
     return {
       status: "ok_local",
