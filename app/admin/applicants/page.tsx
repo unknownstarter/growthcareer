@@ -13,11 +13,13 @@ export const revalidate = 0;
 export const fetchCache = "force-no-store";
 
 export default async function AdminApplicantsPage() {
-  const { rows, error, supabaseAvailable } = await fetchApplicants();
+  const { rows, eligibility, error, supabaseAvailable } =
+    await fetchApplicants();
 
   return (
     <ApplicantsDashboard
       initialRows={rows}
+      anonymizeEligibility={eligibility}
       fetchError={error}
       supabaseAvailable={supabaseAvailable}
     />

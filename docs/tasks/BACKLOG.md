@@ -1,6 +1,6 @@
 # Backlog
 
-> Owner: Aria · Last reviewed: 2026-06-04
+> Owner: Aria · Last reviewed: 2026-06-05
 >
 > 운영 매뉴얼: [docs/decisions/0002-backlog-and-spec-system.md](../decisions/0002-backlog-and-spec-system.md)
 >
@@ -12,6 +12,17 @@
 ---
 
 ## Now  (이번 주)
+
+- **B0018** · 운영자 페이지 확장 Phase 2 (출결·수료증·강사정산·재무·현금영수증·PII파기·다중발송·공연매칭) · status: **specced** · 2026-06-05 specced
+  - Spec: [`docs/specs/B0018-operator-dashboard-expansion.md`](../specs/B0018-operator-dashboard-expansion.md)
+  - ADR: [`docs/decisions/0004-operator-toolset-in-app-vs-external.md`](../decisions/0004-operator-toolset-in-app-vs-external.md) (외부 SaaS 도입 0 + 신규 테이블 8개 + Wave 4분할)
+  - 신규 테이블 8개: `instructors` · `sessions` · `attendance` · `applicant_notes` · `messages_log` · `performances` · `certificates` · `cash_receipts`
+  - **Wave 1 (~10h, 6/14 까지)**: B0023 현금영수증 + B0024 PII 파기 + B0025 다중 발송 (법적 의무 + broadcast)
+  - **Wave 2 (~16h, 6/21 까지)**: B0021 강사 정산 + B0022 재무 대시보드
+  - **Wave 3 (~8h, 6/27~7/19)**: B0019 출결 기록 (강의 시작 시점부터)
+  - **Wave 4 (~12h, 7/25 까지)**: B0020 수료증 PDF + 공연 매칭 + 참여확인서
+  - **블로커**: 노아 결정 회신 17건 필요 (spec §13). 도착 후 status=approved → Iris 마이그레이션 (T1) 부터 디스패치
+  - 출처: Echo 2026-06-05 리서치 (`/admin/applicants` 확장 영역 발굴) + ADR 0004
 
 - **B0005** · 1기 일정 확정 + 강사진 공식 통지 + 사이트 일정 업데이트 · status: **done** · 2026-06-04 완료
   - 신청 마감 **6/21(일) 자정** · 첫 강의 **6/27(토)** · 종강 **7/19(일)** · 수료식+네트워킹 **7/25(토)**

@@ -23,14 +23,26 @@
 
 import {
   ApplicantIdSchema,
+  BroadcastSendSchema,
   MarkAsPaidSchema,
   MarkAsCancelledSchema,
   MarkAsRefundedSchema,
+  RecordCashReceiptSchema,
   type AdminActionResult,
+  type AnonymizeBatchResult,
   type BatchEnrollResult,
+  type BroadcastSendResult,
 } from "@/src/programs/fan-to-pro/domain/application";
 import { ENROLLMENT_CAP } from "@/src/programs/fan-to-pro/domain/program";
 import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
+import {
+  fetchCashReceipts as fetchCashReceiptsImpl,
+  fetchMessagesForApplicant as fetchMessagesForApplicantImpl,
+} from "@/src/programs/fan-to-pro/admin/fetch-applicants";
+import type {
+  CashReceiptRow,
+  MessageLogRow,
+} from "@/src/programs/fan-to-pro/admin/types";
 
 const TABLE = "applicants";
 
@@ -354,4 +366,213 @@ export async function markAsEnrolledBatch(): Promise<BatchEnrollResult> {
     outcome: "cancelled",
     counts: { affected: count ?? 0, threshold },
   };
+}
+
+/* ---------------------------------------------------------------------------
+ * 8. recordCashReceipt - B0018 Wave 1 T2
+ *   현금영수증 자진발급 audit row 1건 INSERT.
+ *   대상: applicants.status in ('paid','enrolled','refunded') 만 허용
+ *         (notified / pending / overdue / cancelled 는 입금 사실 자체가 없거나 미정).
+ *   note: 발급은 운영자가 홈택스에서 수동 처리 → 본 액션은 사후 audit row 작성.
+ * ------------------------------------------------------------------------- */
+export async function recordCashReceipt(
+  input: unknown,
+): Promise<AdminActionResult> {
+  const parsed = RecordCashReceiptSchema.safeParse(input);
+  if (!parsed.success) {
+    return { status: "error", error: "invalidInput" };
+  }
+  const supabase = requireSupabase();
+  if (!supabase) return { status: "error", error: "supabaseUnavailable" };
+
+  // 대상 applicant 의 status 검증 (UI 가드 우회 방지).
+  const { data: target, error: readErr } = await supabase
+    .from(TABLE)
+    .select("status, redacted_at")
+    .eq("id", parsed.data.id)
+    .single();
+
+  if (readErr) return { status: "error", error: readErr.message };
+  if (!target) return { status: "stale", error: "staleStatus" };
+  if (target.redacted_at !== null && target.redacted_at !== undefined) {
+    return { status: "error", error: "applicantRedacted" };
+  }
+  if (!["paid", "enrolled", "refunded"].includes(String(target.status))) {
+    return { status: "stale", error: "staleStatus" };
+  }
+
+  const issuedAt = parsed.data.issuedAt
+    ? `${parsed.data.issuedAt}T00:00:00Z` // 날짜만 입력 시 UTC 자정 - 표시는 KST 로 변환.
+    : new Date().toISOString();
+
+  const { error } = await supabase.from("cash_receipts").insert({
+    applicant_id: parsed.data.id,
+    amount_krw: parsed.data.amountKrw,
+    hometax_receipt_no: parsed.data.hometaxReceiptNo ?? null,
+    issued_at: issuedAt,
+    issued_by: OPERATOR_ID,
+    notes: parsed.data.notes ?? null,
+  });
+
+  if (error) return { status: "error", error: error.message };
+  return { status: "ok" };
+}
+
+/* ---------------------------------------------------------------------------
+ * 9. markPiiAnonymizeBatch - B0018 Wave 1 T3
+ *   public.anonymize_applicants_past_retention() Postgres 함수 호출.
+ *   조건: status in ('enrolled','cancelled','refunded')
+ *         + (payment_confirmed_at | cancelled_at | refunded_at) > 6 months ago
+ *         + redacted_at IS NULL
+ *   동작: name/email/phone/address = '[redacted]', birthdate = null, redacted_at = now()
+ *   반환: anonymizedCount = 이번 호출에서 처리된 row 수.
+ *
+ * 호출 패턴: 운영자가 [종강 +6개월 경과 PII 파기] 버튼 클릭 + 2단계 confirm 후 1회.
+ * 동시성: 함수가 멱등 (redacted_at IS NULL 조건) → 중복 클릭 안전.
+ * ------------------------------------------------------------------------- */
+export async function markPiiAnonymizeBatch(): Promise<AnonymizeBatchResult> {
+  const supabase = requireSupabase();
+  if (!supabase) return { status: "error", error: "supabaseUnavailable" };
+
+  const { data, error } = await supabase.rpc(
+    "anonymize_applicants_past_retention",
+  );
+
+  if (error) return { status: "error", error: error.message };
+
+  // RPC 의 returns table (anonymized_count integer) → row 배열로 들어옴.
+  const first = Array.isArray(data) ? data[0] : data;
+  const raw = first as Record<string, unknown> | null;
+  const count = raw && typeof raw.anonymized_count === "number"
+    ? raw.anonymized_count
+    : 0;
+
+  return { status: "ok", anonymizedCount: count };
+}
+
+/* ---------------------------------------------------------------------------
+ * 10. listCashReceipts - B0018 Wave 1 T2
+ *   drawer 의 "발급 N건" 클릭 시 client 가 호출. fetch-applicants.ts 의
+ *   helper 를 server action 으로 thin wrap.
+ * ------------------------------------------------------------------------- */
+export async function listCashReceipts(
+  input: unknown,
+): Promise<
+  | { status: "ok"; rows: CashReceiptRow[] }
+  | { status: "error"; error: string }
+> {
+  const parsed = ApplicantIdSchema.safeParse(input);
+  if (!parsed.success) {
+    return { status: "error", error: "invalidInput" };
+  }
+  const { rows, error } = await fetchCashReceiptsImpl(parsed.data.id);
+  if (error) return { status: "error", error };
+  return { status: "ok", rows };
+}
+
+/* ---------------------------------------------------------------------------
+ * 11. logBroadcastSend - B0018 Wave 1 T4
+ *
+ *   다중 발송 모달이 [메일 앱 열기] 클릭 후 동시에 호출. messages_log 일괄
+ *   INSERT 만 담당 (실제 발송은 클라이언트에서 mailto: 로 OS 기본 메일 앱을
+ *   띄움).
+ *
+ *   채택 패턴 (spec §4 권장):
+ *     - applicantId 별 row N개 INSERT (direction='broadcast', recipient_count=1)
+ *     - 별도 aggregate row 0 (신청자별 발송 이력 검색 우선)
+ *
+ *   redacted_at IS NOT NULL row 는 건너뜀 (UI 에서 체크박스 비활성으로 1차
+ *   차단. server 가 2차 가드 - id 위변조 방지). skippedCount 로 반환.
+ *
+ *   body_excerpt = body 앞 200자. PII 최소화 (mailto body 가 실제 발송 본문,
+ *   여기는 audit 용 요약만).
+ *
+ *   subject / body 의 CRLF 인젝션은 zod 검증 후 server 에서도 normalize.
+ * ------------------------------------------------------------------------- */
+export async function logBroadcastSend(
+  input: unknown,
+): Promise<BroadcastSendResult> {
+  const parsed = BroadcastSendSchema.safeParse(input);
+  if (!parsed.success) {
+    return { status: "error", error: "invalidInput" };
+  }
+  const supabase = requireSupabase();
+  if (!supabase) return { status: "error", error: "supabaseUnavailable" };
+
+  // 중복 id 제거 + CRLF normalize.
+  const uniqueIds = Array.from(new Set(parsed.data.applicantIds));
+  const normalizedSubject = parsed.data.subject.replace(/[\r\n]+/g, " ").trim();
+  const normalizedBody = parsed.data.body.replace(/\r\n/g, "\n");
+  const bodyExcerpt = normalizedBody.slice(0, 200);
+
+  // redacted_at NOT NULL 인 id 차단 (id 위변조 / 경쟁 조건 가드).
+  const { data: targets, error: readErr } = await supabase
+    .from(TABLE)
+    .select("id, redacted_at")
+    .in("id", uniqueIds);
+
+  if (readErr) return { status: "error", error: readErr.message };
+
+  const validIds: string[] = [];
+  let skippedCount = 0;
+  for (const id of uniqueIds) {
+    const target = targets?.find(
+      (t) => String((t as Record<string, unknown>).id ?? "") === id,
+    );
+    if (!target) {
+      skippedCount += 1;
+      continue;
+    }
+    const redactedAt = (target as Record<string, unknown>).redacted_at;
+    if (redactedAt) {
+      skippedCount += 1;
+      continue;
+    }
+    validIds.push(id);
+  }
+
+  if (validIds.length === 0) {
+    return { status: "ok", insertedCount: 0, skippedCount };
+  }
+
+  const sentAt = new Date().toISOString();
+  const rows = validIds.map((applicantId) => ({
+    applicant_id: applicantId,
+    channel: parsed.data.channel,
+    direction: "broadcast" as const,
+    template_id: parsed.data.templateId ?? null,
+    subject: normalizedSubject,
+    body_excerpt: bodyExcerpt,
+    sent_at: sentAt,
+    sent_by: OPERATOR_ID,
+    recipient_count: 1,
+  }));
+
+  const { error: insertErr } = await supabase.from("messages_log").insert(rows);
+  if (insertErr) return { status: "error", error: insertErr.message };
+
+  return {
+    status: "ok",
+    insertedCount: validIds.length,
+    skippedCount,
+  };
+}
+
+/* ---------------------------------------------------------------------------
+ * 12. listMessagesForApplicant - B0018 Wave 1 T4
+ *   발송 카운트 chip 클릭 시 history drawer 가 호출. 신청자별 sent_at DESC.
+ * ------------------------------------------------------------------------- */
+export async function listMessagesForApplicant(
+  input: unknown,
+): Promise<
+  | { status: "ok"; rows: MessageLogRow[] }
+  | { status: "error"; error: string }
+> {
+  const parsed = ApplicantIdSchema.safeParse(input);
+  if (!parsed.success) {
+    return { status: "error", error: "invalidInput" };
+  }
+  const { rows, error } = await fetchMessagesForApplicantImpl(parsed.data.id);
+  if (error) return { status: "error", error };
+  return { status: "ok", rows };
 }

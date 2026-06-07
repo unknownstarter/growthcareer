@@ -142,10 +142,45 @@ export const MarkAsRefundedSchema = ApplicantIdSchema.extend({
     .max(120, "txnIdMax"),
 });
 
+/**
+ * B0018 Wave 1 T2 - 현금영수증 발급 audit.
+ *
+ * - amountKrw: 발급 금액. 수강료 880,000 기본. 분할 발급도 허용 (positive).
+ * - hometaxReceiptNo: 홈택스 발급 번호. 1기는 수동 입력. 형식 자유 (홈택스 포맷이
+ *   숫자/하이픈 혼용이라 strict regex 미적용). 길이만 가드.
+ * - issuedAt: 발급일 (YYYY-MM-DD). 운영자가 백데이트 가능. 미지정 시 server 가 today.
+ * - notes: 메모 자유 (분할/오발급 사유).
+ */
+export const RecordCashReceiptSchema = ApplicantIdSchema.extend({
+  amountKrw: z
+    .number({ invalid_type_error: "amountInvalid" })
+    .int("amountInteger")
+    .positive("amountPositive")
+    .max(10_000_000, "amountMax"),
+  hometaxReceiptNo: z
+    .string()
+    .trim()
+    .max(60, "hometaxReceiptNoMax")
+    .nullish()
+    .transform((v) => v?.trim() || null),
+  issuedAt: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "issuedAtFormat")
+    .optional()
+    .or(z.literal("").transform(() => undefined)),
+  notes: z
+    .string()
+    .trim()
+    .max(500, "notesMax")
+    .optional()
+    .or(z.literal("").transform(() => undefined)),
+});
+
 export type ApplicantId = z.infer<typeof ApplicantIdSchema>;
 export type MarkAsPaidInput = z.infer<typeof MarkAsPaidSchema>;
 export type MarkAsCancelledInput = z.infer<typeof MarkAsCancelledSchema>;
 export type MarkAsRefundedInput = z.infer<typeof MarkAsRefundedSchema>;
+export type RecordCashReceiptInput = z.infer<typeof RecordCashReceiptSchema>;
 
 /**
  * Admin action 결과 - 클라이언트(운영자 페이지) UI 가 그대로 사용.
@@ -172,5 +207,74 @@ export type BatchEnrollResult =
       status: "ok";
       outcome: "enrolled" | "cancelled";
       counts: { affected: number; threshold: number };
+    }
+  | { status: "error"; error: string };
+
+/**
+ * B0018 Wave 1 T3 - PII 일괄 anonymize 결과.
+ *   ok       : Postgres 함수 실행 성공.
+ *              anonymizedCount = 이번 호출에서 [redacted] 처리된 row 수.
+ *   error    : DB 오류 또는 권한 오류.
+ */
+export type AnonymizeBatchResult =
+  | { status: "ok"; anonymizedCount: number }
+  | { status: "error"; error: string };
+
+/**
+ * B0018 Wave 1 T4 - 다중 발송 (broadcast) 입력 스키마.
+ *
+ * 1기 채널 = email BCC only (노아 결정 6). UI 에서 TO/CC 선택지 자체 미노출
+ * (Sage 인계: TO 노출 시 수강생 이메일 상호 노출 = 정보통신망법 위반 risk).
+ *
+ * applicantIds:
+ *   - min 1, max 100. mailto: 길이 한계 (대부분 OS 2KB) 때문에 50명 초과 시
+ *     UI 가 경고. server 는 100명까지는 INSERT 허용.
+ *   - 모든 id 는 redacted_at IS NULL 이어야 함 (server action 에서 추가 가드).
+ *
+ * subject / body:
+ *   - subject max 200자. body max 5000자. UI 가 char count 표시.
+ *   - 둘 다 CRLF 인젝션 차단을 위해 \r\n -> \n normalize (mailto 헤더 변조 방지).
+ *
+ * templateId:
+ *   - 운영자가 in-app 에서 자유 작성하므로 옵션. 추후 정형 템플릿 도입 시 활용.
+ */
+export const BroadcastSendSchema = z.object({
+  applicantIds: z
+    .array(z.string().uuid("invalidApplicantId"))
+    .min(1, "applicantIdsRequired")
+    .max(100, "applicantIdsMax"),
+  channel: z.literal("email"),
+  subject: z
+    .string()
+    .trim()
+    .min(1, "subjectRequired")
+    .max(200, "subjectMax"),
+  body: z
+    .string()
+    .min(1, "bodyRequired")
+    .max(5000, "bodyMax"),
+  templateId: z
+    .string()
+    .trim()
+    .max(60, "templateIdMax")
+    .optional()
+    .or(z.literal("").transform(() => undefined)),
+});
+
+export type BroadcastSendInput = z.infer<typeof BroadcastSendSchema>;
+
+/**
+ * B0018 Wave 1 T4 - broadcast 발송 결과.
+ *   ok            : messages_log INSERT 완료. insertedCount = 기록된 row 수.
+ *                    개별 row N 개 (applicant_id 별) 패턴 채택. broadcast row 0.
+ *                    (신청자별 발송 이력 검색 우선.)
+ *   skippedCount  : redacted_at IS NOT NULL 로 차단된 id 수. UI 가 경고 표시.
+ *   error         : 입력 검증 / DB 오류. error 는 키 문자열.
+ */
+export type BroadcastSendResult =
+  | {
+      status: "ok";
+      insertedCount: number;
+      skippedCount: number;
     }
   | { status: "error"; error: string };

@@ -1,6 +1,26 @@
 import { cn } from "@/src/programs/fan-to-pro/presentation/components/cn";
 import type { ApplicantStatus } from "../types";
 
+/**
+ * B0018 Wave 1 T3 - PII 파기된 row 의 시각 분기 chip.
+ * status chip 옆에 함께 노출.
+ */
+export function RedactedChip({ className }: { className?: string }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1 border border-zinc-600 bg-zinc-800/60 px-2 py-0.5 text-[10px] font-black uppercase text-zinc-400 whitespace-nowrap",
+        className,
+      )}
+      style={{ letterSpacing: "0.18em" }}
+      title="개인정보 파기됨 (PIPA §21)"
+    >
+      <span aria-hidden>REDACTED</span>
+      <span className="sr-only">개인정보 파기됨</span>
+    </span>
+  );
+}
+
 const STATUS_LABEL: Record<ApplicantStatus, string> = {
   pending: "PENDING",
   notified: "NOTIFIED",

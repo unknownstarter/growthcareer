@@ -47,6 +47,46 @@ export type ApplicantRow = {
   cancelReason: string | null;
   refundedAt: string | null;
   refundTxnId: string | null;
+
+  // B0018 Wave 1 T2 / T3
+  redactedAt: string | null;
+  cashReceiptCount: number;
+
+  // B0018 Wave 1 T4 - 발송 카운트 chip / 발송 이력 drawer 트리거.
+  messageCount: number;
+};
+
+/** B0018 Wave 1 T2 - 발급 이력 list 표시용. */
+export type CashReceiptRow = {
+  id: string;
+  amountKrw: number;
+  issuedAt: string; // ISO
+  hometaxReceiptNo: string | null;
+  notes: string | null;
+};
+
+/** B0018 Wave 1 T3 - 6개월 경과 + status 종료 + 미파기 row 의 현재 카운트. */
+export type AnonymizeEligibility = {
+  /** 종강 +6개월 경과 + redacted_at IS NULL 인 row 수. UI [N명] 표시용. */
+  eligibleCount: number;
+};
+
+/**
+ * B0018 Wave 1 T4 - 신청자별 발송 이력 1건.
+ *
+ * messages_log row 의 client 친화 매핑. body 본문 자체는 저장 안 하고
+ * body_excerpt (앞 200자) 만 보관 (PII 최소화).
+ */
+export type MessageLogRow = {
+  id: string;
+  channel: "email" | "sms" | "kakao_channel" | "kakao_alimtalk";
+  direction: "individual" | "broadcast";
+  templateId: string | null;
+  subject: string | null;
+  bodyExcerpt: string | null;
+  sentAt: string; // ISO
+  sentBy: string | null;
+  recipientCount: number;
 };
 
 export type ApplicantStats = {

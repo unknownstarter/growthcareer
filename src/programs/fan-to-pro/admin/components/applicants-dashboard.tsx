@@ -4,22 +4,26 @@ import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/src/programs/fan-to-pro/presentation/components/cn";
 import {
+  logBroadcastSend,
   markAsCancelled,
   markAsEnrolledBatch,
   markAsNotified,
   markAsOverdue,
   markAsPaid,
   markAsRefunded,
+  markPiiAnonymizeBatch,
+  recordCashReceipt,
   sendReminder,
 } from "@/src/programs/fan-to-pro/application/admin-actions";
 import {
   APPLICANT_STATUSES,
   computeStats,
   getReminderUrgency,
+  type AnonymizeEligibility,
   type ApplicantRow,
   type ApplicantStatus,
 } from "../types";
-import { StatusChip, STATUS_LABEL_KO } from "./status-chip";
+import { StatusChip, STATUS_LABEL_KO, RedactedChip } from "./status-chip";
 import { ToastProvider, useToast } from "./toast";
 import { MessageDrawer } from "./message-drawer";
 import {
@@ -28,6 +32,10 @@ import {
   MarkPaidDialog,
   RefundDialog,
 } from "./action-dialogs";
+import { CashReceiptDrawer } from "./cash-receipt-drawer";
+import { PiiAnonymizeDialog } from "./pii-anonymize-dialog";
+import { BroadcastDialog } from "./broadcast-dialog";
+import { MessagesHistoryDrawer } from "./messages-history-drawer";
 import { downloadCsv } from "./csv";
 import {
   MESSAGE_KIND_LABELS,
@@ -67,10 +75,12 @@ const accentBtn =
 
 export function ApplicantsDashboard({
   initialRows,
+  anonymizeEligibility,
   supabaseAvailable,
   fetchError,
 }: {
   initialRows: ApplicantRow[];
+  anonymizeEligibility: AnonymizeEligibility;
   supabaseAvailable: boolean;
   fetchError: string | null;
 }) {
@@ -78,6 +88,7 @@ export function ApplicantsDashboard({
     <ToastProvider>
       <DashboardInner
         initialRows={initialRows}
+        anonymizeEligibility={anonymizeEligibility}
         supabaseAvailable={supabaseAvailable}
         fetchError={fetchError}
       />
@@ -87,10 +98,12 @@ export function ApplicantsDashboard({
 
 function DashboardInner({
   initialRows,
+  anonymizeEligibility,
   supabaseAvailable,
   fetchError,
 }: {
   initialRows: ApplicantRow[];
+  anonymizeEligibility: AnonymizeEligibility;
   supabaseAvailable: boolean;
   fetchError: string | null;
 }) {
@@ -109,6 +122,17 @@ function DashboardInner({
   const [cancelTarget, setCancelTarget] = useState<ApplicantRow | null>(null);
   const [refundTarget, setRefundTarget] = useState<ApplicantRow | null>(null);
   const [enrollBatchOpen, setEnrollBatchOpen] = useState(false);
+  // B0018 Wave 1 T2 / T3
+  const [receiptTarget, setReceiptTarget] = useState<ApplicantRow | null>(null);
+  const [receiptRefreshKey, setReceiptRefreshKey] = useState(0);
+  const [anonymizeOpen, setAnonymizeOpen] = useState(false);
+
+  // B0018 Wave 1 T4 - 다중 발송 + 발송 이력.
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [broadcastOpen, setBroadcastOpen] = useState(false);
+  const [historyApplicant, setHistoryApplicant] = useState<ApplicantRow | null>(
+    null,
+  );
 
   const [isPending, startTransition] = useTransition();
 
@@ -212,6 +236,57 @@ function DashboardInner({
     });
   }
 
+  // B0018 Wave 1 T2 - 현금영수증 발급 기록.
+  function runRecordCashReceipt(input: {
+    amountKrw: number;
+    hometaxReceiptNo?: string;
+    issuedAt?: string;
+    notes?: string;
+  }) {
+    if (!receiptTarget) return;
+    startTransition(async () => {
+      const result = await recordCashReceipt({
+        id: receiptTarget.id,
+        ...input,
+      });
+      if (result.status === "ok") {
+        show("현금영수증 발급 기록을 저장했어요.", "success");
+        setReceiptRefreshKey((k) => k + 1);
+        refresh();
+        return;
+      }
+      if (result.status === "stale") {
+        show("이 신청자는 발급 대상이 아니에요 (입금 미확인 / 파기).", "info");
+        return;
+      }
+      show(friendlyError(result.error), "error");
+    });
+  }
+
+  // B0018 Wave 1 T3 - PII 일괄 anonymize.
+  function runPiiAnonymize() {
+    startTransition(async () => {
+      const result = await markPiiAnonymizeBatch();
+      if (result.status === "ok") {
+        if (result.anonymizedCount > 0) {
+          show(
+            `${result.anonymizedCount}명의 개인정보를 파기했어요.`,
+            "success",
+          );
+        } else {
+          show(
+            "처리할 대상이 없어요 (이미 모두 파기됐거나 미만료).",
+            "info",
+          );
+        }
+        setAnonymizeOpen(false);
+        refresh();
+        return;
+      }
+      show(friendlyError(result.error), "error");
+    });
+  }
+
   function runEnrollBatch() {
     startTransition(async () => {
       const result = await markAsEnrolledBatch();
@@ -244,6 +319,95 @@ function DashboardInner({
       return next;
     });
   }
+
+  // B0018 Wave 1 T4 - 선택 helpers.
+  // redacted_at IS NOT NULL row 는 체크 불가 (이메일 [redacted] = 발송 불가).
+  const selectableFiltered = useMemo(
+    () => filtered.filter((row) => !row.redactedAt),
+    [filtered],
+  );
+  const masterChecked =
+    selectableFiltered.length > 0 &&
+    selectableFiltered.every((row) => selectedIds.has(row.id));
+  const masterIndeterminate =
+    !masterChecked && selectableFiltered.some((row) => selectedIds.has(row.id));
+  const selectedCount = selectedIds.size;
+
+  function toggleRowSelected(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleMasterSelected() {
+    if (masterChecked) {
+      // 현재 필터된 row 만 해제 (다른 필터에서 선택된 id 는 보존).
+      const filteredIds = new Set(selectableFiltered.map((r) => r.id));
+      setSelectedIds((prev) => {
+        const next = new Set(prev);
+        for (const id of filteredIds) next.delete(id);
+        return next;
+      });
+    } else {
+      setSelectedIds((prev) => {
+        const next = new Set(prev);
+        for (const row of selectableFiltered) next.add(row.id);
+        return next;
+      });
+    }
+  }
+
+  // B0018 Wave 1 T4 - 다중 발송 실행.
+  // 메일 앱 열기 + server action 동시 호출. mailto: navigation 은 동기 트리거.
+  function runBroadcast(input: {
+    applicantIds: string[];
+    subject: string;
+    body: string;
+    mailtoUrl: string;
+  }) {
+    startTransition(async () => {
+      // 1) 메일 앱 즉시 실행. window.location.href 가 mailto: navigation 트리거.
+      //    (a 태그 click 도 가능하지만 모달 안에서는 location 이 더 안정적.)
+      try {
+        window.location.href = input.mailtoUrl;
+      } catch {
+        // 일부 브라우저는 mailto: 지원 없으면 throw → 무시하고 audit row 는 기록.
+      }
+
+      // 2) 같은 transition 안에서 messages_log INSERT.
+      const result = await logBroadcastSend({
+        applicantIds: input.applicantIds,
+        channel: "email",
+        subject: input.subject,
+        body: input.body,
+      });
+
+      if (result.status === "ok") {
+        const skipNote =
+          result.skippedCount > 0
+            ? ` (제외 ${result.skippedCount}명: 파기된 PII)`
+            : "";
+        show(
+          `${result.insertedCount}명에게 발송 준비 완료${skipNote}. 메일 앱에서 보내주세요.`,
+          "success",
+        );
+        setBroadcastOpen(false);
+        setSelectedIds(new Set());
+        refresh();
+        return;
+      }
+      show(friendlyError(result.error), "error");
+    });
+  }
+
+  // 선택된 applicant 객체 배열 (broadcast 모달에 전달).
+  const selectedApplicants = useMemo(
+    () => initialRows.filter((row) => selectedIds.has(row.id)),
+    [initialRows, selectedIds],
+  );
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -279,6 +443,25 @@ function DashboardInner({
             {stats.reminderT1 > 0 ? (
               <StatPill label="T+1 리마인드" value={stats.reminderT1} tone="t1" />
             ) : null}
+            {/* B0018 T3 - 종강 6개월 경과 PII 파기 버튼 */}
+            <button
+              type="button"
+              onClick={() => setAnonymizeOpen(true)}
+              className={cn(
+                "inline-flex items-center gap-1.5 border px-2 py-1 text-[10px] font-black uppercase whitespace-nowrap",
+                anonymizeEligibility.eligibleCount > 0
+                  ? "border-red-500/60 bg-red-500/10 text-red-200 hover:bg-red-500/20"
+                  : "border-border bg-bg text-fg-subtle hover:text-fg",
+              )}
+              style={{ letterSpacing: "0.15em" }}
+              title="PIPA §21 - 종강 +6개월 경과 신청자의 개인정보 파기"
+              disabled={isPending}
+            >
+              <span>PII 파기</span>
+              <span className="text-fg">
+                {anonymizeEligibility.eligibleCount}
+              </span>
+            </button>
           </div>
         </div>
       </header>
@@ -342,7 +525,38 @@ function DashboardInner({
               ) : null}
             </div>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {selectedCount > 0 ? (
+              <>
+                <span
+                  className="inline-flex items-center gap-1.5 border border-brand-pink/60 bg-brand-pink/10 px-2 py-1 text-[10px] font-black uppercase text-brand-pink"
+                  style={{ letterSpacing: "0.15em" }}
+                  role="status"
+                  aria-live="polite"
+                >
+                  <span>선택</span>
+                  <span className="text-fg">{selectedCount}명</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedIds(new Set())}
+                  className={compactBtn}
+                  style={compactStyle}
+                >
+                  선택 해제
+                </button>
+              </>
+            ) : null}
+            <button
+              type="button"
+              onClick={() => setBroadcastOpen(true)}
+              className={accentBtn}
+              style={compactStyle}
+              disabled={selectedCount === 0 || isPending}
+              title="이메일 BCC 일괄 발송"
+            >
+              다중 발송 ({selectedCount})
+            </button>
             <button
               type="button"
               onClick={() => downloadCsv(filtered)}
@@ -369,6 +583,23 @@ function DashboardInner({
           <table className="w-full border-collapse text-left text-sm">
             <thead className="bg-surface text-[10px] uppercase text-fg-subtle">
               <tr style={{ letterSpacing: "0.2em" }}>
+                <th className="px-2 py-2 font-black w-8">
+                  <input
+                    type="checkbox"
+                    aria-label={
+                      masterChecked
+                        ? "전체 선택 해제"
+                        : "현재 필터의 신청자 전체 선택"
+                    }
+                    checked={masterChecked}
+                    ref={(el) => {
+                      if (el) el.indeterminate = masterIndeterminate;
+                    }}
+                    onChange={toggleMasterSelected}
+                    disabled={selectableFiltered.length === 0}
+                    className="h-4 w-4 cursor-pointer accent-brand-pink"
+                  />
+                </th>
                 <th className="px-3 py-2 font-black">신청일</th>
                 <th className="px-3 py-2 font-black">이름</th>
                 <th className="px-3 py-2 font-black">연락처</th>
@@ -385,7 +616,7 @@ function DashboardInner({
               {filtered.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={10}
+                    colSpan={11}
                     className="px-3 py-12 text-center text-xs text-fg-subtle"
                   >
                     표시할 신청자가 없어요.
@@ -395,6 +626,7 @@ function DashboardInner({
               {filtered.map((row) => {
                 const urgency = getReminderUrgency(row);
                 const tint = URGENCY_TINT[urgency.level];
+                const checked = selectedIds.has(row.id);
                 return (
                   <tr
                     key={row.id}
@@ -402,8 +634,23 @@ function DashboardInner({
                       "border-t border-border border-l-4 text-xs hover:bg-surface-elevated/40",
                       tint.border,
                       tint.bg,
+                      checked && "bg-brand-pink/[0.05]",
                     )}
                   >
+                    <td className="px-2 py-2 align-top">
+                      <input
+                        type="checkbox"
+                        aria-label={
+                          row.redactedAt
+                            ? `${row.name} 선택 불가 (PII 파기)`
+                            : `${row.name} 선택`
+                        }
+                        checked={checked}
+                        onChange={() => toggleRowSelected(row.id)}
+                        disabled={row.redactedAt !== null}
+                        className="h-4 w-4 cursor-pointer accent-brand-pink disabled:cursor-not-allowed disabled:opacity-30"
+                      />
+                    </td>
                     <td className="px-3 py-2 align-top text-fg-muted whitespace-nowrap">
                       {formatDate(row.createdAt)}
                     </td>
@@ -428,7 +675,10 @@ function DashboardInner({
                       {row.visa ?? "-"}
                     </td>
                     <td className="px-3 py-2 align-top">
-                      <StatusChip status={row.status} />
+                      <div className="flex flex-wrap gap-1">
+                        <StatusChip status={row.status} />
+                        {row.redactedAt ? <RedactedChip /> : null}
+                      </div>
                     </td>
                     <td className="px-3 py-2 align-top text-fg-muted whitespace-nowrap">
                       {row.notifiedAt ? formatDate(row.notifiedAt) : "-"}
@@ -454,6 +704,11 @@ function DashboardInner({
                         onPaid={() => setPaidTarget(row)}
                         onCancel={() => setCancelTarget(row)}
                         onRefund={() => setRefundTarget(row)}
+                        onReceipt={() => {
+                          setReceiptRefreshKey((k) => k + 1);
+                          setReceiptTarget(row);
+                        }}
+                        onHistory={() => setHistoryApplicant(row)}
                       />
                     </td>
                   </tr>
@@ -473,6 +728,7 @@ function DashboardInner({
           {filtered.map((row) => {
             const urgency = getReminderUrgency(row);
             const tint = URGENCY_TINT[urgency.level];
+            const checked = selectedIds.has(row.id);
             return (
               <article
                 key={row.id}
@@ -480,16 +736,32 @@ function DashboardInner({
                   "border border-border border-l-4 bg-surface/60 p-3 text-xs",
                   tint.border,
                   tint.bg,
+                  checked && "bg-brand-pink/[0.05]",
                 )}
               >
                 <header className="flex items-start justify-between gap-2">
-                  <div>
-                    <div className="text-sm font-bold text-fg">{row.name}</div>
-                    <div className="text-fg-muted">{row.email}</div>
-                    <div className="text-fg-muted">{row.phone}</div>
+                  <div className="flex items-start gap-2">
+                    <input
+                      type="checkbox"
+                      aria-label={
+                        row.redactedAt
+                          ? `${row.name} 선택 불가 (PII 파기)`
+                          : `${row.name} 선택`
+                      }
+                      checked={checked}
+                      onChange={() => toggleRowSelected(row.id)}
+                      disabled={row.redactedAt !== null}
+                      className="mt-1 h-4 w-4 cursor-pointer accent-brand-pink disabled:cursor-not-allowed disabled:opacity-30"
+                    />
+                    <div>
+                      <div className="text-sm font-bold text-fg">{row.name}</div>
+                      <div className="text-fg-muted">{row.email}</div>
+                      <div className="text-fg-muted">{row.phone}</div>
+                    </div>
                   </div>
                   <div className="flex flex-col items-end gap-1">
                     <StatusChip status={row.status} />
+                    {row.redactedAt ? <RedactedChip /> : null}
                     {tint.label ? (
                       <span
                         className="border border-current px-1 py-0.5 text-[9px] font-black"
@@ -529,6 +801,11 @@ function DashboardInner({
                     onPaid={() => setPaidTarget(row)}
                     onCancel={() => setCancelTarget(row)}
                     onRefund={() => setRefundTarget(row)}
+                    onReceipt={() => {
+                      setReceiptRefreshKey((k) => k + 1);
+                      setReceiptTarget(row);
+                    }}
+                    onHistory={() => setHistoryApplicant(row)}
                   />
                 </div>
               </article>
@@ -579,6 +856,36 @@ function DashboardInner({
         onClose={() => setEnrollBatchOpen(false)}
         onSubmit={runEnrollBatch}
       />
+      {receiptTarget ? (
+        <CashReceiptDrawer
+          open
+          busy={isPending}
+          applicant={receiptTarget}
+          refreshKey={receiptRefreshKey}
+          onClose={() => setReceiptTarget(null)}
+          onSubmit={runRecordCashReceipt}
+        />
+      ) : null}
+      <PiiAnonymizeDialog
+        open={anonymizeOpen}
+        busy={isPending}
+        eligibleCount={anonymizeEligibility.eligibleCount}
+        onClose={() => setAnonymizeOpen(false)}
+        onConfirm={runPiiAnonymize}
+      />
+      {/* B0018 Wave 1 T4 - 다중 발송 + 발송 이력 */}
+      <BroadcastDialog
+        open={broadcastOpen}
+        busy={isPending}
+        applicants={selectedApplicants}
+        onClose={() => setBroadcastOpen(false)}
+        onSend={runBroadcast}
+      />
+      <MessagesHistoryDrawer
+        open={historyApplicant !== null}
+        applicant={historyApplicant}
+        onClose={() => setHistoryApplicant(null)}
+      />
     </div>
   );
 }
@@ -593,6 +900,8 @@ function RowActions({
   onPaid,
   onCancel,
   onRefund,
+  onReceipt,
+  onHistory,
 }: {
   row: ApplicantRow;
   busy: boolean;
@@ -603,18 +912,63 @@ function RowActions({
   onPaid: () => void;
   onCancel: () => void;
   onRefund: () => void;
+  onReceipt: () => void;
+  onHistory: () => void;
 }) {
+  // PII 파기된 row 는 발송/연락 액션이 무의미 → 메시지 버튼 숨김.
+  // 거래 처리 액션 (취소/환불/현금영수증 기록) 은 회계 무결성 위해 유지.
+  const redacted = row.redactedAt !== null;
+  const receiptEligible =
+    !redacted &&
+    (row.status === "paid" ||
+      row.status === "enrolled" ||
+      row.status === "refunded");
+
   return (
     <div className="flex flex-wrap gap-1">
-      <button
-        type="button"
-        onClick={onMessage}
-        className={accentBtn}
-        style={compactStyle}
-        disabled={busy}
-      >
-        메시지
-      </button>
+      {redacted ? null : (
+        <button
+          type="button"
+          onClick={onMessage}
+          className={accentBtn}
+          style={compactStyle}
+          disabled={busy}
+        >
+          메시지
+        </button>
+      )}
+      {row.messageCount > 0 ? (
+        <button
+          type="button"
+          onClick={onHistory}
+          className={compactBtn}
+          style={compactStyle}
+          disabled={busy}
+          title={`발송 이력 ${row.messageCount}건`}
+        >
+          발송
+          <span className="ml-1 text-fg">{row.messageCount}</span>
+        </button>
+      ) : null}
+      {receiptEligible ? (
+        <button
+          type="button"
+          onClick={onReceipt}
+          className={compactBtn}
+          style={compactStyle}
+          disabled={busy}
+          title={
+            row.cashReceiptCount > 0
+              ? `현금영수증 발급 ${row.cashReceiptCount}건`
+              : "현금영수증 발급 기록"
+          }
+        >
+          현금영수증
+          {row.cashReceiptCount > 0 ? (
+            <span className="ml-1 text-fg">{row.cashReceiptCount}</span>
+          ) : null}
+        </button>
+      ) : null}
       {row.status === "pending" ? (
         <button
           type="button"
@@ -745,6 +1099,8 @@ function friendlyError(key: string): string {
       return "입력 값이 올바르지 않아요.";
     case "staleStatus":
       return "다른 곳에서 이미 변경됐어요.";
+    case "applicantRedacted":
+      return "이미 PII 가 파기된 신청자에게는 이 액션을 실행할 수 없어요.";
     default:
       return `오류가 발생했어요: ${key}`;
   }

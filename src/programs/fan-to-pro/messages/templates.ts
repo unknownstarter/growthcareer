@@ -393,6 +393,45 @@ export function buildSmsUrl(phone: string, body: string): string {
   return `sms:${cleanedPhone}?body=${encodeURIComponent(body)}`;
 }
 
+/**
+ * B0018 Wave 1 T4 - broadcast mailto: URL.
+ *
+ * 강제 BCC. TO 비어 있음 (수강생 이메일 상호 노출 방지 - Sage 인계).
+ *
+ * 길이 제한:
+ *   - 대부분 OS 의 mailto URI 길이 한계 약 2KB.
+ *   - 한국인 이메일 평균 25자 + URL encoding (콤마 = %2C) 감안 시 50명까지 안전.
+ *   - 50명 초과 시 UI 가 사전 경고하고 청크 발송 권장.
+ *
+ * 보안:
+ *   - subject / body 의 CRLF (%0D%0A) 인코딩 결과는 RFC 6068 에 따라 OS 가 헤더로
+ *     해석하지 않음. 그래도 mailto 구현체 버그 회피 위해 normalize 후 호출.
+ *   - emails 배열은 호출부에서 redacted 차단 + 중복 제거 가정.
+ */
+export function buildBroadcastMailtoUrl(
+  emails: string[],
+  subject: string,
+  body: string,
+): string {
+  const params = new URLSearchParams();
+  // BCC 콤마 구분. URL encoding 은 URLSearchParams 가 처리.
+  params.set("bcc", emails.join(","));
+  params.set("subject", subject);
+  params.set("body", body);
+  const query = params.toString().replaceAll("+", "%20");
+  // TO 비움 (mailto:?bcc=... 형태). RFC 6068 § 6 명시 허용.
+  return `mailto:?${query}`;
+}
+
+/**
+ * B0018 Wave 1 T4 - mailto URI 길이 사전 검사.
+ * 50 = 안전 / 100 = 경고 임계. 100 초과는 reject.
+ */
+export const BROADCAST_LIMITS = {
+  safe: 50,
+  warn: 100,
+} as const;
+
 export const MESSAGE_KIND_LABELS: Record<MessageKind, string> = {
   paymentGuide: "입금 안내",
   paymentConfirmed: "입금 확인 완료",
