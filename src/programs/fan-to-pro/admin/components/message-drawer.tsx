@@ -21,14 +21,14 @@ type LocaleMode = "auto" | "ko" | "en";
 
 const KAKAO_CHAT_URL = "https://pf.kakao.com/_nxhDGX/chat";
 
-const labelClass = "block text-[10px] font-black uppercase text-fg-subtle";
+const labelClass = "block text-[10px] font-black uppercase text-fg/80";
 const labelStyle = { letterSpacing: "0.2em" } as const;
 
 const primaryBtn =
   "inline-flex items-center justify-center gap-2 bg-brand-pink px-3 py-2 text-xs font-black uppercase text-fg hover:bg-brand-purple disabled:opacity-60";
 
 const ghostBtn =
-  "inline-flex items-center justify-center border border-border bg-bg px-3 py-2 text-xs font-black uppercase text-fg-muted hover:text-fg disabled:opacity-40";
+  "inline-flex items-center justify-center border border-border bg-bg px-3 py-2 text-xs font-black uppercase text-fg hover:text-fg disabled:opacity-40";
 
 const btnStyle = { letterSpacing: "0.15em" } as const;
 
@@ -116,7 +116,7 @@ export function MessageDrawer({
     >
       <div className="flex flex-col gap-4">
         {/* 상단 메타 */}
-        <div className="grid grid-cols-1 gap-2 border border-border bg-bg/40 p-3 text-[11px] text-fg-muted sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-2 border border-border bg-bg/40 p-3 text-[11px] text-fg sm:grid-cols-3">
           <div>
             <span className={labelClass} style={labelStyle}>
               이메일
@@ -194,7 +194,7 @@ export function MessageDrawer({
             rows={channel === "email" ? 14 : 8}
             className="w-full resize-y border border-border bg-bg px-3 py-2 text-xs leading-relaxed text-fg outline-none focus:border-brand-pink sm:text-sm"
           />
-          <span className="text-[11px] text-fg-subtle">
+          <span className="text-[11px] text-fg/80">
             {body.length} 글자. 발송 직전 톤 조정 가능.
           </span>
         </label>
@@ -285,7 +285,7 @@ function ToggleGroup<T extends string>({
                 "border px-2.5 py-1.5 text-[11px] font-black uppercase transition-colors",
                 selected
                   ? "border-brand-pink bg-brand-pink/15 text-brand-pink"
-                  : "border-border bg-bg text-fg-muted hover:text-fg",
+                  : "border-border bg-bg text-fg hover:text-fg",
               )}
               style={{ letterSpacing: "0.1em" }}
             >

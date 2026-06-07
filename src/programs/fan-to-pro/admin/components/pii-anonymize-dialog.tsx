@@ -30,7 +30,7 @@ const primaryBtn =
   "inline-flex items-center justify-center gap-2 bg-red-500 px-4 py-2.5 text-xs font-black uppercase text-white hover:bg-red-600 disabled:opacity-40";
 
 const ghostBtn =
-  "inline-flex items-center justify-center border border-border bg-bg px-4 py-2.5 text-xs font-black uppercase text-fg-muted hover:text-fg disabled:opacity-40";
+  "inline-flex items-center justify-center border border-border bg-bg px-4 py-2.5 text-xs font-black uppercase text-fg hover:text-fg disabled:opacity-40";
 
 const btnStyle = { letterSpacing: "0.15em" } as const;
 
@@ -96,12 +96,12 @@ export function PiiAnonymizeDialog({
 
           <div className="border border-border bg-bg/40 p-3 text-xs">
             <p
-              className="text-[10px] font-black uppercase text-fg-subtle"
+              className="text-[10px] font-black uppercase text-fg/80"
               style={{ letterSpacing: "0.2em" }}
             >
               영향받는 필드
             </p>
-            <ul className="mt-2 grid grid-cols-2 gap-1 text-fg-muted">
+            <ul className="mt-2 grid grid-cols-2 gap-1 text-fg">
               <li>이름 → [redacted]</li>
               <li>이메일 → [redacted]</li>
               <li>전화번호 → [redacted]</li>
@@ -109,7 +109,7 @@ export function PiiAnonymizeDialog({
               <li>생년월일 → NULL</li>
               <li>redacted_at → 지금</li>
             </ul>
-            <p className="mt-2 text-fg-subtle">
+            <p className="mt-2 text-fg/80">
               status / 입금 / 환불 / 발급 이력 등 거래 기록은 유지돼요. PIPA §21
               기준 PII 만 제거.
             </p>
@@ -144,7 +144,7 @@ export function PiiAnonymizeDialog({
         </div>
       ) : (
         <form onSubmit={handleConfirmSubmit} className="flex flex-col gap-4">
-          <p className="text-xs text-fg-muted">
+          <p className="text-xs text-fg">
             확인을 위해 아래 입력란에{" "}
             <strong className="text-fg">{CONFIRM_WORD}</strong> 를 정확히
             입력해 주세요.
@@ -152,7 +152,7 @@ export function PiiAnonymizeDialog({
 
           <label className="flex flex-col gap-1.5">
             <span
-              className="text-[10px] font-black uppercase text-fg-subtle"
+              className="text-[10px] font-black uppercase text-fg/80"
               style={{ letterSpacing: "0.2em" }}
             >
               확인 문구

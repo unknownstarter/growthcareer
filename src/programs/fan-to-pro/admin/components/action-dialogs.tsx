@@ -9,7 +9,7 @@ const fieldClass =
   "w-full border border-border bg-bg px-3 py-2 text-sm text-fg outline-none focus:border-brand-pink";
 
 const labelClass =
-  "block text-[10px] font-black uppercase text-fg-subtle";
+  "block text-[10px] font-black uppercase text-fg/80";
 
 const labelStyle = { letterSpacing: "0.2em" } as const;
 
@@ -17,7 +17,7 @@ const primaryBtn =
   "inline-flex items-center justify-center gap-2 bg-brand-pink px-4 py-2.5 text-xs font-black uppercase text-fg hover:bg-brand-purple disabled:opacity-60";
 
 const ghostBtn =
-  "inline-flex items-center justify-center border border-border bg-bg px-4 py-2.5 text-xs font-black uppercase text-fg-muted hover:text-fg disabled:opacity-40";
+  "inline-flex items-center justify-center border border-border bg-bg px-4 py-2.5 text-xs font-black uppercase text-fg hover:text-fg disabled:opacity-40";
 
 const btnStyle = { letterSpacing: "0.15em" } as const;
 
@@ -57,7 +57,7 @@ export function MarkPaidDialog({
   return (
     <Modal open={open} onClose={onClose} title="입금 확인 처리" busy={busy}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <p className="text-xs text-fg-muted">
+        <p className="text-xs text-fg">
           {applicant.name} 님 ({applicant.email}) 의 입금을 확인 처리해요.
         </p>
 
@@ -74,7 +74,7 @@ export function MarkPaidDialog({
             disabled={busy}
             autoFocus
           />
-          <span className="text-[11px] text-fg-subtle">
+          <span className="text-[11px] text-fg/80">
             정가 880,000원. 부분입금/오입금 시 실제 금액으로 수정.
           </span>
         </label>
@@ -90,7 +90,7 @@ export function MarkPaidDialog({
             className={fieldClass}
             disabled={busy}
           />
-          <span className="text-[11px] text-fg-subtle">
+          <span className="text-[11px] text-fg/80">
             신청자 이름: {applicant.name}. 다르면 그대로 기록.
           </span>
         </label>
@@ -163,7 +163,7 @@ export function CancelDialog({
   return (
     <Modal open={open} onClose={onClose} title="신청 취소" busy={busy}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <p className="text-xs text-fg-muted">
+        <p className="text-xs text-fg">
           {applicant.name} 님 ({applicant.email}) 의 신청을 취소 처리해요.
           이후 환불 처리는 별도 액션이에요.
         </p>
@@ -183,7 +183,7 @@ export function CancelDialog({
           />
         </label>
 
-        <label className="flex items-start gap-2 text-xs text-fg-muted">
+        <label className="flex items-start gap-2 text-xs text-fg">
           <input
             type="checkbox"
             checked={confirmed}
@@ -259,7 +259,7 @@ export function RefundDialog({
   return (
     <Modal open={open} onClose={onClose} title="환불 완료 처리" busy={busy}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <p className="text-xs text-fg-muted">
+        <p className="text-xs text-fg">
           {applicant.name} 님 ({applicant.email}) 의 환불을 완료 처리해요.
         </p>
 
@@ -355,14 +355,14 @@ export function EnrollBatchDialog({
             <br />
             최소 정원: <strong>{threshold}명</strong>
           </p>
-          <p className="mt-2 text-fg-muted">
+          <p className="mt-2 text-fg">
             {meets
               ? "정원 충족 → paid 전원이 enrolled 로 전환돼요."
               : "정원 미달 → paid 전원이 cancelled 로 전환되고 환불 대상이 돼요."}
           </p>
         </div>
 
-        <label className="flex items-start gap-2 text-xs text-fg-muted">
+        <label className="flex items-start gap-2 text-xs text-fg">
           <input
             type="checkbox"
             checked={confirmed}

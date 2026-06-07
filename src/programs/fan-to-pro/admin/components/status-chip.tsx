@@ -42,7 +42,7 @@ const STATUS_KO: Record<ApplicantStatus, string> = {
 };
 
 const STATUS_TONE: Record<ApplicantStatus, string> = {
-  pending: "border-fg-subtle/40 bg-fg-subtle/10 text-fg-muted",
+  pending: "border-fg-subtle/40 bg-fg-subtle/10 text-fg",
   notified: "border-blue-400/60 bg-blue-500/15 text-blue-200",
   paid: "border-emerald-500/60 bg-emerald-500/15 text-emerald-200",
   overdue: "border-red-500/70 bg-red-500/20 text-red-200",

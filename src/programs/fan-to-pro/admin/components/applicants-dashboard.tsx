@@ -66,7 +66,7 @@ const URGENCY_TINT: Record<
 };
 
 const compactBtn =
-  "inline-flex items-center justify-center border border-border bg-bg px-2.5 py-1.5 text-[10px] font-black uppercase text-fg-muted hover:text-fg hover:border-fg-subtle disabled:opacity-40 whitespace-nowrap";
+  "inline-flex items-center justify-center border border-border bg-bg px-2.5 py-1.5 text-[10px] font-black uppercase text-fg hover:text-fg hover:border-fg-subtle disabled:opacity-40 whitespace-nowrap";
 
 const compactStyle = { letterSpacing: "0.12em" } as const;
 
@@ -428,7 +428,7 @@ function DashboardInner({
               Fan to Pro 신청자
             </h1>
           </div>
-          <div className="flex flex-wrap items-center gap-2 text-[11px] text-fg-muted">
+          <div className="flex flex-wrap items-center gap-2 text-[11px] text-fg">
             <StatPill label="총" value={stats.total} tone="default" />
             <StatPill label="PENDING" value={stats.byStatus.pending} tone="pending" />
             <StatPill label="NOTIFIED" value={stats.byStatus.notified} tone="notified" />
@@ -451,7 +451,7 @@ function DashboardInner({
                 "inline-flex items-center gap-1.5 border px-2 py-1 text-[10px] font-black uppercase whitespace-nowrap",
                 anonymizeEligibility.eligibleCount > 0
                   ? "border-red-500/60 bg-red-500/10 text-red-200 hover:bg-red-500/20"
-                  : "border-border bg-bg text-fg-subtle hover:text-fg",
+                  : "border-border bg-bg text-fg/80 hover:text-fg",
               )}
               style={{ letterSpacing: "0.15em" }}
               title="PIPA §21 - 종강 +6개월 경과 신청자의 개인정보 파기"
@@ -504,7 +504,7 @@ function DashboardInner({
                       "border px-2 py-1 text-[10px] font-black uppercase transition-colors",
                       active
                         ? "border-brand-pink bg-brand-pink/15 text-brand-pink"
-                        : "border-border bg-bg text-fg-muted hover:text-fg",
+                        : "border-border bg-bg text-fg hover:text-fg",
                     )}
                     style={{ letterSpacing: "0.15em" }}
                     title={STATUS_LABEL_KO[s]}
@@ -517,7 +517,7 @@ function DashboardInner({
                 <button
                   type="button"
                   onClick={() => setStatusFilter(new Set())}
-                  className="border border-border bg-bg px-2 py-1 text-[10px] font-black uppercase text-fg-subtle hover:text-fg"
+                  className="border border-border bg-bg px-2 py-1 text-[10px] font-black uppercase text-fg/80 hover:text-fg"
                   style={{ letterSpacing: "0.15em" }}
                 >
                   reset
@@ -581,7 +581,7 @@ function DashboardInner({
         {/* Table (desktop) */}
         <div className="hidden border border-border md:block">
           <table className="w-full border-collapse text-left text-sm">
-            <thead className="bg-surface text-[10px] uppercase text-fg-subtle">
+            <thead className="bg-surface text-[10px] uppercase text-fg">
               <tr style={{ letterSpacing: "0.2em" }}>
                 <th className="px-2 py-2 font-black w-8">
                   <input
@@ -617,7 +617,7 @@ function DashboardInner({
                 <tr>
                   <td
                     colSpan={11}
-                    className="px-3 py-12 text-center text-xs text-fg-subtle"
+                    className="px-3 py-12 text-center text-xs text-fg/80"
                   >
                     표시할 신청자가 없어요.
                   </td>
@@ -651,7 +651,7 @@ function DashboardInner({
                         className="h-4 w-4 cursor-pointer accent-brand-pink disabled:cursor-not-allowed disabled:opacity-30"
                       />
                     </td>
-                    <td className="px-3 py-2 align-top text-fg-muted whitespace-nowrap">
+                    <td className="px-3 py-2 align-top text-fg whitespace-nowrap">
                       {formatDate(row.createdAt)}
                     </td>
                     <td className="px-3 py-2 align-top text-fg font-bold">
@@ -665,13 +665,13 @@ function DashboardInner({
                         </span>
                       ) : null}
                     </td>
-                    <td className="px-3 py-2 align-top text-fg-muted whitespace-nowrap">
+                    <td className="px-3 py-2 align-top text-fg whitespace-nowrap">
                       {row.phone}
                     </td>
-                    <td className="px-3 py-2 align-top text-fg-muted break-all">
+                    <td className="px-3 py-2 align-top text-fg break-all">
                       {row.email}
                     </td>
-                    <td className="px-3 py-2 align-top text-fg-muted whitespace-nowrap">
+                    <td className="px-3 py-2 align-top text-fg whitespace-nowrap">
                       {row.visa ?? "-"}
                     </td>
                     <td className="px-3 py-2 align-top">
@@ -680,15 +680,15 @@ function DashboardInner({
                         {row.redactedAt ? <RedactedChip /> : null}
                       </div>
                     </td>
-                    <td className="px-3 py-2 align-top text-fg-muted whitespace-nowrap">
+                    <td className="px-3 py-2 align-top text-fg whitespace-nowrap">
                       {row.notifiedAt ? formatDate(row.notifiedAt) : "-"}
                     </td>
-                    <td className="px-3 py-2 align-top text-fg-muted whitespace-nowrap">
+                    <td className="px-3 py-2 align-top text-fg whitespace-nowrap">
                       {row.reminderCount > 0
                         ? `${row.reminderCount}회${row.lastReminderAt ? ` (${formatDate(row.lastReminderAt)})` : ""}`
                         : "-"}
                     </td>
-                    <td className="px-3 py-2 align-top text-fg-muted whitespace-nowrap">
+                    <td className="px-3 py-2 align-top text-fg whitespace-nowrap">
                       {row.paymentConfirmedAt
                         ? `${formatDate(row.paymentConfirmedAt)}${row.paidAmountKrw ? ` / ${row.paidAmountKrw.toLocaleString()}원` : ""}`
                         : "-"}
@@ -721,7 +721,7 @@ function DashboardInner({
         {/* Cards (mobile) */}
         <div className="flex flex-col gap-2 md:hidden">
           {filtered.length === 0 ? (
-            <div className="border border-border bg-surface/60 px-3 py-12 text-center text-xs text-fg-subtle">
+            <div className="border border-border bg-surface/60 px-3 py-12 text-center text-xs text-fg/80">
               표시할 신청자가 없어요.
             </div>
           ) : null}
@@ -755,8 +755,8 @@ function DashboardInner({
                     />
                     <div>
                       <div className="text-sm font-bold text-fg">{row.name}</div>
-                      <div className="text-fg-muted">{row.email}</div>
-                      <div className="text-fg-muted">{row.phone}</div>
+                      <div className="text-fg">{row.email}</div>
+                      <div className="text-fg">{row.phone}</div>
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-1">
@@ -772,19 +772,19 @@ function DashboardInner({
                     ) : null}
                   </div>
                 </header>
-                <dl className="mt-2 grid grid-cols-2 gap-1 text-[11px] text-fg-subtle">
+                <dl className="mt-2 grid grid-cols-2 gap-1 text-[11px] text-fg/80">
                   <dt>신청일</dt>
-                  <dd className="text-fg-muted">{formatDate(row.createdAt)}</dd>
+                  <dd className="text-fg">{formatDate(row.createdAt)}</dd>
                   <dt>비자</dt>
-                  <dd className="text-fg-muted">{row.visa ?? "-"}</dd>
+                  <dd className="text-fg">{row.visa ?? "-"}</dd>
                   <dt>발송</dt>
-                  <dd className="text-fg-muted">
+                  <dd className="text-fg">
                     {row.notifiedAt ? formatDate(row.notifiedAt) : "-"}
                   </dd>
                   <dt>리마인드</dt>
-                  <dd className="text-fg-muted">{row.reminderCount}회</dd>
+                  <dd className="text-fg">{row.reminderCount}회</dd>
                   <dt>입금</dt>
-                  <dd className="text-fg-muted">
+                  <dd className="text-fg">
                     {row.paymentConfirmedAt
                       ? `${formatDate(row.paymentConfirmedAt)}${row.paidAmountKrw ? ` / ${row.paidAmountKrw.toLocaleString()}원` : ""}`
                       : "-"}
@@ -1060,8 +1060,8 @@ function StatPill({
   pulse?: boolean;
 }) {
   const toneClass = {
-    default: "border-border bg-bg text-fg-muted",
-    pending: "border-fg-subtle/40 bg-fg-subtle/10 text-fg-muted",
+    default: "border-border bg-bg text-fg",
+    pending: "border-fg-subtle/40 bg-fg-subtle/10 text-fg",
     notified: "border-blue-400/60 bg-blue-500/15 text-blue-200",
     paid: "border-emerald-500/60 bg-emerald-500/15 text-emerald-200",
     enrolled: "border-brand-pink bg-brand-pink/20 text-brand-pink",

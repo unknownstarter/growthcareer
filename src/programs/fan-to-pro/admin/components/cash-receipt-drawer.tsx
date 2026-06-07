@@ -30,14 +30,14 @@ const HOMETAX_URL =
 const fieldClass =
   "w-full border border-border bg-bg px-3 py-2 text-sm text-fg outline-none focus:border-brand-pink disabled:opacity-50";
 
-const labelClass = "block text-[10px] font-black uppercase text-fg-subtle";
+const labelClass = "block text-[10px] font-black uppercase text-fg/80";
 const labelStyle = { letterSpacing: "0.2em" } as const;
 
 const primaryBtn =
   "inline-flex items-center justify-center gap-2 bg-brand-pink px-4 py-2.5 text-xs font-black uppercase text-fg hover:bg-brand-purple disabled:opacity-60";
 
 const ghostBtn =
-  "inline-flex items-center justify-center border border-border bg-bg px-4 py-2.5 text-xs font-black uppercase text-fg-muted hover:text-fg disabled:opacity-40";
+  "inline-flex items-center justify-center border border-border bg-bg px-4 py-2.5 text-xs font-black uppercase text-fg hover:text-fg disabled:opacity-40";
 
 const btnStyle = { letterSpacing: "0.15em" } as const;
 
@@ -156,7 +156,7 @@ export function CashReceiptDrawer({
     >
       <div className="flex flex-col gap-5">
         {/* 신청자 컨텍스트 */}
-        <div className="grid grid-cols-1 gap-2 border border-border bg-bg/40 p-3 text-[11px] text-fg-muted sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-2 border border-border bg-bg/40 p-3 text-[11px] text-fg sm:grid-cols-3">
           <div>
             <span className={labelClass} style={labelStyle}>
               이메일
@@ -182,7 +182,7 @@ export function CashReceiptDrawer({
         </div>
 
         {/* 홈택스 외부 링크 안내 */}
-        <div className="flex flex-col gap-1 border border-brand-pink/40 bg-brand-pink/[0.06] p-3 text-xs text-fg-muted">
+        <div className="flex flex-col gap-1 border border-brand-pink/40 bg-brand-pink/[0.06] p-3 text-xs text-fg">
           <p className="text-fg">
             홈택스에서 자진발급한 후 발급 번호를 아래에 기록해 주세요.
           </p>
@@ -199,7 +199,7 @@ export function CashReceiptDrawer({
         {/* 신규 발급 기록 폼 */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <h3
-            className="text-[11px] font-black uppercase text-fg-subtle"
+            className="text-[11px] font-black uppercase text-fg/80"
             style={{ letterSpacing: "0.2em" }}
           >
             신규 발급 기록
@@ -296,19 +296,19 @@ export function CashReceiptDrawer({
         {/* 발급 이력 */}
         <section className="flex flex-col gap-2 border-t border-border pt-4">
           <h3
-            className="text-[11px] font-black uppercase text-fg-subtle"
+            className="text-[11px] font-black uppercase text-fg/80"
             style={{ letterSpacing: "0.2em" }}
           >
             발급 이력 {history ? `(${history.length}건)` : ""}
           </h3>
           {historyLoading ? (
-            <p className="text-xs text-fg-subtle">불러오는 중...</p>
+            <p className="text-xs text-fg/80">불러오는 중...</p>
           ) : historyError ? (
             <p className="border border-brand-pink bg-brand-pink/10 px-3 py-2 text-xs text-brand-pink">
               이력 로드 오류: {historyError}
             </p>
           ) : !history || history.length === 0 ? (
-            <p className="text-xs text-fg-subtle">아직 발급 이력이 없어요.</p>
+            <p className="text-xs text-fg/80">아직 발급 이력이 없어요.</p>
           ) : (
             <ul className="flex flex-col gap-1.5">
               {history.map((row) => (
@@ -324,15 +324,15 @@ export function CashReceiptDrawer({
                       {row.amountKrw.toLocaleString()}원
                     </span>
                     {row.hometaxReceiptNo ? (
-                      <span className="text-fg-muted">
+                      <span className="text-fg">
                         홈택스 번호: {row.hometaxReceiptNo}
                       </span>
                     ) : (
-                      <span className="text-fg-subtle">홈택스 번호 미기재</span>
+                      <span className="text-fg/80">홈택스 번호 미기재</span>
                     )}
                   </div>
                   {row.notes ? (
-                    <p className="mt-1 text-fg-muted">{row.notes}</p>
+                    <p className="mt-1 text-fg">{row.notes}</p>
                   ) : null}
                 </li>
               ))}

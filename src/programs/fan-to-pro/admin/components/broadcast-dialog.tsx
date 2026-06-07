@@ -12,7 +12,7 @@ import type { ApplicantRow } from "../types";
 const fieldClass =
   "w-full border border-border bg-bg px-3 py-2 text-sm text-fg outline-none focus:border-brand-pink";
 
-const labelClass = "block text-[10px] font-black uppercase text-fg-subtle";
+const labelClass = "block text-[10px] font-black uppercase text-fg/80";
 
 const labelStyle = { letterSpacing: "0.2em" } as const;
 
@@ -20,7 +20,7 @@ const primaryBtn =
   "inline-flex items-center justify-center gap-2 bg-brand-pink px-4 py-2.5 text-xs font-black uppercase text-fg hover:bg-brand-purple disabled:opacity-60";
 
 const ghostBtn =
-  "inline-flex items-center justify-center border border-border bg-bg px-4 py-2.5 text-xs font-black uppercase text-fg-muted hover:text-fg disabled:opacity-40";
+  "inline-flex items-center justify-center border border-border bg-bg px-4 py-2.5 text-xs font-black uppercase text-fg hover:text-fg disabled:opacity-40";
 
 const btnStyle = { letterSpacing: "0.15em" } as const;
 
@@ -155,12 +155,12 @@ export function BroadcastDialog({
             </span>
           </div>
           {recipientEmails.length === 0 ? (
-            <p className="text-fg-muted">
+            <p className="text-fg">
               발송 가능한 신청자가 없어요. 모달을 닫고 다시 선택해 주세요.
             </p>
           ) : (
             <p
-              className="break-all text-fg-muted"
+              className="break-all text-fg"
               aria-label="BCC 수신자 미리보기"
             >
               {recipientEmails.slice(0, 5).join(", ")}
@@ -187,7 +187,7 @@ export function BroadcastDialog({
               청크 발송으로 나눠 주세요.
             </p>
           ) : null}
-          <p className="mt-2 text-[11px] text-fg-subtle">
+          <p className="mt-2 text-[11px] text-fg/80">
             모든 발송은 BCC 처리돼요. TO / CC 선택지는 정보통신망법 §50 정보 노출
             방지 위해 차단했어요.
           </p>
@@ -208,7 +208,7 @@ export function BroadcastDialog({
             maxLength={SUBJECT_MAX}
             autoFocus
           />
-          <span className="text-[11px] text-fg-subtle">
+          <span className="text-[11px] text-fg/80">
             {subject.length} / {SUBJECT_MAX}자
           </span>
         </label>
@@ -229,7 +229,7 @@ export function BroadcastDialog({
             disabled={busy || recipientEmails.length === 0}
             maxLength={BODY_MAX}
           />
-          <span className="text-[11px] text-fg-subtle">
+          <span className="text-[11px] text-fg/80">
             {body.length} / {BODY_MAX}자. 운영자가 직접 작성. 1기는 BCC 일괄
             발송이라 {"{name}"} 등 변수 치환 미지원.
           </span>
@@ -237,7 +237,7 @@ export function BroadcastDialog({
 
         {/* mailto: 길이 표시 (디버그/정보) */}
         {recipientEmails.length > 0 ? (
-          <p className="text-[11px] text-fg-subtle">
+          <p className="text-[11px] text-fg/80">
             mailto URI 길이: {mailtoLength.toLocaleString()} byte (OS 권장 한계
             약 2,000 byte)
           </p>

@@ -111,7 +111,7 @@ export function Modal({
             onClick={onClose}
             disabled={busy}
             aria-label="닫기"
-            className="flex h-8 w-8 items-center justify-center text-fg-subtle hover:text-fg disabled:opacity-40"
+            className="flex h-8 w-8 items-center justify-center text-fg/80 hover:text-fg disabled:opacity-40"
           >
             <span aria-hidden className="text-xl leading-none">
               ×
