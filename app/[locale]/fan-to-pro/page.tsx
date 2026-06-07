@@ -4,6 +4,7 @@ import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Footer } from "@/src/programs/fan-to-pro/presentation/components/footer";
 import { StickyCTA } from "@/src/programs/fan-to-pro/presentation/components/sticky-cta";
+import { StructuredData } from "@/src/programs/fan-to-pro/presentation/components/structured-data";
 import { ApplyForm } from "@/src/programs/fan-to-pro/presentation/sections/apply-form";
 import { Bonus } from "@/src/programs/fan-to-pro/presentation/sections/bonus";
 import { FAQ } from "@/src/programs/fan-to-pro/presentation/sections/faq";
@@ -56,6 +57,7 @@ export async function generateMetadata({
       description: t("ogDescription"),
       siteName: t("siteName"),
       locale: ogLocale,
+      alternateLocale: locale === "ko" ? ["en_US"] : ["ko_KR"],
     },
     twitter: {
       card: "summary_large_image",
@@ -76,6 +78,7 @@ export default async function FanToProPage({
 
   return (
     <main className="relative">
+      <StructuredData locale={locale} />
       <Hero />
       <Problem />
       <Solution />
