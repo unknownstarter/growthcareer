@@ -563,7 +563,7 @@
       },
       "nationality": {
         "label": "국적",
-        "placeholder": "예) 대한민국 / Vietnam / Indonesia"
+        "placeholder": "예) 미국 / 스페인 / 중국"
       },
       "birthdate": {
         "label": "생년월일"

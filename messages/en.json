@@ -563,7 +563,7 @@
       },
       "nationality": {
         "label": "Nationality",
-        "placeholder": "e.g. Vietnam / Indonesia / Korea"
+        "placeholder": "e.g. USA / Spain / China"
       },
       "birthdate": {
         "label": "Date of birth"
