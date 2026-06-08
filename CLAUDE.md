@@ -143,6 +143,42 @@ UI 변경은 항상 `pnpm preview` 로 **자체 캡처 → Read → 사용자에
 
 ---
 
+## 7.5 세션 핸드오프 (Session Handoff)
+
+세션이 길어지거나 rate limit / 중단으로 끊겼을 때 다음 세션이 컨텍스트를 즉시 복원할 수 있게 한다.
+
+### 단일 파일 — `WORKING-SESSION.md`
+
+루트의 `WORKING-SESSION.md` 가 항상 최신 작업 상태를 담는다. 다음 5 섹션:
+
+1. **현재 상태** — 1기 운영 시점, 모집 D-?, 배포 상태
+2. **최근 완료** — 큰 작업 단위로 정리 (B0XXX 식 백로그 ID 와 연결)
+3. **진행 중 / 대기 중** — 다음 작업, 블로커, 예정 Wave
+4. **노아 manual action 잔여** — Vercel env / Search Console / DNS / 시각 검토 등
+5. **핵심 파일 / 경로** — spec, ADR, migrations, components 등 단축 reference
+
+### 업데이트 트리거
+
+- 큰 작업 (Wave, B0XXX 단위) 끝날 때마다
+- commit + push 후
+- 노아가 "잠깐 멈춤" / 세션 종료 의사 표시할 때
+- 단순 minor fix 는 commit 으로 충분 — WORKING-SESSION 업데이트 안 해도 됨
+
+### 아카이브
+
+세션 단락이 끝나면 `docs/sessions/SESSION-YYYY-MM-DD-{short-title}.md` 로 스냅샷 박제. `WORKING-SESSION.md` 는 새 작업 상태로 덮어쓴다. 상세: `docs/sessions/README.md`.
+
+### 다음 세션 시작 시 권장 흐름
+
+1. `WORKING-SESSION.md` 먼저 읽기
+2. `git log --oneline -10` 최근 커밋
+3. `git status` 작업 중 변경
+4. `docs/tasks/BACKLOG.md` 다음 작업 우선순위
+
+CLAUDE.md / 메모리는 자동 로드되므로 별도 액션 X.
+
+---
+
 ## 8. 외부 리소스 — 명명 불일치 주의
 
 브랜드/우산명을 여러 번 바꾼 흔적이 외부 리소스에 일부 남아 있음. **이름은 그대로 두지만 매핑은 명확히 인지해야 함.**
