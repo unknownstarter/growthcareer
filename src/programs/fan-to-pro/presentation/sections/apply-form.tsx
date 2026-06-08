@@ -26,6 +26,7 @@ type Step1Data = {
   name: string;
   email: string;
   phone: string;
+  nationality: string;
 };
 
 type Step2Data = {
@@ -35,7 +36,12 @@ type Step2Data = {
   address: string;
 };
 
-const EMPTY_STEP1: Step1Data = { name: "", email: "", phone: "" };
+const EMPTY_STEP1: Step1Data = {
+  name: "",
+  email: "",
+  phone: "",
+  nationality: "",
+};
 const EMPTY_STEP2: Step2Data = {
   birthdate: "",
   university: "",
@@ -44,7 +50,12 @@ const EMPTY_STEP2: Step2Data = {
 };
 
 type Step1Field = keyof Step1Data;
-const STEP1_FIELD_ORDER: readonly Step1Field[] = ["name", "email", "phone"];
+const STEP1_FIELD_ORDER: readonly Step1Field[] = [
+  "name",
+  "email",
+  "phone",
+  "nationality",
+];
 
 // All translatable error keys live in messages under `applyForm.errors.<key>`.
 // The schemas / server action only emit keys; the UI resolves them here so
@@ -79,6 +90,7 @@ export function ApplyForm() {
     name: null,
     email: null,
     phone: null,
+    nationality: null,
   });
 
   const setStep1Ref = (field: Step1Field) => (el: HTMLInputElement | null) => {
@@ -97,6 +109,7 @@ export function ApplyForm() {
       name: String(fd.get("name") ?? ""),
       email: String(fd.get("email") ?? ""),
       phone: String(fd.get("phone") ?? ""),
+      nationality: String(fd.get("nationality") ?? ""),
     };
     const parsed = Step1Schema.safeParse(data);
     if (!parsed.success) {
@@ -105,6 +118,7 @@ export function ApplyForm() {
         name: resolveErrorKey(tErrors, flat.name?.[0]),
         email: resolveErrorKey(tErrors, flat.email?.[0]),
         phone: resolveErrorKey(tErrors, flat.phone?.[0]),
+        nationality: resolveErrorKey(tErrors, flat.nationality?.[0]),
       };
       setStep1Errors(errors);
       setStep1(data);
@@ -269,6 +283,7 @@ export function ApplyForm() {
     name: resolveErrorKey(tErrors, rawFieldErrors.name?.[0]),
     email: resolveErrorKey(tErrors, rawFieldErrors.email?.[0]),
     phone: resolveErrorKey(tErrors, rawFieldErrors.phone?.[0]),
+    nationality: resolveErrorKey(tErrors, rawFieldErrors.nationality?.[0]),
     birthdate: resolveErrorKey(tErrors, rawFieldErrors.birthdate?.[0]),
     university: resolveErrorKey(tErrors, rawFieldErrors.university?.[0]),
     visa: resolveErrorKey(tErrors, rawFieldErrors.visa?.[0]),
@@ -422,6 +437,16 @@ export function ApplyForm() {
                 required
                 inputRef={setStep1Ref("phone")}
               />
+              <Field
+                label={t("fields.nationality.label")}
+                name="nationality"
+                placeholder={t("fields.nationality.placeholder")}
+                defaultValue={step1.nationality}
+                error={step1Errors.nationality}
+                autoComplete="country-name"
+                required
+                inputRef={setStep1Ref("nationality")}
+              />
 
               <button
                 type="submit"
@@ -442,6 +467,11 @@ export function ApplyForm() {
               <input type="hidden" name="name" value={step1.name} />
               <input type="hidden" name="email" value={step1.email} />
               <input type="hidden" name="phone" value={step1.phone} />
+              <input
+                type="hidden"
+                name="nationality"
+                value={step1.nationality}
+              />
 
               <Field
                 label={t("fields.birthdate.label")}

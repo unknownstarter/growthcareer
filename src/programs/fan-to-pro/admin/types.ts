@@ -23,6 +23,7 @@ export type ApplicantRow = {
   name: string;
   email: string;
   phone: string;
+  nationality: string | null;
   birthdate: string | null;
   university: string | null;
   visa: string | null;

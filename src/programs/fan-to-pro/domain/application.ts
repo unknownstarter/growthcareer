@@ -12,6 +12,32 @@ import { z } from "zod";
 const phoneRegex = /^[+0-9\s\-()]{8,20}$/;
 const digitCount = (s: string) => (s.match(/\d/g) ?? []).length;
 
+// 한국 휴대폰/일반전화 패턴이면 표준 하이픈 포맷으로 정규화. 외국 번호는
+// 원본 trim 만. 운영자가 DB 에서 phone 으로 조회·정렬할 때 일관성 유지.
+function normalizePhone(raw: string): string {
+  const trimmed = raw.trim();
+  const digits = trimmed.replace(/\D/g, "");
+  let local = digits;
+  if (local.startsWith("82")) local = "0" + local.slice(2);
+  // 010/011/016-019 휴대폰 11자리
+  if (local.length === 11 && /^01[016789]/.test(local)) {
+    return `${local.slice(0, 3)}-${local.slice(3, 7)}-${local.slice(7)}`;
+  }
+  // 011-19 옛 휴대폰 10자리
+  if (local.length === 10 && /^01[16789]/.test(local)) {
+    return `${local.slice(0, 3)}-${local.slice(3, 6)}-${local.slice(6)}`;
+  }
+  // 서울 02 일반전화 10자리
+  if (local.length === 10 && local.startsWith("02")) {
+    return `${local.slice(0, 2)}-${local.slice(2, 6)}-${local.slice(6)}`;
+  }
+  // 서울 02 일반전화 9자리
+  if (local.length === 9 && local.startsWith("02")) {
+    return `${local.slice(0, 2)}-${local.slice(2, 5)}-${local.slice(5)}`;
+  }
+  return trimmed;
+}
+
 // 메시지 키 상수 - 잘못된 키를 흘리지 않도록 단일 진실 소스로 묶는다.
 export const ERROR_KEYS = {
   nameMin: "nameMin",
@@ -19,6 +45,7 @@ export const ERROR_KEYS = {
   emailInvalid: "emailInvalid",
   phoneInvalid: "phoneInvalid",
   phoneDigits: "phoneDigits",
+  nationalityRequired: "nationalityRequired",
   birthdateFormat: "birthdateFormat",
   universityMin: "universityMin",
   visaRequired: "visaRequired",
@@ -38,7 +65,13 @@ export const Step1Schema = z.object({
     .string()
     .trim()
     .regex(phoneRegex, ERROR_KEYS.phoneInvalid)
-    .refine((v) => digitCount(v) >= 8, ERROR_KEYS.phoneDigits),
+    .refine((v) => digitCount(v) >= 8, ERROR_KEYS.phoneDigits)
+    .transform(normalizePhone),
+  nationality: z
+    .string()
+    .trim()
+    .min(2, ERROR_KEYS.nationalityRequired)
+    .max(60),
 });
 
 export const VISA_OPTIONS = [

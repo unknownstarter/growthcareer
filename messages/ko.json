@@ -561,6 +561,10 @@
         "label": "연락처",
         "placeholder": "010-1234-5678"
       },
+      "nationality": {
+        "label": "국적",
+        "placeholder": "예) 대한민국 / Vietnam / Indonesia"
+      },
       "birthdate": {
         "label": "생년월일"
       },
@@ -583,6 +587,7 @@
       "emailInvalid": "유효한 이메일 주소를 입력해주세요.",
       "phoneInvalid": "유효한 연락처를 입력해주세요. (숫자, +, -, 공백)",
       "phoneDigits": "연락처에 숫자가 8개 이상 포함되어야 합니다.",
+      "nationalityRequired": "국적을 입력해주세요.",
       "birthdateFormat": "생년월일은 YYYY-MM-DD 형식이어야 합니다.",
       "universityMin": "재학 또는 졸업 대학을 입력해주세요.",
       "visaRequired": "비자 상태를 선택해주세요.",

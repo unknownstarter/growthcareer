@@ -46,6 +46,7 @@ export async function submitApplication(
       name: parsed.data.name,
       email: parsed.data.email,
       phone: parsed.data.phone,
+      nationality: parsed.data.nationality,
       birthdate: parsed.data.birthdate,
       university: parsed.data.university,
       visa: parsed.data.visa,
