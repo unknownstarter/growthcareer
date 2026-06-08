@@ -221,12 +221,12 @@ alter table public.cash_receipts enable row level security;
 | audit log | (a) `messages_log` 재사용 / (b) `instructor_payouts` 별도 테이블 | ⭐ (a) 재사용 — `channel='email'`, `template_id='instructor_payout'`. 별도 테이블 안 만듦 |
 
 빌드:
-- `instructors` 테이블 + `sessions` 테이블 (사전 입력 — 이제향·Nino·박성철 3명, 8회 강의 매핑)
+- `instructors` 테이블 + `sessions` 테이블 (사전 입력 = 이제향·Nino·박성철 3명, 8회 강의 매핑)
 - 운영자 페이지 신규 탭 `/admin/instructors`
 - 강사 리스트 + 강사료 자동 계산 (`base_fee_krw` + `bonus_per_n` jsonb 룰)
-  - 예: `{"20": 0, "25": 500000, "30": 1000000}` = 20명 250만 / 25명 300만 / 30명 350만
-- [정산 메시지 생성] 버튼 → mailto: 강사 이메일 + 본문 (송금 안내 + 세금계산서 요청 or 원천징수 안내)
-- 노아가 송금 + 송금 완료 토글 → `messages_log` INSERT
+  - 계약서 §4 기준 2단계: 20명 미만 base / 20~29명 +50만 / 30석 만석 +100만 (실제 구현은 본 룰을 따른다. 1기는 강사 3명 모두 동일 룰)
+- 정산 메시지 발송은 **운영자가 외부 메일 클라이언트에서 수동 처리** (in-app mailto helper 미도입). 운영자는 `/admin/instructors` 에서 row 별 강사 정보·계좌·세금 모드를 확인 후, 본인 메일 앱에서 본문 작성·발송
+- 노아가 송금 + 송금 완료 토글 → `instructor_payouts` row 의 `paid_at` 기록
 
 ### 4.2 재무 대시보드 (B0022 sub-spec, ~4~6h)
 
@@ -393,10 +393,10 @@ Wave 별 종료 시 Sage 가 점검:
 ### Wave 2
 
 1. instructors 3명 사전 입력 → `/admin/instructors` 리스트 표시
-2. 수강생 25명 가정 → 강사료 자동 계산 = 300만 (bonus_per_n 룰 적용)
-3. [정산 메시지 생성] → mailto 본문에 송금 안내 + 세금 모드 분기 정확
+2. 수강생 25명 가정 → 강사료 자동 계산 = **250만** (계약서 §4 룰: 20~29명 = base + 50만. 30석 만석 시 +100만)
+3. 정산 row INSERT (`recordInstructorPayouts`) + 송금 완료 토글 (`markInstructorPayoutPaid`) → DB 정합성. **메일 발송은 운영자가 외부 메일 클라이언트에서 수동 처리** (in-app mailto 미도입)
 4. `/admin/finance` 카드 4종 (매출 880만 x N / 환불 / 강사료 / 마진) 정확
-5. CSV export → applicants + instructors + performances 통합 다운로드
+5. CSV export → applicants + instructor_payouts ledger 통합 다운로드 (performances 는 Wave 4 추가)
 
 ### Wave 3
 

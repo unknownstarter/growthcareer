@@ -57,10 +57,13 @@
 
 ## 🔄 진행 중 / 대기 중
 
-### Wave 2 Mira QA (잠시 보류)
-- 첫 시도 API rate limit 으로 fail
-- 코드 자체는 빌드 통과 + Iris/Luna 자체 검증 통과 (블로커 없음)
-- 다음 세션에서 재시도 또는 노아가 직접 둘러보고 issue 발견 시 fix
+### Wave 2 QA + 보안 (2026-06-08 완료)
+- **Mira QA**: 5 시나리오 PASS / WARN / FAIL→강등 / PASS / WARN. typecheck PASS. 회계 무결성 + PII 보호 + 멱등성 OK
+- 캡처 `docs/screenshots/wave2-qa/` (instructors + finance × desktop + mobile)
+- **Sage 보안**: pass (critical/high 차단 사유 0). HIGH 1 (server action 인증 freshness — Wave 1 수용 패턴) · MED 3 · LOW 2 모두 backlog (B0026 주민번호 암호화 / B0027 error 매핑 / B0028 CSV refId + 자격 회전)
+- **결정**: mailto 정산 메시지 미구현 항목 (Mira #3) → ship + 스펙 강등. 운영자가 외부 메일 클라이언트에서 수동 발송. 종강(7/25) 이후 정산 시점에 다시 판단
+- 스펙 §4.1 + §11 Wave 2 시나리오 문구 정정 완료 (코드 = 계약서 §4 = 스펙 일치)
+- 잔여 minor: `finance` 운영자 노트 텍스트 영역 미도입 (스펙 §4.2 마지막 bullet 누락). 1기 운영 중 필요해지면 추가
 
 ### B0018 Wave 3 (출결) — 6/27 강의 시작 후 진입
 - `attendance` 테이블 + 8회 × 30명 출결 UI

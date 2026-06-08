@@ -130,6 +130,21 @@
   - 너무 일찍 자동화 금지 — 수동 운영이 일주일 이상 익숙해진 후 패턴 굳으면 박제
   - 출처: ADR 0002 §6
 
+- **B0026** · 강사 `resident_no` (주민번호) 암호화 + UI 마스킹 · status: **raw** · 2026-06-08 captured · owner: Iris
+  - 개인정보보호법 §24 고유식별정보 암호화 의무 (Sage Wave 2 MED 지적)
+  - DB: pgcrypto AES (서버 사이드 키 관리) · UI: 마지막 4자리만 표시, 변경 시에만 full input
+  - 출처: Sage 2026-06-08 Wave 2 보안 검토
+
+- **B0027** · 운영자 toast error 매핑 (Supabase error.message passthrough 제거) · status: **raw** · 2026-06-08 captured · owner: Luna
+  - 현재 UNIQUE constraint·FK violation 메시지에 컬럼명·테이블명·인덱스명 그대로 노출 → 자격 유출 시 스키마 탐색 표면
+  - `instructor-actions.ts` · `finance-actions.ts` · `admin-actions.ts` 전부 친화 키 (`dbError`) 매핑 + 원본은 server log 만
+  - 출처: Sage 2026-06-08 Wave 2 보안 검토
+
+- **B0028** · 회계사 CSV 의 `refId` UUID 마스킹 + 운영자 자격 분기 1회 회전 · status: **raw** · 2026-06-08 captured · owner: Vera
+  - CSV refId 를 short hash (예 `app-A1B2`) 로 마스킹 + 매핑 테이블은 DB 내부만
+  - server action 인증 freshness (Sage HIGH) 잔여 리스크 → 분기 1회 운영자 자격 회전 정책
+  - 출처: Sage 2026-06-08 Wave 2 보안 검토
+
 ---
 
 ## Raw  (T1 dump · 미분류)
