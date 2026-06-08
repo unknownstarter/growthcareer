@@ -663,7 +663,8 @@
     "success": {
       "headerLabel": "신청 완료",
       "headlineNameSuffix": "님,",
-      "headlineEmphasis": "한 발 들어왔다.",
+      "headlineEmphasisLine1": "신청 완료를 위해",
+      "headlineEmphasisLine2": "결제해주세요.",
       "fallbackName": "신청자",
       "bodyA": "결제 계좌 정보는",
       "fallbackEmail": "등록 이메일",

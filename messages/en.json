@@ -663,7 +663,8 @@
     "success": {
       "headerLabel": "Application received",
       "headlineNameSuffix": ",",
-      "headlineEmphasis": "you're one step in.",
+      "headlineEmphasisLine1": "Please complete payment",
+      "headlineEmphasisLine2": "to confirm your spot.",
       "fallbackName": "Applicant",
       "bodyA": "Account details will be sent",
       "fallbackEmail": "your registered email",

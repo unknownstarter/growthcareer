@@ -945,8 +945,21 @@ function SuccessBlock({
 }) {
   const t = useTranslations("applyForm.success");
   const checklist = t.raw("checklist") as string[];
+  const blockRef = useRef<HTMLDivElement | null>(null);
+
+  // Scroll the success block into view as soon as it mounts so applicants
+  // are not left staring at where the form used to be.
+  useEffect(() => {
+    const el = blockRef.current;
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
+
   return (
-    <div className="mx-auto max-w-2xl border-2 border-brand-pink bg-surface p-8 text-center sm:p-12">
+    <div
+      ref={blockRef}
+      className="mx-auto max-w-2xl border-2 border-brand-pink bg-surface p-8 text-center sm:p-12"
+    >
       <p
         className="mb-4 text-brand-pink text-xs font-black uppercase"
         style={{ letterSpacing: "0.3em" }}
@@ -965,7 +978,11 @@ function SuccessBlock({
         {name || t("fallbackName")}
         {t("headlineNameSuffix")}
         <br />
-        <span className="text-brand-pink">{t("headlineEmphasis")}</span>
+        <span className="text-brand-pink">
+          {t("headlineEmphasisLine1")}
+          <br />
+          {t("headlineEmphasisLine2")}
+        </span>
       </h3>
 
       <p className="mb-8 text-fg-muted text-base leading-relaxed sm:text-lg">
