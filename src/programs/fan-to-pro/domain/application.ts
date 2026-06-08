@@ -67,8 +67,9 @@ export const Step2Schema = z.object({
   university: z
     .string()
     .trim()
-    .min(2, ERROR_KEYS.universityMin)
-    .max(120),
+    .max(120)
+    .optional()
+    .transform((v) => (v && v.length > 0 ? v : null)),
   visa: z.enum(VISA_OPTIONS, { message: ERROR_KEYS.visaRequired }),
   address: z
     .string()

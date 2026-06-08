@@ -186,11 +186,69 @@ export function ApplyForm() {
   // success block replaces the whole form on the next render, so we only
   // need this for the brief window between `pending=false` and the
   // status flipping to ok.
+  //
+  // On validation error: close the modal, route back to whichever step owns
+  // the offending field, and focus/scroll the first one. Without this the
+  // modal looked frozen (pending → false but no visible change) whenever
+  // zod rejected anything other than _form (e.g. an empty university).
   useEffect(() => {
     if (state.status === "ok" || state.status === "ok_local") {
       setConfirmModalOpen(false);
+      return;
     }
-  }, [state.status]);
+    if (state.status !== "error") return;
+    const errs = state.errors ?? {};
+    const step1FieldsWithError = STEP1_FIELD_ORDER.filter(
+      (f) => (errs[f]?.length ?? 0) > 0,
+    );
+    const step2FieldsWithError = (
+      [
+        "birthdate",
+        "university",
+        "visa",
+        "address",
+        "consent",
+        "consent_operations",
+      ] as const
+    ).filter((f) => (errs[f]?.length ?? 0) > 0);
+    const hasFieldError =
+      step1FieldsWithError.length > 0 || step2FieldsWithError.length > 0;
+    if (!hasFieldError) return;
+    setConfirmModalOpen(false);
+    if (step1FieldsWithError.length > 0) {
+      setStep(1);
+      setStep1Errors((prev) => {
+        const next = { ...prev };
+        for (const f of step1FieldsWithError) {
+          next[f] = resolveErrorKey(tErrors, errs[f]?.[0]);
+        }
+        return next;
+      });
+      // Defer focus so the step-1 form has remounted.
+      window.setTimeout(() => {
+        const first = step1FieldsWithError[0];
+        const el = step1Refs.current[first];
+        if (el) {
+          el.focus({ preventScroll: true });
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }, 0);
+      return;
+    }
+    // Step 2 error — scroll the first offending field into view. The error
+    // text is rendered by the Field/ConsentRow inline (fieldErrors map).
+    window.setTimeout(() => {
+      const firstName = step2FieldsWithError[0];
+      const el =
+        step2FormRef.current?.querySelector<HTMLElement>(
+          `[name="${firstName}"]`,
+        ) ?? null;
+      if (el) {
+        el.focus?.({ preventScroll: true });
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }, 0);
+  }, [state, tErrors]);
 
   if (state.status === "ok" || state.status === "ok_local") {
     return (
@@ -402,7 +460,6 @@ export function ApplyForm() {
                 placeholder={t("fields.university.placeholder")}
                 defaultValue={step2.university}
                 error={fieldErrors.university}
-                required
               />
 
               <div className="flex flex-col gap-2">
@@ -610,25 +667,25 @@ function RefundSummary() {
   const rows = refundSection?.tableRows ?? [];
 
   return (
-    <div className="mt-2 border border-border bg-bg p-4 sm:p-5">
+    <div className="mt-2 border border-border bg-bg p-3">
       <p
-        className="mb-3 text-fg-subtle text-[10px] font-black uppercase sm:text-xs"
-        style={{ letterSpacing: "0.3em" }}
+        className="mb-2 text-fg-subtle text-[9px] font-black uppercase"
+        style={{ letterSpacing: "0.25em" }}
       >
         {t("label")}
       </p>
-      <ul className="grid grid-cols-1 gap-1 text-fg-muted text-xs leading-relaxed sm:text-sm">
+      <ul className="grid grid-cols-1 gap-0.5 text-fg-muted text-[11px] leading-snug">
         {rows.map((row, i) => (
           <li
             key={i}
-            className="flex flex-wrap items-start justify-between gap-3 border-border/60 border-b py-1.5 last:border-b-0"
+            className="flex flex-wrap items-baseline justify-between gap-2 border-border/40 border-b py-1 last:border-b-0"
           >
             <span>{row[0]}</span>
             <span className="font-black text-fg">{row[1]}</span>
           </li>
         ))}
       </ul>
-      <p className="mt-3 text-fg-subtle text-[11px] leading-relaxed max-w-prose">
+      <p className="mt-2 text-fg-subtle text-[10px] leading-snug max-w-prose">
         {t("noteTemplate", {
           legalBasis: REFUND_POLICY.legalBasis,
           autoRefundNote: ENROLLMENT_CAP.autoRefundNote,

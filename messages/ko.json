@@ -565,8 +565,8 @@
         "label": "생년월일"
       },
       "university": {
-        "label": "재학 또는 졸업 대학",
-        "placeholder": "OO대학교 / OO Department"
+        "label": "재학 또는 졸업 대학 (선택)",
+        "placeholder": "OO대학교 (없으면 비워두세요)"
       },
       "visa": {
         "label": "비자 상태",

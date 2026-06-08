@@ -565,8 +565,8 @@
         "label": "Date of birth"
       },
       "university": {
-        "label": "University (current or graduated)",
-        "placeholder": "University name / Department"
+        "label": "University (optional)",
+        "placeholder": "Your school (leave empty if none)"
       },
       "visa": {
         "label": "Visa status",
