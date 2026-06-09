@@ -145,6 +145,12 @@
   - server action 인증 freshness (Sage HIGH) 잔여 리스크 → 분기 1회 운영자 자격 회전 정책
   - 출처: Sage 2026-06-08 Wave 2 보안 검토
 
+- **B0029** · 운영자 인증 Basic Auth → cookie session 전환 검토 · status: **raw** · 2026-06-09 captured · owner: Sophia → Iris
+  - 현재: HTTP Basic Auth + cookie timestamp + realm rotation 트릭. 로그아웃·세션·role 전환 모두 본질적으로 트릭에 의존 (브라우저별 100% 보장 X)
+  - 전환 후보: NextAuth / Clerk / Supabase Auth + httpOnly cookie session. 깔끔한 logout, 명확한 세션 expiry, multi-operator 지원
+  - 트리거: 운영자 2명 이상 도입 시 또는 코워크 외 외부 공유 추가 요청 시
+  - 출처: `docs/lessons/2026-06-09-basic-auth-logout-limitations.md`
+
 ---
 
 ## Raw  (T1 dump · 미분류)

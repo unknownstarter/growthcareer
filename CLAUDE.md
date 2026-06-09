@@ -42,6 +42,7 @@
 핵심 원칙:
 - **단계 11 → 12는 의무**: 동일 형태의 문제가 다시 발생하지 않도록 **프로세스 자체를 코드/훅/문서로 박제**합니다. 대표적 출력: settings.json 훅 추가, CLAUDE.md 규칙 추가, 에이전트 프롬프트 보강, 새 스킬 생성.
 - **자체 점검 의무**: 8단계 종료 시 *"개선안이 정말 없는가?"* 를 명시적으로 자문하고, 없다면 그 근거를 한 줄로 남깁니다.
+- **9단계 (배포) prerequisite**: 새 권한·인증·PII 표면이 늘어나는 변경은 **Sage 결과를 받은 후에만** push / `vercel --prod` 실행. Sage 를 백그라운드로 띄우고 동시에 배포하면 안 됨 (2026-06-09 viewer role 사고). 사고 박제: `docs/lessons/2026-06-09-sage-review-skipped.md`.
 
 ---
 
@@ -140,6 +141,7 @@ UI 변경은 항상 `pnpm preview` 로 **자체 캡처 → Read → 사용자에
 - 환경 변수: `vercel env` (커밋 금지)
 - 설정: `vercel.ts` 우선, `vercel.json` 지양
 - AI: `vercel:ai-gateway` 통한 `provider/model` 문자열 우선
+- **배포는 `git push` 가 default**: GitHub integration 이 production 배포 trigger. `vercel --prod` 직접 호출은 (a) 10분 이상 auto deploy 안 들어옴 또는 (b) GitHub integration disconnect 확정 또는 (c) critical hotfix 사고 대응 시만. 매 commit 마다 직접 호출하면 일일 quota 빨리 소모됨 (2026-06-09 사고). 사고 박제: `docs/lessons/2026-06-09-vercel-cli-overuse.md`.
 
 ---
 
