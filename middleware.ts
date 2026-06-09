@@ -25,6 +25,7 @@ import { routing } from "@/src/i18n/routing";
 const intlMiddleware = createMiddleware(routing);
 
 const ADMIN_PREFIX = "/admin";
+const ADMIN_LOGOUT_PATH = "/admin/logout";
 const ADMIN_ROLE_HEADER = "x-admin-role";
 
 // 코워크 공유 viewer 가 더 이상 PII 를 볼 수 없는 시점. 종강 = 7/19 24:00 KST.
@@ -32,6 +33,12 @@ const VIEWER_ACCESS_END_UTC = Date.parse("2026-07-19T15:00:00.000Z");
 
 // viewer 가 절대 접근 못 하는 경로 prefix.
 const ADMIN_ONLY_PREFIXES = ["/admin/instructors", "/admin/finance"];
+
+// HTTP Basic Auth 는 stateless 라 "세션 타임아웃" 을 cookie 의 timestamp 로
+// 강제. 12 시간 후 자격을 통과해도 401 → 사용자가 자격 재입력해야 함. 로그
+// 아웃 시에도 같은 cookie 삭제.
+const ADMIN_SESSION_COOKIE = "gc_admin_session";
+const ADMIN_SESSION_TTL_MS = 12 * 60 * 60 * 1000;
 
 type Role = "admin" | "viewer";
 
@@ -43,6 +50,36 @@ function unauthorized(): NextResponse {
       "X-Robots-Tag": "noindex, nofollow, noarchive",
       "Cache-Control": "no-store",
     },
+  });
+  return res;
+}
+
+const LOGOUT_BODY = `<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>로그아웃 — Growth Career Admin</title>
+<style>body{font-family:system-ui,-apple-system,sans-serif;background:#0a0a0a;color:#e5e5e5;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;padding:1.5rem;text-align:center}main{max-width:24rem}h1{font-size:1.5rem;letter-spacing:-0.02em;margin:0 0 0.5rem}p{color:#a3a3a3;margin:0 0 1.5rem;line-height:1.5}a{display:inline-block;border:1px solid #ec4899;color:#ec4899;padding:0.625rem 1.25rem;text-decoration:none;font-weight:700;letter-spacing:0.05em;font-size:0.875rem;text-transform:uppercase}a:hover{background:rgba(236,72,153,0.1)}</style>
+</head><body><main>
+<h1>로그아웃 완료</h1>
+<p>운영자 페이지에서 안전하게 로그아웃했어요. 브라우저를 닫거나 새 창에서 다시 자격을 입력하면 재접속할 수 있어요.</p>
+<a href="/">홈으로</a>
+</main></body></html>`;
+
+function logoutResponse(): NextResponse {
+  // 401 + WWW-Authenticate 로 브라우저의 Basic Auth 자격 캐시 invalidate 시도.
+  // cookie 삭제로 세션 timestamp 도 정리. 브라우저별로 100% 보장은 아니지만
+  // 사용자가 자격 다이얼로그에서 취소 후 새 창에서는 무조건 다시 요구됨.
+  const res = new NextResponse(LOGOUT_BODY, {
+    status: 401,
+    headers: {
+      "WWW-Authenticate":
+        'Basic realm="growthcareer-admin-loggedout", charset="UTF-8"',
+      "Content-Type": "text/html; charset=utf-8",
+      "X-Robots-Tag": "noindex, nofollow, noarchive",
+      "Cache-Control": "no-store",
+    },
+  });
+  res.cookies.set(ADMIN_SESSION_COOKIE, "", {
+    path: ADMIN_PREFIX,
+    maxAge: 0,
   });
   return res;
 }
@@ -135,8 +172,36 @@ export default function middleware(req: NextRequest): NextResponse | Response {
   const { pathname } = req.nextUrl;
 
   if (pathname === ADMIN_PREFIX || pathname.startsWith(`${ADMIN_PREFIX}/`)) {
+    // 명시적 로그아웃 — 자격이 통과해도 무조건 401 + cookie 삭제.
+    if (pathname === ADMIN_LOGOUT_PATH) {
+      return logoutResponse();
+    }
+
     const auth = resolveRole(req);
     if (auth.kind !== "ok") return auth.response;
+
+    // 12 시간 세션 타임아웃. cookie 의 timestamp 와 비교.
+    const sessionCookie = req.cookies.get(ADMIN_SESSION_COOKIE)?.value;
+    const now = Date.now();
+    let sessionExpired = false;
+    let sessionStartMs: number | null = null;
+    if (sessionCookie) {
+      const parsed = Number(sessionCookie);
+      if (!Number.isFinite(parsed) || now - parsed > ADMIN_SESSION_TTL_MS) {
+        sessionExpired = true;
+      } else {
+        sessionStartMs = parsed;
+      }
+    }
+    if (sessionExpired) {
+      // 자격은 통과했어도 세션 만료. 자격 재입력 강제.
+      const res = unauthorized();
+      res.cookies.set(ADMIN_SESSION_COOKIE, "", {
+        path: ADMIN_PREFIX,
+        maxAge: 0,
+      });
+      return res;
+    }
 
     // viewer 는 admin-only 경로 진입 차단.
     if (
@@ -156,6 +221,17 @@ export default function middleware(req: NextRequest): NextResponse | Response {
     const res = NextResponse.next({ request: { headers: requestHeaders } });
     res.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
     res.headers.set("Cache-Control", "no-store");
+    // 첫 진입이면 세션 timestamp 새로 박음. 기존 세션은 그대로 유지 (롤링
+    // 갱신 안 함 — 12 시간 hard cap).
+    if (sessionStartMs === null) {
+      res.cookies.set(ADMIN_SESSION_COOKIE, String(now), {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: true,
+        path: ADMIN_PREFIX,
+        maxAge: ADMIN_SESSION_TTL_MS / 1000,
+      });
+    }
     return res;
   }
 

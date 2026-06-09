@@ -33,6 +33,10 @@ const ITEMS = [
   },
 ];
 
+const SHARED_NAV_STYLE = { letterSpacing: "0.18em" };
+const BASE_TAB_CLASS =
+  "inline-flex items-center border px-3 py-1.5 text-[11px] font-black uppercase whitespace-nowrap transition-colors";
+
 export function AdminNav({
   current,
   role = "admin",
@@ -55,17 +59,42 @@ export function AdminNav({
               href={item.href}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "inline-flex items-center border px-3 py-1.5 text-[11px] font-black uppercase whitespace-nowrap transition-colors",
+                BASE_TAB_CLASS,
                 active
                   ? "border-brand-pink bg-brand-pink/15 text-brand-pink"
                   : "border-border bg-bg text-fg/80 hover:text-fg hover:border-fg-subtle",
               )}
-              style={{ letterSpacing: "0.18em" }}
+              style={SHARED_NAV_STYLE}
             >
               {item.label}
             </Link>
           );
         })}
+        <div className="ml-auto flex items-center gap-1">
+          {/* 공개 사이트로 이동. next-intl middleware 가 locale 분기 처리. */}
+          <a
+            href="/"
+            className={cn(
+              BASE_TAB_CLASS,
+              "border-border bg-bg text-fg/80 hover:text-fg hover:border-fg-subtle",
+            )}
+            style={SHARED_NAV_STYLE}
+            title="공개 사이트로 이동"
+          >
+            홈
+          </a>
+          <a
+            href="/admin/logout"
+            className={cn(
+              BASE_TAB_CLASS,
+              "border-border bg-bg text-fg/80 hover:text-brand-pink hover:border-brand-pink",
+            )}
+            style={SHARED_NAV_STYLE}
+            title="자격을 폐기하고 로그아웃"
+          >
+            로그아웃
+          </a>
+        </div>
       </div>
     </nav>
   );
