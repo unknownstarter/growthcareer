@@ -9,18 +9,51 @@ import {
 } from "./types";
 
 /**
+ * 신청자 PII 마스킹. viewer (코워크 공유) 일 때만 적용. server side 에서 평문이
+ * DOM 으로 흘러가지 않도록 row 가공 시점에 한 번에 처리.
+ *
+ * - email: `j****@gmail.com` 패턴. 로컬 첫 1자만 + 도메인 그대로.
+ * - phone: `010-****-1234` 패턴. 한국 휴대폰 (010-XXXX-XXXX) 가정.
+ *   그 외 (외국 번호) 는 끝 4자리만 보이게 보수적 마스킹.
+ */
+function maskEmail(raw: string): string {
+  const at = raw.indexOf("@");
+  if (at <= 0) return "****";
+  const local = raw.slice(0, at);
+  const domain = raw.slice(at);
+  const first = local.slice(0, 1);
+  return `${first}****${domain}`;
+}
+
+function maskPhone(raw: string): string {
+  // 정규화 함수가 010-XXXX-XXXX 형식으로 저장. split('-') 안전.
+  const parts = raw.split("-");
+  if (parts.length === 3 && parts[2].length >= 4) {
+    return `${parts[0]}-****-${parts[2]}`;
+  }
+  // 외국 번호 등 비표준: 마지막 4자리만 노출.
+  const digits = raw.replace(/\D/g, "");
+  if (digits.length >= 4) {
+    return `****${digits.slice(-4)}`;
+  }
+  return "****";
+}
+
+/**
  * 운영자 페이지 server component 가 호출하는 단일 SELECT.
  *
  * - service_role 키로 RLS 우회 → middleware Basic Auth 가 단일 게이트.
  * - 캐시 회피 (`force-cache` 금지): Next.js 16 의 dynamic = 'force-dynamic' 로
  *   페이지 단위 처리 + Supabase JS 는 fetch 캐시 미사용이므로 추가 옵션 불필요.
+ * - mask=true: viewer 자격 (코워크 공유) 호출 시 email / phone 마스킹.
  */
-export async function fetchApplicants(): Promise<{
+export async function fetchApplicants(options?: { mask?: boolean }): Promise<{
   rows: ApplicantRow[];
   eligibility: AnonymizeEligibility;
   error: string | null;
   supabaseAvailable: boolean;
 }> {
+  const mask = options?.mask ?? false;
   const supabase = getSupabaseServer();
   if (!supabase) {
     return {
@@ -88,8 +121,8 @@ export async function fetchApplicants(): Promise<{
       id: String(raw.id ?? ""),
       createdAt: String(raw.created_at ?? ""),
       name: String(raw.name ?? ""),
-      email: String(raw.email ?? ""),
-      phone: String(raw.phone ?? ""),
+      email: mask ? maskEmail(String(raw.email ?? "")) : String(raw.email ?? ""),
+      phone: mask ? maskPhone(String(raw.phone ?? "")) : String(raw.phone ?? ""),
       nationality: raw.nationality ? String(raw.nationality) : null,
       birthdate: raw.birthdate ? String(raw.birthdate) : null,
       university: raw.university ? String(raw.university) : null,

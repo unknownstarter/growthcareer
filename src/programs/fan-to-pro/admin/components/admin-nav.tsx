@@ -10,21 +10,44 @@ import { cn } from "@/src/programs/fan-to-pro/presentation/components/cn";
  */
 
 type AdminNavKey = "applicants" | "instructors" | "finance";
+type Role = "admin" | "viewer";
 
 const ITEMS = [
-  { key: "applicants" as const, href: "/admin/applicants" as const, label: "신청자" },
-  { key: "instructors" as const, href: "/admin/instructors" as const, label: "강사" },
-  { key: "finance" as const, href: "/admin/finance" as const, label: "재무" },
+  {
+    key: "applicants" as const,
+    href: "/admin/applicants" as const,
+    label: "신청자",
+    roles: ["admin", "viewer"] as Role[],
+  },
+  {
+    key: "instructors" as const,
+    href: "/admin/instructors" as const,
+    label: "강사",
+    roles: ["admin"] as Role[],
+  },
+  {
+    key: "finance" as const,
+    href: "/admin/finance" as const,
+    label: "재무",
+    roles: ["admin"] as Role[],
+  },
 ];
 
-export function AdminNav({ current }: { current: AdminNavKey }) {
+export function AdminNav({
+  current,
+  role = "admin",
+}: {
+  current: AdminNavKey;
+  role?: Role;
+}) {
+  const visible = ITEMS.filter((item) => item.roles.includes(role));
   return (
     <nav
       aria-label="운영자 페이지 이동"
       className="sticky top-0 z-30 border-b border-border bg-bg/95 backdrop-blur"
     >
       <div className="mx-auto flex max-w-[1400px] items-center gap-1 overflow-x-auto px-4 py-2">
-        {ITEMS.map((item) => {
+        {visible.map((item) => {
           const active = item.key === current;
           return (
             <Link

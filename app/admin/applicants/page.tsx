@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { fetchApplicants } from "@/src/programs/fan-to-pro/admin/fetch-applicants";
 import { ApplicantsDashboard } from "@/src/programs/fan-to-pro/admin/components/applicants-dashboard";
 import { AdminNav } from "@/src/programs/fan-to-pro/admin/components/admin-nav";
+import { getAdminRole } from "@/src/programs/fan-to-pro/admin/role";
 
 export const metadata: Metadata = {
   title: "신청자 - Growth Career Admin",
@@ -14,17 +15,21 @@ export const revalidate = 0;
 export const fetchCache = "force-no-store";
 
 export default async function AdminApplicantsPage() {
-  const { rows, eligibility, error, supabaseAvailable } =
-    await fetchApplicants();
+  const role = await getAdminRole();
+  const isViewer = role === "viewer";
+  const { rows, eligibility, error, supabaseAvailable } = await fetchApplicants(
+    { mask: isViewer },
+  );
 
   return (
     <>
-      <AdminNav current="applicants" />
+      <AdminNav current="applicants" role={role} />
       <ApplicantsDashboard
         initialRows={rows}
         anonymizeEligibility={eligibility}
         fetchError={error}
         supabaseAvailable={supabaseAvailable}
+        readOnly={isViewer}
       />
     </>
   );

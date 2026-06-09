@@ -78,11 +78,13 @@ export function ApplicantsDashboard({
   anonymizeEligibility,
   supabaseAvailable,
   fetchError,
+  readOnly = false,
 }: {
   initialRows: ApplicantRow[];
   anonymizeEligibility: AnonymizeEligibility;
   supabaseAvailable: boolean;
   fetchError: string | null;
+  readOnly?: boolean;
 }) {
   return (
     <ToastProvider>
@@ -91,6 +93,7 @@ export function ApplicantsDashboard({
         anonymizeEligibility={anonymizeEligibility}
         supabaseAvailable={supabaseAvailable}
         fetchError={fetchError}
+        readOnly={readOnly}
       />
     </ToastProvider>
   );
@@ -101,11 +104,13 @@ function DashboardInner({
   anonymizeEligibility,
   supabaseAvailable,
   fetchError,
+  readOnly,
 }: {
   initialRows: ApplicantRow[];
   anonymizeEligibility: AnonymizeEligibility;
   supabaseAvailable: boolean;
   fetchError: string | null;
+  readOnly: boolean;
 }) {
   const router = useRouter();
   const { show } = useToast();
@@ -444,24 +449,26 @@ function DashboardInner({
               <StatPill label="T+1 리마인드" value={stats.reminderT1} tone="t1" />
             ) : null}
             {/* B0018 T3 - 종강 6개월 경과 PII 파기 버튼 */}
-            <button
-              type="button"
-              onClick={() => setAnonymizeOpen(true)}
-              className={cn(
-                "inline-flex items-center gap-1.5 border px-2 py-1 text-[10px] font-black uppercase whitespace-nowrap",
-                anonymizeEligibility.eligibleCount > 0
-                  ? "border-red-500/60 bg-red-500/10 text-red-200 hover:bg-red-500/20"
-                  : "border-border bg-bg text-fg/80 hover:text-fg",
-              )}
-              style={{ letterSpacing: "0.15em" }}
-              title="PIPA §21 - 종강 +6개월 경과 신청자의 개인정보 파기"
-              disabled={isPending}
-            >
-              <span>PII 파기</span>
-              <span className="text-fg">
-                {anonymizeEligibility.eligibleCount}
-              </span>
-            </button>
+            {!readOnly && (
+              <button
+                type="button"
+                onClick={() => setAnonymizeOpen(true)}
+                className={cn(
+                  "inline-flex items-center gap-1.5 border px-2 py-1 text-[10px] font-black uppercase whitespace-nowrap",
+                  anonymizeEligibility.eligibleCount > 0
+                    ? "border-red-500/60 bg-red-500/10 text-red-200 hover:bg-red-500/20"
+                    : "border-border bg-bg text-fg/80 hover:text-fg",
+                )}
+                style={{ letterSpacing: "0.15em" }}
+                title="PIPA §21 - 종강 +6개월 경과 신청자의 개인정보 파기"
+                disabled={isPending}
+              >
+                <span>PII 파기</span>
+                <span className="text-fg">
+                  {anonymizeEligibility.eligibleCount}
+                </span>
+              </button>
+            )}
           </div>
         </div>
       </header>
@@ -526,7 +533,7 @@ function DashboardInner({
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            {selectedCount > 0 ? (
+            {!readOnly && selectedCount > 0 ? (
               <>
                 <span
                   className="inline-flex items-center gap-1.5 border border-brand-pink/60 bg-brand-pink/10 px-2 py-1 text-[10px] font-black uppercase text-brand-pink"
@@ -547,16 +554,18 @@ function DashboardInner({
                 </button>
               </>
             ) : null}
-            <button
-              type="button"
-              onClick={() => setBroadcastOpen(true)}
-              className={accentBtn}
-              style={compactStyle}
-              disabled={selectedCount === 0 || isPending}
-              title="이메일 BCC 일괄 발송"
-            >
-              다중 발송 ({selectedCount})
-            </button>
+            {!readOnly && (
+              <button
+                type="button"
+                onClick={() => setBroadcastOpen(true)}
+                className={accentBtn}
+                style={compactStyle}
+                disabled={selectedCount === 0 || isPending}
+                title="이메일 BCC 일괄 발송"
+              >
+                다중 발송 ({selectedCount})
+              </button>
+            )}
             <button
               type="button"
               onClick={() => downloadCsv(filtered)}
@@ -566,15 +575,17 @@ function DashboardInner({
             >
               CSV 내려받기 ({filtered.length})
             </button>
-            <button
-              type="button"
-              onClick={() => setEnrollBatchOpen(true)}
-              className={accentBtn}
-              style={compactStyle}
-              disabled={stats.byStatus.paid === 0}
-            >
-              강좌 확정 일괄
-            </button>
+            {!readOnly && (
+              <button
+                type="button"
+                onClick={() => setEnrollBatchOpen(true)}
+                className={accentBtn}
+                style={compactStyle}
+                disabled={stats.byStatus.paid === 0}
+              >
+                강좌 확정 일괄
+              </button>
+            )}
           </div>
         </div>
 
@@ -583,23 +594,25 @@ function DashboardInner({
           <table className="w-full border-collapse text-left text-sm">
             <thead className="bg-surface text-[10px] uppercase text-fg">
               <tr style={{ letterSpacing: "0.2em" }}>
-                <th className="px-2 py-2 font-black w-8">
-                  <input
-                    type="checkbox"
-                    aria-label={
-                      masterChecked
-                        ? "전체 선택 해제"
-                        : "현재 필터의 신청자 전체 선택"
-                    }
-                    checked={masterChecked}
-                    ref={(el) => {
-                      if (el) el.indeterminate = masterIndeterminate;
-                    }}
-                    onChange={toggleMasterSelected}
-                    disabled={selectableFiltered.length === 0}
-                    className="h-4 w-4 cursor-pointer accent-brand-pink"
-                  />
-                </th>
+                {!readOnly && (
+                  <th className="px-2 py-2 font-black w-8">
+                    <input
+                      type="checkbox"
+                      aria-label={
+                        masterChecked
+                          ? "전체 선택 해제"
+                          : "현재 필터의 신청자 전체 선택"
+                      }
+                      checked={masterChecked}
+                      ref={(el) => {
+                        if (el) el.indeterminate = masterIndeterminate;
+                      }}
+                      onChange={toggleMasterSelected}
+                      disabled={selectableFiltered.length === 0}
+                      className="h-4 w-4 cursor-pointer accent-brand-pink"
+                    />
+                  </th>
+                )}
                 <th className="px-3 py-2 font-black">신청일</th>
                 <th className="px-3 py-2 font-black">이름</th>
                 <th className="px-3 py-2 font-black">연락처</th>
@@ -609,14 +622,14 @@ function DashboardInner({
                 <th className="px-3 py-2 font-black">발송</th>
                 <th className="px-3 py-2 font-black">리마인드</th>
                 <th className="px-3 py-2 font-black">입금</th>
-                <th className="px-3 py-2 font-black">액션</th>
+                {!readOnly && <th className="px-3 py-2 font-black">액션</th>}
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={11}
+                    colSpan={readOnly ? 9 : 11}
                     className="px-3 py-12 text-center text-xs text-fg/80"
                   >
                     표시할 신청자가 없어요.
@@ -637,20 +650,22 @@ function DashboardInner({
                       checked && "bg-brand-pink/[0.05]",
                     )}
                   >
-                    <td className="px-2 py-2 align-top">
-                      <input
-                        type="checkbox"
-                        aria-label={
-                          row.redactedAt
-                            ? `${row.name} 선택 불가 (PII 파기)`
-                            : `${row.name} 선택`
-                        }
-                        checked={checked}
-                        onChange={() => toggleRowSelected(row.id)}
-                        disabled={row.redactedAt !== null}
-                        className="h-4 w-4 cursor-pointer accent-brand-pink disabled:cursor-not-allowed disabled:opacity-30"
-                      />
-                    </td>
+                    {!readOnly && (
+                      <td className="px-2 py-2 align-top">
+                        <input
+                          type="checkbox"
+                          aria-label={
+                            row.redactedAt
+                              ? `${row.name} 선택 불가 (PII 파기)`
+                              : `${row.name} 선택`
+                          }
+                          checked={checked}
+                          onChange={() => toggleRowSelected(row.id)}
+                          disabled={row.redactedAt !== null}
+                          className="h-4 w-4 cursor-pointer accent-brand-pink disabled:cursor-not-allowed disabled:opacity-30"
+                        />
+                      </td>
+                    )}
                     <td className="px-3 py-2 align-top text-fg whitespace-nowrap">
                       {formatDate(row.createdAt)}
                     </td>
@@ -693,24 +708,26 @@ function DashboardInner({
                         ? `${formatDate(row.paymentConfirmedAt)}${row.paidAmountKrw ? ` / ${row.paidAmountKrw.toLocaleString()}원` : ""}`
                         : "-"}
                     </td>
-                    <td className="px-3 py-2 align-top">
-                      <RowActions
-                        row={row}
-                        busy={isPending}
-                        onMessage={() => setDrawerApplicant(row)}
-                        onNotify={() => runNotify(row)}
-                        onReminder={() => runReminder(row)}
-                        onOverdue={() => runOverdue(row)}
-                        onPaid={() => setPaidTarget(row)}
-                        onCancel={() => setCancelTarget(row)}
-                        onRefund={() => setRefundTarget(row)}
-                        onReceipt={() => {
-                          setReceiptRefreshKey((k) => k + 1);
-                          setReceiptTarget(row);
-                        }}
-                        onHistory={() => setHistoryApplicant(row)}
-                      />
-                    </td>
+                    {!readOnly && (
+                      <td className="px-3 py-2 align-top">
+                        <RowActions
+                          row={row}
+                          busy={isPending}
+                          onMessage={() => setDrawerApplicant(row)}
+                          onNotify={() => runNotify(row)}
+                          onReminder={() => runReminder(row)}
+                          onOverdue={() => runOverdue(row)}
+                          onPaid={() => setPaidTarget(row)}
+                          onCancel={() => setCancelTarget(row)}
+                          onRefund={() => setRefundTarget(row)}
+                          onReceipt={() => {
+                            setReceiptRefreshKey((k) => k + 1);
+                            setReceiptTarget(row);
+                          }}
+                          onHistory={() => setHistoryApplicant(row)}
+                        />
+                      </td>
+                    )}
                   </tr>
                 );
               })}
@@ -741,18 +758,20 @@ function DashboardInner({
               >
                 <header className="flex items-start justify-between gap-2">
                   <div className="flex items-start gap-2">
-                    <input
-                      type="checkbox"
-                      aria-label={
-                        row.redactedAt
-                          ? `${row.name} 선택 불가 (PII 파기)`
-                          : `${row.name} 선택`
-                      }
-                      checked={checked}
-                      onChange={() => toggleRowSelected(row.id)}
-                      disabled={row.redactedAt !== null}
-                      className="mt-1 h-4 w-4 cursor-pointer accent-brand-pink disabled:cursor-not-allowed disabled:opacity-30"
-                    />
+                    {!readOnly && (
+                      <input
+                        type="checkbox"
+                        aria-label={
+                          row.redactedAt
+                            ? `${row.name} 선택 불가 (PII 파기)`
+                            : `${row.name} 선택`
+                        }
+                        checked={checked}
+                        onChange={() => toggleRowSelected(row.id)}
+                        disabled={row.redactedAt !== null}
+                        className="mt-1 h-4 w-4 cursor-pointer accent-brand-pink disabled:cursor-not-allowed disabled:opacity-30"
+                      />
+                    )}
                     <div>
                       <div className="text-sm font-bold text-fg">{row.name}</div>
                       <div className="text-fg">{row.email}</div>
@@ -790,24 +809,26 @@ function DashboardInner({
                       : "-"}
                   </dd>
                 </dl>
-                <div className="mt-2 flex flex-wrap gap-1">
-                  <RowActions
-                    row={row}
-                    busy={isPending}
-                    onMessage={() => setDrawerApplicant(row)}
-                    onNotify={() => runNotify(row)}
-                    onReminder={() => runReminder(row)}
-                    onOverdue={() => runOverdue(row)}
-                    onPaid={() => setPaidTarget(row)}
-                    onCancel={() => setCancelTarget(row)}
-                    onRefund={() => setRefundTarget(row)}
-                    onReceipt={() => {
-                      setReceiptRefreshKey((k) => k + 1);
-                      setReceiptTarget(row);
-                    }}
-                    onHistory={() => setHistoryApplicant(row)}
-                  />
-                </div>
+                {!readOnly && (
+                  <div className="mt-2 flex flex-wrap gap-1">
+                    <RowActions
+                      row={row}
+                      busy={isPending}
+                      onMessage={() => setDrawerApplicant(row)}
+                      onNotify={() => runNotify(row)}
+                      onReminder={() => runReminder(row)}
+                      onOverdue={() => runOverdue(row)}
+                      onPaid={() => setPaidTarget(row)}
+                      onCancel={() => setCancelTarget(row)}
+                      onRefund={() => setRefundTarget(row)}
+                      onReceipt={() => {
+                        setReceiptRefreshKey((k) => k + 1);
+                        setReceiptTarget(row);
+                      }}
+                      onHistory={() => setHistoryApplicant(row)}
+                    />
+                  </div>
+                )}
               </article>
             );
           })}

@@ -35,6 +35,7 @@ import {
 } from "@/src/programs/fan-to-pro/domain/application";
 import { ENROLLMENT_CAP } from "@/src/programs/fan-to-pro/domain/program";
 import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
+import { assertAdmin } from "@/src/programs/fan-to-pro/admin/role";
 import {
   fetchCashReceipts as fetchCashReceiptsImpl,
   fetchMessagesForApplicant as fetchMessagesForApplicantImpl,
@@ -57,10 +58,13 @@ const ENROLLMENT_DEADLINE_ISO = "2026-06-21T14:59:59Z";
 const PAYMENT_GRACE_DAYS = 3;
 
 /**
- * 공통 헬퍼: supabase 클라이언트가 없으면 (로컬 모의 모드) 'error' 반환.
- * 호출부는 결과 객체를 그대로 UI 에 전달.
+ * 공통 헬퍼: admin role 검증 + supabase 클라이언트 반환. viewer 자격으로
+ * 도달한 호출은 즉시 throw → middleware UI hide 와 함께 2중 방어.
+ * supabase 가 없으면 (로컬 모의 모드) null. 호출부는 결과 객체를 그대로
+ * UI 에 전달.
  */
-function requireSupabase() {
+async function requireSupabase() {
+  await assertAdmin();
   const supabase = getSupabaseServer();
   if (!supabase) {
     return null;
@@ -98,7 +102,7 @@ export async function markAsNotified(
   if (!parsed.success) {
     return { status: "error", error: "invalidInput" };
   }
-  const supabase = requireSupabase();
+  const supabase = await requireSupabase();
   if (!supabase) return { status: "error", error: "supabaseUnavailable" };
 
   const now = new Date();
@@ -142,7 +146,7 @@ export async function sendReminder(
   if (!parsed.success) {
     return { status: "error", error: "invalidInput" };
   }
-  const supabase = requireSupabase();
+  const supabase = await requireSupabase();
   if (!supabase) return { status: "error", error: "supabaseUnavailable" };
 
   const { data: current, error: readErr } = await supabase
@@ -188,7 +192,7 @@ export async function markAsPaid(input: unknown): Promise<AdminActionResult> {
   if (!parsed.success) {
     return { status: "error", error: "invalidInput" };
   }
-  const supabase = requireSupabase();
+  const supabase = await requireSupabase();
   if (!supabase) return { status: "error", error: "supabaseUnavailable" };
 
   const { error, count } = await supabase
@@ -221,7 +225,7 @@ export async function markAsOverdue(
   if (!parsed.success) {
     return { status: "error", error: "invalidInput" };
   }
-  const supabase = requireSupabase();
+  const supabase = await requireSupabase();
   if (!supabase) return { status: "error", error: "supabaseUnavailable" };
 
   const { error, count } = await supabase
@@ -249,7 +253,7 @@ export async function markAsCancelled(
   if (!parsed.success) {
     return { status: "error", error: "invalidInput" };
   }
-  const supabase = requireSupabase();
+  const supabase = await requireSupabase();
   if (!supabase) return { status: "error", error: "supabaseUnavailable" };
 
   const { error, count } = await supabase
@@ -281,7 +285,7 @@ export async function markAsRefunded(
   if (!parsed.success) {
     return { status: "error", error: "invalidInput" };
   }
-  const supabase = requireSupabase();
+  const supabase = await requireSupabase();
   if (!supabase) return { status: "error", error: "supabaseUnavailable" };
 
   const { error, count } = await supabase
@@ -318,7 +322,7 @@ export async function markAsRefunded(
  * 입력 없음. 결과는 BatchEnrollResult.
  * ------------------------------------------------------------------------- */
 export async function markAsEnrolledBatch(): Promise<BatchEnrollResult> {
-  const supabase = requireSupabase();
+  const supabase = await requireSupabase();
   if (!supabase) return { status: "error", error: "supabaseUnavailable" };
 
   const { count: paidCount, error: countErr } = await supabase
@@ -382,7 +386,7 @@ export async function recordCashReceipt(
   if (!parsed.success) {
     return { status: "error", error: "invalidInput" };
   }
-  const supabase = requireSupabase();
+  const supabase = await requireSupabase();
   if (!supabase) return { status: "error", error: "supabaseUnavailable" };
 
   // 대상 applicant 의 status 검증 (UI 가드 우회 방지).
@@ -431,7 +435,7 @@ export async function recordCashReceipt(
  * 동시성: 함수가 멱등 (redacted_at IS NULL 조건) → 중복 클릭 안전.
  * ------------------------------------------------------------------------- */
 export async function markPiiAnonymizeBatch(): Promise<AnonymizeBatchResult> {
-  const supabase = requireSupabase();
+  const supabase = await requireSupabase();
   if (!supabase) return { status: "error", error: "supabaseUnavailable" };
 
   const { data, error } = await supabase.rpc(
@@ -496,7 +500,7 @@ export async function logBroadcastSend(
   if (!parsed.success) {
     return { status: "error", error: "invalidInput" };
   }
-  const supabase = requireSupabase();
+  const supabase = await requireSupabase();
   if (!supabase) return { status: "error", error: "supabaseUnavailable" };
 
   // 중복 id 제거 + CRLF normalize.
