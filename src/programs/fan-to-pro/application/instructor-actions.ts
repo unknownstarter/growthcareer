@@ -25,6 +25,7 @@ import {
 } from "@/src/programs/fan-to-pro/domain/instructor";
 import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
 import type { AdminActionResult } from "@/src/programs/fan-to-pro/domain/application";
+import { assertAdmin } from "@/src/programs/fan-to-pro/admin/role";
 
 const INSTRUCTORS_TABLE = "instructors";
 const PAYOUTS_TABLE = "instructor_payouts";
@@ -32,7 +33,8 @@ const APPLICANTS_TABLE = "applicants";
 
 const OPERATOR_ID = process.env.ADMIN_OPERATOR_ID ?? "noah";
 
-function requireSupabase() {
+async function requireSupabase() {
+  await assertAdmin();
   const supabase = getSupabaseServer();
   return supabase ?? null;
 }
@@ -50,7 +52,7 @@ export async function createInstructor(
   if (!parsed.success) {
     return { status: "error", error: "invalidInput" };
   }
-  const supabase = requireSupabase();
+  const supabase = await requireSupabase();
   if (!supabase) return { status: "error", error: "supabaseUnavailable" };
 
   const v = parsed.data;
@@ -93,7 +95,7 @@ export async function updateInstructor(
   if (!parsed.success) {
     return { status: "error", error: "invalidInput" };
   }
-  const supabase = requireSupabase();
+  const supabase = await requireSupabase();
   if (!supabase) return { status: "error", error: "supabaseUnavailable" };
 
   const v = parsed.data;
@@ -142,7 +144,7 @@ export async function deleteInstructor(
   if (!parsed.success) {
     return { status: "error", error: "invalidInput" };
   }
-  const supabase = requireSupabase();
+  const supabase = await requireSupabase();
   if (!supabase) return { status: "error", error: "supabaseUnavailable" };
 
   const { error, count } = await supabase
@@ -192,7 +194,7 @@ export async function recordInstructorPayouts(
   if (!parsed.success) {
     return { status: "error", error: "invalidInput" };
   }
-  const supabase = requireSupabase();
+  const supabase = await requireSupabase();
   if (!supabase) return { status: "error", error: "supabaseUnavailable" };
 
   const { cohortLabel, instructorIds } = parsed.data;
@@ -338,7 +340,7 @@ export async function markInstructorPayoutPaid(
   if (!parsed.success) {
     return { status: "error", error: "invalidInput" };
   }
-  const supabase = requireSupabase();
+  const supabase = await requireSupabase();
   if (!supabase) return { status: "error", error: "supabaseUnavailable" };
 
   const { error, count } = await supabase

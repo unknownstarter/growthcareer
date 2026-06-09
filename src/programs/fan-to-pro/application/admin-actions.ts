@@ -465,6 +465,8 @@ export async function listCashReceipts(
   | { status: "ok"; rows: CashReceiptRow[] }
   | { status: "error"; error: string }
 > {
+  // viewer (코워크 공유) 는 명단만 read. drawer 의 영수증 내역은 admin 전용.
+  await assertAdmin();
   const parsed = ApplicantIdSchema.safeParse(input);
   if (!parsed.success) {
     return { status: "error", error: "invalidInput" };
@@ -572,6 +574,8 @@ export async function listMessagesForApplicant(
   | { status: "ok"; rows: MessageLogRow[] }
   | { status: "error"; error: string }
 > {
+  // viewer (코워크 공유) 는 명단만 read. 메시지 이력은 admin 전용.
+  await assertAdmin();
   const parsed = ApplicantIdSchema.safeParse(input);
   if (!parsed.success) {
     return { status: "error", error: "invalidInput" };

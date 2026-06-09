@@ -26,11 +26,13 @@ import type {
   FinanceKpiResult,
   FinanceLedgerRow,
 } from "@/src/programs/fan-to-pro/domain/finance";
+import { assertAdmin } from "@/src/programs/fan-to-pro/admin/role";
 
 const APPLICANTS_TABLE = "applicants";
 const PAYOUTS_TABLE = "instructor_payouts";
 
-function requireSupabase() {
+async function requireSupabase() {
+  await assertAdmin();
   const supabase = getSupabaseServer();
   return supabase ?? null;
 }
@@ -52,7 +54,7 @@ function requireSupabase() {
  *   - 캐시 X (force-dynamic 페이지에서 호출).
  * ------------------------------------------------------------------------- */
 export async function fetchFinanceKpi(): Promise<FinanceKpiResult> {
-  const supabase = requireSupabase();
+  const supabase = await requireSupabase();
   if (!supabase) return { status: "error", error: "supabaseUnavailable" };
 
   const [revenueRes, refundsRes, payoutsRes] = await Promise.all([
@@ -134,7 +136,7 @@ export async function fetchFinanceKpi(): Promise<FinanceKpiResult> {
  * 본 함수는 raw text 만 반환 - Blob 변환은 클라이언트가 처리.
  * ------------------------------------------------------------------------- */
 export async function exportFinanceCsv(): Promise<FinanceCsvResult> {
-  const supabase = requireSupabase();
+  const supabase = await requireSupabase();
   if (!supabase) return { status: "error", error: "supabaseUnavailable" };
 
   const [applicantRes, payoutsRes] = await Promise.all([

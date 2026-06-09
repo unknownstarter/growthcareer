@@ -6,6 +6,7 @@ import {
 import { fetchEnrolledCount } from "@/src/programs/fan-to-pro/admin/fetch-enrolled-count";
 import { AdminNav } from "@/src/programs/fan-to-pro/admin/components/admin-nav";
 import { InstructorsDashboard } from "@/src/programs/fan-to-pro/admin/components/instructors-dashboard";
+import { assertAdmin } from "@/src/programs/fan-to-pro/admin/role";
 
 export const metadata: Metadata = {
   title: "강사 - Growth Career Admin",
@@ -18,6 +19,8 @@ export const revalidate = 0;
 export const fetchCache = "force-no-store";
 
 export default async function AdminInstructorsPage() {
+  // middleware 의 path 차단과 별개로 page 단위 fail-closed. matcher 변경 회귀 방지.
+  await assertAdmin();
   const [instructorsResult, payoutsResult, enrolledResult] = await Promise.all([
     fetchInstructors(),
     fetchInstructorPayouts(),

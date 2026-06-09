@@ -149,6 +149,8 @@ export default function middleware(req: NextRequest): NextResponse | Response {
     }
 
     // role 을 server component 에 전달. NextResponse.next({ request }) 패턴.
+    // Headers.set() 은 동일 key 의 기존 값을 제거 후 set — client 가 보낸
+    // 위조 x-admin-role 헤더가 있어도 여기서 안전하게 덮어쓴다.
     const requestHeaders = new Headers(req.headers);
     requestHeaders.set(ADMIN_ROLE_HEADER, auth.role);
     const res = NextResponse.next({ request: { headers: requestHeaders } });
