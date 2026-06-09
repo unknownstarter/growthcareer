@@ -41,8 +41,9 @@
 
 핵심 원칙:
 - **단계 11 → 12는 의무**: 동일 형태의 문제가 다시 발생하지 않도록 **프로세스 자체를 코드/훅/문서로 박제**합니다. 대표적 출력: settings.json 훅 추가, CLAUDE.md 규칙 추가, 에이전트 프롬프트 보강, 새 스킬 생성.
+- **lesson → rule 역반영 의무**: 사고 후 `docs/lessons/YYYY-MM-DD-<slug>.md` 박제만으로는 부족. 그 lesson 의 "어떻게 막을까" 섹션이 **반드시 CLAUDE.md 의 룰 또는 새 섹션 / 에이전트 prompt / hooks 로 역반영**돼야 함. 미반영 lesson 은 사고로 간주. 인덱스: `docs/lessons/README.md` 에서 각 lesson 의 역반영 상태 체크.
 - **자체 점검 의무**: 8단계 종료 시 *"개선안이 정말 없는가?"* 를 명시적으로 자문하고, 없다면 그 근거를 한 줄로 남깁니다.
-- **9단계 (배포) prerequisite**: 새 권한·인증·PII 표면이 늘어나는 변경은 **Sage 결과를 받은 후에만** push / `vercel --prod` 실행. Sage 를 백그라운드로 띄우고 동시에 배포하면 안 됨 (2026-06-09 viewer role 사고). 사고 박제: `docs/lessons/2026-06-09-sage-review-skipped.md`.
+- **9단계 (배포) prerequisite**: 새 권한·인증·PII 표면이 늘어나는 변경은 **Sage 결과를 받은 후에만** push / `vercel --prod` 실행. Sage 를 백그라운드로 띄우고 동시에 배포하면 안 됨 (2026-06-09 viewer role 사고). 사고 박제: `docs/lessons/2026-06-09-sage-review-skipped.md`. §7.4 의 5종 체크 동시 적용.
 
 ---
 
@@ -145,6 +146,32 @@ UI 변경은 항상 `pnpm preview` 로 **자체 캡처 → Read → 사용자에
 
 ---
 
+## ⛔ 7.4 Production 보호 (Critical Safety Rules)
+
+1기 모집·강의 운영 중 사이트는 **라이브 운영 사이트**다. 다음 룰은 절대 위반 금지. 위반 시 그 자체로 사고로 간주하고 lesson 박제 + 룰 갱신.
+
+### 절대 금지 (Hard Stops)
+
+- ❌ **신규 권한·인증·PII 표면 변경 시 Sage 검토 결과 받기 전 push / `vercel --prod`** — viewer/admin role 분기, 새 server action, 새 마이그레이션, RLS 정책 추가 등이 다 해당. Sage 를 백그라운드로 띄우고 동시에 배포 진행 안 함. (사고: `docs/lessons/2026-06-09-sage-review-skipped.md`)
+- ❌ **prod Supabase SQL Editor 에서 직접 DDL 실행** — 모든 스키마 변경은 `supabase/migrations/` 파일로만. `supabase db push` 로 적용 + 마이그레이션 파일은 git 에 박힘.
+- ❌ **민감 정보를 dashboard / 로그 / commit message 에 평문 노출** — admin/viewer 자격, Supabase service_role key, applicants PII (이름·이메일·전화·주민번호·계좌) 모두.
+- ❌ **운영자 페이지 server action 에 `assertAdmin()` 누락** — admin-actions / instructor-actions / finance-actions 의 모든 mutation 함수가 첫 줄에 호출해야 함. middleware path 차단만 신뢰 금지 (사고: viewer role 의 Sage critical 2건).
+- ❌ **Vercel env 추가 직전 새 권한 코드의 hotfix 상태 미확인** — 신규 권한 (viewer 등) 의 자격을 production env 에 박기 전에 해당 자격이 활용할 server action 들이 모두 권한 검증 통과한 build 인지 확인.
+
+### 배포 전 5종 체크 (Pre-Deploy Checklist)
+
+production 영향 PR 또는 commit 직전:
+
+1. ✅ **Mira QA 통과** — 변경 영역의 test 시나리오 PASS
+2. ✅ **Sage 보안 검토 통과** — 새 권한·인증·PII 표면이면 의무. 결과 받은 후 진행
+3. ✅ **typecheck + build PASS** — `pnpm typecheck`
+4. ✅ **카피 부호 검사** — em dash · interpunct · 곡선 따옴표 · 단일 ellipsis 검사
+5. ✅ **마이그레이션이면 supabase-verify.mjs PASS** — DB shape 변경 후 INSERT/SELECT 정상 동작
+
+위반 시 *그 commit 자체가 사고* 로 간주, lesson 박제.
+
+---
+
 ## 7.5 세션 핸드오프 (Session Handoff)
 
 세션이 길어지거나 rate limit / 중단으로 끊겼을 때 다음 세션이 컨텍스트를 즉시 복원할 수 있게 한다.
@@ -170,14 +197,19 @@ UI 변경은 항상 `pnpm preview` 로 **자체 캡처 → Read → 사용자에
 
 세션 단락이 끝나면 `docs/sessions/SESSION-YYYY-MM-DD-{short-title}.md` 로 스냅샷 박제. `WORKING-SESSION.md` 는 새 작업 상태로 덮어쓴다. 상세: `docs/sessions/README.md`.
 
-### 다음 세션 시작 시 권장 흐름
+### 다음 세션 시작 30초 체크 (의무)
 
-1. `WORKING-SESSION.md` 먼저 읽기
-2. `git log --oneline -10` 최근 커밋
-3. `git status` 작업 중 변경
-4. `docs/tasks/BACKLOG.md` 다음 작업 우선순위
+권장 X → **의무**. 아래 5단계를 모두 통과한 후에 작업 진행.
+
+- [ ] `WORKING-SESSION.md` 먼저 읽기 — 현재 상태, 노아 manual action 잔여
+- [ ] `git log --oneline -10` — 최근 커밋 흐름
+- [ ] `git status` — 진행 중 변경 파일
+- [ ] `docs/tasks/BACKLOG.md` — 다음 우선순위 + B번호 확인
+- [ ] `docs/lessons/README.md` 인덱스 표 — 미반영 (❌) lesson 있으면 그 작업 우선
 
 CLAUDE.md / 메모리는 자동 로드되므로 별도 액션 X.
+
+체크 누락 시 직전 세션 맥락 / 사고 패턴 / 우선순위 다 놓치고 작업 → 같은 실수 재발. 5단계가 1분 안 걸리니 절대 건너뛰지 말 것.
 
 ---
 
