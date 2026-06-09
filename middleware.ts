@@ -40,6 +40,12 @@ const ADMIN_ONLY_PREFIXES = ["/admin/instructors", "/admin/finance"];
 const ADMIN_SESSION_COOKIE = "gc_admin_session";
 const ADMIN_SESSION_TTL_MS = 12 * 60 * 60 * 1000;
 
+// 로그아웃 직후 1회용 marker. middleware 가 이 cookie 를 보면 자격 헤더가
+// 와도 무시하고 401 응답 + 매번 다른 realm 으로 자격 다이얼로그 강제. 그래야
+// 브라우저가 캐시된 admin 자격을 자동 첨부해서 재로그인되는 현상을 회피.
+// cookie 는 401 보낸 직후 삭제 → 한 번만 효과.
+const ADMIN_LOGGED_OUT_COOKIE = "gc_admin_logged_out";
+
 type Role = "admin" | "viewer";
 
 function unauthorized(): NextResponse {
@@ -54,30 +60,41 @@ function unauthorized(): NextResponse {
   return res;
 }
 
-const LOGOUT_BODY = `<!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><title>로그아웃 — Growth Career Admin</title>
-<style>body{font-family:system-ui,-apple-system,sans-serif;background:#0a0a0a;color:#e5e5e5;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;padding:1.5rem;text-align:center}main{max-width:24rem}h1{font-size:1.5rem;letter-spacing:-0.02em;margin:0 0 0.5rem}p{color:#a3a3a3;margin:0 0 1.5rem;line-height:1.5}a{display:inline-block;border:1px solid #ec4899;color:#ec4899;padding:0.625rem 1.25rem;text-decoration:none;font-weight:700;letter-spacing:0.05em;font-size:0.875rem;text-transform:uppercase}a:hover{background:rgba(236,72,153,0.1)}</style>
-</head><body><main>
-<h1>로그아웃 완료</h1>
-<p>운영자 페이지에서 안전하게 로그아웃했어요. 브라우저를 닫거나 새 창에서 다시 자격을 입력하면 재접속할 수 있어요.</p>
-<a href="/">홈으로</a>
-</main></body></html>`;
+function logoutResponse(req: NextRequest): NextResponse {
+  // 로그아웃 = 신청자 페이지로 redirect + logged-out marker cookie 박음.
+  // 다음 요청에서 middleware 가 cookie 를 보고 매번 다른 realm 으로 자격
+  // 다이얼로그 강제 → 브라우저의 admin 자격 자동 첨부 우회.
+  const url = new URL("/admin/applicants", req.url);
+  const res = NextResponse.redirect(url, 302);
+  res.cookies.set(ADMIN_LOGGED_OUT_COOKIE, "1", {
+    path: ADMIN_PREFIX,
+    maxAge: 60,
+    httpOnly: true,
+    sameSite: "lax",
+    secure: true,
+  });
+  res.cookies.set(ADMIN_SESSION_COOKIE, "", {
+    path: ADMIN_PREFIX,
+    maxAge: 0,
+  });
+  res.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+  res.headers.set("Cache-Control", "no-store");
+  return res;
+}
 
-function logoutResponse(): NextResponse {
-  // 401 + WWW-Authenticate 로 브라우저의 Basic Auth 자격 캐시 invalidate 시도.
-  // cookie 삭제로 세션 timestamp 도 정리. 브라우저별로 100% 보장은 아니지만
-  // 사용자가 자격 다이얼로그에서 취소 후 새 창에서는 무조건 다시 요구됨.
-  const res = new NextResponse(LOGOUT_BODY, {
+function freshChallenge(): NextResponse {
+  // 매번 다른 realm 으로 자격 요구. 브라우저는 같은 realm 의 캐시된 자격만
+  // 자동 첨부하므로 realm 이 바뀌면 새 자격 다이얼로그를 띄운다.
+  const realm = `growthcareer-admin-${Date.now().toString(36)}`;
+  const res = new NextResponse("Authentication required", {
     status: 401,
     headers: {
-      "WWW-Authenticate":
-        'Basic realm="growthcareer-admin-loggedout", charset="UTF-8"',
-      "Content-Type": "text/html; charset=utf-8",
+      "WWW-Authenticate": `Basic realm="${realm}", charset="UTF-8"`,
       "X-Robots-Tag": "noindex, nofollow, noarchive",
       "Cache-Control": "no-store",
     },
   });
-  res.cookies.set(ADMIN_SESSION_COOKIE, "", {
+  res.cookies.set(ADMIN_LOGGED_OUT_COOKIE, "", {
     path: ADMIN_PREFIX,
     maxAge: 0,
   });
@@ -172,9 +189,15 @@ export default function middleware(req: NextRequest): NextResponse | Response {
   const { pathname } = req.nextUrl;
 
   if (pathname === ADMIN_PREFIX || pathname.startsWith(`${ADMIN_PREFIX}/`)) {
-    // 명시적 로그아웃 — 자격이 통과해도 무조건 401 + cookie 삭제.
+    // 명시적 로그아웃 — 신청자 페이지로 redirect + logged-out cookie 박음.
     if (pathname === ADMIN_LOGOUT_PATH) {
-      return logoutResponse();
+      return logoutResponse(req);
+    }
+
+    // 직전 요청이 로그아웃이었으면 자격을 무시하고 새 realm 으로 자격 강제.
+    // 브라우저의 admin 자격 자동 첨부 우회.
+    if (req.cookies.get(ADMIN_LOGGED_OUT_COOKIE)?.value === "1") {
+      return freshChallenge();
     }
 
     const auth = resolveRole(req);
