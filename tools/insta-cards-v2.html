@@ -1,0 +1,846 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>Growth Career / Fan to Pro / Insta Cards v2 — Why Now</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
+    />
+    <style>
+      /* ───────────────────────────────────────────────
+         Wave 2 — Why Now (5 cards × 2 locales = 10)
+
+         Design system (Wave 1 유지 + Wave 2 신규):
+           - 다크 #0a0a0a / 핑크 #ec4899 (좌측 12px 바, 워드마크 dot)
+           - 보라 #a855f7 — 데이터 잉크 (숫자/그래픽 only, 텍스트 X)
+           - 노란 #fbbf24 — D-day 카운터 only
+           - 핑크→보라 135deg 그라데이션 — 큰 가격 숫자 한정
+           - Pretendard Black, padding 96/120 safe-zone
+
+         Typography (per spec):
+           Hero       180~220px
+           Headline    88~108px
+           Sub         28~32px
+           Caption     20~22px
+           Eyebrow     22~26px / tracking 0.32em
+
+         Copy 부호 (§6.5):
+           em dash · interpunct · 곡선 따옴표 · 단일 ellipsis 금지.
+           시리즈 라벨 → "WHY NOW / 1 OF 5".
+         ─────────────────────────────────────────────── */
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      :root {
+        --bg: #0a0a0a;
+        --fg: #fafafa;
+        --fg-muted: #d4d4d8;
+        --fg-subtle: #a1a1aa;
+        --pink: #ec4899;
+        --purple: #a855f7;
+        --yellow: #fbbf24;
+        --border: #27272f;
+      }
+
+      html, body {
+        background: #1f1f24;
+        font-family:
+          "Pretendard Variable", "Pretendard",
+          system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        color: var(--fg);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+        word-break: keep-all;
+        overflow-wrap: normal;
+      }
+
+      body {
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        align-items: flex-start;
+      }
+
+      .row-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        color: #71717a;
+        margin-bottom: 8px;
+      }
+
+      /* ───────────────────────────────────────────────
+         Card shell — 1080 square
+         ─────────────────────────────────────────────── */
+      .card {
+        position: relative;
+        width: 1080px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--bg);
+        color: var(--fg);
+        font-family:
+          "Pretendard Variable", "Pretendard",
+          system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        word-break: keep-all;
+        overflow-wrap: normal;
+        isolation: isolate;
+      }
+
+      /* Pink signature bar (left vertical) — shared w/ Wave 1 */
+      .pink-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 12px;
+        height: 100%;
+        background: var(--pink);
+        z-index: 4;
+      }
+
+      /* Series label — top-right */
+      .series-label {
+        position: absolute;
+        top: 64px;
+        right: 80px;
+        z-index: 5;
+        font-weight: 700;
+        font-size: 22px;
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        color: var(--fg-subtle);
+      }
+      .series-label .num { color: var(--pink); }
+
+      /* Wordmark — bottom left */
+      .wordmark {
+        position: absolute;
+        left: 120px;
+        bottom: 64px;
+        z-index: 5;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .wordmark .mark {
+        font-weight: 900;
+        font-size: 28px;
+        letter-spacing: -0.03em;
+        color: var(--fg);
+      }
+      .wordmark .mark .dot { color: var(--pink); }
+      .wordmark .umbrella {
+        font-weight: 700;
+        font-size: 11px;
+        letter-spacing: 0.36em;
+        text-transform: uppercase;
+        color: var(--fg-subtle);
+      }
+
+      /* Content layer base */
+      .content {
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        padding: 96px 96px 96px 120px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .eyebrow {
+        font-weight: 700;
+        font-size: 24px;
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        color: var(--pink);
+        white-space: nowrap;
+      }
+
+      .headline {
+        font-weight: 900;
+        color: var(--fg);
+        letter-spacing: -0.04em;
+        line-height: 1.0;
+      }
+      .sub {
+        font-weight: 500;
+        color: var(--fg-muted);
+        line-height: 1.45;
+      }
+      .detail {
+        font-weight: 500;
+        color: var(--fg-subtle);
+        line-height: 1.5;
+      }
+
+      .pink   { color: var(--pink);   font-weight: 900; }
+      .purple { color: var(--purple); font-weight: 900; }
+      .yellow { color: var(--yellow); font-weight: 900; }
+
+      /* ═══════════════════════════════════════════════
+         CARD 1 — Price decomposed
+         hero 220px gradient number + "÷ 8 sessions"
+         ═══════════════════════════════════════════════ */
+      .card-price {
+        background:
+          radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.18) 0%, transparent 50%),
+          radial-gradient(circle at 20% 80%, rgba(236, 72, 153, 0.12) 0%, transparent 55%),
+          var(--bg);
+      }
+      .card-price .content {
+        justify-content: center;
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+      .card-price .eyebrow { margin-bottom: 56px; }
+
+      .hero-price {
+        font-weight: 900;
+        font-size: 220px;
+        line-height: 0.9;
+        letter-spacing: -0.06em;
+        background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 16px;
+        white-space: nowrap;
+      }
+      /* EN price string is longer ("110,000") — same size works because
+         we drop "원" suffix and tighten the unit row. */
+      .hero-unit {
+        font-weight: 700;
+        font-size: 36px;
+        color: var(--fg-muted);
+        letter-spacing: 0.01em;
+        margin-bottom: 64px;
+      }
+      .hero-unit .unit-strong { color: var(--fg); font-weight: 900; }
+
+      .divisor-row {
+        display: flex;
+        align-items: baseline;
+        gap: 24px;
+        margin-bottom: 36px;
+      }
+      .divisor-row .div-glyph {
+        font-weight: 900;
+        font-size: 64px;
+        color: var(--purple);
+        letter-spacing: -0.02em;
+      }
+      .divisor-row .div-text {
+        font-weight: 800;
+        font-size: 40px;
+        color: var(--fg);
+        letter-spacing: -0.02em;
+      }
+      .price-sub {
+        font-size: 30px;
+        font-weight: 500;
+        color: var(--fg-muted);
+        line-height: 1.4;
+        max-width: 820px;
+      }
+
+      /* ═══════════════════════════════════════════════
+         CARD 2 — Refund guarantee
+         purple stamp + check + RISK FREE label
+         ═══════════════════════════════════════════════ */
+      .card-refund {
+        background:
+          radial-gradient(circle at 50% 38%, rgba(168, 85, 247, 0.18) 0%, transparent 55%),
+          var(--bg);
+      }
+      .card-refund .content {
+        justify-content: flex-start;
+        padding-top: 96px;
+      }
+      .card-refund .eyebrow { margin-bottom: 36px; }
+
+      .stamp-wrap {
+        position: relative;
+        align-self: flex-start;
+        margin-bottom: 48px;
+      }
+      .stamp {
+        width: 220px;
+        height: 220px;
+        border-radius: 999px;
+        background: var(--purple);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        box-shadow:
+          0 0 0 6px rgba(168, 85, 247, 0.18),
+          0 0 0 14px rgba(168, 85, 247, 0.08);
+      }
+      .stamp .check {
+        font-weight: 900;
+        font-size: 160px;
+        color: #ffffff;
+        line-height: 1;
+        margin-top: -8px;
+      }
+      .risk-label {
+        position: absolute;
+        top: 50%;
+        left: 248px;
+        transform: translateY(-50%);
+        font-weight: 900;
+        font-size: 36px;
+        letter-spacing: 0.18em;
+        color: var(--purple);
+        white-space: nowrap;
+        padding: 14px 24px;
+        border: 3px solid var(--purple);
+        border-radius: 8px;
+        background: rgba(168, 85, 247, 0.08);
+      }
+
+      .card-refund .headline {
+        font-size: 92px;
+        margin-bottom: 28px;
+        max-width: 880px;
+      }
+      .card-refund .sub {
+        font-size: 30px;
+        max-width: 820px;
+        margin-bottom: 24px;
+      }
+      .card-refund .detail {
+        font-size: 22px;
+        max-width: 820px;
+      }
+
+      /* ═══════════════════════════════════════════════
+         CARD 3 — Two credentials
+         Two passport/ticket cards side-by-side
+         ═══════════════════════════════════════════════ */
+      .card-credentials {
+        background:
+          radial-gradient(circle at 10% 100%, rgba(236, 72, 153, 0.12) 0%, transparent 55%),
+          radial-gradient(circle at 90% 0%, rgba(168, 85, 247, 0.12) 0%, transparent 55%),
+          var(--bg);
+      }
+      .card-credentials .content {
+        justify-content: flex-start;
+        padding-top: 96px;
+        padding-bottom: 200px;
+      }
+      .card-credentials .eyebrow { margin-bottom: 28px; }
+      .card-credentials .headline {
+        font-size: 76px;
+        margin-bottom: 18px;
+        max-width: 900px;
+        line-height: 1.05;
+      }
+      .card-credentials .sub {
+        font-size: 26px;
+        max-width: 820px;
+        margin-bottom: 36px;
+      }
+
+      .cert-pair {
+        display: flex;
+        gap: 28px;
+        margin-bottom: 24px;
+      }
+      .cert {
+        flex: 1;
+        position: relative;
+        background: linear-gradient(180deg, #18181b 0%, #0f0f12 100%);
+        border: 2px solid rgba(236, 72, 153, 0.35);
+        border-radius: 18px;
+        padding: 32px 28px 28px;
+        min-height: 320px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .cert.purple-edge {
+        border-color: rgba(168, 85, 247, 0.45);
+      }
+      .cert .corner-stamp {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 64px;
+        height: 64px;
+        border-radius: 999px;
+        border: 3px solid var(--pink);
+        color: var(--pink);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 28px;
+        transform: rotate(-12deg);
+      }
+      .cert.purple-edge .corner-stamp {
+        border-color: var(--purple);
+        color: var(--purple);
+      }
+      .cert .cert-eyebrow {
+        font-weight: 700;
+        font-size: 16px;
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        color: var(--pink);
+        margin-bottom: 16px;
+      }
+      .cert.purple-edge .cert-eyebrow {
+        color: var(--purple);
+      }
+      .cert .cert-title {
+        font-weight: 900;
+        font-size: 34px;
+        color: var(--fg);
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+        margin-bottom: 18px;
+        max-width: 320px;
+      }
+      .cert .cert-issuer-label {
+        font-weight: 600;
+        font-size: 15px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--fg-subtle);
+        margin-bottom: 6px;
+      }
+      .cert .cert-issuer {
+        font-weight: 800;
+        font-size: 22px;
+        color: var(--fg);
+        letter-spacing: -0.01em;
+        margin-bottom: 18px;
+      }
+      .cert .cert-line {
+        margin-top: auto;
+        padding-top: 18px;
+        border-top: 1px dashed rgba(255, 255, 255, 0.15);
+        font-weight: 600;
+        font-size: 16px;
+        color: var(--fg-subtle);
+        letter-spacing: 0.02em;
+      }
+      .card-credentials .detail {
+        font-size: 22px;
+        max-width: 880px;
+      }
+
+      /* ═══════════════════════════════════════════════
+         CARD 4 — Comparison table
+         "Alone" vs "Fan to Pro" — 4 rows
+         ═══════════════════════════════════════════════ */
+      .card-compare {
+        background:
+          radial-gradient(circle at 100% 0%, rgba(168, 85, 247, 0.14) 0%, transparent 55%),
+          var(--bg);
+      }
+      .card-compare .content {
+        justify-content: flex-start;
+        padding-top: 96px;
+        padding-bottom: 180px;
+      }
+      .card-compare .eyebrow { margin-bottom: 28px; }
+      .card-compare .headline {
+        font-size: 72px;
+        margin-bottom: 16px;
+        max-width: 880px;
+        line-height: 1.05;
+      }
+      .card-compare .sub {
+        font-size: 26px;
+        max-width: 820px;
+        margin-bottom: 40px;
+      }
+
+      .cmp-table {
+        display: grid;
+        grid-template-columns: 220px 1fr 1fr;
+        row-gap: 0;
+        border-top: 2px solid rgba(255, 255, 255, 0.12);
+      }
+      .cmp-table .cmp-head {
+        padding: 18px 16px;
+        font-weight: 800;
+        font-size: 22px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.12);
+      }
+      .cmp-table .cmp-head.label-col { color: var(--fg-subtle); font-size: 18px; }
+      .cmp-table .cmp-head.alone-col { color: var(--fg-subtle); }
+      .cmp-table .cmp-head.us-col {
+        color: var(--pink);
+        background: rgba(236, 72, 153, 0.08);
+      }
+      .cmp-table .cell {
+        padding: 22px 16px;
+        font-weight: 600;
+        font-size: 26px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        line-height: 1.3;
+      }
+      .cmp-table .cell.label {
+        color: var(--fg-subtle);
+        font-weight: 700;
+        font-size: 22px;
+        letter-spacing: 0.02em;
+      }
+      .cmp-table .cell.alone {
+        color: var(--fg-muted);
+        text-decoration: line-through;
+        text-decoration-thickness: 2px;
+        text-decoration-color: rgba(161, 161, 170, 0.6);
+      }
+      .cmp-table .cell.us {
+        color: var(--fg);
+        background: rgba(236, 72, 153, 0.06);
+        font-weight: 800;
+      }
+      .cmp-table .cell.us strong {
+        color: var(--pink);
+        font-weight: 900;
+      }
+
+      /* ═══════════════════════════════════════════════
+         CARD 5 — Closing D-day counter
+         giant yellow D-N + deadline copy
+         ═══════════════════════════════════════════════ */
+      .card-closing {
+        background:
+          radial-gradient(circle at 50% 50%, rgba(251, 191, 36, 0.12) 0%, transparent 55%),
+          var(--bg);
+      }
+      .card-closing .content {
+        justify-content: center;
+        align-items: flex-start;
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+      .card-closing .eyebrow { margin-bottom: 24px; }
+      .card-closing .headline {
+        font-size: 96px;
+        margin-bottom: 36px;
+        max-width: 880px;
+        line-height: 1.0;
+      }
+      .dday-counter {
+        font-weight: 900;
+        font-size: 320px;
+        line-height: 0.85;
+        letter-spacing: -0.08em;
+        color: var(--yellow);
+        margin-bottom: 28px;
+      }
+      .card-closing .sub {
+        font-size: 32px;
+        margin-bottom: 16px;
+        color: var(--fg);
+        font-weight: 700;
+      }
+      .card-closing .detail {
+        font-size: 22px;
+        color: var(--fg-muted);
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- ═══════════════════════════════════════════════
+         CARD 1 / PRICE / EN
+         ═══════════════════════════════════════════════ -->
+    <div class="row-label">CARD 1 / PRICE / EN</div>
+    <div id="card-01-en" class="card card-price">
+      <div class="pink-bar"></div>
+      <div class="series-label">WHY NOW <span class="num">/ 1 OF 5</span></div>
+      <div class="content">
+        <div class="eyebrow">PER SESSION</div>
+        <div class="hero-price">110,000</div>
+        <div class="hero-unit"><span class="unit-strong">KRW</span> per session.</div>
+        <div class="divisor-row">
+          <span class="div-glyph">/</span>
+          <span class="div-text">8 sessions over 4 weeks</span>
+        </div>
+        <div class="price-sub">Working K-pop pros teaching live sound, A and R, and stage direction.</div>
+      </div>
+      <div class="wordmark">
+        <div class="mark">FAN<span class="dot">.</span> TO PRO<span class="dot">.</span></div>
+        <div class="umbrella">GROWTH CAREER</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         CARD 1 / PRICE / KO
+         ═══════════════════════════════════════════════ -->
+    <div class="row-label">CARD 1 / PRICE / KO</div>
+    <div id="card-01-ko" class="card card-price">
+      <div class="pink-bar"></div>
+      <div class="series-label">WHY NOW <span class="num">/ 1 OF 5</span></div>
+      <div class="content">
+        <div class="eyebrow">회당 가격</div>
+        <div class="hero-price">110,000</div>
+        <div class="hero-unit"><span class="unit-strong">원</span>, 한 회.</div>
+        <div class="divisor-row">
+          <span class="div-glyph">/</span>
+          <span class="div-text">4주 8회</span>
+        </div>
+        <div class="price-sub">현직 음향감독, 디렉터, 뮤지션이 직접 가르치는 4주.</div>
+      </div>
+      <div class="wordmark">
+        <div class="mark">FAN<span class="dot">.</span> TO PRO<span class="dot">.</span></div>
+        <div class="umbrella">GROWTH CAREER</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         CARD 2 / REFUND / EN
+         ═══════════════════════════════════════════════ -->
+    <div class="row-label">CARD 2 / REFUND / EN</div>
+    <div id="card-02-en" class="card card-refund">
+      <div class="pink-bar"></div>
+      <div class="series-label">WHY NOW <span class="num">/ 2 OF 5</span></div>
+      <div class="content">
+        <div class="eyebrow">PROMISE</div>
+        <div class="stamp-wrap">
+          <div class="stamp"><div class="check">&#10003;</div></div>
+          <div class="risk-label">RISK FREE</div>
+        </div>
+        <div class="headline">Full refund<br />if it doesn't <span class="purple">launch.</span></div>
+        <div class="sub">Cohort cancels under 20 seats. Automatic refund.</div>
+        <div class="detail">Rare in Korean bootcamps. A promise that 880,000 KRW is earned.</div>
+      </div>
+      <div class="wordmark">
+        <div class="mark">FAN<span class="dot">.</span> TO PRO<span class="dot">.</span></div>
+        <div class="umbrella">GROWTH CAREER</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         CARD 2 / REFUND / KO
+         ═══════════════════════════════════════════════ -->
+    <div class="row-label">CARD 2 / REFUND / KO</div>
+    <div id="card-02-ko" class="card card-refund">
+      <div class="pink-bar"></div>
+      <div class="series-label">WHY NOW <span class="num">/ 2 OF 5</span></div>
+      <div class="content">
+        <div class="eyebrow">약속</div>
+        <div class="stamp-wrap">
+          <div class="stamp"><div class="check">&#10003;</div></div>
+          <div class="risk-label">RISK FREE</div>
+        </div>
+        <div class="headline">안 열리면<br /><span class="purple">100% 돌려드립니다.</span></div>
+        <div class="sub">20명 미달 시 강좌 취소, 자동 환불.</div>
+        <div class="detail">한국 부트캠프에서 흔하지 않은 조건. 880,000원을 보낼 자격이 우리에게 있다는 약속.</div>
+      </div>
+      <div class="wordmark">
+        <div class="mark">FAN<span class="dot">.</span> TO PRO<span class="dot">.</span></div>
+        <div class="umbrella">GROWTH CAREER</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         CARD 3 / CREDENTIALS / EN
+         ═══════════════════════════════════════════════ -->
+    <div class="row-label">CARD 3 / CREDENTIALS / EN</div>
+    <div id="card-03-en" class="card card-credentials">
+      <div class="pink-bar"></div>
+      <div class="series-label">WHY NOW <span class="num">/ 3 OF 5</span></div>
+      <div class="content">
+        <div class="eyebrow">WHAT YOU TAKE HOME</div>
+        <div class="headline">One certificate.<br />One <span class="purple">on-set credit.</span></div>
+        <div class="sub">Course completion by Dropdown. K-pop production credit by Union Pictures.</div>
+        <div class="cert-pair">
+          <div class="cert">
+            <div class="corner-stamp">A</div>
+            <div class="cert-eyebrow">CERTIFICATE</div>
+            <div class="cert-title">Course Completion</div>
+            <div class="cert-issuer-label">Issued by</div>
+            <div class="cert-issuer">Dropdown</div>
+            <div class="cert-line">No. FTP / 2026 / A</div>
+          </div>
+          <div class="cert purple-edge">
+            <div class="corner-stamp">B</div>
+            <div class="cert-eyebrow">ON-SET CREDIT</div>
+            <div class="cert-title">K-pop Production Participation</div>
+            <div class="cert-issuer-label">Issued by</div>
+            <div class="cert-issuer">Union Pictures</div>
+            <div class="cert-line">For verified on-set work</div>
+          </div>
+        </div>
+        <div class="detail">For those who join the actual production. A documented line in Korea's entertainment industry.</div>
+      </div>
+      <div class="wordmark">
+        <div class="mark">FAN<span class="dot">.</span> TO PRO<span class="dot">.</span></div>
+        <div class="umbrella">GROWTH CAREER</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         CARD 3 / CREDENTIALS / KO
+         ═══════════════════════════════════════════════ -->
+    <div class="row-label">CARD 3 / CREDENTIALS / KO</div>
+    <div id="card-03-ko" class="card card-credentials">
+      <div class="pink-bar"></div>
+      <div class="series-label">WHY NOW <span class="num">/ 3 OF 5</span></div>
+      <div class="content">
+        <div class="eyebrow">가져갈 수 있는 것</div>
+        <div class="headline">수료증 한 장,<br /><span class="purple">참여확인서 한 장.</span></div>
+        <div class="sub">Dropdown 명의 수료증과 유니온픽처스 명의 K-pop 공연 참여확인서.</div>
+        <div class="cert-pair">
+          <div class="cert">
+            <div class="corner-stamp">A</div>
+            <div class="cert-eyebrow">수료증</div>
+            <div class="cert-title">Fan to Pro 과정 수료</div>
+            <div class="cert-issuer-label">발급</div>
+            <div class="cert-issuer">Dropdown</div>
+            <div class="cert-line">제 FTP / 2026 / A 호</div>
+          </div>
+          <div class="cert purple-edge">
+            <div class="corner-stamp">B</div>
+            <div class="cert-eyebrow">참여확인서</div>
+            <div class="cert-title">K-pop 공연 참여(업무) 확인서</div>
+            <div class="cert-issuer-label">발급</div>
+            <div class="cert-issuer">유니온픽처스</div>
+            <div class="cert-line">실제 공연 참여자 한정</div>
+          </div>
+        </div>
+        <div class="detail">실제 공연에 참여한 분께. 한국 엔터테인먼트 산업의 실무 기록 한 줄.</div>
+      </div>
+      <div class="wordmark">
+        <div class="mark">FAN<span class="dot">.</span> TO PRO<span class="dot">.</span></div>
+        <div class="umbrella">GROWTH CAREER</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         CARD 4 / COMPARE / EN
+         ═══════════════════════════════════════════════ -->
+    <div class="row-label">CARD 4 / COMPARE / EN</div>
+    <div id="card-04-en" class="card card-compare">
+      <div class="pink-bar"></div>
+      <div class="series-label">WHY NOW <span class="num">/ 4 OF 5</span></div>
+      <div class="content">
+        <div class="eyebrow">FOR INTERNATIONAL STUDENTS</div>
+        <div class="headline">From fan to<br /><span class="pink">industry insider.</span></div>
+        <div class="sub">Four weeks. Built for international students living in Korea.</div>
+        <div class="cmp-table">
+          <div class="cmp-head label-col">&nbsp;</div>
+          <div class="cmp-head alone-col">Alone</div>
+          <div class="cmp-head us-col">Fan to Pro</div>
+
+          <div class="cell label">Portfolio</div>
+          <div class="cell alone">none</div>
+          <div class="cell us"><strong>live show credit</strong></div>
+
+          <div class="cell label">Mentor</div>
+          <div class="cell alone">YouTube</div>
+          <div class="cell us"><strong>3 working pros</strong></div>
+
+          <div class="cell label">Network</div>
+          <div class="cell alone">zero</div>
+          <div class="cell us"><strong>inside the industry</strong></div>
+
+          <div class="cell label">Cost</div>
+          <div class="cell alone">high, slow</div>
+          <div class="cell us"><strong>4 weeks</strong></div>
+        </div>
+      </div>
+      <div class="wordmark">
+        <div class="mark">FAN<span class="dot">.</span> TO PRO<span class="dot">.</span></div>
+        <div class="umbrella">GROWTH CAREER</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         CARD 4 / COMPARE / KO
+         ═══════════════════════════════════════════════ -->
+    <div class="row-label">CARD 4 / COMPARE / KO</div>
+    <div id="card-04-ko" class="card card-compare">
+      <div class="pink-bar"></div>
+      <div class="series-label">WHY NOW <span class="num">/ 4 OF 5</span></div>
+      <div class="content">
+        <div class="eyebrow">한국 거주 외국인 유학생</div>
+        <div class="headline">팬에서<br /><span class="pink">산업 안쪽으로.</span></div>
+        <div class="sub">4주. 한국에 사는 외국인 유학생을 위해.</div>
+        <div class="cmp-table">
+          <div class="cmp-head label-col">&nbsp;</div>
+          <div class="cmp-head alone-col">혼자</div>
+          <div class="cmp-head us-col">Fan to Pro</div>
+
+          <div class="cell label">포트폴리오</div>
+          <div class="cell alone">없음</div>
+          <div class="cell us"><strong>실제 공연 크레딧</strong></div>
+
+          <div class="cell label">멘토</div>
+          <div class="cell alone">유튜브</div>
+          <div class="cell us"><strong>현직 3인</strong></div>
+
+          <div class="cell label">네트워크</div>
+          <div class="cell alone">0</div>
+          <div class="cell us"><strong>산업 안쪽</strong></div>
+
+          <div class="cell label">비용</div>
+          <div class="cell alone">느림</div>
+          <div class="cell us"><strong>4주</strong></div>
+        </div>
+      </div>
+      <div class="wordmark">
+        <div class="mark">FAN<span class="dot">.</span> TO PRO<span class="dot">.</span></div>
+        <div class="umbrella">GROWTH CAREER</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         CARD 5 / CLOSING D-DAY / EN
+         ═══════════════════════════════════════════════ -->
+    <div class="row-label">CARD 5 / CLOSING / EN</div>
+    <div id="card-05-en" class="card card-closing">
+      <div class="pink-bar"></div>
+      <div class="series-label">WHY NOW <span class="num">/ 5 OF 5</span></div>
+      <div class="content">
+        <div class="eyebrow">DEADLINE</div>
+        <div class="headline">June 21,<br /><span class="pink">midnight.</span></div>
+        <!-- D-day counter. Today = 2026-06-10 → D-11. Noah: 발행일 다른 경우
+             아래 data-dday 속성 + 표시 텍스트 직접 교체. -->
+        <div class="dday-counter" data-dday="D-11">D-11</div>
+        <div class="sub">Registration closes.</div>
+        <div class="detail">First class June 27, Saturday.</div>
+      </div>
+      <div class="wordmark">
+        <div class="mark">FAN<span class="dot">.</span> TO PRO<span class="dot">.</span></div>
+        <div class="umbrella">GROWTH CAREER</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         CARD 5 / CLOSING D-DAY / KO
+         ═══════════════════════════════════════════════ -->
+    <div class="row-label">CARD 5 / CLOSING / KO</div>
+    <div id="card-05-ko" class="card card-closing">
+      <div class="pink-bar"></div>
+      <div class="series-label">WHY NOW <span class="num">/ 5 OF 5</span></div>
+      <div class="content">
+        <div class="eyebrow">마감</div>
+        <div class="headline">6월 21일<br /><span class="pink">자정.</span></div>
+        <!-- D-day counter. 오늘 = 2026-06-10 → D-11. 발행일 다른 경우
+             data-dday + 표시 텍스트 직접 교체. -->
+        <div class="dday-counter" data-dday="D-11">D-11</div>
+        <div class="sub">모집 마감.</div>
+        <div class="detail">첫 강의 6월 27일 토요일.</div>
+      </div>
+      <div class="wordmark">
+        <div class="mark">FAN<span class="dot">.</span> TO PRO<span class="dot">.</span></div>
+        <div class="umbrella">GROWTH CAREER</div>
+      </div>
+    </div>
+
+  </body>
+</html>
