@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/src/programs/fan-to-pro/presentation/components/cn";
 import {
@@ -15,6 +15,7 @@ import {
   recordCashReceipt,
   sendReminder,
 } from "@/src/programs/fan-to-pro/application/admin-actions";
+import { pollApplicants } from "@/src/programs/fan-to-pro/application/polling-actions";
 import {
   APPLICANT_STATUSES,
   computeStats,
@@ -115,6 +116,61 @@ function DashboardInner({
   const router = useRouter();
   const { show } = useToast();
 
+  // 30 초 silent 폴링이 갱신하는 라이브 상태. initialRows / initial eligibility
+  // 는 첫 paint 만 채우고, 이후 pollApplicants() 응답으로 덮어쓴다.
+  // server action (mark*, broadcast 등) 호출 후의 router.refresh() 도 동일하게
+  // 페이지 props 를 새로 내려주는데, 그 때 아래 effect 가 props 동기화로 따라간다.
+  const [rows, setRows] = useState<ApplicantRow[]>(initialRows);
+  const [eligibility, setEligibility] = useState<AnonymizeEligibility>(
+    anonymizeEligibility,
+  );
+  const [lastFetchedAt, setLastFetchedAt] = useState<number>(Date.now());
+  const [nowTick, setNowTick] = useState<number>(Date.now());
+
+  // server component 가 새 props 를 내려주면 (router.refresh / 첫 마운트 이후
+  // navigation) 라이브 state 도 따라가야 함. 그렇지 않으면 mutation 후 폴링
+  // 한 사이클 (최대 30 s) 동안 stale data 유지.
+  useEffect(() => {
+    setRows(initialRows);
+    setEligibility(anonymizeEligibility);
+    setLastFetchedAt(Date.now());
+  }, [initialRows, anonymizeEligibility]);
+
+  // 30 초 silent 폴링. setInterval 1 회 + 마지막 응답이 도착해야 다음 trigger
+  // 가는 cancel 패턴 (in-flight 가드 X 대신, AbortController 미사용 + 결과를
+  // 받기 전 mount 해제 시 setState 호출 안 함).
+  // - 다이얼로그 / 드로어 열려있어도 무관: rows state 만 교체.
+  //   useMemo 가 새 rows 로 filtered 를 재계산하지만, dialogTarget state 는
+  //   별도 ref 라 깜빡임 없음. selection (selectedIds) 도 id 기반이라 보존.
+  // - error 응답은 silent 무시 (헤더 fetchError 는 첫 진입 시 props 만 표시).
+  //   실패가 누적되면 lastFetchedAt 이 안 올라가 chip 으로 즉시 인지 가능.
+  useEffect(() => {
+    if (!supabaseAvailable) return; // mock 모드면 폴링 의미 없음
+    let cancelled = false;
+    const id = window.setInterval(async () => {
+      try {
+        const result = await pollApplicants();
+        if (cancelled) return;
+        if (result.error || !result.supabaseAvailable) return;
+        setRows(result.rows);
+        setEligibility(result.eligibility);
+        setLastFetchedAt(Date.parse(result.fetchedAt));
+      } catch {
+        // network blip 등은 silent — 다음 tick 에 재시도.
+      }
+    }, 30_000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(id);
+    };
+  }, [supabaseAvailable]);
+
+  // "갱신 12s ago" chip 의 1 초 카운터. 별도 effect 라 폴링 사이클과 무관.
+  useEffect(() => {
+    const id = window.setInterval(() => setNowTick(Date.now()), 1_000);
+    return () => window.clearInterval(id);
+  }, []);
+
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<Set<ApplicantStatus>>(
     new Set(),
@@ -141,11 +197,11 @@ function DashboardInner({
 
   const [isPending, startTransition] = useTransition();
 
-  const stats = useMemo(() => computeStats(initialRows), [initialRows]);
+  const stats = useMemo(() => computeStats(rows), [rows]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const items = initialRows.filter((row) => {
+    const items = rows.filter((row) => {
       if (statusFilter.size > 0 && !statusFilter.has(row.status)) return false;
       if (q.length === 0) return true;
       return (
@@ -163,7 +219,7 @@ function DashboardInner({
       if (ua !== ub) return ub - ua;
       return a.createdAt < b.createdAt ? 1 : -1;
     });
-  }, [initialRows, query, statusFilter]);
+  }, [rows, query, statusFilter]);
 
   function refresh() {
     router.refresh();
@@ -410,8 +466,8 @@ function DashboardInner({
 
   // 선택된 applicant 객체 배열 (broadcast 모달에 전달).
   const selectedApplicants = useMemo(
-    () => initialRows.filter((row) => selectedIds.has(row.id)),
-    [initialRows, selectedIds],
+    () => rows.filter((row) => selectedIds.has(row.id)),
+    [rows, selectedIds],
   );
 
   return (
@@ -432,6 +488,7 @@ function DashboardInner({
             >
               Fan to Pro 신청자
             </h1>
+            <LastFetchedChip lastFetchedAt={lastFetchedAt} now={nowTick} />
           </div>
           <div className="flex flex-wrap items-center gap-2 text-[11px] text-fg">
             <StatPill label="총" value={stats.total} tone="default" />
@@ -455,7 +512,7 @@ function DashboardInner({
                 onClick={() => setAnonymizeOpen(true)}
                 className={cn(
                   "inline-flex items-center gap-1.5 border px-2 py-1 text-[10px] font-black uppercase whitespace-nowrap",
-                  anonymizeEligibility.eligibleCount > 0
+                  eligibility.eligibleCount > 0
                     ? "border-red-500/60 bg-red-500/10 text-red-200 hover:bg-red-500/20"
                     : "border-border bg-bg text-fg/80 hover:text-fg",
                 )}
@@ -465,7 +522,7 @@ function DashboardInner({
               >
                 <span>PII 파기</span>
                 <span className="text-fg">
-                  {anonymizeEligibility.eligibleCount}
+                  {eligibility.eligibleCount}
                 </span>
               </button>
             )}
@@ -890,7 +947,7 @@ function DashboardInner({
       <PiiAnonymizeDialog
         open={anonymizeOpen}
         busy={isPending}
-        eligibleCount={anonymizeEligibility.eligibleCount}
+        eligibleCount={eligibility.eligibleCount}
         onClose={() => setAnonymizeOpen(false)}
         onConfirm={runPiiAnonymize}
       />
@@ -1058,6 +1115,39 @@ function RowActions({
         </button>
       )}
     </div>
+  );
+}
+
+function LastFetchedChip({
+  lastFetchedAt,
+  now,
+}: {
+  lastFetchedAt: number;
+  now: number;
+}) {
+  // "갱신 12s" / "갱신 1m 23s" 식. 30 s 폴링이라 보통 30 s 이내 머무름.
+  // 60 s 넘어가면 폴링 실패 의심 → tone 변경으로 시각화.
+  const elapsedSec = Math.max(0, Math.floor((now - lastFetchedAt) / 1000));
+  const stale = elapsedSec >= 60;
+  const label =
+    elapsedSec < 60
+      ? `${elapsedSec}s`
+      : `${Math.floor(elapsedSec / 60)}m ${elapsedSec % 60}s`;
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 border px-2 py-0.5 text-[10px] font-black uppercase whitespace-nowrap",
+        stale
+          ? "border-amber-500/60 bg-amber-500/10 text-amber-200"
+          : "border-border bg-bg text-fg/80",
+      )}
+      style={{ letterSpacing: "0.15em" }}
+      title={`마지막 갱신: ${new Date(lastFetchedAt).toLocaleTimeString("ko-KR")}`}
+      aria-live="polite"
+    >
+      <span>갱신</span>
+      <span className="text-fg">{label}</span>
+    </span>
   );
 }
 
