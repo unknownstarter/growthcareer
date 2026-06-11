@@ -9,6 +9,7 @@ const COLUMNS: ReadonlyArray<{
   { key: "email", label: "이메일" },
   { key: "phone", label: "연락처" },
   { key: "birthdate", label: "생년월일" },
+  { key: "nationality", label: "국적" },
   { key: "university", label: "대학" },
   { key: "visa", label: "비자" },
   { key: "address", label: "주소" },

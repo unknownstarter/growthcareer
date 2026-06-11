@@ -255,6 +255,7 @@ function DashboardInner({
         row.name.toLowerCase().includes(q) ||
         row.email.toLowerCase().includes(q) ||
         row.phone.toLowerCase().includes(q) ||
+        (row.nationality ?? "").toLowerCase().includes(q) ||
         (row.depositorNameObserved ?? "").toLowerCase().includes(q)
       );
     });
@@ -732,6 +733,7 @@ function DashboardInner({
                 <th className="px-3 py-2 font-black">이름</th>
                 <th className="px-3 py-2 font-black">연락처</th>
                 <th className="px-3 py-2 font-black">이메일</th>
+                <th className="px-3 py-2 font-black">국적</th>
                 <th className="px-3 py-2 font-black">비자</th>
                 <th className="px-3 py-2 font-black">상태</th>
                 <th className="px-3 py-2 font-black">발송</th>
@@ -744,7 +746,7 @@ function DashboardInner({
               {filtered.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={readOnly ? 9 : 11}
+                    colSpan={readOnly ? 10 : 12}
                     className="px-3 py-12 text-center text-xs text-fg/80"
                   >
                     표시할 신청자가 없어요.
@@ -800,6 +802,9 @@ function DashboardInner({
                     </td>
                     <td className="px-3 py-2 align-top text-fg break-all">
                       {row.email}
+                    </td>
+                    <td className="px-3 py-2 align-top text-fg whitespace-nowrap">
+                      {row.nationality ?? "-"}
                     </td>
                     <td className="px-3 py-2 align-top text-fg whitespace-nowrap">
                       {row.visa ?? "-"}
@@ -909,6 +914,8 @@ function DashboardInner({
                 <dl className="mt-2 grid grid-cols-2 gap-1 text-[11px] text-fg/80">
                   <dt>신청일</dt>
                   <dd className="text-fg">{formatDate(row.createdAt)}</dd>
+                  <dt>국적</dt>
+                  <dd className="text-fg">{row.nationality ?? "-"}</dd>
                   <dt>비자</dt>
                   <dd className="text-fg">{row.visa ?? "-"}</dd>
                   <dt>발송</dt>
