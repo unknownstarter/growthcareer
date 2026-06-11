@@ -116,10 +116,10 @@ function DashboardInner({
   const router = useRouter();
   const { show } = useToast();
 
-  // 30 초 silent 폴링이 갱신하는 라이브 상태. initialRows / initial eligibility
-  // 는 첫 paint 만 채우고, 이후 pollApplicants() 응답으로 덮어쓴다.
-  // server action (mark*, broadcast 등) 호출 후의 router.refresh() 도 동일하게
-  // 페이지 props 를 새로 내려주는데, 그 때 아래 effect 가 props 동기화로 따라간다.
+  // 화면에 실제로 그려지는 라이브 상태. 사용자가 chip 을 명시적으로 클릭
+  // (applyPending) 하거나 props 가 새로 내려올 때만 갱신. 30 초 폴링이
+  // 도착해도 여기는 건드리지 않아서 다이얼로그 / 드로어 / 발송 모달이
+  // 열려 있을 때 화면이 떨리지 않는다.
   const [rows, setRows] = useState<ApplicantRow[]>(initialRows);
   const [eligibility, setEligibility] = useState<AnonymizeEligibility>(
     anonymizeEligibility,
@@ -127,34 +127,40 @@ function DashboardInner({
   const [lastFetchedAt, setLastFetchedAt] = useState<number>(Date.now());
   const [nowTick, setNowTick] = useState<number>(Date.now());
 
+  // 폴링 결과의 staging 영역. setRows 대신 여기에만 쓴다. diff 가 있으면
+  // chip 으로 "N건 변경 / 새로고침" 알림. 사용자가 클릭 → rows 로 commit.
+  // 다음 폴링에서도 계속 덮어쓰므로 항상 "최신" 스냅샷이 대기.
+  const [pendingRows, setPendingRows] = useState<ApplicantRow[] | null>(null);
+  const [pendingEligibility, setPendingEligibility] =
+    useState<AnonymizeEligibility | null>(null);
+  const [pendingFetchedAt, setPendingFetchedAt] = useState<number | null>(null);
+
   // server component 가 새 props 를 내려주면 (router.refresh / 첫 마운트 이후
-  // navigation) 라이브 state 도 따라가야 함. 그렇지 않으면 mutation 후 폴링
-  // 한 사이클 (최대 30 s) 동안 stale data 유지.
+  // navigation) 라이브 state 도 따라가야 함. mutation 직후엔 우리가 방금
+  // 만든 변경이 최신이므로 pendingRows 도 함께 비워서 stale chip 방지.
   useEffect(() => {
     setRows(initialRows);
     setEligibility(anonymizeEligibility);
     setLastFetchedAt(Date.now());
+    setPendingRows(null);
+    setPendingEligibility(null);
+    setPendingFetchedAt(null);
   }, [initialRows, anonymizeEligibility]);
 
-  // 30 초 silent 폴링. setInterval 1 회 + 마지막 응답이 도착해야 다음 trigger
-  // 가는 cancel 패턴 (in-flight 가드 X 대신, AbortController 미사용 + 결과를
-  // 받기 전 mount 해제 시 setState 호출 안 함).
-  // - 다이얼로그 / 드로어 열려있어도 무관: rows state 만 교체.
-  //   useMemo 가 새 rows 로 filtered 를 재계산하지만, dialogTarget state 는
-  //   별도 ref 라 깜빡임 없음. selection (selectedIds) 도 id 기반이라 보존.
-  // - error 응답은 silent 무시 (헤더 fetchError 는 첫 진입 시 props 만 표시).
-  //   실패가 누적되면 lastFetchedAt 이 안 올라가 chip 으로 즉시 인지 가능.
+  // 30 초 silent 폴링. 결과는 staging (pendingRows) 에만 저장하므로 화면은
+  // 1px 도 흔들리지 않는다. cancel 패턴은 mount 해제 시 setState 차단.
+  // mock 모드 / error / supabase 미가용 응답은 모두 silent 무시.
   useEffect(() => {
-    if (!supabaseAvailable) return; // mock 모드면 폴링 의미 없음
+    if (!supabaseAvailable) return;
     let cancelled = false;
     const id = window.setInterval(async () => {
       try {
         const result = await pollApplicants();
         if (cancelled) return;
         if (result.error || !result.supabaseAvailable) return;
-        setRows(result.rows);
-        setEligibility(result.eligibility);
-        setLastFetchedAt(Date.parse(result.fetchedAt));
+        setPendingRows(result.rows);
+        setPendingEligibility(result.eligibility);
+        setPendingFetchedAt(Date.parse(result.fetchedAt));
       } catch {
         // network blip 등은 silent — 다음 tick 에 재시도.
       }
@@ -170,6 +176,47 @@ function DashboardInner({
     const id = window.setInterval(() => setNowTick(Date.now()), 1_000);
     return () => window.clearInterval(id);
   }, []);
+
+  // pendingRows ↔ rows diff. 4 종 변경 cnt 합산.
+  // - 신규: pending 에는 있고 rows 에는 없는 id
+  // - 상태 변경: id 일치 + status 다름
+  // - PII 파기: id 일치 + 기존 redactedAt 없었는데 pending 에 새로 생김
+  // - 정원 추적: eligibility.eligibleCount 변경
+  const pendingDiff = useMemo(() => {
+    if (!pendingRows || !pendingEligibility) {
+      return { total: 0, added: 0, statusChanged: 0, redacted: 0, eligibilityChanged: false };
+    }
+    const currentById = new Map(rows.map((r) => [r.id, r]));
+    let added = 0;
+    let statusChanged = 0;
+    let redacted = 0;
+    for (const next of pendingRows) {
+      const prev = currentById.get(next.id);
+      if (!prev) {
+        added += 1;
+        continue;
+      }
+      if (prev.status !== next.status) statusChanged += 1;
+      if (!prev.redactedAt && next.redactedAt) redacted += 1;
+    }
+    const eligibilityChanged =
+      pendingEligibility.eligibleCount !== eligibility.eligibleCount;
+    const total =
+      added + statusChanged + redacted + (eligibilityChanged ? 1 : 0);
+    return { total, added, statusChanged, redacted, eligibilityChanged };
+  }, [rows, eligibility, pendingRows, pendingEligibility]);
+
+  const hasPending = pendingDiff.total > 0;
+
+  function applyPending() {
+    if (!pendingRows || !pendingEligibility || pendingFetchedAt === null) return;
+    setRows(pendingRows);
+    setEligibility(pendingEligibility);
+    setLastFetchedAt(pendingFetchedAt);
+    setPendingRows(null);
+    setPendingEligibility(null);
+    setPendingFetchedAt(null);
+  }
 
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<Set<ApplicantStatus>>(
@@ -488,7 +535,18 @@ function DashboardInner({
             >
               Fan to Pro 신청자
             </h1>
-            <LastFetchedChip lastFetchedAt={lastFetchedAt} now={nowTick} />
+            {hasPending ? (
+              <PendingChangesChip
+                count={pendingDiff.total}
+                added={pendingDiff.added}
+                statusChanged={pendingDiff.statusChanged}
+                redacted={pendingDiff.redacted}
+                eligibilityChanged={pendingDiff.eligibilityChanged}
+                onApply={applyPending}
+              />
+            ) : (
+              <LastFetchedChip lastFetchedAt={lastFetchedAt} now={nowTick} />
+            )}
           </div>
           <div className="flex flex-wrap items-center gap-2 text-[11px] text-fg">
             <StatPill label="총" value={stats.total} tone="default" />
@@ -1115,6 +1173,45 @@ function RowActions({
         </button>
       )}
     </div>
+  );
+}
+
+function PendingChangesChip({
+  count,
+  added,
+  statusChanged,
+  redacted,
+  eligibilityChanged,
+  onApply,
+}: {
+  count: number;
+  added: number;
+  statusChanged: number;
+  redacted: number;
+  eligibilityChanged: boolean;
+  onApply: () => void;
+}) {
+  // hover / 접근성 — 변경 종류별 breakdown 을 title 에 노출.
+  // 카피: "새 변경 N건 / 새로고침". 핑크 + pulse 로 주목.
+  const parts: string[] = [];
+  if (added > 0) parts.push(`신규 ${added}`);
+  if (statusChanged > 0) parts.push(`상태 ${statusChanged}`);
+  if (redacted > 0) parts.push(`파기 ${redacted}`);
+  if (eligibilityChanged) parts.push(`PII 파기 대상 변경`);
+  const title = parts.length > 0 ? parts.join(" / ") : "변경 사항";
+  return (
+    <button
+      type="button"
+      onClick={onApply}
+      className="inline-flex items-center gap-1.5 border border-brand-pink bg-brand-pink/15 px-2 py-0.5 text-[10px] font-black uppercase whitespace-nowrap text-brand-pink hover:bg-brand-pink/25 animate-pulse"
+      style={{ letterSpacing: "0.15em" }}
+      title={title}
+      aria-live="polite"
+    >
+      <span>새 변경</span>
+      <span className="text-fg">{count}건</span>
+      <span className="opacity-70">/ 새로고침</span>
+    </button>
   );
 }
 
