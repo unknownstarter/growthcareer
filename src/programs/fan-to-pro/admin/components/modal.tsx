@@ -23,22 +23,36 @@ export function Modal({
   busy?: boolean;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
+  // busy / onClose 는 ref 로 추적해서 useEffect 가 [open] 변화에만 반응.
+  // 그래야 parent re-render (polling, transition) 에서 cleanup→focus restore 가
+  // 실행되어 textarea focus 가 빠지는 사고를 회피 (2026-06-12 한글 IME 깨짐 사고).
+  const busyRef = useRef(busy);
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    busyRef.current = busy;
+    onCloseRef.current = onClose;
+  });
 
   useEffect(() => {
     if (!open) return;
 
     const previouslyFocused = document.activeElement as HTMLElement | null;
     const focusTimer = window.setTimeout(() => {
-      const focusables = ref.current?.querySelectorAll<HTMLElement>(
+      const root = ref.current;
+      if (!root) return;
+      // 이미 modal 안의 element 가 focus 잡고 있으면 (autoFocus 등) 건드리지 않음.
+      const active = document.activeElement as HTMLElement | null;
+      if (active && root.contains(active)) return;
+      const focusables = root.querySelectorAll<HTMLElement>(
         'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
       );
       focusables?.[0]?.focus();
     }, 0);
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !busy) {
+      if (e.key === "Escape" && !busyRef.current) {
         e.preventDefault();
-        onClose();
+        onCloseRef.current();
         return;
       }
       if (e.key === "Tab") {
@@ -73,7 +87,7 @@ export function Modal({
       document.body.style.overflow = prevOverflow;
       previouslyFocused?.focus?.();
     };
-  }, [open, busy, onClose]);
+  }, [open]);
 
   if (!open) return null;
 
