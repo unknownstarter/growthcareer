@@ -10,6 +10,7 @@ import {
   getEmailSubject,
   getSmsBody,
   guessLocaleFromPhone,
+  hasEligibleVisa,
   MESSAGE_KIND_LABELS,
   type MessageChannel,
   type MessageKind,
@@ -58,15 +59,17 @@ export function MessageDrawer({
 
   const generatedBody = useMemo(() => {
     if (!applicant) return "";
+    const hasVisa = hasEligibleVisa(applicant.visa);
     if (channel === "sms") {
-      return getSmsBody(kind, resolvedLocale, applicant.name);
+      return getSmsBody(kind, resolvedLocale, applicant.name, { hasVisa });
     }
-    return getEmailBody(kind, resolvedLocale, applicant.name);
+    return getEmailBody(kind, resolvedLocale, applicant.name, { hasVisa });
   }, [applicant, channel, kind, resolvedLocale]);
 
   const generatedSubject = useMemo(() => {
     if (!applicant || channel !== "email") return "";
-    return getEmailSubject(kind, resolvedLocale, applicant.name);
+    const hasVisa = hasEligibleVisa(applicant.visa);
+    return getEmailSubject(kind, resolvedLocale, applicant.name, { hasVisa });
   }, [applicant, channel, kind, resolvedLocale]);
 
   // 옵션이 바뀌면 사용자 편집 초기화.

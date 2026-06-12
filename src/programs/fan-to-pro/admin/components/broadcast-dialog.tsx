@@ -223,15 +223,16 @@ export function BroadcastDialog({
             value={body}
             onChange={(e) => setBody(e.target.value.slice(0, BODY_MAX))}
             placeholder={
-              "안녕하세요.\n\nFan to Pro 1기 첫 강의 안내 드려요.\n..."
+              "안녕하세요, Fan to Pro 입니다.\n\n첫 강의 안내 드려요.\n..."
             }
             className={cn(fieldClass, "resize-y leading-relaxed")}
             disabled={busy || recipientEmails.length === 0}
             maxLength={BODY_MAX}
           />
           <span className="text-[11px] text-fg/80">
-            {body.length} / {BODY_MAX}자. 운영자가 직접 작성. 1기는 BCC 일괄
-            발송이라 {"{name}"} 등 변수 치환 미지원.
+            {body.length} / {BODY_MAX}자. 운영자가 직접 작성. BCC 일괄 발송이라
+            {" "}
+            {"{name}"} 등 변수 치환 미지원.
           </span>
         </label>
 

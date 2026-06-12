@@ -19,6 +19,18 @@ export type MessageKind =
   | "reminderD1";
 export type MessageChannel = "sms" | "email";
 
+/**
+ * paymentGuide 만 비자 보유 여부에 따라 본문이 분기됨.
+ * 다른 kind 는 hasVisa 무시.
+ *
+ * - hasVisa=true: 일반 입금 안내 + 비자/오프라인 출석 확인 reminder 1줄
+ * - hasVisa=false: 입금 안내 전에 (1) 한국 오프라인 출석 가능 (2) 공연 프로젝트
+ *   유급 참여 불가 두 가지 명시 확인 요청. "확인했습니다" 답장 받은 뒤 입금 진행.
+ */
+export type MessageOptions = {
+  hasVisa?: boolean;
+};
+
 const KAKAO = "https://pf.kakao.com/_nxhDGX/chat";
 const ACCOUNT = "토스뱅크 1002-4759-1521";
 const ACCOUNT_EN = "Toss Bank 1002-4759-1521";
@@ -34,105 +46,176 @@ function fill(template: string, name: string): string {
 }
 
 /* ---------------------------------------------------------------------------
- * 4.1 ~ 4.4 입금 안내
+ * 4.1 ~ 4.4 입금 안내 (paymentGuide)
+ *
+ * 노아 톤 가이드 (2026-06-12):
+ *   - "1기" 표현 제거
+ *   - 인사말 "안녕하세요, Fan to Pro 입니다 :)"
+ *   - 선착순 + 비자 + 오프라인 강의 확인 reminder
+ *   - 입금 후 첫 강의 안내 발송 + 카톡 채널 문의 유도
+ *   - 마무리 "Fan to Pro 운영진 드림"
+ *
+ * 비자 없음 (visa = "기타/없음" 또는 null) 분기:
+ *   - 공연 프로젝트 유급 참여 불가 명시
+ *   - 한국 오프라인 강의만 제공 명시
+ *   - "확인했습니다" 답장 받은 후 입금 진행
  * ------------------------------------------------------------------------- */
 
-const paymentGuide_sms_ko = `[Growth Career] {name} 님, Fan to Pro 1기 신청 감사해요. 입금 안내드려요.
+const paymentGuide_sms_ko = `[Fan to Pro] {name} 님 신청 감사드려요 :) 입금 안내드려요.
 
 수강료 ${TUITION_KO}
 계좌 ${ACCOUNT} (예금주 ${HOLDER_KO})
 입금자명 {name}
 마감 ${DEADLINE_KO}까지
 
-입금 확인 후 6/27 첫 강의 안내 드려요. 문의는 카톡 채널로 편하게요. ${KAKAO}`;
+선착순이라 자리는 입금 확인 순으로 확정돼요. 비자 보유 + 한국 오프라인 강의 참석 가능 여부 꼭 확인 부탁드려요. 문의는 카톡 ${KAKAO}`;
 
-const paymentGuide_sms_en = `[Growth Career] Hi {name}, thanks for applying to Fan to Pro Cohort 1. Here is your payment guide.
+const paymentGuide_sms_en = `[Fan to Pro] Hi {name}, thanks for applying. Here is your payment guide.
 
 Tuition ${TUITION_EN}
 Account ${ACCOUNT_EN} (Holder: ${HOLDER_EN})
 Depositor name: {name}
 Deadline ${DEADLINE_EN}
 
-We will send the kickoff info for Jun 27 once payment is confirmed. KakaoTalk channel: ${KAKAO}`;
+Seats lock in payment order. Please reconfirm your visa and ability to attend offline in Seoul. Questions: KakaoTalk ${KAKAO}`;
 
-const paymentGuide_email_ko = `{name} 님, 안녕하세요.
+const paymentGuide_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 
-Fan to Pro 1기에 신청해 주셔서 감사해요. 자리는 입금이 확인된 순서대로 확정돼요.
+{name} 님의 수강 신청에 감사드리며, 다음과 같이 입금하실 내용을 안내드려요.
 
-결제 정보
+(입금 완료가 되어야 수강신청이 완료되고, 선착순이니 참고 부탁드려요. 또한 비자 보유, 한국 오프라인 강의에 참석 가능하신지 꼭 다시 확인해주세요.)
+
+[입금 정보]
 - 수강료: ${TUITION_KO} (원가 1,100,000원에서 20% 할인)
 - 입금 계좌: ${ACCOUNT}
 - 예금주: ${HOLDER_KO}
 - 입금자명: {name} 으로 입금 부탁드려요
 - 마감: 2026년 6월 21일(일) 자정
 
-입금이 확인되면 별도 안내를 보내드려요. 첫 강의는 6월 27일(토) 입니다.
-
-환불 안내
-- 마감 전까지 100% 환불 가능합니다
-- 마감 후 강좌가 취소되면 결제 금액 전액이 자동 환불됩니다
-- 자세한 환불 규정은 약관을 참고해 주세요: https://growthcareer.xyz/terms
-
-질문이 있으시면 카카오톡 채널로 편하게 말씀해 주세요.
+입금이 확인되면 첫 강의와 관련한 안내 문자와 메일이 발송됩니다. 이외의 문의는 카카오톡 채널로 부탁드려요.
 ${KAKAO}
 
-Growth Career 운영팀 드림`;
+감사합니다.
+Fan to Pro 운영진 드림`;
 
-const paymentGuide_email_en = `Hi {name},
+const paymentGuide_email_en = `Hello, this is Fan to Pro.
 
-Thanks for applying to Fan to Pro Cohort 1. Your seat is confirmed once we receive your payment, in the order payments arrive.
+Thank you for applying, {name}. Here is your payment guide.
 
-Payment details
+A quick note before you transfer: your seat is only locked in once we receive payment, and seats are filling on a first-come, first-served basis. Please also reconfirm that you (a) hold a valid Korean residence visa and (b) can attend in person in Seoul every Saturday and Sunday for the full 4-week program.
+
+[PAYMENT]
 - Tuition: ${TUITION_EN} (20% off from the regular KRW 1,100,000)
 - Account: ${ACCOUNT_EN}
 - Holder: ${HOLDER_EN}
-- Depositor name: please use your full name as written on the form
+- Depositor name: ${"{name}"}
 - Deadline: Sunday, June 21, midnight (KST)
 
-We will send a confirmation as soon as your payment is verified. The first class is Saturday, June 27.
-
-Refund policy
-- 100% refund any time before the deadline
-- Full automatic refund if the cohort is cancelled after the deadline
-- Detailed refund schedule: https://growthcareer.xyz/terms
-
-Any questions? Reach us on KakaoTalk anytime.
+Once your payment is verified, we will send the first-class details by text and email. For any other questions, KakaoTalk is the fastest channel.
 ${KAKAO}
 
-Growth Career team`;
+Thank you,
+Fan to Pro Team`;
 
-const paymentGuide_email_subject_ko = "[Growth Career] Fan to Pro 1기 입금 안내";
-const paymentGuide_email_subject_en =
-  "[Growth Career] Fan to Pro Cohort 1 - Payment Guide";
+/* paymentGuide - 비자 없음 분기 (visa = "기타/없음" 또는 null) */
+
+const paymentGuide_sms_ko_noVisa = `[Fan to Pro] {name} 님 신청 감사드려요 :) 신청서 비자가 "기타/없음" 으로 되어 있어 입금 전 두 가지 확인 부탁드려요.
+
+(1) 한국 오프라인 강의 (강남역) 4주 토/일 출석 가능 여부
+(2) 수료 후 K팝 공연 프로젝트 유급 참여는 비자 보유자만 가능, 비자 없으면 강의는 OK 지만 공연 단계는 불가
+
+두 가지 확인하셨고 그래도 수강 원하시면 "확인" 답장 부탁드려요. 답장 후 입금 정보 안내드려요. 문의 카톡 ${KAKAO}`;
+
+const paymentGuide_sms_en_noVisa = `[Fan to Pro] Hi {name}, thanks for applying. Your form lists "other/none" for visa, so please confirm two things before we send payment details.
+
+(1) Can you attend offline in Seoul (Gangnam) every Sat/Sun for 4 weeks?
+(2) The paid K-pop concert role after the program requires a Korean visa that allows paid work. Without one, you can still attend class but cannot take the concert role.
+
+If both confirmed, reply "confirmed" and we will send the payment details. Questions: KakaoTalk ${KAKAO}`;
+
+const paymentGuide_email_ko_noVisa = `안녕하세요, Fan to Pro 입니다 :)
+
+{name} 님의 수강 신청에 감사드려요. 신청서에 비자 상태가 "기타/없음" 으로 작성되어 있어, 입금 안내 전에 두 가지 꼭 확인 부탁드릴 게 있어요.
+
+(1) Fan to Pro 는 한국 오프라인 강의만 제공하고 있어요. 4주 동안 강남역 부근 강의실에 매주 토/일 직접 오실 수 있는 상태인지 확인 부탁드려요.
+
+(2) 수료 후 이어지는 K팝 공연 프로젝트 유급 참여 기회는 한국에서 합법적으로 영리 활동이 가능한 비자 보유자만 참여 가능해요. 비자가 없거나 관광/단기 비자라면 수강은 가능하지만, 공연 프로젝트 단계에는 참석이 어려운 점 미리 안내드려요.
+
+위 두 가지 모두 확인하셨고 그래도 수강을 원하시면, 이 메일에 "확인했습니다" 라고 짧게 답장 부탁드려요. 답장이 확인되면 아래 입금 정보로 안내드려요.
+
+[입금 정보 - 확인 답장 후 적용]
+- 수강료: ${TUITION_KO}
+- 입금 계좌: ${ACCOUNT}
+- 예금주: ${HOLDER_KO}
+- 입금자명: {name}
+- 마감: 2026년 6월 21일(일) 자정
+
+비자 상태가 바뀌었거나 다른 비자를 보유하고 계셨다면 그것도 함께 알려주세요. 문의는 카카오톡 채널이 빨라요.
+${KAKAO}
+
+감사합니다.
+Fan to Pro 운영진 드림`;
+
+const paymentGuide_email_en_noVisa = `Hello, this is Fan to Pro.
+
+Thank you for applying, {name}. Before we send you the payment details, please confirm two things, because your application listed "other / none" for visa status.
+
+(1) Fan to Pro is taught fully offline in Seoul (near Gangnam Station). Please confirm you can attend in person every Saturday and Sunday for the full 4-week program.
+
+(2) The paid K-pop concert project after the program is only available to those who hold a Korean visa that allows paid side work. If you do not currently hold an eligible visa, you may still attend the class, but you will not be able to take part in the paid concert role.
+
+If you have confirmed both points and still want to proceed, please reply to this email with "confirmed" and we will send the payment details. If your visa status has changed or was filled in incorrectly, please let us know in your reply.
+
+[PAYMENT - sent after your confirmation reply]
+- Tuition: ${TUITION_EN}
+- Account: ${ACCOUNT_EN}
+- Holder: ${HOLDER_EN}
+- Depositor name: ${"{name}"}
+- Deadline: Sunday, June 21, midnight (KST)
+
+KakaoTalk is the fastest channel for questions.
+${KAKAO}
+
+Thank you,
+Fan to Pro Team`;
+
+const paymentGuide_email_subject_ko = "[Fan to Pro] 입금 안내 드려요";
+const paymentGuide_email_subject_en = "[Fan to Pro] Payment Guide";
+const paymentGuide_email_subject_ko_noVisa =
+  "[Fan to Pro] 신청 확인 부탁드려요 (비자 / 오프라인 강의)";
+const paymentGuide_email_subject_en_noVisa =
+  "[Fan to Pro] Quick confirmation needed before payment details";
 
 /* ---------------------------------------------------------------------------
- * 4.5 ~ 4.8 입금 확인 완료
+ * 4.5 ~ 4.8 입금 확인 완료 (paymentConfirmed) — "1기" 표현만 제거
  * ------------------------------------------------------------------------- */
 
-const paymentConfirmed_sms_ko = `[Growth Career] {name} 님, 입금 확인 완료. Fan to Pro 1기 자리가 확정됐어요. 첫 강의 6/27(토) 안내 메일을 곧 보내드려요. 문의는 카톡 채널 ${KAKAO}`;
+const paymentConfirmed_sms_ko = `[Fan to Pro] {name} 님, 입금 확인 완료. 자리가 확정됐어요. 첫 강의 6/27(토) 안내 메일을 곧 보내드려요. 문의는 카톡 채널 ${KAKAO}`;
 
-const paymentConfirmed_sms_en = `[Growth Career] Hi {name}, payment confirmed. Your seat for Fan to Pro Cohort 1 is locked in. We will send kickoff details for Sat Jun 27 shortly. KakaoTalk: ${KAKAO}`;
+const paymentConfirmed_sms_en = `[Fan to Pro] Hi {name}, payment confirmed. Your seat is locked in. We will send kickoff details for Sat Jun 27 shortly. KakaoTalk: ${KAKAO}`;
 
-const paymentConfirmed_email_ko = `{name} 님,
+const paymentConfirmed_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 
-입금 확인이 완료됐어요. Fan to Pro 1기 자리가 확정됐습니다.
+{name} 님, 입금 확인이 완료됐어요. 자리가 확정됐습니다.
 
-첫 강의 안내
+[첫 강의 안내]
 - 일시: 2026년 6월 27일(토)
 - 장소: 별도 안내 (수강 확정자에게만 개별 공지)
 - 준비물: 별도 안내 메일에서 확인 부탁드려요
 
 수강생 카카오톡 오픈채팅 초대 링크는 강의 시작 전 별도로 보내드려요.
 
-환불이 필요하면 마감 전(6/21 자정) 까지는 100% 환불 가능합니다. 그 이후 환불 규정은 약관을 참고해 주세요: https://growthcareer.xyz/terms
+환불이 필요하면 마감 전(6/21 자정) 까지는 100% 환불 가능합니다. 그 이후 환불 규정은 약관을 참고해주세요.
+https://growthcareer.xyz/terms
 
-Growth Career 운영팀 드림`;
+감사합니다.
+Fan to Pro 운영진 드림`;
 
-const paymentConfirmed_email_en = `Hi {name},
+const paymentConfirmed_email_en = `Hello, this is Fan to Pro.
 
-Your payment has been confirmed. Your seat for Fan to Pro Cohort 1 is locked in.
+Hi {name}, your payment has been confirmed. Your seat is locked in.
 
-First class
+[FIRST CLASS]
 - Date: Saturday, June 27, 2026
 - Venue: Sent separately to confirmed students only
 - What to bring: Details in the kickoff email
@@ -141,37 +224,39 @@ Student KakaoTalk open chat invitation will arrive before the first class.
 
 If you need a refund, 100% refund is available any time before the deadline (Sun Jun 21 midnight KST). Refund policy after that: https://growthcareer.xyz/terms
 
-Growth Career team`;
+Thank you,
+Fan to Pro Team`;
 
 const paymentConfirmed_email_subject_ko =
-  "[Growth Career] 입금 확인 완료 - Fan to Pro 1기 자리 확정";
+  "[Fan to Pro] 입금 확인 완료 / 자리 확정";
 const paymentConfirmed_email_subject_en =
-  "[Growth Career] Payment Confirmed - Fan to Pro Cohort 1 Seat Locked";
+  "[Fan to Pro] Payment Confirmed / Seat Locked";
 
 /* ---------------------------------------------------------------------------
- * 5. 리마인드 - T+1
+ * 5. 리마인드 - T+1 (reminderT1) — "1기" 표현만 제거
  * ------------------------------------------------------------------------- */
 
-const reminderT1_sms_ko = `[Growth Career] {name} 님, Fan to Pro 1기 신청 다음날이에요. 입금이 아직이라면 ${ACCOUNT} (${HOLDER_KO}) 으로 ${TUITION_KO} 부탁드려요. 마감 ${DEADLINE_KO}. 카톡 ${KAKAO}`;
+const reminderT1_sms_ko = `[Fan to Pro] {name} 님, 신청 다음날이에요. 입금이 아직이라면 ${ACCOUNT} (${HOLDER_KO}) 으로 ${TUITION_KO} 부탁드려요. 마감 ${DEADLINE_KO}. 카톡 ${KAKAO}`;
 
-const reminderT1_sms_en = `[Growth Career] Hi {name}, one day after your application. If you have not paid yet, send ${TUITION_EN} to ${ACCOUNT_EN} (${HOLDER_EN}). Deadline ${DEADLINE_EN}. KakaoTalk ${KAKAO}`;
+const reminderT1_sms_en = `[Fan to Pro] Hi {name}, one day after your application. If you have not paid yet, send ${TUITION_EN} to ${ACCOUNT_EN} (${HOLDER_EN}). Deadline ${DEADLINE_EN}. KakaoTalk ${KAKAO}`;
 
-const reminderT1_email_ko = `{name} 님, 안녕하세요.
+const reminderT1_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 
-Fan to Pro 1기 신청하신지 하루가 지났어요. 입금 아직이시라면 아래 정보로 부탁드려요.
+{name} 님, 신청하신지 하루가 지났어요. 입금 아직이시라면 아래 정보로 부탁드려요.
 
 - 수강료 ${TUITION_KO}
 - ${ACCOUNT} (예금주 ${HOLDER_KO})
 - 입금자명: {name}
 - 마감: 2026년 6월 21일(일) 자정
 
-자리는 입금 확인된 순서대로 확정돼요. 카톡 채널이 편하시면 ${KAKAO} 로 말씀해 주세요.
+자리는 입금 확인된 순서대로 확정돼요. 카톡 채널이 편하시면 ${KAKAO} 로 말씀해주세요.
 
-Growth Career 운영팀 드림`;
+감사합니다.
+Fan to Pro 운영진 드림`;
 
-const reminderT1_email_en = `Hi {name},
+const reminderT1_email_en = `Hello, this is Fan to Pro.
 
-It has been a day since your application. If you have not paid yet, here is the info again.
+Hi {name}, it has been a day since your application. If you have not paid yet, here is the info again.
 
 - Tuition ${TUITION_EN}
 - ${ACCOUNT_EN} (Holder: ${HOLDER_EN})
@@ -180,61 +265,62 @@ It has been a day since your application. If you have not paid yet, here is the 
 
 Seats are locked in the order payments arrive. KakaoTalk is the fastest way to reach us: ${KAKAO}
 
-Growth Career team`;
+Thank you,
+Fan to Pro Team`;
 
-const reminderT1_email_subject_ko = "[Growth Career] 입금 안내 다시 보내드려요";
-const reminderT1_email_subject_en = "[Growth Career] Quick payment reminder";
+const reminderT1_email_subject_ko = "[Fan to Pro] 입금 안내 다시 보내드려요";
+const reminderT1_email_subject_en = "[Fan to Pro] Quick payment reminder";
 
 /* ---------------------------------------------------------------------------
- * 5. 리마인드 - D-3
+ * 5. 리마인드 - D-3 (reminderD3) — "1기" 표현만 제거
  * ------------------------------------------------------------------------- */
 
-const reminderD3_sms_ko = `[Growth Career] 마감 3일 전이에요. {name} 님 자리 아직 못 잡았어요. ${ACCOUNT} (${HOLDER_KO}) ${TUITION_KO} 입금 부탁드려요. 마감 6/21 자정. 카톡 ${KAKAO}`;
+const reminderD3_sms_ko = `[Fan to Pro] 마감 3일 전이에요. {name} 님 자리 아직 못 잡았어요. ${ACCOUNT} (${HOLDER_KO}) ${TUITION_KO} 입금 부탁드려요. 마감 6/21 자정. 카톡 ${KAKAO}`;
 
-const reminderD3_sms_en = `[Growth Career] 3 days to deadline. Hi {name}, your seat is not locked yet. ${ACCOUNT_EN} (${HOLDER_EN}), ${TUITION_EN}. Deadline Sun Jun 21 midnight. KakaoTalk ${KAKAO}`;
+const reminderD3_sms_en = `[Fan to Pro] 3 days to deadline. Hi {name}, your seat is not locked yet. ${ACCOUNT_EN} (${HOLDER_EN}), ${TUITION_EN}. Deadline Sun Jun 21 midnight. KakaoTalk ${KAKAO}`;
 
-const reminderD3_email_ko = `{name} 님,
+const reminderD3_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 
-신청 마감까지 3일 남았어요. 입금이 확인되지 않은 분은 아직 자리가 확정되지 않았어요.
+{name} 님, 신청 마감까지 3일 남았어요. 입금이 확인되지 않은 분은 아직 자리가 확정되지 않았어요.
 
-수강료 ${TUITION_KO}
-${ACCOUNT} (${HOLDER_KO})
-입금자명 {name}
-마감 2026년 6월 21일(일) 자정
+- 수강료 ${TUITION_KO}
+- ${ACCOUNT} (${HOLDER_KO})
+- 입금자명 {name}
+- 마감 2026년 6월 21일(일) 자정
 
-카톡 채널이 편하시면 ${KAKAO} 로 말씀해 주세요. 결제 후 24시간 안에 확인 안내 보내드려요.
+카톡 채널이 편하시면 ${KAKAO} 로 말씀해주세요. 결제 후 24시간 안에 확인 안내 보내드려요.
 
-Growth Career 운영팀 드림`;
+감사합니다.
+Fan to Pro 운영진 드림`;
 
-const reminderD3_email_en = `Hi {name},
+const reminderD3_email_en = `Hello, this is Fan to Pro.
 
-3 days left until the application deadline. If we have not received your payment, your seat is not yet locked in.
+Hi {name}, 3 days left until the application deadline. If we have not received your payment, your seat is not yet locked in.
 
-Tuition ${TUITION_EN}
-${ACCOUNT_EN} (${HOLDER_EN})
-Depositor name: your full name
-Deadline Sun Jun 21 midnight (KST)
+- Tuition ${TUITION_EN}
+- ${ACCOUNT_EN} (${HOLDER_EN})
+- Depositor name: your full name
+- Deadline Sun Jun 21 midnight (KST)
 
 KakaoTalk works too: ${KAKAO}. We send a confirmation within 24 hours of payment.
 
-Growth Career team`;
+Thank you,
+Fan to Pro Team`;
 
-const reminderD3_email_subject_ko =
-  "[Growth Career] 마감 3일 전 - Fan to Pro 1기";
-const reminderD3_email_subject_en =
-  "[Growth Career] 3 days left - Fan to Pro Cohort 1";
+const reminderD3_email_subject_ko = "[Fan to Pro] 마감 3일 전";
+const reminderD3_email_subject_en = "[Fan to Pro] 3 days left";
 
 /* ---------------------------------------------------------------------------
- * 5. 리마인드 - D-1
+ * 5. 리마인드 - D-1 (reminderD1) — "1기" 표현만 제거
  * ------------------------------------------------------------------------- */
 
-const reminderD1_sms_ko = `[Growth Career] 내일 자정 마감이에요. {name} 님 입금 미확인. ${ACCOUNT} (${HOLDER_KO}) ${TUITION_KO}. 마감 후엔 자리 보장 어려워요. 카톡 ${KAKAO}`;
+const reminderD1_sms_ko = `[Fan to Pro] 내일 자정 마감이에요. {name} 님 입금 미확인. ${ACCOUNT} (${HOLDER_KO}) ${TUITION_KO}. 마감 후엔 자리 보장 어려워요. 카톡 ${KAKAO}`;
 
-const reminderD1_sms_en = `[Growth Career] Deadline tomorrow midnight. Hi {name}, payment not received yet. ${ACCOUNT_EN} (${HOLDER_EN}), ${TUITION_EN}. After deadline we cannot guarantee your seat. KakaoTalk ${KAKAO}`;
+const reminderD1_sms_en = `[Fan to Pro] Deadline tomorrow midnight. Hi {name}, payment not received yet. ${ACCOUNT_EN} (${HOLDER_EN}), ${TUITION_EN}. After deadline we cannot guarantee your seat. KakaoTalk ${KAKAO}`;
 
-const reminderD1_email_ko = `{name} 님,
+const reminderD1_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 
-Fan to Pro 1기 신청 마감이 내일(6/21 일) 자정이에요. 아직 입금이 확인되지 않은 분께 마지막으로 안내드려요.
+{name} 님, 신청 마감이 내일(6/21 일) 자정이에요. 아직 입금이 확인되지 않은 분께 마지막으로 안내드려요.
 
 - 수강료 ${TUITION_KO}
 - ${ACCOUNT} (${HOLDER_KO})
@@ -244,25 +330,27 @@ Fan to Pro 1기 신청 마감이 내일(6/21 일) 자정이에요. 아직 입금
 
 카톡 채널: ${KAKAO}
 
-Growth Career 운영팀 드림`;
+감사합니다.
+Fan to Pro 운영진 드림`;
 
-const reminderD1_email_en = `Hi {name},
+const reminderD1_email_en = `Hello, this is Fan to Pro.
 
-The application deadline for Fan to Pro Cohort 1 is tomorrow (Sun Jun 21) at midnight (KST). One last reminder if you have not paid yet.
+Hi {name}, the application deadline is tomorrow (Sun Jun 21) at midnight (KST). One last reminder if you have not paid yet.
 
 - Tuition ${TUITION_EN}
 - ${ACCOUNT_EN} (${HOLDER_EN})
 - Depositor name: your full name
+- Deadline: Sun Jun 21 midnight (KST)
 
 After the deadline, we will process any late payments within 24 hours if seats remain, and auto-refund if no seat is available. Please send payment before the deadline if you can.
 
 KakaoTalk: ${KAKAO}
 
-Growth Career team`;
+Thank you,
+Fan to Pro Team`;
 
-const reminderD1_email_subject_ko = "[Growth Career] 내일 마감 - 마지막 안내";
-const reminderD1_email_subject_en =
-  "[Growth Career] Last day - deadline tomorrow";
+const reminderD1_email_subject_ko = "[Fan to Pro] 내일 마감 / 마지막 안내";
+const reminderD1_email_subject_en = "[Fan to Pro] Last day / deadline tomorrow";
 
 /* ---------------------------------------------------------------------------
  * 통합 매핑
@@ -329,12 +417,28 @@ const TEMPLATES: Record<MessageKind, Template> = {
   },
 };
 
+/* paymentGuide 의 비자 없음 분기 lookup. paymentGuide 만 적용. */
+const PAYMENT_GUIDE_NO_VISA = {
+  sms: { ko: paymentGuide_sms_ko_noVisa, en: paymentGuide_sms_en_noVisa },
+  email: {
+    subject: {
+      ko: paymentGuide_email_subject_ko_noVisa,
+      en: paymentGuide_email_subject_en_noVisa,
+    },
+    body: { ko: paymentGuide_email_ko_noVisa, en: paymentGuide_email_en_noVisa },
+  },
+} as const;
+
 /** SMS / 카톡 본문 — 채널 단일. */
 export function getSmsBody(
   kind: MessageKind,
   locale: MessageLocale,
   name: string,
+  options?: MessageOptions,
 ): string {
+  if (kind === "paymentGuide" && options?.hasVisa === false) {
+    return fill(PAYMENT_GUIDE_NO_VISA.sms[locale], name);
+  }
   return fill(TEMPLATES[kind].sms[locale], name);
 }
 
@@ -343,7 +447,11 @@ export function getEmailSubject(
   kind: MessageKind,
   locale: MessageLocale,
   name: string,
+  options?: MessageOptions,
 ): string {
+  if (kind === "paymentGuide" && options?.hasVisa === false) {
+    return fill(PAYMENT_GUIDE_NO_VISA.email.subject[locale], name);
+  }
   return fill(TEMPLATES[kind].email.subject[locale], name);
 }
 
@@ -352,7 +460,11 @@ export function getEmailBody(
   kind: MessageKind,
   locale: MessageLocale,
   name: string,
+  options?: MessageOptions,
 ): string {
+  if (kind === "paymentGuide" && options?.hasVisa === false) {
+    return fill(PAYMENT_GUIDE_NO_VISA.email.body[locale], name);
+  }
   return fill(TEMPLATES[kind].email.body[locale], name);
 }
 
@@ -366,6 +478,20 @@ export function guessLocaleFromPhone(phone: string | null): MessageLocale {
   if (normalized.startsWith("+82") || normalized.startsWith("010")) return "ko";
   if (normalized.startsWith("+")) return "en";
   return "ko";
+}
+
+/**
+ * applicant.visa 값 기준으로 "비자 보유자" 여부 판단.
+ *
+ * - D-2 / D-4 / D-10 / E-7 / F-2 / F-4 / F-6: 비자 있음 (true)
+ * - "기타/없음" 또는 null: 비자 없음 (false)
+ *
+ * paymentGuide 메시지 분기에 사용. 다른 kind 는 영향 없음.
+ */
+export function hasEligibleVisa(visa: string | null): boolean {
+  if (!visa) return false;
+  if (visa === "기타/없음") return false;
+  return true;
 }
 
 /**
