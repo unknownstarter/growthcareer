@@ -62,6 +62,8 @@ function fill(template: string, name: string): string {
  * ------------------------------------------------------------------------- */
 
 const paymentGuide_sms_ko = `[Fan to Pro] {name} 님 신청 감사드려요 :)
+다음과 같이 입금 정보를 알려드리니
+확인해주세요.
 
 [입금 안내]
 수강료 ${TUITION_KO}
@@ -73,10 +75,11 @@ const paymentGuide_sms_ko = `[Fan to Pro] {name} 님 신청 감사드려요 :)
 자리는 입금 확인 순으로 확정돼요 (선착순).
 비자 보유 + 한국 오프라인 강의 참석 가능 여부 꼭 재확인 부탁드려요.
 
-카톡 문의
+문의사항은 하단의 카카오톡 채널을 이용해주세요.
 ${KAKAO}`;
 
 const paymentGuide_sms_en = `[Fan to Pro] Hi {name}, thanks for applying.
+Please review your payment details below.
 
 [PAYMENT]
 Tuition ${TUITION_EN}
@@ -88,12 +91,14 @@ Deadline ${DEADLINE_EN}
 Seats lock in payment order.
 Please reconfirm your visa and ability to attend offline in Seoul.
 
-Questions via KakaoTalk
+For any questions, please use the KakaoTalk channel below.
 ${KAKAO}`;
 
 const paymentGuide_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 
-{name} 님의 수강 신청에 감사드리며, 다음과 같이 입금하실 내용을 안내드려요.
+{name} 님의 수강 신청에 감사드려요.
+다음과 같이 입금 정보를 알려드리니
+확인해주세요.
 
 (입금 완료가 되어야 수강신청이 완료되고, 선착순이니 참고 부탁드려요. 또한 비자 보유, 한국 오프라인 강의에 참석 가능하신지 꼭 다시 확인해주세요.)
 
@@ -104,7 +109,9 @@ const paymentGuide_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 - 입금자명: {name} 으로 입금 부탁드려요
 - 마감: 2026년 6월 21일(일) 자정
 
-입금이 확인되면 첫 강의와 관련한 안내 문자와 메일이 발송됩니다. 이외의 문의는 카카오톡 채널로 부탁드려요.
+입금이 확인되면 첫 강의와 관련한 안내 문자와 메일이 발송됩니다.
+
+문의사항은 하단의 카카오톡 채널을 이용해주세요.
 ${KAKAO}
 
 감사합니다.
@@ -112,7 +119,8 @@ Fan to Pro 운영진 드림`;
 
 const paymentGuide_email_en = `Hello, this is Fan to Pro.
 
-Thank you for applying, {name}. Here is your payment guide.
+Thank you for applying, {name}.
+Please review your payment details below.
 
 A quick note before you transfer: your seat is only locked in once we receive payment, and seats are filling on a first-come, first-served basis. Please also reconfirm that you (a) hold a valid Korean residence visa and (b) can attend in person in Seoul every Saturday and Sunday for the full 4-week program.
 
@@ -123,7 +131,9 @@ A quick note before you transfer: your seat is only locked in once we receive pa
 - Depositor name: ${"{name}"}
 - Deadline: Sunday, June 21, midnight (KST)
 
-Once your payment is verified, we will send the first-class details by text and email. For any other questions, KakaoTalk is the fastest channel.
+Once your payment is verified, we will send the first-class details by text and email.
+
+For any questions, please use the KakaoTalk channel below.
 ${KAKAO}
 
 Thank you,
@@ -141,7 +151,7 @@ const paymentGuide_sms_ko_noVisa = `[Fan to Pro] {name} 님 신청 감사드려�
 두 가지 확인하셨고 그래도 수강 원하시면 "확인" 답장 부탁드려요.
 답장 후 입금 정보 안내드려요.
 
-카톡 문의
+문의사항은 하단의 카카오톡 채널을 이용해주세요.
 ${KAKAO}`;
 
 const paymentGuide_sms_en_noVisa = `[Fan to Pro] Hi {name}, thanks for applying.
@@ -153,7 +163,7 @@ Your form lists "other/none" for visa, so please confirm two things before we se
 
 If both confirmed, reply "confirmed" and we will send the payment details.
 
-Questions via KakaoTalk
+For any questions, please use the KakaoTalk channel below.
 ${KAKAO}`;
 
 const paymentGuide_email_ko_noVisa = `안녕하세요, Fan to Pro 입니다 :)
@@ -173,7 +183,9 @@ const paymentGuide_email_ko_noVisa = `안녕하세요, Fan to Pro 입니다 :)
 - 입금자명: {name}
 - 마감: 2026년 6월 21일(일) 자정
 
-비자 상태가 바뀌었거나 다른 비자를 보유하고 계셨다면 그것도 함께 알려주세요. 문의는 카카오톡 채널이 빨라요.
+비자 상태가 바뀌었거나 다른 비자를 보유하고 계셨다면 그것도 함께 알려주세요.
+
+문의사항은 하단의 카카오톡 채널을 이용해주세요.
 ${KAKAO}
 
 감사합니다.
@@ -196,7 +208,7 @@ If you have confirmed both points and still want to proceed, please reply to thi
 - Depositor name: ${"{name}"}
 - Deadline: Sunday, June 21, midnight (KST)
 
-KakaoTalk is the fastest channel for questions.
+For any questions, please use the KakaoTalk channel below.
 ${KAKAO}
 
 Thank you,
@@ -218,7 +230,7 @@ const paymentConfirmed_sms_ko = `[Fan to Pro] {name} 님 입금 확인 완료 :)
 자리가 확정됐어요.
 첫 강의 6/27(토) 안내 메일을 곧 보내드려요.
 
-카톡 문의
+문의사항은 하단의 카카오톡 채널을 이용해주세요.
 ${KAKAO}`;
 
 const paymentConfirmed_sms_en = `[Fan to Pro] Hi {name}, payment confirmed.
@@ -226,7 +238,7 @@ const paymentConfirmed_sms_en = `[Fan to Pro] Hi {name}, payment confirmed.
 Your seat is locked in.
 Kickoff details for Sat Jun 27 will arrive shortly.
 
-Questions via KakaoTalk
+For any questions, please use the KakaoTalk channel below.
 ${KAKAO}`;
 
 const paymentConfirmed_email_ko = `안녕하세요, Fan to Pro 입니다 :)
@@ -243,6 +255,9 @@ const paymentConfirmed_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 환불이 필요하면 마감 전(6/21 자정) 까지는 100% 환불 가능합니다. 그 이후 환불 규정은 약관을 참고해주세요.
 https://growthcareer.xyz/terms
 
+문의사항은 하단의 카카오톡 채널을 이용해주세요.
+${KAKAO}
+
 감사합니다.
 Fan to Pro 운영진 드림`;
 
@@ -258,6 +273,9 @@ Hi {name}, your payment has been confirmed. Your seat is locked in.
 Student KakaoTalk open chat invitation will arrive before the first class.
 
 If you need a refund, 100% refund is available any time before the deadline (Sun Jun 21 midnight KST). Refund policy after that: https://growthcareer.xyz/terms
+
+For any questions, please use the KakaoTalk channel below.
+${KAKAO}
 
 Thank you,
 Fan to Pro Team`;
@@ -279,7 +297,7 @@ const reminderT1_sms_ko = `[Fan to Pro] {name} 님, 신청 다음날이에요.
 금액 ${TUITION_KO}
 마감 ${DEADLINE_KO}
 
-카톡 문의
+문의사항은 하단의 카카오톡 채널을 이용해주세요.
 ${KAKAO}`;
 
 const reminderT1_sms_en = `[Fan to Pro] Hi {name}, one day after your application.
@@ -290,7 +308,7 @@ Holder ${HOLDER_EN}
 Amount ${TUITION_EN}
 Deadline ${DEADLINE_EN}
 
-Questions via KakaoTalk
+For any questions, please use the KakaoTalk channel below.
 ${KAKAO}`;
 
 const reminderT1_email_ko = `안녕하세요, Fan to Pro 입니다 :)
@@ -302,7 +320,10 @@ const reminderT1_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 - 입금자명: {name}
 - 마감: 2026년 6월 21일(일) 자정
 
-자리는 입금 확인된 순서대로 확정돼요. 카톡 채널이 편하시면 ${KAKAO} 로 말씀해주세요.
+자리는 입금 확인된 순서대로 확정돼요.
+
+문의사항은 하단의 카카오톡 채널을 이용해주세요.
+${KAKAO}
 
 감사합니다.
 Fan to Pro 운영진 드림`;
@@ -316,7 +337,10 @@ Hi {name}, it has been a day since your application. If you have not paid yet, h
 - Depositor name: your full name from the form
 - Deadline: Sunday, June 21, midnight (KST)
 
-Seats are locked in the order payments arrive. KakaoTalk is the fastest way to reach us: ${KAKAO}
+Seats are locked in the order payments arrive.
+
+For any questions, please use the KakaoTalk channel below.
+${KAKAO}
 
 Thank you,
 Fan to Pro Team`;
@@ -336,7 +360,7 @@ const reminderD3_sms_ko = `[Fan to Pro] 마감 3일 전이에요.
 금액 ${TUITION_KO}
 마감 ${DEADLINE_KO}
 
-카톡 문의
+문의사항은 하단의 카카오톡 채널을 이용해주세요.
 ${KAKAO}`;
 
 const reminderD3_sms_en = `[Fan to Pro] 3 days to deadline.
@@ -347,7 +371,7 @@ Holder ${HOLDER_EN}
 Amount ${TUITION_EN}
 Deadline ${DEADLINE_EN}
 
-Questions via KakaoTalk
+For any questions, please use the KakaoTalk channel below.
 ${KAKAO}`;
 
 const reminderD3_email_ko = `안녕하세요, Fan to Pro 입니다 :)
@@ -359,7 +383,10 @@ const reminderD3_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 - 입금자명 {name}
 - 마감 2026년 6월 21일(일) 자정
 
-카톡 채널이 편하시면 ${KAKAO} 로 말씀해주세요. 결제 후 24시간 안에 확인 안내 보내드려요.
+결제 후 24시간 안에 확인 안내 보내드려요.
+
+문의사항은 하단의 카카오톡 채널을 이용해주세요.
+${KAKAO}
 
 감사합니다.
 Fan to Pro 운영진 드림`;
@@ -373,7 +400,10 @@ Hi {name}, 3 days left until the application deadline. If we have not received y
 - Depositor name: your full name
 - Deadline Sun Jun 21 midnight (KST)
 
-KakaoTalk works too: ${KAKAO}. We send a confirmation within 24 hours of payment.
+We send a confirmation within 24 hours of payment.
+
+For any questions, please use the KakaoTalk channel below.
+${KAKAO}
 
 Thank you,
 Fan to Pro Team`;
@@ -394,7 +424,7 @@ const reminderD1_sms_ko = `[Fan to Pro] 내일 자정 마감이에요.
 
 마감 후엔 자리 보장이 어려워요.
 
-카톡 문의
+문의사항은 하단의 카카오톡 채널을 이용해주세요.
 ${KAKAO}`;
 
 const reminderD1_sms_en = `[Fan to Pro] Deadline tomorrow midnight.
@@ -406,7 +436,7 @@ Amount ${TUITION_EN}
 
 After deadline we cannot guarantee your seat.
 
-Questions via KakaoTalk
+For any questions, please use the KakaoTalk channel below.
 ${KAKAO}`;
 
 const reminderD1_email_ko = `안녕하세요, Fan to Pro 입니다 :)
@@ -419,7 +449,8 @@ const reminderD1_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 
 마감 이후 입금된 건은 자리가 남은 경우에만 24시간 안에 확인 후 안내드리고, 자리가 없으면 자동 환불됩니다. 가능하면 마감 전 입금 부탁드려요.
 
-카톡 채널: ${KAKAO}
+문의사항은 하단의 카카오톡 채널을 이용해주세요.
+${KAKAO}
 
 감사합니다.
 Fan to Pro 운영진 드림`;
@@ -435,7 +466,8 @@ Hi {name}, the application deadline is tomorrow (Sun Jun 21) at midnight (KST). 
 
 After the deadline, we will process any late payments within 24 hours if seats remain, and auto-refund if no seat is available. Please send payment before the deadline if you can.
 
-KakaoTalk: ${KAKAO}
+For any questions, please use the KakaoTalk channel below.
+${KAKAO}
 
 Thank you,
 Fan to Pro Team`;
