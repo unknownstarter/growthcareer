@@ -721,6 +721,62 @@ const COUNTRY_CALLING_CODE: Record<string, string> = {
   // 멕시코
   "멕시코": "52",
   mexico: "52",
+  // 남아공
+  "남아공": "27",
+  "남아프리카": "27",
+  "south africa": "27",
+  // 사우디아라비아
+  "사우디": "966",
+  "사우디아라비아": "966",
+  "saudi arabia": "966",
+  // UAE
+  uae: "971",
+  "아랍에미리트": "971",
+  // 이집트
+  "이집트": "20",
+  egypt: "20",
+  // 케냐
+  "케냐": "254",
+  kenya: "254",
+  // 나이지리아
+  "나이지리아": "234",
+  nigeria: "234",
+  // 홍콩
+  "홍콩": "852",
+  "hong kong": "852",
+  // 마카오
+  "마카오": "853",
+  macau: "853",
+  // 싱가포르
+  "싱가포르": "65",
+  singapore: "65",
+  // 캄보디아
+  "캄보디아": "855",
+  cambodia: "855",
+  // 라오스
+  "라오스": "856",
+  laos: "856",
+  // 미얀마
+  "미얀마": "95",
+  myanmar: "95",
+  // 네팔
+  "네팔": "977",
+  nepal: "977",
+  // 방글라데시
+  "방글라데시": "880",
+  bangladesh: "880",
+  // 스리랑카
+  "스리랑카": "94",
+  "sri lanka": "94",
+  // 파키스탄
+  "파키스탄": "92",
+  pakistan: "92",
+  // 이란
+  "이란": "98",
+  iran: "98",
+  // 터키
+  "터키": "90",
+  turkey: "90",
 };
 
 function resolveCountryCode(nationality: string | null): string | null {
@@ -755,10 +811,67 @@ export function normalizePhoneForSms(
   if (/^01[0-9]/.test(cleaned)) return `+82${cleaned.slice(1)}`;
   const cc = resolveCountryCode(nationality ?? null);
   if (cc) {
+    // phone 이 이미 cc 로 시작하는 경우 (예: 사우디 96659574xxxx) → + 만 추가.
+    // cc 길이 + 모바일 최소 7자리 보장으로 우연 매치 회피.
+    if (cleaned.length >= cc.length + 7 && cleaned.startsWith(cc)) {
+      return `+${cleaned}`;
+    }
     const stripped = cleaned.startsWith("0") ? cleaned.slice(1) : cleaned;
     return `+${cc}${stripped}`;
   }
   return cleaned;
+}
+
+/**
+ * 어드민 display 용 phone 정규화. macOS Messages 발신 인식과 별개로 운영자가
+ * 어드민에서 phone 을 깔끔하게 읽도록 표시 형식 정리.
+ *
+ * - 한국 010xxxxxxxx (11자리) → 010-xxxx-xxxx
+ * - 한국 +82-10-xxxx-xxxx → 010-xxxx-xxxx (한국 운영자 가독성)
+ * - 외국 + 시작 → 그대로
+ * - 외국 raw + nationality 매칭 → +CC-XXXX-XXXX
+ * - 매칭 안 되면 raw
+ */
+export function formatPhoneForDisplay(
+  phone: string | null,
+  nationality?: string | null,
+): string {
+  if (!phone) return "";
+  const trimmed = phone.trim();
+  if (!trimmed) return "";
+  const cleaned = trimmed.replace(/[\s\-()]/g, "");
+  // 한국 +82 prefix → 010 표기
+  if (cleaned.startsWith("+82")) {
+    const local = "0" + cleaned.slice(3);
+    if (/^01[0-9]\d{8}$/.test(local)) {
+      return `${local.slice(0, 3)}-${local.slice(3, 7)}-${local.slice(7)}`;
+    }
+    return cleaned;
+  }
+  // 다른 + 국제 prefix → 그대로
+  if (cleaned.startsWith("+")) return cleaned;
+  // 한국 모바일 11자리 (010xxxxxxxxx)
+  if (/^01[016789]\d{8}$/.test(cleaned)) {
+    return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 7)}-${cleaned.slice(7)}`;
+  }
+  // 한국 모바일 10자리 (구 011)
+  if (/^01[16789]\d{7}$/.test(cleaned) && cleaned.length === 10) {
+    return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+  }
+  // 한국 서울 02 일반
+  if (cleaned.length === 10 && cleaned.startsWith("02")) {
+    return `${cleaned.slice(0, 2)}-${cleaned.slice(2, 6)}-${cleaned.slice(6)}`;
+  }
+  // 외국 raw + nationality 매칭 → +CC prefix 표시
+  const cc = resolveCountryCode(nationality ?? null);
+  if (cc) {
+    if (cleaned.length >= cc.length + 7 && cleaned.startsWith(cc)) {
+      return `+${cleaned}`;
+    }
+    const stripped = cleaned.startsWith("0") ? cleaned.slice(1) : cleaned;
+    return `+${cc} ${stripped}`;
+  }
+  return trimmed;
 }
 
 export function buildSmsUrl(

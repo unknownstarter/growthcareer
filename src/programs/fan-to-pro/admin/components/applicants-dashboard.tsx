@@ -39,6 +39,7 @@ import { BroadcastDialog } from "./broadcast-dialog";
 import { MessagesHistoryDrawer } from "./messages-history-drawer";
 import { downloadCsv } from "./csv";
 import {
+  formatPhoneForDisplay,
   MESSAGE_KIND_LABELS,
   type MessageChannel,
   type MessageKind,
@@ -798,7 +799,7 @@ function DashboardInner({
                       ) : null}
                     </td>
                     <td className="px-3 py-2 align-top text-fg whitespace-nowrap">
-                      {row.phone}
+                      {formatPhoneForDisplay(row.phone, row.nationality)}
                     </td>
                     <td className="px-3 py-2 align-top text-fg break-all">
                       {row.email}
@@ -895,7 +896,9 @@ function DashboardInner({
                     <div>
                       <div className="text-sm font-bold text-fg">{row.name}</div>
                       <div className="text-fg">{row.email}</div>
-                      <div className="text-fg">{row.phone}</div>
+                      <div className="text-fg">
+                        {formatPhoneForDisplay(row.phone, row.nationality)}
+                      </div>
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-1">
