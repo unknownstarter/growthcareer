@@ -61,23 +61,35 @@ function fill(template: string, name: string): string {
  *   - "확인했습니다" 답장 받은 후 입금 진행
  * ------------------------------------------------------------------------- */
 
-const paymentGuide_sms_ko = `[Fan to Pro] {name} 님 신청 감사드려요 :) 입금 안내드려요.
+const paymentGuide_sms_ko = `[Fan to Pro] {name} 님 신청 감사드려요 :)
 
+[입금 안내]
 수강료 ${TUITION_KO}
-계좌 ${ACCOUNT} (예금주 ${HOLDER_KO})
+계좌 ${ACCOUNT}
+예금주 ${HOLDER_KO}
 입금자명 {name}
-마감 ${DEADLINE_KO}까지
+마감 ${DEADLINE_KO}
 
-선착순이라 자리는 입금 확인 순으로 확정돼요. 비자 보유 + 한국 오프라인 강의 참석 가능 여부 꼭 확인 부탁드려요. 문의는 카톡 ${KAKAO}`;
+자리는 입금 확인 순으로 확정돼요 (선착순).
+비자 보유 + 한국 오프라인 강의 참석 가능 여부 꼭 재확인 부탁드려요.
 
-const paymentGuide_sms_en = `[Fan to Pro] Hi {name}, thanks for applying. Here is your payment guide.
+카톡 문의
+${KAKAO}`;
 
+const paymentGuide_sms_en = `[Fan to Pro] Hi {name}, thanks for applying.
+
+[PAYMENT]
 Tuition ${TUITION_EN}
-Account ${ACCOUNT_EN} (Holder: ${HOLDER_EN})
-Depositor name: {name}
+Account ${ACCOUNT_EN}
+Holder ${HOLDER_EN}
+Depositor {name}
 Deadline ${DEADLINE_EN}
 
-Seats lock in payment order. Please reconfirm your visa and ability to attend offline in Seoul. Questions: KakaoTalk ${KAKAO}`;
+Seats lock in payment order.
+Please reconfirm your visa and ability to attend offline in Seoul.
+
+Questions via KakaoTalk
+${KAKAO}`;
 
 const paymentGuide_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 
@@ -119,19 +131,30 @@ Fan to Pro Team`;
 
 /* paymentGuide - 비자 없음 분기 (visa = "기타/없음" 또는 null) */
 
-const paymentGuide_sms_ko_noVisa = `[Fan to Pro] {name} 님 신청 감사드려요 :) 신청서 비자가 "기타/없음" 으로 되어 있어 입금 전 두 가지 확인 부탁드려요.
+const paymentGuide_sms_ko_noVisa = `[Fan to Pro] {name} 님 신청 감사드려요 :)
 
-(1) 한국 오프라인 강의 (강남역) 4주 토/일 출석 가능 여부
-(2) 수료 후 K팝 공연 프로젝트 유급 참여는 비자 보유자만 가능, 비자 없으면 강의는 OK 지만 공연 단계는 불가
+신청서 비자가 "기타/없음" 으로 되어 있어 입금 전 두 가지 확인 부탁드려요.
 
-두 가지 확인하셨고 그래도 수강 원하시면 "확인" 답장 부탁드려요. 답장 후 입금 정보 안내드려요. 문의 카톡 ${KAKAO}`;
+(1) 강남역 오프라인 강의 4주 토/일 출석 가능 여부
+(2) 수료 후 K팝 공연 유급 참여는 비자 보유자만 가능 (비자 없으면 강의는 OK 지만 공연 단계는 불가)
 
-const paymentGuide_sms_en_noVisa = `[Fan to Pro] Hi {name}, thanks for applying. Your form lists "other/none" for visa, so please confirm two things before we send payment details.
+두 가지 확인하셨고 그래도 수강 원하시면 "확인" 답장 부탁드려요.
+답장 후 입금 정보 안내드려요.
+
+카톡 문의
+${KAKAO}`;
+
+const paymentGuide_sms_en_noVisa = `[Fan to Pro] Hi {name}, thanks for applying.
+
+Your form lists "other/none" for visa, so please confirm two things before we send payment details.
 
 (1) Can you attend offline in Seoul (Gangnam) every Sat/Sun for 4 weeks?
-(2) The paid K-pop concert role after the program requires a Korean visa that allows paid work. Without one, you can still attend class but cannot take the concert role.
+(2) The paid K-pop concert role after the program requires a Korean visa that allows paid work. Without one, you can attend class but not the concert role.
 
-If both confirmed, reply "confirmed" and we will send the payment details. Questions: KakaoTalk ${KAKAO}`;
+If both confirmed, reply "confirmed" and we will send the payment details.
+
+Questions via KakaoTalk
+${KAKAO}`;
 
 const paymentGuide_email_ko_noVisa = `안녕하세요, Fan to Pro 입니다 :)
 
@@ -190,9 +213,21 @@ const paymentGuide_email_subject_en_noVisa =
  * 4.5 ~ 4.8 입금 확인 완료 (paymentConfirmed) — "1기" 표현만 제거
  * ------------------------------------------------------------------------- */
 
-const paymentConfirmed_sms_ko = `[Fan to Pro] {name} 님, 입금 확인 완료. 자리가 확정됐어요. 첫 강의 6/27(토) 안내 메일을 곧 보내드려요. 문의는 카톡 채널 ${KAKAO}`;
+const paymentConfirmed_sms_ko = `[Fan to Pro] {name} 님 입금 확인 완료 :)
 
-const paymentConfirmed_sms_en = `[Fan to Pro] Hi {name}, payment confirmed. Your seat is locked in. We will send kickoff details for Sat Jun 27 shortly. KakaoTalk: ${KAKAO}`;
+자리가 확정됐어요.
+첫 강의 6/27(토) 안내 메일을 곧 보내드려요.
+
+카톡 문의
+${KAKAO}`;
+
+const paymentConfirmed_sms_en = `[Fan to Pro] Hi {name}, payment confirmed.
+
+Your seat is locked in.
+Kickoff details for Sat Jun 27 will arrive shortly.
+
+Questions via KakaoTalk
+${KAKAO}`;
 
 const paymentConfirmed_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 
@@ -236,9 +271,27 @@ const paymentConfirmed_email_subject_en =
  * 5. 리마인드 - T+1 (reminderT1) — "1기" 표현만 제거
  * ------------------------------------------------------------------------- */
 
-const reminderT1_sms_ko = `[Fan to Pro] {name} 님, 신청 다음날이에요. 입금이 아직이라면 ${ACCOUNT} (${HOLDER_KO}) 으로 ${TUITION_KO} 부탁드려요. 마감 ${DEADLINE_KO}. 카톡 ${KAKAO}`;
+const reminderT1_sms_ko = `[Fan to Pro] {name} 님, 신청 다음날이에요.
 
-const reminderT1_sms_en = `[Fan to Pro] Hi {name}, one day after your application. If you have not paid yet, send ${TUITION_EN} to ${ACCOUNT_EN} (${HOLDER_EN}). Deadline ${DEADLINE_EN}. KakaoTalk ${KAKAO}`;
+입금이 아직이라면 부탁드려요.
+계좌 ${ACCOUNT}
+예금주 ${HOLDER_KO}
+금액 ${TUITION_KO}
+마감 ${DEADLINE_KO}
+
+카톡 문의
+${KAKAO}`;
+
+const reminderT1_sms_en = `[Fan to Pro] Hi {name}, one day after your application.
+
+If you have not paid yet:
+Account ${ACCOUNT_EN}
+Holder ${HOLDER_EN}
+Amount ${TUITION_EN}
+Deadline ${DEADLINE_EN}
+
+Questions via KakaoTalk
+${KAKAO}`;
 
 const reminderT1_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 
@@ -275,9 +328,27 @@ const reminderT1_email_subject_en = "[Fan to Pro] Quick payment reminder";
  * 5. 리마인드 - D-3 (reminderD3) — "1기" 표현만 제거
  * ------------------------------------------------------------------------- */
 
-const reminderD3_sms_ko = `[Fan to Pro] 마감 3일 전이에요. {name} 님 자리 아직 못 잡았어요. ${ACCOUNT} (${HOLDER_KO}) ${TUITION_KO} 입금 부탁드려요. 마감 6/21 자정. 카톡 ${KAKAO}`;
+const reminderD3_sms_ko = `[Fan to Pro] 마감 3일 전이에요.
 
-const reminderD3_sms_en = `[Fan to Pro] 3 days to deadline. Hi {name}, your seat is not locked yet. ${ACCOUNT_EN} (${HOLDER_EN}), ${TUITION_EN}. Deadline Sun Jun 21 midnight. KakaoTalk ${KAKAO}`;
+{name} 님 자리 아직 못 잡았어요.
+계좌 ${ACCOUNT}
+예금주 ${HOLDER_KO}
+금액 ${TUITION_KO}
+마감 ${DEADLINE_KO}
+
+카톡 문의
+${KAKAO}`;
+
+const reminderD3_sms_en = `[Fan to Pro] 3 days to deadline.
+
+Hi {name}, your seat is not locked yet.
+Account ${ACCOUNT_EN}
+Holder ${HOLDER_EN}
+Amount ${TUITION_EN}
+Deadline ${DEADLINE_EN}
+
+Questions via KakaoTalk
+${KAKAO}`;
 
 const reminderD3_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 
@@ -314,9 +385,29 @@ const reminderD3_email_subject_en = "[Fan to Pro] 3 days left";
  * 5. 리마인드 - D-1 (reminderD1) — "1기" 표현만 제거
  * ------------------------------------------------------------------------- */
 
-const reminderD1_sms_ko = `[Fan to Pro] 내일 자정 마감이에요. {name} 님 입금 미확인. ${ACCOUNT} (${HOLDER_KO}) ${TUITION_KO}. 마감 후엔 자리 보장 어려워요. 카톡 ${KAKAO}`;
+const reminderD1_sms_ko = `[Fan to Pro] 내일 자정 마감이에요.
 
-const reminderD1_sms_en = `[Fan to Pro] Deadline tomorrow midnight. Hi {name}, payment not received yet. ${ACCOUNT_EN} (${HOLDER_EN}), ${TUITION_EN}. After deadline we cannot guarantee your seat. KakaoTalk ${KAKAO}`;
+{name} 님 입금 아직 미확인이에요.
+계좌 ${ACCOUNT}
+예금주 ${HOLDER_KO}
+금액 ${TUITION_KO}
+
+마감 후엔 자리 보장이 어려워요.
+
+카톡 문의
+${KAKAO}`;
+
+const reminderD1_sms_en = `[Fan to Pro] Deadline tomorrow midnight.
+
+Hi {name}, payment not received yet.
+Account ${ACCOUNT_EN}
+Holder ${HOLDER_EN}
+Amount ${TUITION_EN}
+
+After deadline we cannot guarantee your seat.
+
+Questions via KakaoTalk
+${KAKAO}`;
 
 const reminderD1_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 
