@@ -108,7 +108,10 @@ export function MessageDrawer({
     channel === "email"
       ? buildMailtoUrl(applicant.email, subject, body)
       : "";
-  const smsHref = channel === "sms" ? buildSmsUrl(applicant.phone, body) : "";
+  const smsHref =
+    channel === "sms"
+      ? buildSmsUrl(applicant.phone, body, applicant.nationality)
+      : "";
 
   return (
     <Modal

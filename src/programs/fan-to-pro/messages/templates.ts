@@ -634,12 +634,142 @@ export function buildMailtoUrl(
   return `mailto:${encodeURIComponent(email)}?${query}`;
 }
 
-export function buildSmsUrl(phone: string, body: string): string {
-  // iOS / Android 가 받아들이는 phone 은 + 와 숫자만. 공백/하이픈 제거.
-  const cleanedPhone = phone.replace(/[\s\-()]/g, "");
+/**
+ * nationality 텍스트 (자유 입력) → ITU country calling code 매핑.
+ *
+ * 사용자가 한글/영문 어느 쪽으로 입력하더라도 처리 가능하도록 양쪽 키 보유.
+ * partial match (lowercase contains) 까지 지원해서 "South Korea", "Republic of
+ * India" 같은 변형도 잡힘.
+ *
+ * 매핑 못 한 경우 null 반환. 호출부는 그대로 raw 번호 사용하거나 운영자가 직접
+ * +XX 붙여서 발송.
+ *
+ * 2026-06-12 사고: 인도 신청자의 10자리 폰 (7010448262) 을 macOS Messages 가
+ * 북미 NANP (+1) 로 자동 해석. nationality 기반 country code 자동 prefix 로 회피.
+ */
+const COUNTRY_CALLING_CODE: Record<string, string> = {
+  // 한국
+  "한국": "82",
+  "대한민국": "82",
+  korea: "82",
+  "south korea": "82",
+  "republic of korea": "82",
+  // 인도
+  "인도": "91",
+  india: "91",
+  // 베트남
+  "베트남": "84",
+  vietnam: "84",
+  // 인도네시아
+  "인도네시아": "62",
+  indonesia: "62",
+  // 중국
+  "중국": "86",
+  china: "86",
+  // 일본
+  "일본": "81",
+  japan: "81",
+  // 필리핀
+  "필리핀": "63",
+  philippines: "63",
+  // 태국
+  "태국": "66",
+  thailand: "66",
+  // 말레이시아
+  "말레이시아": "60",
+  malaysia: "60",
+  // 대만
+  "대만": "886",
+  taiwan: "886",
+  // 미국 / 캐나다 (NANP)
+  "미국": "1",
+  usa: "1",
+  "united states": "1",
+  "캐나다": "1",
+  canada: "1",
+  // 영국
+  "영국": "44",
+  uk: "44",
+  "united kingdom": "44",
+  // 러시아
+  "러시아": "7",
+  russia: "7",
+  // 우즈베키스탄
+  "우즈베키스탄": "998",
+  uzbekistan: "998",
+  // 카자흐스탄
+  "카자흐스탄": "7",
+  kazakhstan: "7",
+  // 몽골
+  "몽골": "976",
+  mongolia: "976",
+  // 스페인
+  "스페인": "34",
+  spain: "34",
+  // 프랑스
+  "프랑스": "33",
+  france: "33",
+  // 독일
+  "독일": "49",
+  germany: "49",
+  // 호주
+  "호주": "61",
+  australia: "61",
+  // 브라질
+  "브라질": "55",
+  brazil: "55",
+  // 멕시코
+  "멕시코": "52",
+  mexico: "52",
+};
+
+function resolveCountryCode(nationality: string | null): string | null {
+  if (!nationality) return null;
+  const normalized = nationality.trim().toLowerCase();
+  if (COUNTRY_CALLING_CODE[normalized]) {
+    return COUNTRY_CALLING_CODE[normalized];
+  }
+  for (const [key, code] of Object.entries(COUNTRY_CALLING_CODE)) {
+    if (normalized.includes(key)) return code;
+  }
+  return null;
+}
+
+/**
+ * SMS 발송용 phone 정규화. nationality 기반으로 +CC 자동 prefix.
+ *
+ * 우선순위:
+ *   1. 이미 + 시작 → 그대로
+ *   2. 00 prefix (한국 국제전화 식별) → + 변환
+ *   3. 010 / 011~019 (한국 모바일) → +82 + (앞 0 제거)
+ *   4. nationality resolve 가능 → +CC + (mobile prefix 0 제거)
+ *   5. 그 외 → 그대로 (운영자가 직접 처리)
+ */
+export function normalizePhoneForSms(
+  phone: string,
+  nationality?: string | null,
+): string {
+  const cleaned = phone.replace(/[\s\-()]/g, "");
+  if (cleaned.startsWith("+")) return cleaned;
+  if (cleaned.startsWith("00")) return `+${cleaned.slice(2)}`;
+  if (/^01[0-9]/.test(cleaned)) return `+82${cleaned.slice(1)}`;
+  const cc = resolveCountryCode(nationality ?? null);
+  if (cc) {
+    const stripped = cleaned.startsWith("0") ? cleaned.slice(1) : cleaned;
+    return `+${cc}${stripped}`;
+  }
+  return cleaned;
+}
+
+export function buildSmsUrl(
+  phone: string,
+  body: string,
+  nationality?: string | null,
+): string {
+  const normalized = normalizePhoneForSms(phone, nationality);
   // sms: URI 의 body 파라미터는 vendor 별 차이가 있어 일관성을 위해 둘 다 시도하는
   // 게 맞으나, iOS Safari + Android Chrome 모두 ?body= 형식을 인식한다.
-  return `sms:${cleanedPhone}?body=${encodeURIComponent(body)}`;
+  return `sms:${normalized}?body=${encodeURIComponent(body)}`;
 }
 
 /**
