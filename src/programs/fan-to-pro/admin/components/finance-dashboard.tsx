@@ -8,9 +8,9 @@ import type { FinanceKpi } from "@/src/programs/fan-to-pro/domain/finance";
 import { ToastProvider, useToast } from "./toast";
 
 const compactBtn =
-  "inline-flex items-center justify-center border border-border bg-bg px-2.5 py-1.5 text-[10px] font-black uppercase text-fg hover:text-fg hover:border-fg-subtle disabled:opacity-40 whitespace-nowrap";
+  "inline-flex min-h-[32px] shrink-0 items-center justify-center border border-border bg-bg px-2.5 py-1.5 text-[10px] font-black uppercase text-fg hover:text-fg hover:border-fg-subtle disabled:opacity-40 whitespace-nowrap";
 const accentBtn =
-  "inline-flex items-center justify-center border border-brand-pink/60 bg-brand-pink/10 px-2.5 py-1.5 text-[10px] font-black uppercase text-brand-pink hover:bg-brand-pink/20 disabled:opacity-40 whitespace-nowrap";
+  "inline-flex min-h-[32px] shrink-0 items-center justify-center border border-brand-pink/60 bg-brand-pink/10 px-2.5 py-1.5 text-[10px] font-black uppercase text-brand-pink hover:bg-brand-pink/20 disabled:opacity-40 whitespace-nowrap";
 const compactStyle = { letterSpacing: "0.12em" } as const;
 
 export function FinanceDashboard({
@@ -85,8 +85,8 @@ function DashboardInner({
     <div className="flex min-h-dvh flex-col">
       {/* Header */}
       <header className="sticky top-[44px] z-20 border-b border-border bg-bg/95 backdrop-blur">
-        <div className="mx-auto flex max-w-[1400px] flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-          <div className="flex items-center gap-3">
+        <div className="mx-auto flex max-w-[1400px] flex-col gap-2 px-3 py-2.5 sm:gap-3 sm:px-4 sm:py-3 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <span
               className="border border-brand-pink bg-brand-pink/10 px-2 py-0.5 text-[10px] font-black uppercase text-brand-pink"
               style={{ letterSpacing: "0.2em" }}
@@ -94,13 +94,14 @@ function DashboardInner({
               ADMIN
             </span>
             <h1
-              className="text-base font-black text-fg sm:text-lg"
+              className="text-sm font-black text-fg sm:text-base lg:text-lg"
               style={{ letterSpacing: "-0.02em" }}
             >
               Fan to Pro 재무
             </h1>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
+          {/* 모바일: 가로 스크롤 액션. 데스크탑: wrap. */}
+          <div className="-mx-3 flex items-center gap-1.5 overflow-x-auto px-3 pb-0.5 sm:mx-0 sm:px-0 sm:pb-0 lg:flex-wrap lg:gap-2">
             <button
               type="button"
               onClick={runRefresh}
@@ -124,7 +125,7 @@ function DashboardInner({
         </div>
       </header>
 
-      <main className="mx-auto flex w-full max-w-[1400px] flex-1 flex-col gap-4 px-4 py-4">
+      <main className="mx-auto flex w-full max-w-[1400px] flex-1 flex-col gap-3 px-3 py-3 sm:gap-4 sm:px-4 sm:py-4">
         {!supabaseAvailable ? (
           <div className="border border-amber-500/60 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
             Supabase 자격이 환경에 없어 mock 모드.
