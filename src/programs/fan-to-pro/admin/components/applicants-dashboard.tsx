@@ -555,7 +555,10 @@ function DashboardInner({
             <StatPill label="PENDING" value={stats.byStatus.pending} tone="pending" />
             <StatPill label="NOTIFIED" value={stats.byStatus.notified} tone="notified" />
             <StatPill label="PAID" value={stats.byStatus.paid} tone="paid" />
+            <StatPill label="OVERDUE" value={stats.byStatus.overdue} tone="overdue" />
             <StatPill label="ENROLLED" value={stats.byStatus.enrolled} tone="enrolled" />
+            <StatPill label="CANCELLED" value={stats.byStatus.cancelled} tone="cancelled" />
+            <StatPill label="REFUNDED" value={stats.byStatus.refunded} tone="refunded" />
             {stats.reminderD1 > 0 ? (
               <StatPill label="D-1 리마인드" value={stats.reminderD1} tone="d1" pulse />
             ) : null}
@@ -1271,7 +1274,10 @@ function StatPill({
     | "pending"
     | "notified"
     | "paid"
+    | "overdue"
     | "enrolled"
+    | "cancelled"
+    | "refunded"
     | "t1"
     | "d3"
     | "d1";
@@ -1282,7 +1288,10 @@ function StatPill({
     pending: "border-fg-subtle/40 bg-fg-subtle/10 text-fg",
     notified: "border-blue-400/60 bg-blue-500/15 text-blue-200",
     paid: "border-emerald-500/60 bg-emerald-500/15 text-emerald-200",
+    overdue: "border-amber-500/60 bg-amber-500/15 text-amber-200",
     enrolled: "border-brand-pink bg-brand-pink/20 text-brand-pink",
+    cancelled: "border-zinc-600/60 bg-zinc-700/30 text-zinc-300",
+    refunded: "border-violet-400/60 bg-violet-500/15 text-violet-200",
     t1: "border-amber-400/60 bg-amber-500/15 text-amber-200",
     d3: "border-orange-500/60 bg-orange-500/15 text-orange-200",
     d1: "border-red-500/70 bg-red-500/20 text-red-200",
