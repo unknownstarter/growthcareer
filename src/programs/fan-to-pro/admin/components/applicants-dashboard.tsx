@@ -68,12 +68,12 @@ const URGENCY_TINT: Record<
 };
 
 const compactBtn =
-  "inline-flex items-center justify-center border border-border bg-bg px-2.5 py-1.5 text-[10px] font-black uppercase text-fg hover:text-fg hover:border-fg-subtle disabled:opacity-40 whitespace-nowrap";
+  "inline-flex min-h-[32px] shrink-0 items-center justify-center border border-border bg-bg px-2.5 py-1.5 text-[10px] font-black uppercase text-fg hover:text-fg hover:border-fg-subtle disabled:opacity-40 whitespace-nowrap";
 
 const compactStyle = { letterSpacing: "0.12em" } as const;
 
 const accentBtn =
-  "inline-flex items-center justify-center border border-brand-pink/60 bg-brand-pink/10 px-2.5 py-1.5 text-[10px] font-black uppercase text-brand-pink hover:bg-brand-pink/20 disabled:opacity-40 whitespace-nowrap";
+  "inline-flex min-h-[32px] shrink-0 items-center justify-center border border-brand-pink/60 bg-brand-pink/10 px-2.5 py-1.5 text-[10px] font-black uppercase text-brand-pink hover:bg-brand-pink/20 disabled:opacity-40 whitespace-nowrap";
 
 export function ApplicantsDashboard({
   initialRows,
@@ -523,8 +523,8 @@ function DashboardInner({
     <div className="flex min-h-dvh flex-col">
       {/* Header */}
       <header className="sticky top-[44px] z-20 border-b border-border bg-bg/95 backdrop-blur">
-        <div className="mx-auto flex max-w-[1400px] flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-          <div className="flex items-center gap-3">
+        <div className="mx-auto flex max-w-[1400px] flex-col gap-2 px-3 py-2.5 sm:gap-3 sm:px-4 sm:py-3 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <span
               className="border border-brand-pink bg-brand-pink/10 px-2 py-0.5 text-[10px] font-black uppercase text-brand-pink"
               style={{ letterSpacing: "0.2em" }}
@@ -532,7 +532,7 @@ function DashboardInner({
               ADMIN
             </span>
             <h1
-              className="text-base font-black text-fg sm:text-lg"
+              className="text-sm font-black text-fg sm:text-base lg:text-lg"
               style={{ letterSpacing: "-0.02em" }}
             >
               Fan to Pro 신청자
@@ -550,7 +550,8 @@ function DashboardInner({
               <LastFetchedChip lastFetchedAt={lastFetchedAt} now={nowTick} />
             )}
           </div>
-          <div className="flex flex-wrap items-center gap-2 text-[11px] text-fg">
+          {/* 모바일: 가로 스크롤 stats. 데스크탑: wrap. */}
+          <div className="-mx-3 flex items-center gap-1.5 overflow-x-auto px-3 pb-0.5 text-[11px] text-fg sm:mx-0 sm:px-0 sm:pb-0 lg:flex-wrap lg:gap-2">
             <StatPill label="총" value={stats.total} tone="default" />
             <StatPill label="PENDING" value={stats.byStatus.pending} tone="pending" />
             <StatPill label="NOTIFIED" value={stats.byStatus.notified} tone="notified" />
@@ -574,7 +575,7 @@ function DashboardInner({
                 type="button"
                 onClick={() => setAnonymizeOpen(true)}
                 className={cn(
-                  "inline-flex items-center gap-1.5 border px-2 py-1 text-[10px] font-black uppercase whitespace-nowrap",
+                  "inline-flex shrink-0 items-center gap-1.5 border px-2 py-1 text-[10px] font-black uppercase whitespace-nowrap",
                   eligibility.eligibleCount > 0
                     ? "border-red-500/60 bg-red-500/10 text-red-200 hover:bg-red-500/20"
                     : "border-border bg-bg text-fg/80 hover:text-fg",
@@ -593,7 +594,7 @@ function DashboardInner({
         </div>
       </header>
 
-      <main className="mx-auto flex w-full max-w-[1400px] flex-1 flex-col gap-4 px-4 py-4">
+      <main className="mx-auto flex w-full max-w-[1400px] flex-1 flex-col gap-3 px-3 py-3 sm:gap-4 sm:px-4 sm:py-4">
         {/* Warning bar */}
         {!supabaseAvailable ? (
           <div className="border border-amber-500/60 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
@@ -608,17 +609,22 @@ function DashboardInner({
         ) : null}
 
         {/* Filter + actions row */}
-        <div className="flex flex-col gap-3 border border-border bg-surface/60 p-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-1 flex-col gap-2 sm:flex-row sm:items-center">
+        <div className="flex flex-col gap-3 border border-border bg-surface/60 p-2.5 sm:p-3 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-1 flex-col gap-2 lg:flex-row lg:items-center">
             <input
               type="search"
-              placeholder="이름 / 이메일 / 연락처 / 입금자명 검색"
+              placeholder="이름 / 이메일 / 연락처 / 입금자명"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full border border-border bg-bg px-3 py-2 text-sm text-fg outline-none focus:border-brand-pink sm:max-w-sm"
+              className="w-full border border-border bg-bg px-3 py-2 text-sm text-fg outline-none focus:border-brand-pink lg:max-w-sm"
               aria-label="신청자 검색"
             />
-            <div className="flex flex-wrap gap-1" role="group" aria-label="상태 필터">
+            {/* 모바일: 가로 스크롤. 데스크탑 lg 이상: wrap. */}
+            <div
+              className="-mx-2.5 flex gap-1 overflow-x-auto px-2.5 pb-0.5 sm:-mx-3 sm:px-3 lg:mx-0 lg:flex-wrap lg:px-0 lg:pb-0"
+              role="group"
+              aria-label="상태 필터"
+            >
               {APPLICANT_STATUSES.map((s) => {
                 const active = statusFilter.has(s);
                 return (
@@ -628,7 +634,7 @@ function DashboardInner({
                     aria-pressed={active}
                     onClick={() => toggleStatusFilter(s)}
                     className={cn(
-                      "border px-2 py-1 text-[10px] font-black uppercase transition-colors",
+                      "shrink-0 border px-2 py-1 text-[10px] font-black uppercase whitespace-nowrap transition-colors",
                       active
                         ? "border-brand-pink bg-brand-pink/15 text-brand-pink"
                         : "border-border bg-bg text-fg hover:text-fg",
@@ -644,7 +650,7 @@ function DashboardInner({
                 <button
                   type="button"
                   onClick={() => setStatusFilter(new Set())}
-                  className="border border-border bg-bg px-2 py-1 text-[10px] font-black uppercase text-fg/80 hover:text-fg"
+                  className="shrink-0 border border-border bg-bg px-2 py-1 text-[10px] font-black uppercase whitespace-nowrap text-fg/80 hover:text-fg"
                   style={{ letterSpacing: "0.15em" }}
                 >
                   reset
@@ -652,7 +658,8 @@ function DashboardInner({
               ) : null}
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
+          {/* 모바일: 가로 스크롤 액션 bar. */}
+          <div className="-mx-2.5 flex items-center gap-2 overflow-x-auto px-2.5 pb-0.5 sm:-mx-3 sm:px-3 lg:mx-0 lg:flex-wrap lg:px-0 lg:pb-0">
             {!readOnly && selectedCount > 0 ? (
               <>
                 <span
@@ -881,7 +888,7 @@ function DashboardInner({
                 )}
               >
                 <header className="flex items-start justify-between gap-2">
-                  <div className="flex items-start gap-2">
+                  <div className="flex min-w-0 items-start gap-2">
                     {!readOnly && (
                       <input
                         type="checkbox"
@@ -893,43 +900,50 @@ function DashboardInner({
                         checked={checked}
                         onChange={() => toggleRowSelected(row.id)}
                         disabled={row.redactedAt !== null}
-                        className="mt-1 h-4 w-4 cursor-pointer accent-brand-pink disabled:cursor-not-allowed disabled:opacity-30"
+                        className="mt-1 h-5 w-5 shrink-0 cursor-pointer accent-brand-pink disabled:cursor-not-allowed disabled:opacity-30"
                       />
                     )}
-                    <div>
-                      <div className="text-sm font-bold text-fg">{row.name}</div>
-                      <div className="text-fg">{row.email}</div>
-                      <div className="text-fg">
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="text-sm font-bold text-fg">{row.name}</span>
+                        {tint.label ? (
+                          <span
+                            className={cn(
+                              "border border-current px-1 py-0.5 text-[9px] font-black",
+                              urgency.level === "d1" && "text-red-300",
+                              urgency.level === "d3" && "text-orange-300",
+                              urgency.level === "t1" && "text-amber-300",
+                            )}
+                            style={{ letterSpacing: "0.15em" }}
+                          >
+                            {tint.label}
+                          </span>
+                        ) : null}
+                      </div>
+                      <div className="mt-0.5 break-all text-fg/90">{row.email}</div>
+                      <div className="text-fg/90">
                         {formatPhoneForDisplay(row.phone, row.nationality)}
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col items-end gap-1">
+                  <div className="flex shrink-0 flex-col items-end gap-1">
                     <StatusChip status={row.status} />
                     {row.redactedAt ? <RedactedChip /> : null}
-                    {tint.label ? (
-                      <span
-                        className="border border-current px-1 py-0.5 text-[9px] font-black"
-                        style={{ letterSpacing: "0.15em" }}
-                      >
-                        {tint.label}
-                      </span>
-                    ) : null}
                   </div>
                 </header>
-                <dl className="mt-2 grid grid-cols-2 gap-1 text-[11px] text-fg/80">
+                <dl className="mt-2.5 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-[11px] text-fg/70">
                   <dt>신청일</dt>
                   <dd className="text-fg">{formatDate(row.createdAt)}</dd>
-                  <dt>국적</dt>
-                  <dd className="text-fg">{row.nationality ?? "-"}</dd>
-                  <dt>비자</dt>
-                  <dd className="text-fg">{row.visa ?? "-"}</dd>
-                  <dt>발송</dt>
+                  <dt>국적 / 비자</dt>
+                  <dd className="text-fg">
+                    {row.nationality ?? "-"}
+                    {row.visa ? ` / ${row.visa}` : ""}
+                  </dd>
+                  <dt>발송 / 리마인드</dt>
                   <dd className="text-fg">
                     {row.notifiedAt ? formatDate(row.notifiedAt) : "-"}
+                    {row.reminderCount > 0 ? ` / ${row.reminderCount}회` : ""}
                   </dd>
-                  <dt>리마인드</dt>
-                  <dd className="text-fg">{row.reminderCount}회</dd>
                   <dt>입금</dt>
                   <dd className="text-fg">
                     {row.paymentConfirmedAt
@@ -938,7 +952,7 @@ function DashboardInner({
                   </dd>
                 </dl>
                 {!readOnly && (
-                  <div className="mt-2 flex flex-wrap gap-1">
+                  <div className="mt-3 flex flex-wrap gap-1.5 border-t border-border/60 pt-2.5">
                     <RowActions
                       row={row}
                       busy={isPending}
@@ -1299,7 +1313,7 @@ function StatPill({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 border px-2 py-1 text-[10px] font-black uppercase",
+        "inline-flex shrink-0 items-center gap-1.5 border px-2 py-1 text-[10px] font-black uppercase whitespace-nowrap",
         toneClass,
         pulse && "animate-pulse",
       )}

@@ -50,27 +50,29 @@ export function AdminNav({
       aria-label="운영자 페이지 이동"
       className="sticky top-0 z-30 border-b border-border bg-bg/95 backdrop-blur"
     >
-      <div className="mx-auto flex max-w-[1400px] items-center gap-1 overflow-x-auto px-4 py-2">
-        {visible.map((item) => {
-          const active = item.key === current;
-          return (
-            <Link
-              key={item.key}
-              href={item.href}
-              aria-current={active ? "page" : undefined}
-              className={cn(
-                BASE_TAB_CLASS,
-                active
-                  ? "border-brand-pink bg-brand-pink/15 text-brand-pink"
-                  : "border-border bg-bg text-fg/80 hover:text-fg hover:border-fg-subtle",
-              )}
-              style={SHARED_NAV_STYLE}
-            >
-              {item.label}
-            </Link>
-          );
-        })}
-        <div className="ml-auto flex items-center gap-1">
+      <div className="mx-auto flex max-w-[1400px] items-center gap-1 px-3 py-2 sm:px-4">
+        <div className="flex flex-1 items-center gap-1 overflow-x-auto">
+          {visible.map((item) => {
+            const active = item.key === current;
+            return (
+              <Link
+                key={item.key}
+                href={item.href}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  BASE_TAB_CLASS,
+                  active
+                    ? "border-brand-pink bg-brand-pink/15 text-brand-pink"
+                    : "border-border bg-bg text-fg/80 hover:text-fg hover:border-fg-subtle",
+                )}
+                style={SHARED_NAV_STYLE}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+        </div>
+        <div className="flex shrink-0 items-center gap-1 pl-1">
           {/* 공개 사이트로 이동. next-intl middleware 가 locale 분기 처리. */}
           <a
             href="/"
