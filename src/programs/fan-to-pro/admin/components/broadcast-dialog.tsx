@@ -17,10 +17,10 @@ const labelClass = "block text-[10px] font-black uppercase text-fg/80";
 const labelStyle = { letterSpacing: "0.2em" } as const;
 
 const primaryBtn =
-  "inline-flex items-center justify-center gap-2 bg-brand-pink px-4 py-2.5 text-xs font-black uppercase text-fg hover:bg-brand-purple disabled:opacity-60";
+  "inline-flex min-h-[40px] items-center justify-center gap-2 bg-brand-pink px-4 py-2.5 text-xs font-black uppercase text-fg hover:bg-brand-purple disabled:opacity-60";
 
 const ghostBtn =
-  "inline-flex items-center justify-center border border-border bg-bg px-4 py-2.5 text-xs font-black uppercase text-fg hover:text-fg disabled:opacity-40";
+  "inline-flex min-h-[40px] items-center justify-center border border-border bg-bg px-4 py-2.5 text-xs font-black uppercase text-fg hover:text-fg disabled:opacity-40";
 
 const btnStyle = { letterSpacing: "0.15em" } as const;
 
@@ -219,13 +219,13 @@ export function BroadcastDialog({
             본문
           </span>
           <textarea
-            rows={10}
+            rows={7}
             value={body}
             onChange={(e) => setBody(e.target.value.slice(0, BODY_MAX))}
             placeholder={
               "안녕하세요, Fan to Pro 입니다.\n\n첫 강의 안내 드려요.\n..."
             }
-            className={cn(fieldClass, "resize-y leading-relaxed")}
+            className={cn(fieldClass, "resize-y leading-relaxed sm:min-h-[180px]")}
             disabled={busy || recipientEmails.length === 0}
             maxLength={BODY_MAX}
           />

@@ -106,16 +106,17 @@ export function Modal({
         aria-labelledby="modal-title"
         className={cn(
           "relative flex w-full flex-col overflow-y-auto border-t-2 border-brand-pink bg-surface shadow-2xl sm:border-2",
+          // iOS Safari 의 dynamic viewport — 100dvh 가 chrome 자동 보정.
           "max-h-[100dvh] sm:max-h-[90dvh]",
           size === "sm" && "sm:max-w-[420px]",
           size === "md" && "sm:max-w-[560px]",
           size === "lg" && "sm:max-w-[760px]",
         )}
       >
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-surface px-5 py-3">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-surface px-4 py-2.5 sm:px-5 sm:py-3">
           <h2
             id="modal-title"
-            className="text-base font-black text-fg sm:text-lg"
+            className="text-sm font-black text-fg sm:text-base lg:text-lg"
             style={{ letterSpacing: "-0.02em" }}
           >
             {title}
@@ -125,14 +126,18 @@ export function Modal({
             onClick={onClose}
             disabled={busy}
             aria-label="닫기"
-            className="flex h-8 w-8 items-center justify-center text-fg/80 hover:text-fg disabled:opacity-40"
+            className="-mr-1 flex h-9 w-9 shrink-0 items-center justify-center text-fg/80 hover:text-fg disabled:opacity-40 sm:h-8 sm:w-8"
           >
             <span aria-hidden className="text-xl leading-none">
               ×
             </span>
           </button>
         </div>
-        <div className="flex flex-col gap-4 px-5 py-4 sm:px-6 sm:py-5">
+        {/* 모바일은 홈 인디케이터 회피 위해 pb-[env(safe-area-inset-bottom)]. */}
+        <div
+          className="flex flex-col gap-4 px-4 py-4 sm:px-6 sm:py-5"
+          style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
+        >
           {children}
         </div>
       </div>

@@ -26,10 +26,10 @@ const labelClass = "block text-[10px] font-black uppercase text-fg/80";
 const labelStyle = { letterSpacing: "0.2em" } as const;
 
 const primaryBtn =
-  "inline-flex items-center justify-center gap-2 bg-brand-pink px-3 py-2 text-xs font-black uppercase text-fg hover:bg-brand-purple disabled:opacity-60";
+  "inline-flex min-h-[40px] shrink-0 items-center justify-center gap-2 bg-brand-pink px-3 py-2 text-xs font-black uppercase text-fg hover:bg-brand-purple disabled:opacity-60";
 
 const ghostBtn =
-  "inline-flex items-center justify-center border border-border bg-bg px-3 py-2 text-xs font-black uppercase text-fg hover:text-fg disabled:opacity-40";
+  "inline-flex min-h-[40px] shrink-0 items-center justify-center border border-border bg-bg px-3 py-2 text-xs font-black uppercase text-fg hover:text-fg disabled:opacity-40";
 
 const btnStyle = { letterSpacing: "0.15em" } as const;
 
@@ -197,7 +197,7 @@ export function MessageDrawer({
           <textarea
             value={body}
             onChange={(e) => setEditedBody(e.target.value)}
-            rows={channel === "email" ? 14 : 8}
+            rows={channel === "email" ? 10 : 6}
             className="w-full resize-y border border-border bg-bg px-3 py-2 text-xs leading-relaxed text-fg outline-none focus:border-brand-pink sm:text-sm"
           />
           <span className="text-[11px] text-fg/80">
@@ -288,7 +288,7 @@ function ToggleGroup<T extends string>({
               aria-checked={selected}
               onClick={() => onChange(opt.value)}
               className={cn(
-                "border px-2.5 py-1.5 text-[11px] font-black uppercase transition-colors",
+                "inline-flex min-h-[32px] items-center border px-2.5 py-1.5 text-[11px] font-black uppercase whitespace-nowrap transition-colors",
                 selected
                   ? "border-brand-pink bg-brand-pink/15 text-brand-pink"
                   : "border-border bg-bg text-fg hover:text-fg",

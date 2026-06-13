@@ -10,7 +10,7 @@ const labelClass = "block text-[10px] font-black uppercase text-fg/80";
 const labelStyle = { letterSpacing: "0.2em" } as const;
 
 const ghostBtn =
-  "inline-flex items-center justify-center border border-border bg-bg px-3 py-2 text-xs font-black uppercase text-fg hover:text-fg";
+  "inline-flex min-h-[40px] items-center justify-center border border-border bg-bg px-4 py-2 text-xs font-black uppercase text-fg hover:text-fg";
 
 const btnStyle = { letterSpacing: "0.15em" } as const;
 
