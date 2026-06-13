@@ -27,10 +27,10 @@ const fieldClass =
   "w-full border border-border bg-bg px-3 py-2 text-sm font-bold tracking-widest text-fg outline-none focus:border-brand-pink uppercase disabled:opacity-50";
 
 const primaryBtn =
-  "inline-flex items-center justify-center gap-2 bg-red-500 px-4 py-2.5 text-xs font-black uppercase text-white hover:bg-red-600 disabled:opacity-40";
+  "inline-flex min-h-[40px] items-center justify-center gap-2 bg-red-500 px-4 py-2.5 text-xs font-black uppercase text-white hover:bg-red-600 disabled:opacity-40";
 
 const ghostBtn =
-  "inline-flex items-center justify-center border border-border bg-bg px-4 py-2.5 text-xs font-black uppercase text-fg hover:text-fg disabled:opacity-40";
+  "inline-flex min-h-[40px] items-center justify-center border border-border bg-bg px-4 py-2.5 text-xs font-black uppercase text-fg hover:text-fg disabled:opacity-40";
 
 const btnStyle = { letterSpacing: "0.15em" } as const;
 
@@ -101,7 +101,7 @@ export function PiiAnonymizeDialog({
             >
               영향받는 필드
             </p>
-            <ul className="mt-2 grid grid-cols-2 gap-1 text-fg">
+            <ul className="mt-2 grid grid-cols-1 gap-1 text-fg sm:grid-cols-2">
               <li>이름 → [redacted]</li>
               <li>이메일 → [redacted]</li>
               <li>전화번호 → [redacted]</li>

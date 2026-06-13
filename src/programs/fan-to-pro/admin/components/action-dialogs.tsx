@@ -14,10 +14,10 @@ const labelClass =
 const labelStyle = { letterSpacing: "0.2em" } as const;
 
 const primaryBtn =
-  "inline-flex items-center justify-center gap-2 bg-brand-pink px-4 py-2.5 text-xs font-black uppercase text-fg hover:bg-brand-purple disabled:opacity-60";
+  "inline-flex min-h-[40px] items-center justify-center gap-2 bg-brand-pink px-4 py-2.5 text-xs font-black uppercase text-fg hover:bg-brand-purple disabled:opacity-60";
 
 const ghostBtn =
-  "inline-flex items-center justify-center border border-border bg-bg px-4 py-2.5 text-xs font-black uppercase text-fg hover:text-fg disabled:opacity-40";
+  "inline-flex min-h-[40px] items-center justify-center border border-border bg-bg px-4 py-2.5 text-xs font-black uppercase text-fg hover:text-fg disabled:opacity-40";
 
 const btnStyle = { letterSpacing: "0.15em" } as const;
 
@@ -189,7 +189,7 @@ export function CancelDialog({
             checked={confirmed}
             onChange={(e) => setConfirmed(e.target.checked)}
             disabled={busy}
-            className="mt-0.5"
+            className="mt-0.5 h-4 w-4 accent-brand-pink"
           />
           <span>
             취소 처리는 되돌릴 수 없어요 (status=cancelled 진입). 진행할게요.
@@ -368,7 +368,7 @@ export function EnrollBatchDialog({
             checked={confirmed}
             onChange={(e) => setConfirmed(e.target.checked)}
             disabled={busy}
-            className="mt-0.5"
+            className="mt-0.5 h-4 w-4 accent-brand-pink"
           />
           <span>
             일괄 처리는 되돌릴 수 없어요. 진행할게요.

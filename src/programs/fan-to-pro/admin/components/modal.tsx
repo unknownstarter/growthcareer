@@ -106,7 +106,7 @@ export function Modal({
         aria-labelledby="modal-title"
         className={cn(
           "relative flex w-full flex-col overflow-y-auto border-t-2 border-brand-pink bg-surface shadow-2xl sm:border-2",
-          // iOS Safari 의 dynamic viewport — 100dvh 가 chrome 자동 보정.
+          // iOS Safari 의 dynamic viewport. 100dvh 가 chrome 자동 보정.
           "max-h-[100dvh] sm:max-h-[90dvh]",
           size === "sm" && "sm:max-w-[420px]",
           size === "md" && "sm:max-w-[560px]",
