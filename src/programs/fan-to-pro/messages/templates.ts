@@ -293,9 +293,11 @@ const paymentConfirmed_email_subject_en =
  * 5. 리마인드 - T+1 (reminderT1) — "1기" 표현만 제거
  * ------------------------------------------------------------------------- */
 
-const reminderT1_sms_ko = `[Fan to Pro] {name} 님, 신청 다음날이에요.
+const reminderT1_sms_ko = `[Fan to Pro] {name} 님, 혹시 신청 후 입금을 잊으신 건 아닌지 리마인드 차원에서 안내드려요 :)
 
-입금이 아직이라면 부탁드려요.
+자리는 입금 확인 순으로 확정돼요 (선착순).
+
+[입금 정보]
 계좌 ${ACCOUNT}
 예금주 ${HOLDER_KO}
 금액 ${TUITION_KO}
@@ -304,9 +306,11 @@ const reminderT1_sms_ko = `[Fan to Pro] {name} 님, 신청 다음날이에요.
 문의사항은 하단의 카카오톡 채널을 이용해주세요.
 ${KAKAO}`;
 
-const reminderT1_sms_en = `[Fan to Pro] Hi {name}, one day after your application.
+const reminderT1_sms_en = `[Fan to Pro] Hi {name}, just a friendly reminder in case you might have forgotten about your payment :)
 
-If you have not paid yet:
+Seats are locked in payment order.
+
+[PAYMENT]
 Account ${ACCOUNT_EN}
 Holder ${HOLDER_EN}
 Amount ${TUITION_EN}
@@ -317,14 +321,17 @@ ${KAKAO}`;
 
 const reminderT1_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 
-{name} 님, 신청하신지 하루가 지났어요. 입금 아직이시라면 아래 정보로 부탁드려요.
+{name} 님, 혹시 신청 후 입금을 잊으신 건 아닌지 리마인드 차원에서 안내드려요.
 
-- 수강료 ${TUITION_KO}
-- ${ACCOUNT} (예금주 ${HOLDER_KO})
+자리는 입금 확인 순으로 확정되니, 아직 입금 전이시라면 아래 정보로 부탁드려요.
+
+[입금 정보]
+- 수강료: ${TUITION_KO}
+- 계좌: ${ACCOUNT} (예금주 ${HOLDER_KO})
 - 입금자명: {name}
 - 마감: 2026년 6월 21일(일) 자정
 
-자리는 입금 확인된 순서대로 확정돼요.
+이미 입금하셨다면 본 안내는 무시하셔도 좋아요.
 
 문의사항은 하단의 카카오톡 채널을 이용해주세요.
 ${KAKAO}
@@ -334,14 +341,17 @@ Fan to Pro 운영진 드림`;
 
 const reminderT1_email_en = `Hello, this is Fan to Pro.
 
-Hi {name}, it has been a day since your application. If you have not paid yet, here is the info again.
+Hi {name}, just a friendly reminder in case you might have forgotten about your payment.
 
-- Tuition ${TUITION_EN}
-- ${ACCOUNT_EN} (Holder: ${HOLDER_EN})
+Seats are locked in payment order. If you have not paid yet, here is the info again.
+
+[PAYMENT]
+- Tuition: ${TUITION_EN}
+- Account: ${ACCOUNT_EN} (Holder: ${HOLDER_EN})
 - Depositor name: your full name from the form
 - Deadline: Sunday, June 21, midnight (KST)
 
-Seats are locked in the order payments arrive.
+If you have already paid, please disregard this message.
 
 For any questions, please use the KakaoTalk channel below.
 ${KAKAO}
@@ -349,16 +359,18 @@ ${KAKAO}
 Thank you,
 Fan to Pro Team`;
 
-const reminderT1_email_subject_ko = "[Fan to Pro] 입금 안내 다시 보내드려요";
-const reminderT1_email_subject_en = "[Fan to Pro] Quick payment reminder";
+const reminderT1_email_subject_ko = "[Fan to Pro] 혹시 입금을 잊으신 건 아닐까요?";
+const reminderT1_email_subject_en = "[Fan to Pro] Friendly payment reminder";
 
 /* ---------------------------------------------------------------------------
  * 5. 리마인드 - D-3 (reminderD3) — "1기" 표현만 제거
  * ------------------------------------------------------------------------- */
 
-const reminderD3_sms_ko = `[Fan to Pro] 마감 3일 전이에요.
+const reminderD3_sms_ko = `[Fan to Pro] {name} 님, 혹시 신청 후 입금을 잊으신 건 아닌지 리마인드 차원에서 안내드려요 :)
 
-{name} 님 자리 아직 못 잡았어요.
+신청 마감일이 다가오고 있어요. 입금이 확인되면 자리가 확정돼요.
+
+[입금 정보]
 계좌 ${ACCOUNT}
 예금주 ${HOLDER_KO}
 금액 ${TUITION_KO}
@@ -367,9 +379,11 @@ const reminderD3_sms_ko = `[Fan to Pro] 마감 3일 전이에요.
 문의사항은 하단의 카카오톡 채널을 이용해주세요.
 ${KAKAO}`;
 
-const reminderD3_sms_en = `[Fan to Pro] 3 days to deadline.
+const reminderD3_sms_en = `[Fan to Pro] Hi {name}, just a friendly reminder in case you might have forgotten about your payment :)
 
-Hi {name}, your seat is not locked yet.
+The application deadline is approaching. Your seat is locked in once payment is confirmed.
+
+[PAYMENT]
 Account ${ACCOUNT_EN}
 Holder ${HOLDER_EN}
 Amount ${TUITION_EN}
@@ -380,14 +394,17 @@ ${KAKAO}`;
 
 const reminderD3_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 
-{name} 님, 신청 마감까지 3일 남았어요. 입금이 확인되지 않은 분은 아직 자리가 확정되지 않았어요.
+{name} 님, 혹시 신청 후 입금을 잊으신 건 아닌지 리마인드 차원에서 안내드려요.
 
-- 수강료 ${TUITION_KO}
-- ${ACCOUNT} (${HOLDER_KO})
-- 입금자명 {name}
-- 마감 2026년 6월 21일(일) 자정
+신청 마감일이 다가오고 있어요. 입금이 확인되면 자리가 확정되니, 아직 입금 전이시라면 아래 정보로 부탁드려요.
 
-결제 후 24시간 안에 확인 안내 보내드려요.
+[입금 정보]
+- 수강료: ${TUITION_KO}
+- 계좌: ${ACCOUNT} (예금주 ${HOLDER_KO})
+- 입금자명: {name}
+- 마감: 2026년 6월 21일(일) 자정
+
+결제 후 24시간 안에 확인 안내 보내드려요. 이미 입금하셨다면 본 안내는 무시하셔도 좋아요.
 
 문의사항은 하단의 카카오톡 채널을 이용해주세요.
 ${KAKAO}
@@ -397,14 +414,17 @@ Fan to Pro 운영진 드림`;
 
 const reminderD3_email_en = `Hello, this is Fan to Pro.
 
-Hi {name}, 3 days left until the application deadline. If we have not received your payment, your seat is not yet locked in.
+Hi {name}, just a friendly reminder in case you might have forgotten about your payment.
 
-- Tuition ${TUITION_EN}
-- ${ACCOUNT_EN} (${HOLDER_EN})
+The application deadline is approaching. Your seat is locked in once payment is confirmed.
+
+[PAYMENT]
+- Tuition: ${TUITION_EN}
+- Account: ${ACCOUNT_EN} (Holder: ${HOLDER_EN})
 - Depositor name: your full name
-- Deadline Sun Jun 21 midnight (KST)
+- Deadline: Sunday, June 21, midnight (KST)
 
-We send a confirmation within 24 hours of payment.
+We send a confirmation within 24 hours of payment. If you have already paid, please disregard this message.
 
 For any questions, please use the KakaoTalk channel below.
 ${KAKAO}
@@ -412,46 +432,50 @@ ${KAKAO}
 Thank you,
 Fan to Pro Team`;
 
-const reminderD3_email_subject_ko = "[Fan to Pro] 마감 3일 전";
-const reminderD3_email_subject_en = "[Fan to Pro] 3 days left";
+const reminderD3_email_subject_ko = "[Fan to Pro] 혹시 입금을 잊으신 건 아닐까요?";
+const reminderD3_email_subject_en = "[Fan to Pro] Friendly payment reminder";
 
 /* ---------------------------------------------------------------------------
  * 5. 리마인드 - D-1 (reminderD1) — "1기" 표현만 제거
  * ------------------------------------------------------------------------- */
 
-const reminderD1_sms_ko = `[Fan to Pro] 내일 자정 마감이에요.
+const reminderD1_sms_ko = `[Fan to Pro] {name} 님, 혹시 신청 후 입금을 잊으신 건 아닌지 리마인드 차원에서 안내드려요 :)
 
-{name} 님 입금 아직 미확인이에요.
+신청 마감이 내일(6/21 일) 자정이에요. 자리 확정을 원하시면 마감 전에 입금 부탁드려요.
+
+[입금 정보]
 계좌 ${ACCOUNT}
 예금주 ${HOLDER_KO}
 금액 ${TUITION_KO}
 
-마감 후엔 자리 보장이 어려워요.
-
 문의사항은 하단의 카카오톡 채널을 이용해주세요.
 ${KAKAO}`;
 
-const reminderD1_sms_en = `[Fan to Pro] Deadline tomorrow midnight.
+const reminderD1_sms_en = `[Fan to Pro] Hi {name}, just a friendly reminder in case you might have forgotten about your payment :)
 
-Hi {name}, payment not received yet.
+The application deadline is tomorrow (Sun Jun 21) at midnight (KST). If you would like to lock in your seat, please send payment before then.
+
+[PAYMENT]
 Account ${ACCOUNT_EN}
 Holder ${HOLDER_EN}
 Amount ${TUITION_EN}
-
-After deadline we cannot guarantee your seat.
 
 For any questions, please use the KakaoTalk channel below.
 ${KAKAO}`;
 
 const reminderD1_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 
-{name} 님, 신청 마감이 내일(6/21 일) 자정이에요. 아직 입금이 확인되지 않은 분께 마지막으로 안내드려요.
+{name} 님, 혹시 신청 후 입금을 잊으신 건 아닌지 리마인드 차원에서 안내드려요.
 
-- 수강료 ${TUITION_KO}
-- ${ACCOUNT} (${HOLDER_KO})
-- 입금자명 {name}
+신청 마감이 내일(6/21 일) 자정이에요. 자리 확정을 원하시면 마감 전에 입금 부탁드려요.
 
-마감 이후 입금된 건은 자리가 남은 경우에만 24시간 안에 확인 후 안내드리고, 자리가 없으면 자동 환불됩니다. 가능하면 마감 전 입금 부탁드려요.
+[입금 정보]
+- 수강료: ${TUITION_KO}
+- 계좌: ${ACCOUNT} (예금주 ${HOLDER_KO})
+- 입금자명: {name}
+- 마감: 2026년 6월 21일(일) 자정
+
+마감 이후 입금된 건은 자리가 남은 경우에만 24시간 안에 확인 후 안내드리고, 자리가 없으면 자동 환불됩니다. 이미 입금하셨다면 본 안내는 무시하셔도 좋아요.
 
 문의사항은 하단의 카카오톡 채널을 이용해주세요.
 ${KAKAO}
@@ -461,14 +485,17 @@ Fan to Pro 운영진 드림`;
 
 const reminderD1_email_en = `Hello, this is Fan to Pro.
 
-Hi {name}, the application deadline is tomorrow (Sun Jun 21) at midnight (KST). One last reminder if you have not paid yet.
+Hi {name}, just a friendly reminder in case you might have forgotten about your payment.
 
-- Tuition ${TUITION_EN}
-- ${ACCOUNT_EN} (${HOLDER_EN})
+The application deadline is tomorrow (Sun Jun 21) at midnight (KST). If you would like to lock in your seat, please send payment before then.
+
+[PAYMENT]
+- Tuition: ${TUITION_EN}
+- Account: ${ACCOUNT_EN} (Holder: ${HOLDER_EN})
 - Depositor name: your full name
 - Deadline: Sun Jun 21 midnight (KST)
 
-After the deadline, we will process any late payments within 24 hours if seats remain, and auto-refund if no seat is available. Please send payment before the deadline if you can.
+After the deadline, we will process any late payments within 24 hours if seats remain, and auto-refund if no seat is available. If you have already paid, please disregard this message.
 
 For any questions, please use the KakaoTalk channel below.
 ${KAKAO}
@@ -476,8 +503,8 @@ ${KAKAO}
 Thank you,
 Fan to Pro Team`;
 
-const reminderD1_email_subject_ko = "[Fan to Pro] 내일 마감 / 마지막 안내";
-const reminderD1_email_subject_en = "[Fan to Pro] Last day / deadline tomorrow";
+const reminderD1_email_subject_ko = "[Fan to Pro] 혹시 입금을 잊으신 건 아닐까요?";
+const reminderD1_email_subject_en = "[Fan to Pro] Friendly payment reminder";
 
 /* ---------------------------------------------------------------------------
  * 통합 매핑
