@@ -227,20 +227,22 @@ const paymentGuide_email_subject_en_noVisa =
 
 const paymentConfirmed_sms_ko = `[Fan to Pro] {name} 님 입금 확인 완료 :)
 
-자리가 확정됐어요.
-첫 강의 6/27(토) 강남역 인근.
+[자리 확정]
+첫 강의: 6/27(토) 강남역 인근
 
-6/21(일) 모집 마감일에 정확한 강의장 / 준비물 / 카톡 오픈채팅 초대 등 자세한 안내를 일괄 발송해드려요.
+[다음 안내]
+6/21(일) 모집 마감 이후, 정확한 강의장 주소 / 준비물 / 카톡 오픈채팅 초대 등 자세한 안내 메일을 별도로 보내드려요.
 
 문의사항은 하단의 카카오톡 채널을 이용해주세요.
 ${KAKAO}`;
 
 const paymentConfirmed_sms_en = `[Fan to Pro] Hi {name}, payment confirmed.
 
-Your seat is locked in.
-First class: Sat Jun 27, near Gangnam Station.
+[SEAT LOCKED]
+First class: Sat Jun 27, near Gangnam Station
 
-On Sun Jun 21 (application deadline), we will send a full guide with the exact venue, what to bring, KakaoTalk open chat invitation, and more.
+[NEXT GUIDE]
+After the application deadline (Sun Jun 21), we will send a separate guide email with the exact venue, what to bring, KakaoTalk open chat invitation, and more.
 
 For any questions, please use the KakaoTalk channel below.
 ${KAKAO}`;
