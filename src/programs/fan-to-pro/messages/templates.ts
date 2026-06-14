@@ -247,7 +247,7 @@ const paymentConfirmed_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 
 [첫 강의 안내]
 - 일시: 2026년 6월 27일(토)
-- 장소: 별도 안내 (수강 확정자에게만 개별 공지)
+- 장소: 강남역 인근 (정확한 강의장 주소는 다음 주에 별도로 안내드려요)
 - 준비물: 별도 안내 메일에서 확인 부탁드려요
 
 수강생 카카오톡 오픈채팅 초대 링크는 강의 시작 전 별도로 보내드려요.
@@ -267,7 +267,7 @@ Hi {name}, your payment has been confirmed. Your seat is locked in.
 
 [FIRST CLASS]
 - Date: Saturday, June 27, 2026
-- Venue: Sent separately to confirmed students only
+- Venue: Near Gangnam Station, Seoul (exact address will be sent next week)
 - What to bring: Details in the kickoff email
 
 Student KakaoTalk open chat invitation will arrive before the first class.
