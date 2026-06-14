@@ -228,7 +228,9 @@ const paymentGuide_email_subject_en_noVisa =
 const paymentConfirmed_sms_ko = `[Fan to Pro] {name} 님 입금 확인 완료 :)
 
 자리가 확정됐어요.
-첫 강의 6/27(토) 안내 메일을 곧 보내드려요.
+첫 강의 6/27(토) 강남역 인근.
+
+6/21(일) 모집 마감일에 정확한 강의장 / 준비물 / 카톡 오픈채팅 초대 등 자세한 안내를 일괄 발송해드려요.
 
 문의사항은 하단의 카카오톡 채널을 이용해주세요.
 ${KAKAO}`;
@@ -236,7 +238,9 @@ ${KAKAO}`;
 const paymentConfirmed_sms_en = `[Fan to Pro] Hi {name}, payment confirmed.
 
 Your seat is locked in.
-Kickoff details for Sat Jun 27 will arrive shortly.
+First class: Sat Jun 27, near Gangnam Station.
+
+On Sun Jun 21 (application deadline), we will send a full guide with the exact venue, what to bring, KakaoTalk open chat invitation, and more.
 
 For any questions, please use the KakaoTalk channel below.
 ${KAKAO}`;
@@ -247,10 +251,10 @@ const paymentConfirmed_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 
 [첫 강의 안내]
 - 일시: 2026년 6월 27일(토)
-- 장소: 강남역 인근 (정확한 강의장 주소는 다음 주에 별도로 안내드려요)
-- 준비물: 별도 안내 메일에서 확인 부탁드려요
+- 장소: 강남역 인근
 
-수강생 카카오톡 오픈채팅 초대 링크는 강의 시작 전 별도로 보내드려요.
+[다음 안내]
+6월 21일(일) 모집 마감일에 정원 확정 후, 정확한 강의장 주소 / 준비물 / 수강생 카카오톡 오픈채팅 초대 링크 등 자세한 가이드를 일괄 발송해드려요.
 
 환불이 필요하면 마감 전(6/21 자정) 까지는 100% 환불 가능합니다. 그 이후 환불 규정은 약관을 참고해주세요.
 https://growthcareer.xyz/terms
@@ -267,10 +271,10 @@ Hi {name}, your payment has been confirmed. Your seat is locked in.
 
 [FIRST CLASS]
 - Date: Saturday, June 27, 2026
-- Venue: Near Gangnam Station, Seoul (exact address will be sent next week)
-- What to bring: Details in the kickoff email
+- Venue: Near Gangnam Station, Seoul
 
-Student KakaoTalk open chat invitation will arrive before the first class.
+[NEXT GUIDE]
+On Sunday, June 21 (application deadline), once the cohort is confirmed, we will send a comprehensive guide with the exact venue address, what to bring, the student KakaoTalk open chat invitation, and more.
 
 If you need a refund, 100% refund is available any time before the deadline (Sun Jun 21 midnight KST). Refund policy after that: https://growthcareer.xyz/terms
 
