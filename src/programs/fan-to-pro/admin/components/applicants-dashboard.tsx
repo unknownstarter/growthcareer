@@ -261,21 +261,22 @@ function DashboardInner({
       );
     });
     // 정렬 우선순위:
-    //  1) status 운영 우선순위 (pending 최상 → paid 최하)
+    //  1) status 운영 우선순위 (pending 최상 → cancelled 최하)
     //  2) 같은 status 안에서는 시급도 (T+1 / D-3 / D-1 reminderUrgency) desc
     //  3) 그 다음 created_at desc
     //
     // status 순서는 운영자가 "다음에 무엇을 할지" 기준:
-    //  pending (즉시 안내 발송 필요) → notified (catch-up) → overdue → cancelled →
-    //  refunded → enrolled → paid (자리 확정 완료, 추가 action 없음).
+    //  pending (즉시 안내 발송 필요) → notified (catch-up) → overdue →
+    //  paid (입금 확인) → enrolled (정원 확정) → refunded (환불 완료) →
+    //  cancelled (취소, 시야에서 가장 멀리).
     const STATUS_ORDER: Record<ApplicantStatus, number> = {
       pending: 0,
       notified: 1,
       overdue: 2,
-      cancelled: 3,
-      refunded: 4,
-      enrolled: 5,
-      paid: 6,
+      paid: 3,
+      enrolled: 4,
+      refunded: 5,
+      cancelled: 6,
     };
     const now = new Date();
     return [...items].sort((a, b) => {
