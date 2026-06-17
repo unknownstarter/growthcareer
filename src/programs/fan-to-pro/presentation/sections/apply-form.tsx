@@ -780,7 +780,7 @@ function PaymentNotice() {
   const locale = useLocale();
 
   return (
-    <div className="mt-2 border-2 border-brand-pink bg-brand-pink/5 p-5 sm:p-6">
+    <div className="mt-2 border-2 border-brand-pink bg-brand-pink/5 p-4 sm:p-6">
       <p
         className="mb-4 text-brand-pink text-[10px] font-black uppercase sm:text-xs"
         style={{ letterSpacing: "0.3em" }}
@@ -789,7 +789,7 @@ function PaymentNotice() {
       </p>
 
       <p
-        className="mb-5 font-black text-fg text-xl leading-snug sm:text-2xl"
+        className="mb-5 font-black text-fg text-lg leading-snug sm:text-2xl"
         style={{
           letterSpacing: "-0.03em",
           textWrap: "balance",
@@ -806,7 +806,7 @@ function PaymentNotice() {
         {t("headlineD")}
       </p>
 
-      <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 border-brand-pink/40 border-t pt-4 text-sm sm:text-base">
+      <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-3 border-brand-pink/40 border-t pt-4 text-sm sm:gap-x-6 sm:gap-y-2 sm:text-base">
         <dt
           className="text-fg-subtle text-xs uppercase"
           style={{ letterSpacing: "0.2em" }}
@@ -1018,10 +1018,6 @@ function SuccessBlock({
       <p className="mb-8 text-fg-muted text-base leading-relaxed sm:text-lg">
         {t("bodyA")}{" "}
         {t("bodyB", { email: email || t("fallbackEmail") })}
-        <br />
-        <span className="text-fg-subtle text-sm">
-          {t("idLabel", { id })}
-        </span>
       </p>
 
       <ul className="mb-2 grid grid-cols-1 gap-2 text-left text-fg-muted text-sm">
