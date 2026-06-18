@@ -12,6 +12,7 @@ import {
   guessLocaleFromPhone,
   hasEligibleVisa,
   MESSAGE_KIND_LABELS,
+  MESSAGE_KIND_PAID_ONLY,
   type MessageChannel,
   type MessageKind,
   type MessageLocale,
@@ -167,9 +168,17 @@ export function MessageDrawer({
           <ToggleGroup
             label="메시지 종류"
             value={kind}
-            options={(
-              Object.keys(MESSAGE_KIND_LABELS) as MessageKind[]
-            ).map((k) => ({ value: k, label: MESSAGE_KIND_LABELS[k] }))}
+            options={(Object.keys(MESSAGE_KIND_LABELS) as MessageKind[])
+              .filter(
+                // paid-only 메시지 종류는 paid / enrolled 신청자에게만 노출.
+                // 그 외 status (pending / notified / overdue / cancelled / refunded)
+                // 에는 친구 초대 이벤트 옵션 숨김 — 약관 §15 매칭 일관성 보호.
+                (k) =>
+                  !MESSAGE_KIND_PAID_ONLY.has(k) ||
+                  applicant.status === "paid" ||
+                  applicant.status === "enrolled",
+              )
+              .map((k) => ({ value: k, label: MESSAGE_KIND_LABELS[k] }))}
             onChange={setKind}
           />
         </div>
