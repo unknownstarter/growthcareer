@@ -151,6 +151,14 @@
   - 트리거: 운영자 2명 이상 도입 시 또는 코워크 외 외부 공유 추가 요청 시
   - 출처: `docs/lessons/2026-06-09-basic-auth-logout-limitations.md`
 
+- **B0030** · 모바일 fluid typography 카드/박스 전체 적용 · status: **deferred** · 2026-06-18 captured · owner: Luna
+  - 현재 fluid 시스템은 display 헤드라인 (h1/h2/h3 + `.text-display-*`) 만 적용. card/box/body 는 Tailwind 표준 breakpoint (`text-xl sm:text-2xl`) 라 320~640px 사이 동일 사이즈로 step change
+  - 사용자 지적 (2026-06-18): "화면이 작아지면 그만큼 폰트 사이즈가 반응형으로 줄면서 영역도 그와 함께 반응형이 되어야 함" — 정확. 현재 PaymentNotice 의 모바일 빡빡함이 그 증상
+  - 임시 fix: 2026-06-18 commit `9ed4edf` 에서 PaymentNotice 만 핀포인트 spacing/font 보정. SuccessBlock 의 Application ID 노출 제거도 같이.
+  - 본 작업: card/box 용 fluid 토큰 신설 (예 `--text-card-headline: clamp(1.125rem, 4vw, 1.5rem)` · `--text-card-body: clamp(0.875rem, 3vw, 1rem)`) → 전 카드 컴포넌트 일괄 적용. PaymentNotice / SuccessBlock / value-cards / pricing / mentor / faq 등.
+  - 트리거: 1기 종료 후 (2026-07-22+). 운영 중 디자인 시스템 변경은 risk.
+  - 출처: 사용자 점검 요청 2026-06-18
+
 ---
 
 ## Raw  (T1 dump · 미분류)
