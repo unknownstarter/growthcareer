@@ -518,12 +518,12 @@ const referralInvite_sms_ko = `[Fan to Pro] 친구 초대 이벤트!
 
 {name} 님, 함께 K엔터 직무를 배우고 싶은 친구가 있다면 추천하고 혜택 받아요~ :)
 
-[추천 혜택]
+[친구 추천 보상]
 - {name} 님: 추천한 친구가 결제 완료 시 50,000원 보상 (계좌 송금)
-- 친구: 수강료 50,000원 할인 (실 결제 830,000원)
+- 친구: 수강료 50,000원 할인 (실 부담 830,000원)
 
 [매칭 방법]
-친구분이 수강 신청 후 받게 되는 결제 안내 문자 또는 이메일에 답장으로 추천인({name} 님)의 정확한 성과 이름을 적어서 보내주시면 추천 완료예요.
+친구분이 결제를 완료하신 후, 처음 받으셨던 결제 안내 문자 또는 이메일에 답장으로 추천인({name} 님)의 정확한 성과 이름을 적어 보내주시면 추천 완료예요.
 
 * 정확한 한글 또는 영문 성명 (신청서 또는 결제자명과 일치)
 * 추천 1인당 최대 5명까지 가능
@@ -535,12 +535,12 @@ const referralInvite_sms_en = `[Fan to Pro] Friend referral event!
 
 Hi {name}, if you know any friends who want to learn K-entertainment work with you, invite them and earn a reward :)
 
-[REFERRAL REWARDS]
+[FRIEND REFERRAL REWARDS]
 - You: KRW 50,000 reward when your friend completes payment (transferred to your bank account)
 - Your friend: KRW 50,000 tuition discount (final payment KRW 830,000)
 
 [HOW TO MATCH]
-Once your friend applies, they will receive a payment guide (SMS or email). When they reply to that message with your full name (first and last), the referral is complete.
+After your friend completes their payment, they reply to the payment guide (SMS or email) they received with your exact full name (first and last). The referral is then complete.
 
 * The name must match the application or payment record exactly (Korean or English).
 * Each referrer can invite up to 5 friends.
@@ -554,12 +554,12 @@ const referralInvite_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 
 함께 K엔터 직무를 배우고 싶은 친구가 있다면 추천하고 혜택을 받아요~
 
-[추천 혜택]
+[친구 추천 보상]
 - {name} 님: 추천하신 친구가 결제 완료하시면 추천 보상 50,000원을 {name} 님이 지정하신 계좌로 송금해드려요.
-- 추천받은 친구: 수강료 50,000원 할인 (실 결제 830,000원) 적용해드려요.
+- 추천받은 친구: 수강료 50,000원 할인 (실 부담 830,000원) 적용해드려요.
 
 [매칭 방법]
-친구분이 수강 신청을 완료하시면 결제 안내 문자 또는 이메일을 받으시게 돼요. 친구분이 그 메시지에 답장으로 추천인({name} 님)의 정확한 성과 이름을 적어 보내주시면 추천이 완료됩니다.
+친구분이 결제를 완료하신 후, 처음 받으셨던 결제 안내 문자 또는 이메일에 답장으로 추천인({name} 님)의 정확한 성과 이름을 적어 보내주시면 추천이 완료됩니다.
 
 [유의 사항]
 - 추천인 성명은 친구분의 신청서 또는 결제자명과 정확히 일치하는 한글 또는 영문 성명이어야 합니다.
@@ -579,12 +579,12 @@ Hi {name}, here is our friend referral event.
 
 If you know any friends who want to learn K-entertainment work with you, invite them and earn a reward.
 
-[REFERRAL REWARDS]
+[FRIEND REFERRAL REWARDS]
 - You: a KRW 50,000 reward, transferred to a bank account you designate, after your friend completes payment.
 - Your friend: a KRW 50,000 tuition discount (final payment KRW 830,000).
 
 [HOW TO MATCH]
-Once your friend completes the application, they will receive a payment guide (SMS or email). When they reply to that message with your full name (first and last), the referral is complete.
+After your friend completes their payment, they reply to the payment guide (SMS or email) they originally received with your exact full name (first and last). The referral is then complete.
 
 [NOTES]
 - The referrer's name must match the friend's application or payment record exactly (Korean or English).
