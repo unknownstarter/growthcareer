@@ -514,62 +514,56 @@ const reminderD1_email_subject_en = "[Fan to Pro] Friendly payment reminder";
  * 할인. 1인당 1회. 친구 결제 + 청약철회 7일 경과 후 송금.
  * ------------------------------------------------------------------------- */
 
-const referralInvite_sms_ko = `[Fan to Pro] {name} 님, 친구초대 이벤트 :)
+const referralInvite_sms_ko = `[Fan to Pro] 친구 초대 이벤트!
 
-마감 임박! 막판 자리 채움 중이에요. 주변에 한국 거주 외국 유학생이나 K엔터 진로에 관심 있는 친구가 있으시면 추천 부탁드려요.
+{name} 님, 함께 K엔터 직무를 배우고 싶은 친구가 있다면 추천하고 혜택 받아요~ :)
 
 [추천 혜택]
-- {name} 님: 추천하신 친구 결제 완료 시 50,000원 보상 (계좌 송금)
+- {name} 님: 추천한 친구가 결제 완료 시 50,000원 보상 (계좌 송금)
 - 친구: 수강료 50,000원 할인 (실 결제 830,000원)
 
 [매칭 방법]
-친구가 신청 후 카카오톡 채널에 한 줄 알려주세요.
-"{친구 이름}으로 신청했어요. 추천인: {name}"
+친구분이 수강 신청 후 받게 되는 결제 안내 문자 또는 이메일에 답장으로 추천인({name} 님)의 정확한 성과 이름을 적어서 보내주시면 추천 완료예요.
 
-* 추천인 이름은 친구의 신청서 또는 결제자명과 정확히 일치하는 한글 또는 영문 성명이어야 매칭돼요.
-* 청약철회 기간(7일) 경과 후 송금
-* 1인당 1회(1명 추천)까지
+* 정확한 한글 또는 영문 성명 (신청서 또는 결제자명과 일치)
+* 추천 1인당 최대 5명까지 가능
 
 문의사항은 하단의 카카오톡 채널을 이용해주세요.
 ${KAKAO}`;
 
-const referralInvite_sms_en = `[Fan to Pro] Hi {name}, friend referral event :)
+const referralInvite_sms_en = `[Fan to Pro] Friend referral event!
 
-The deadline is approaching, and we are running a referral reward to fill the remaining seats. If you know any international students in Korea who would be interested in a K-entertainment career, please consider inviting them.
+Hi {name}, if you know any friends who want to learn K-entertainment work with you, invite them and earn a reward :)
 
 [REFERRAL REWARDS]
-- You: KRW 50,000 reward when your friend completes payment
+- You: KRW 50,000 reward when your friend completes payment (transferred to your bank account)
 - Your friend: KRW 50,000 tuition discount (final payment KRW 830,000)
 
 [HOW TO MATCH]
-Once your friend applies, notify us through the KakaoTalk channel with one line:
-"{Friend's name} applied. Referrer: {name}"
+Once your friend applies, they will receive a payment guide (SMS or email). When they reply to that message with your full name (first and last), the referral is complete.
 
-* The referrer's name must exactly match the name on the friend's application or payment record (Korean or English).
-* Reward is sent after the 7-day cooling-off period.
-* One reward per referrer.
+* The name must match the application or payment record exactly (Korean or English).
+* Each referrer can invite up to 5 friends.
 
 For any questions, please use the KakaoTalk channel below.
 ${KAKAO}`;
 
 const referralInvite_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 
-{name} 님, 친구초대 이벤트 안내드려요.
+{name} 님, 친구 초대 이벤트 안내드려요.
 
-모집 마감이 임박해서 막판 자리 채움 중이에요. 주변에 한국 거주 외국 유학생이나 K엔터 진로에 관심 있는 친구가 있으시면 추천 부탁드려요.
+함께 K엔터 직무를 배우고 싶은 친구가 있다면 추천하고 혜택을 받아요~
 
 [추천 혜택]
 - {name} 님: 추천하신 친구가 결제 완료하시면 추천 보상 50,000원을 {name} 님이 지정하신 계좌로 송금해드려요.
-- 추천받은 친구: 신청 시 추천인 이름을 카카오톡 채널로 알려주시면 수강료 50,000원 할인 (실 결제 830,000원) 적용해드려요.
+- 추천받은 친구: 수강료 50,000원 할인 (실 결제 830,000원) 적용해드려요.
 
 [매칭 방법]
-친구분이 신청서 작성 후, 카카오톡 채널에 다음 한 줄 알려주시면 돼요.
-"{친구 이름}으로 신청했어요. 추천인: {name}"
+친구분이 수강 신청을 완료하시면 결제 안내 문자 또는 이메일을 받으시게 돼요. 친구분이 그 메시지에 답장으로 추천인({name} 님)의 정확한 성과 이름을 적어 보내주시면 추천이 완료됩니다.
 
 [유의 사항]
-- 추천인 이름은 친구분의 신청서 또는 결제자명과 정확히 일치하는 한글 또는 영문 성명이어야 매칭됩니다.
-- 추천 보상은 친구분의 결제 완료 + 청약철회 기간 (7일) 경과 후 지급됩니다.
-- 추천 보상은 추천인 1인당 1회 (1명 추천) 까지 지급됩니다.
+- 추천인 성명은 친구분의 신청서 또는 결제자명과 정확히 일치하는 한글 또는 영문 성명이어야 합니다.
+- 추천 보상은 추천인 1인당 최대 5명까지 가능합니다.
 - 본 이벤트의 자세한 정책은 약관 §15 (추천 보상 정책) 을 참고해주세요.
 https://growthcareer.xyz/terms
 
@@ -581,22 +575,20 @@ Fan to Pro 운영진 드림`;
 
 const referralInvite_email_en = `Hello, this is Fan to Pro.
 
-Hi {name}, we are running a friend referral event.
+Hi {name}, here is our friend referral event.
 
-The application deadline is approaching, and we are inviting current students to help fill the remaining seats. If you know any international students living in Korea who would be interested in a K-entertainment career, please consider inviting them.
+If you know any friends who want to learn K-entertainment work with you, invite them and earn a reward.
 
 [REFERRAL REWARDS]
 - You: a KRW 50,000 reward, transferred to a bank account you designate, after your friend completes payment.
-- Your friend: a KRW 50,000 tuition discount (final payment KRW 830,000), applied when they notify us of your name through the KakaoTalk channel.
+- Your friend: a KRW 50,000 tuition discount (final payment KRW 830,000).
 
 [HOW TO MATCH]
-Once your friend submits the application, please notify us through the KakaoTalk channel with one line:
-"{Friend's name} applied. Referrer: {name}"
+Once your friend completes the application, they will receive a payment guide (SMS or email). When they reply to that message with your full name (first and last), the referral is complete.
 
 [NOTES]
-- The referrer's name must exactly match the name on the friend's application form or payment record (Korean or English).
-- The referral reward is sent after the friend's payment is complete and the 7-day cooling-off period has passed.
-- One reward per referrer (one successful referral).
+- The referrer's name must match the friend's application or payment record exactly (Korean or English).
+- Each referrer can invite up to 5 friends.
 - Full policy details are in our Terms of Service §15 (Referral reward policy).
 https://growthcareer.xyz/terms
 
