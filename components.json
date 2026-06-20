@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "default",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "app/globals.css",
+    "baseColor": "neutral",
+    "cssVariables": false,
+    "prefix": ""
+  },
+  "aliases": {
+    "components": "@/src/programs/fan-to-pro/interface/components/lms",
+    "utils": "@/src/programs/fan-to-pro/interface/components/lms/lib/utils",
+    "ui": "@/src/programs/fan-to-pro/interface/components/lms/ui",
+    "lib": "@/src/programs/fan-to-pro/interface/components/lms/lib"
+  },
+  "iconLibrary": "lucide"
+}
