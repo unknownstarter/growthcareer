@@ -158,6 +158,32 @@ UI 변경은 항상 `pnpm preview` 로 **자체 캡처 → Read → 사용자에
 - ❌ **운영자 페이지 server action 에 `assertAdmin()` 누락** — admin-actions / instructor-actions / finance-actions 의 모든 mutation 함수가 첫 줄에 호출해야 함. middleware path 차단만 신뢰 금지 (사고: viewer role 의 Sage critical 2건).
 - ❌ **Vercel env 추가 직전 새 권한 코드의 hotfix 상태 미확인** — 신규 권한 (viewer 등) 의 자격을 production env 에 박기 전에 해당 자격이 활용할 server action 들이 모두 권한 검증 통과한 build 인지 확인.
 
+### ⛔ LMS 작업 시 기존 영역 보호 룰 (2026-06-21 추가)
+
+LMS 신규 트랙 (B0031~B0036) 작업 시 기존 모집/어드민 surface 는 트래킹 + 모집 관리 안정성 우선. 변경 최소화.
+
+- ❌ **모집 페이지 카피/디자인/신청 폼 변경 금지** — `app/[locale]/fan-to-pro/*` + `src/programs/fan-to-pro/presentation/sections/*`. 1기 운영 중 라이브 카피 변경 = 신청자 혼동 risk.
+- ❌ **어드민 기존 3-tab 의 컬럼/액션/폴링 동작 변경 금지** — `/admin/applicants` `/admin/instructors` `/admin/finance` + `admin/components/*-dashboard.tsx`. 운영자가 매일 쓰는 UI 변경 = 운영 사고 risk.
+- ❌ **기존 server actions 함수 시그니처 변경 금지** — `application/admin-actions.ts` `instructor-actions.ts` `finance-actions.ts` `polling-actions.ts` `submit-application.ts`. 내부 구현 Strangler Fig 이전은 OK, signature 변경은 호출처 전부 영향.
+- ❌ **messages/templates.ts 변경 시 기존 운영 메시지 종류 (paymentGuide / Confirmed / reminder*) 손대지 않음** — LMS 알림은 별도 모듈 (`infrastructure/email/`, `kakao/`) 로 분리.
+
+### ✅ 허용 변경 — 최소 침습 원칙
+
+- 기존 어드민 페이지에 1버튼 / 1필드 추가 OK (예: applicants 에 [수강생 등록] 버튼, instructors 에 "회사 선택" dropdown)
+- 약관 (terms) 정책 추가 (텍스트만, 이미 §15 추천 보상 박힌 패턴)
+
+### 신규 영역 (LMS)
+
+- `/admin/cohorts` `/admin/students` `/admin/consultations` `/admin/announcements` — 신규 어드민 LMS 탭 (라이트 디자인)
+- `/instructor/*` — 강사 surface (신규, 라이트)
+- `/student/*` — 학생 surface (신규, 라이트)
+- `domain/entities/` + `application/use-cases/` + `infrastructure/supabase/repositories/` — 신규 클린 아키텍처 폴더 (ADR 0005)
+
+### 위반 시
+
+- 기존 코드 동작 변경 commit = **그 자체로 사고**. lesson 박제 대상.
+- 기존 함수 시그니처 변경 = 호출처 회귀 risk = 금지.
+
 ### 배포 전 5종 체크 (Pre-Deploy Checklist)
 
 production 영향 PR 또는 commit 직전:

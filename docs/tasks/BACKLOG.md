@@ -161,6 +161,69 @@
 
 ---
 
+## LMS 트랙 (B0031 ~ B0036) — 자체 LMS 구축
+
+ADR 0005 (클린 아키텍처 Layered Pragmatic) + ADR 0006 (라이트 디자인 시스템 shadcn/ui + 토스 톤) 박제.
+기존 모집/어드민 변경 금지 룰 = CLAUDE.md §7.4.
+
+- **B0031** · **Wave 0** — LMS DB minimum (cohort + student + session + attendance) + 출결 UI · status: **ready** · 2026-06-21 captured · owner: Iris
+  - 4 entity 신규: companies / cohorts / sessions / students / attendance (instructors.company_id FK 추가)
+  - 마이그레이션 + Strangler Fig Step 1 (기존 폴더 이전 + shim)
+  - `/admin/cohorts` 페이지 (sessions list + 출결 mark UI, admin only)
+  - 강사/학생 로그인 X, 자료 업로드 X — 카톡 보강
+  - 작업량 5일, 강의 시작 전 (~6/26) 완료 목표
+  - Sage critical = 0 (admin only)
+
+- **B0032** · **Wave 1** — Supabase Auth 전환 + 강사/학생 로그인 + materials/announcements · status: **raw** · 2026-06-21 captured · owner: Iris + Luna
+  - admin/viewer Basic Auth → Supabase Auth 점진 전환
+  - 강사 3명 + 학생 9명 invite + 본인 PW 변경
+  - `/instructor/dashboard` + `/student/dashboard` 신규
+  - materials (강의 자료) + announcements (공지) entity + UI
+  - shadcn primitives 도입 (Button / Card / Input / Dialog / Tabs / Table)
+  - `(lms)/layout.tsx` route group + 라이트 토큰 적용 (ADR 0006)
+  - 작업량 6.5일, 강의 진행 중 (~7/11) 완료 목표
+  - Sage critical 의무 — 신규 인증 표면 + PII 표면
+
+- **B0033** · **Wave 2** — 과제 + 컨설팅 + 수료증 + 캘린더 · status: **raw** · 2026-06-21 captured · owner: Iris + Luna
+  - assignments / submissions / feedback entity
+  - consultations / consultation-reviews entity (resume/cover/portfolio version 관리)
+  - certificates 발급 흐름 (Dropdown 명의 + 유니온 픽처스 공연 참여 확인서)
+  - events (캘린더)
+  - 강사 review UI + 학생 받은 피드백 view
+  - Storage 도입 (Supabase Storage + signed URL TTL 5분)
+  - 작업량 5.5일, 종강 직전 (~7/19) 완료 목표
+  - **노아 보류 결정**: consultation review 권한 (모든 강사 풀 vs 배정 강사만)
+
+- **B0034** · **Wave 3** — 회사 단위 정산 + VAT/원천징수 + 회계 CSV · status: **raw** · 2026-06-21 captured · owner: Iris
+  - company_settlements entity (회사별 합산 정산)
+  - VAT 10% / 원천징수 3.3% 분기 (companies.vat_issuer)
+  - 세금계산서 발행 트래킹 (invoice_status / invoice_number)
+  - 송금 기록 (transfer_status / transferred_at)
+  - 회계 CSV export (refId 마스킹, B0028 와 통합)
+  - `/admin/finance` 회사 grouping + 강사 breakdown
+  - 작업량 4.5일, 종강 후 (~7/28) 완료 목표
+  - **노아 보류 결정**: 정산 메일에 강사 개인별 금액 포함 여부
+
+- **B0035** · **Wave 4** — RLS 본격 + follow-up + 영문 UX + viewer PII 마스킹 강화 · status: **raw** · 2026-06-21 captured · owner: Iris + Sage
+  - Wave 0~2 의 임시 service-role 패턴 → RLS 정책 전환
+  - follow-up (수료생 외부 행사 알림 / 동문 네트워킹)
+  - 외국인 학생 onboarding 영문 UX 강화 (magic link 옵션)
+  - viewer role PII 마스킹 강화 (B0028 잔여)
+  - RLS 테스트 스크립트 (다른 학생 데이터 접근 시도 차단 검증)
+  - 작업량 6일, 2기 모집 전 (8월) 완료 목표
+
+- **B0036** · **Wave 5** — Realtime + 자동 정산 + 대량 onboarding · status: **deferred** · 2026-06-21 captured · owner: Iris
+  - Supabase Realtime 전환 (제출물/피드백 알림)
+  - 자동 정산 trigger (월별)
+  - 대량 invite/onboarding 자동화 (100명 규모)
+  - Storage 용량/대역폭 모니터링
+  - audit log 통합 view
+  - 트리거: 100명 규모 (3기+) 또는 강사 10명 이상
+
+---
+
+---
+
 ## Raw  (T1 dump · 미분류)
 
 _여기에 머릿속 할 일을 1줄씩 던지세요. promote 시점에 위 lane 으로 이동._
