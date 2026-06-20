@@ -103,6 +103,79 @@
   color: var(--color-fg);
 }
 
+/* === LMS 라이트 토큰 (ADR 0006) ===
+   `[data-theme="light"]` selector 로 LMS 영역만 라이트 토큰 적용.
+   기존 다크 (마케팅 + 어드민 3-tab) 는 무영향. nested wrapper 패턴 —
+   `<div data-theme="light">` 안에서만 변수 override.
+
+   토스 톤 시그니처:
+   - Primary Blue #3182f6 한 가지 색
+   - 카드 radius 12px / 인풋 8px
+   - 얇은 단일 shadow
+   - 회색 9단계 (#191f28 → #8b95a1)
+
+   shadcn/ui 변수 alias: shadcn 컴포넌트가 기대하는 `--background` /
+   `--foreground` / `--primary` 등을 우리 변수로 wire. shadcn upgrade
+   시 mapping 1곳 (이 block) 만 손보면 됨. */
+@layer base {
+  [data-theme="light"] {
+    color-scheme: light;
+
+    /* 색 — 토스 관찰 기반 */
+    --color-bg: #ffffff;
+    --color-surface: #f7f8fa;
+    --color-surface-elevated: #ffffff;
+    --color-border: #e5e8eb;
+    --color-border-strong: #d1d6db;
+    --color-fg: #191f28;
+    --color-fg-muted: #4e5968;
+    --color-fg-subtle: #8b95a1;
+    --color-primary: #3182f6;
+
+    /* 라운드 — 토스 시그니처 */
+    --radius: 0.75rem;
+    --radius-sm: 0.5rem;
+    --radius-lg: 1rem;
+
+    /* shadow — 라이트 전용 */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.06);
+
+    /* shadcn/ui 기대 변수 = 우리 변수 alias */
+    --background: var(--color-bg);
+    --foreground: var(--color-fg);
+    --card: var(--color-surface-elevated);
+    --card-foreground: var(--color-fg);
+    --popover: var(--color-surface-elevated);
+    --popover-foreground: var(--color-fg);
+    --primary: var(--color-primary);
+    --primary-foreground: #ffffff;
+    --secondary: var(--color-surface);
+    --secondary-foreground: var(--color-fg);
+    --muted: var(--color-surface);
+    --muted-foreground: var(--color-fg-muted);
+    --accent: var(--color-surface);
+    --accent-foreground: var(--color-fg);
+    --destructive: #f04438;
+    --destructive-foreground: #ffffff;
+    --border: var(--color-border);
+    --input: var(--color-border);
+    --ring: var(--color-primary);
+
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    line-height: 1.6;
+  }
+
+  /* shadcn 컴포넌트가 사용하는 `bg-background text-foreground` 등의 utility 가
+     라이트 wrapper 안에서 우리 토큰을 보도록. Tailwind v4 의 @theme 는 build
+     타임에 한 번 박혀 [data-theme] override 가 안 먹는 utility 가 있을 수
+     있어 safety net 으로 wrapper 안의 기본 surface 도 강제. */
+  [data-theme="light"] *:focus-visible {
+    outline-color: var(--color-primary);
+  }
+}
+
 /* === Locale-scoped display tweaks ===
    영문 헤드라인은 한글보다 단어가 길어 360px 모바일에서 5줄까지 늘어진다.
    한글 페이지엔 영향 없게 lang="en" 일 때만 display-lg / display-md 한 단계 다운.
