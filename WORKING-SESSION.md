@@ -26,6 +26,7 @@
 - **클린 아키텍처 (Layered Pragmatic)** + Strangler Fig 점진 마이그레이션 (ADR 0005)
 - **디자인 시스템 분리** — 기존 다크 (마케팅+어드민 기존) vs 라이트 LMS (토스 톤 + shadcn/ui) (ADR 0006)
 - **기존 영역 변경 금지 룰** — CLAUDE.md §7.4 보강 (모집 페이지 / 어드민 3-tab / 기존 server actions)
+- **B0031 Wave 0 코드 12 commit 완료** — shadcn primitives 4종 + 라이트 토큰 + 6 신규 entity + Strangler Fig Step 1 + /admin/cohorts 페이지. prod 마이그레이션 적용 대기 (노아 manual)
 
 ---
 
@@ -70,7 +71,7 @@
 
 ### LMS 트랙 (B0031~B0036)
 
-- **B0031 Wave 0** — DB minimum + 출결 UI (Iris, 5일, 강의 시작 전 ~6/26 완료 목표) ⭐ 다음 작업
+- **B0031 Wave 0** — DB minimum + 출결 UI (Iris) ⭐ **코드 완료 2026-06-21 — prod 마이그레이션 적용 대기**
 - B0032 Wave 1 — Supabase Auth + 강사/학생 로그인 + materials/announcements (Iris+Luna, 6.5일)
 - B0033 Wave 2 — 과제 + 컨설팅 + 수료증 + 캘린더 (Iris+Luna, 5.5일)
 - B0034 Wave 3 — 회사 단위 정산 (Iris, 4.5일)
@@ -93,6 +94,19 @@
 
 - 친구 초대 이벤트 + catch-up 카톡 답장 응대 (회사 Gmail / 휴대폰 SMS / 카카오톡 채널 주기적 확인)
 - 매칭 + 친구 결제 안내 (880,000 → 830,000원 할인)
+
+### B0031 Wave 0 prod 적용 (강의 시작 6/27 전까지)
+
+1. **Supabase 마이그레이션 적용** — `supabase db push` 또는 Dashboard SQL editor 에 `supabase/migrations/20260621000000_lms_wave0_schema.sql` 적용
+2. **`/admin/cohorts` 접속 확인** — 1기 cohort + sessions 8개 노출 확인 (라이트 톤 + 토스 스타일)
+3. **[결제 완료 신청자 일괄 등록] 버튼 클릭** — paid 신청자 9명 → student 자동 등록
+4. **시각 확인** — 라이트 톤 + 카드 radius 12px + Primary Blue #3182f6 토스 시그니처 정상 적용
+5. **강의 첫날 (6/27) 출결 테스트** — 1회차 [출결] 클릭, student 9명 status dropdown 으로 mark, [출결 저장]
+
+### LMS Wave 0 → Wave 1 전 결정 보류 (강의 첫주 안에 컨펌)
+
+- **AdminNav 에 cohorts 진입점 추가 여부** — Wave 0 는 노아가 직접 `/admin/cohorts` URL 진입. 기존 admin-nav 변경 금지 룰 (CLAUDE.md §7.4) 와 트레이드오프. Wave 1 진입 시 신규 LMS 네비 (라이트 톤) 분리 권장
+- **Strangler Fig Step 2** (`domain/application.ts` 의 4 split — entity/zod/DTO/Result) — Wave 1 에 새 entity (instructor/material) 추가하며 점진 처리
 
 ### LMS Wave 0 사전 결정 보류 항목 (Wave 2~3 안에 컨펌)
 
