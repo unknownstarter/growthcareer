@@ -40,7 +40,7 @@
 - [ ] 출석부 (학생 11명 명단) 인쇄 / 디지털 양쪽
 - [ ] 명찰 (선택) — 외국인 학생 이름 표기 헷갈림 방지
 - [ ] 다과 / 음료 준비 (회차당 예산 결정)
-- [ ] 카카오톡 오픈채팅 (https://open.kakao.com/o/gCuOABAi, 비번 fan06pro) 입장 안내
+- [ ] 카카오톡 오픈채팅 (https://open.kakao.com/o/gX12jFAi, 비번 fan06pro) 입장 안내
 - [ ] cohortKickoff 메시지 11명 발송 완료 + 원페이저 PDF 링크 첨부 확인
 
 ### 회차마다

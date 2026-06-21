@@ -18,7 +18,7 @@
 - **첫 강의**: 6/27(토) 14:00~16:00 / 블루스프링하우스 (서울 마포구 월드컵북로 161)
 - **종강**: 7/19(일)
 - **수료식**: 7/25(토)
-- **카톡 오픈채팅**: https://open.kakao.com/o/gCuOABAi (비번 fan06pro)
+- **카톡 오픈채팅**: https://open.kakao.com/o/gX12jFAi (비번 fan06pro) — 오픈프로필 모드
 - **LMS Wave 1+2 배포 완료**: `/fan-to-pro/(lms)/admin/*` (super_admin) + `/fan-to-pro/[cohortSlug]/student/career` (학생, career documents 만)
 
 ### 새로 박힌 결정 (2026-06-21)

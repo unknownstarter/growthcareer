@@ -48,7 +48,7 @@
 
 - 사이트 우측 하단 카카오 채널 버튼 (B0008)
 - 채널: `@nxhDGX` (1:1 상담)
-- 1기 카톡 오픈채팅: `https://open.kakao.com/o/gCuOABAi` (비번 fan06pro) — paid 학생 한정
+- 1기 카톡 오픈채팅: `https://open.kakao.com/o/gX12jFAi` (비번 fan06pro) — paid 학생 한정 / 오픈프로필 모드 (입장 시 별도 닉네임 + 사진 설정 가능)
 
 ### 5. 친구 추천 (referralInvite)
 
