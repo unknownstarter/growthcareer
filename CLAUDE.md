@@ -158,6 +158,13 @@ UI 변경은 항상 `pnpm preview` 로 **자체 캡처 → Read → 사용자에
 - ❌ **운영자 페이지 server action 에 `assertAdmin()` 누락** — admin-actions / instructor-actions / finance-actions 의 모든 mutation 함수가 첫 줄에 호출해야 함. middleware path 차단만 신뢰 금지 (사고: viewer role 의 Sage critical 2건).
 - ❌ **Vercel env 추가 직전 새 권한 코드의 hotfix 상태 미확인** — 신규 권한 (viewer 등) 의 자격을 production env 에 박기 전에 해당 자격이 활용할 server action 들이 모두 권한 검증 통과한 build 인지 확인.
 
+### ⛔ URL 분리 + 인증 시스템 분리 룰 (2026-06-21 추가, ADR 0007)
+
+- `/admin/*` (기존 어드민, 다크) = **Basic Auth** (admin + viewer) — 변경 금지
+- `/lms/*` (신규 LMS, 라이트 토스 톤) = **Supabase Auth** (super_admin + instructor + student) — 신규
+- 두 시스템 절대 통합 금지. 운영자 (노아) 는 두 계정 별도 보유 + 다른 cookie scope 동시 로그인 가능
+- middleware.ts 안에서 `/admin/*` matcher (현 로직) + `/lms/*` matcher (신규) 분리 진입
+
 ### ⛔ LMS 작업 시 기존 영역 보호 룰 (2026-06-21 추가)
 
 LMS 신규 트랙 (B0031~B0036) 작업 시 기존 모집/어드민 surface 는 트래킹 + 모집 관리 안정성 우선. 변경 최소화.
