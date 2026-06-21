@@ -128,7 +128,8 @@ begin
   for v_cohort in select id from public.cohorts where slug is null loop
     v_tries := 0;
     loop
-      v_slug := substr(encode(gen_random_bytes(4), 'hex'), 1, 8);
+      -- gen_random_uuid 의 hex 부분 첫 8자 (gen_random_bytes 는 pgcrypto schema 의존 — Supabase 호환성 회피)
+      v_slug := substr(replace(gen_random_uuid()::text, '-', ''), 1, 8);
       v_tries := v_tries + 1;
       -- reserved word 또는 collision 시 재시도. 10회 시도 후엔 prefix 추가.
       exit when v_slug <> all(v_reserved)
