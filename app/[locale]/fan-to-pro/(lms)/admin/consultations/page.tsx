@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { assertProgramAdmin } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
 import { fetchConsultationsWithStudent } from "@/src/programs/fan-to-pro/application/queries/lms/fetch-consultations-with-student";
+import { isMissingTableMessage } from "@/src/programs/fan-to-pro/infrastructure/supabase/error-utils";
 import {
   Card,
   CardContent,
@@ -49,6 +50,17 @@ export default async function FanToProAdminConsultationsPage() {
   const result = await fetchConsultationsWithStudent();
 
   if (result.status === "error") {
+    if (isMissingTableMessage(result.error)) {
+      return (
+        <PageContainer>
+          <PageHeader title="컨설팅" />
+          <EmptyState
+            title="Wave 2 마이그레이션 적용 대기"
+            description="컨설팅 (consultations) 테이블이 아직 DB 에 없습니다. Wave 2 entity 마이그레이션 적용 후 사용 가능합니다. (예정: 강의 시작 후 ~7/19)"
+          />
+        </PageContainer>
+      );
+    }
     return (
       <PageContainer>
         <PageHeader title="컨설팅" />

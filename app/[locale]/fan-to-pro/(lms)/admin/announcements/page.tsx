@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { assertProgramAdmin } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
 import { fetchActiveCohorts } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-repository";
 import { fetchAnnouncementsByCohort } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/announcement-repository";
+import { isMissingTableError } from "@/src/programs/fan-to-pro/infrastructure/supabase/error-utils";
 import { AnnouncementsDashboard } from "@/src/programs/fan-to-pro/interface/components/lms/admin/announcements-dashboard";
 import {
   PageContainer,
@@ -42,7 +43,44 @@ export default async function FanToProAdminAnnouncementsPage() {
   }
 
   const cohort = cohorts[0];
-  const announcements = await fetchAnnouncementsByCohort(cohort.id);
+
+  // Wave 2 entity (announcements) 마이그레이션 대기 가능 — graceful fallback.
+  let announcements: Awaited<ReturnType<typeof fetchAnnouncementsByCohort>> = [];
+  let entityMissing = false;
+  let unexpectedError: string | null = null;
+  try {
+    announcements = await fetchAnnouncementsByCohort(cohort.id);
+  } catch (err) {
+    if (isMissingTableError(err)) {
+      entityMissing = true;
+    } else {
+      unexpectedError = err instanceof Error ? err.message : "unknown";
+    }
+  }
+
+  if (entityMissing) {
+    return (
+      <PageContainer>
+        <PageHeader title="공지" description={cohort.name} />
+        <EmptyState
+          title="Wave 2 마이그레이션 적용 대기"
+          description="공지 (announcements) 테이블이 아직 DB 에 없습니다. Wave 2 entity 마이그레이션 적용 후 사용 가능합니다. (예정: 강의 시작 후 ~7/19)"
+        />
+      </PageContainer>
+    );
+  }
+
+  if (unexpectedError) {
+    return (
+      <PageContainer>
+        <PageHeader title="공지" description={cohort.name} />
+        <EmptyState
+          title="데이터를 불러올 수 없습니다"
+          description={unexpectedError}
+        />
+      </PageContainer>
+    );
+  }
 
   return (
     <PageContainer>

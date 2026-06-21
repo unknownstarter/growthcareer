@@ -3,6 +3,7 @@ import { assertProgramAdmin } from "@/src/programs/fan-to-pro/infrastructure/aut
 import { fetchActiveCohorts } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-repository";
 import { fetchSessionsByCohort } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/session-repository";
 import { fetchMaterialsByCohort } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/material-repository";
+import { isMissingTableError } from "@/src/programs/fan-to-pro/infrastructure/supabase/error-utils";
 import { MaterialsDashboard } from "@/src/programs/fan-to-pro/interface/components/lms/admin/materials-dashboard";
 import {
   PageContainer,
@@ -43,8 +44,48 @@ export default async function FanToProAdminMaterialsPage() {
   }
 
   const cohort = cohorts[0];
-  const materials = await fetchMaterialsByCohort(cohort.id);
-  const sessions = await fetchSessionsByCohort(cohort.id);
+
+  // Wave 2 entity (materials) 마이그레이션이 아직 적용 안 됐을 수 있음 — graceful fallback.
+  let materials: Awaited<ReturnType<typeof fetchMaterialsByCohort>> = [];
+  let sessions: Awaited<ReturnType<typeof fetchSessionsByCohort>> = [];
+  let entityMissing = false;
+  let unexpectedError: string | null = null;
+  try {
+    [materials, sessions] = await Promise.all([
+      fetchMaterialsByCohort(cohort.id),
+      fetchSessionsByCohort(cohort.id),
+    ]);
+  } catch (err) {
+    if (isMissingTableError(err)) {
+      entityMissing = true;
+    } else {
+      unexpectedError = err instanceof Error ? err.message : "unknown";
+    }
+  }
+
+  if (entityMissing) {
+    return (
+      <PageContainer>
+        <PageHeader title="강의 자료" description={cohort.name} />
+        <EmptyState
+          title="Wave 2 마이그레이션 적용 대기"
+          description="강의 자료 (materials) 테이블이 아직 DB 에 없습니다. Wave 2 entity 마이그레이션 적용 후 사용 가능합니다. (예정: 강의 시작 후 ~7/19)"
+        />
+      </PageContainer>
+    );
+  }
+
+  if (unexpectedError) {
+    return (
+      <PageContainer>
+        <PageHeader title="강의 자료" description={cohort.name} />
+        <EmptyState
+          title="데이터를 불러올 수 없습니다"
+          description={unexpectedError}
+        />
+      </PageContainer>
+    );
+  }
 
   return (
     <PageContainer>
