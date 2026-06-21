@@ -14,6 +14,12 @@ export type StudentWithProfile = {
   phone: string | null;
   invited: boolean;
   last_login_at: string | null;
+  // 결제 정보 (applicants join).
+  payment_status: string | null;
+  paid_amount_krw: number | null;
+  payment_confirmed_at: string | null;
+  depositor_name_observed: string | null;
+  refunded_at: string | null;
 };
 
 export async function fetchStudentsWithProfiles(input: {
@@ -28,7 +34,7 @@ export async function fetchStudentsWithProfiles(input: {
   const { data: students, error } = await supabase
     .from("students")
     .select(
-      "id, applicant_id, display_name, status, applicants(email, phone, redacted_at)",
+      "id, applicant_id, display_name, status, applicants(email, phone, redacted_at, status, paid_amount_krw, payment_confirmed_at, depositor_name_observed, refunded_at)",
     )
     .eq("cohort_id", input.cohort_id)
     .order("display_name", { ascending: true });
@@ -39,7 +45,16 @@ export async function fetchStudentsWithProfiles(input: {
     applicant_id: string;
     display_name: string;
     status: string;
-    applicants?: { email?: string; phone?: string; redacted_at?: string | null } | null;
+    applicants?: {
+      email?: string;
+      phone?: string;
+      redacted_at?: string | null;
+      status?: string;
+      paid_amount_krw?: number | null;
+      payment_confirmed_at?: string | null;
+      depositor_name_observed?: string | null;
+      refunded_at?: string | null;
+    } | null;
   }>;
 
   // profile 조회 (student_id 인덱스).
@@ -77,6 +92,11 @@ export async function fetchStudentsWithProfiles(input: {
         phone: r.applicants?.phone ?? null,
         invited: !!profile,
         last_login_at: profile?.last_login_at ?? null,
+        payment_status: r.applicants?.status ?? null,
+        paid_amount_krw: r.applicants?.paid_amount_krw ?? null,
+        payment_confirmed_at: r.applicants?.payment_confirmed_at ?? null,
+        depositor_name_observed: r.applicants?.depositor_name_observed ?? null,
+        refunded_at: r.applicants?.refunded_at ?? null,
       };
     }),
   };

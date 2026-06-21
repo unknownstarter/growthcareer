@@ -129,69 +129,116 @@ export function StudentsDashboard({ cohort_id, cohort_name, students }: Props) {
               등록을 먼저 진행해주세요.
             </p>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>이름</TableHead>
-                  <TableHead>이메일</TableHead>
-                  <TableHead>전화</TableHead>
-                  <TableHead>상태</TableHead>
-                  <TableHead>로그인</TableHead>
-                  <TableHead className="text-right">작업</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {students.map((s) => (
-                  <TableRow key={s.student_id}>
-                    <TableCell className="font-semibold">
-                      {s.display_name}
-                    </TableCell>
-                    <TableCell className="text-[var(--muted-foreground)]">
-                      {s.email ?? "-"}
-                    </TableCell>
-                    <TableCell className="text-[var(--muted-foreground)]">
-                      {s.phone ?? "-"}
-                    </TableCell>
-                    <TableCell>
-                      {s.invited ? (
-                        <Badge className="bg-[var(--primary)]/10 text-[var(--primary)] border-0">
-                          <CheckCircle2 className="h-3 w-3 mr-1" />
-                          초대됨
-                        </Badge>
-                      ) : (
-                        <Badge variant="outline">
-                          <AlertCircle className="h-3 w-3 mr-1" />
-                          미초대
-                        </Badge>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-xs text-[var(--muted-foreground)]">
-                      {s.last_login_at
-                        ? new Date(s.last_login_at).toLocaleString("ko-KR", {
-                            month: "short",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })
-                        : "-"}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        disabled={pending || !s.email}
-                        onClick={() => onSingleInvite(s)}
-                      >
-                        {s.invited ? "재초대" : "초대"}
-                      </Button>
-                    </TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>이름</TableHead>
+                    <TableHead>이메일</TableHead>
+                    <TableHead>전화</TableHead>
+                    <TableHead>입금자명</TableHead>
+                    <TableHead className="text-right">결제액</TableHead>
+                    <TableHead>입금일</TableHead>
+                    <TableHead>결제 상태</TableHead>
+                    <TableHead>초대 상태</TableHead>
+                    <TableHead>로그인</TableHead>
+                    <TableHead className="text-right">작업</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {students.map((s) => (
+                    <TableRow key={s.student_id}>
+                      <TableCell className="font-semibold">
+                        {s.display_name}
+                      </TableCell>
+                      <TableCell className="text-[var(--muted-foreground)] text-xs">
+                        {s.email ?? "-"}
+                      </TableCell>
+                      <TableCell className="text-[var(--muted-foreground)] text-xs">
+                        {s.phone ?? "-"}
+                      </TableCell>
+                      <TableCell className="text-xs">
+                        {s.depositor_name_observed ?? "-"}
+                      </TableCell>
+                      <TableCell className="text-right text-xs tabular-nums">
+                        {s.paid_amount_krw != null
+                          ? `${s.paid_amount_krw.toLocaleString("ko-KR")}원`
+                          : "-"}
+                      </TableCell>
+                      <TableCell className="text-xs text-[var(--muted-foreground)]">
+                        {s.payment_confirmed_at
+                          ? new Date(s.payment_confirmed_at).toLocaleDateString("ko-KR", {
+                              month: "short",
+                              day: "numeric",
+                            })
+                          : "-"}
+                      </TableCell>
+                      <TableCell>
+                        <PaymentStatusBadge status={s.payment_status} refundedAt={s.refunded_at} />
+                      </TableCell>
+                      <TableCell>
+                        {s.invited ? (
+                          <Badge className="bg-[var(--primary)]/10 text-[var(--primary)] border-0">
+                            <CheckCircle2 className="h-3 w-3 mr-1" />
+                            초대됨
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline">
+                            <AlertCircle className="h-3 w-3 mr-1" />
+                            미초대
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-xs text-[var(--muted-foreground)]">
+                        {s.last_login_at
+                          ? new Date(s.last_login_at).toLocaleString("ko-KR", {
+                              month: "short",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
+                          : "-"}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          disabled={pending || !s.email}
+                          onClick={() => onSingleInvite(s)}
+                        >
+                          {s.invited ? "재초대" : "초대"}
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </CardContent>
       </Card>
     </div>
   );
+}
+
+function PaymentStatusBadge({
+  status,
+  refundedAt,
+}: {
+  status: string | null;
+  refundedAt: string | null;
+}) {
+  if (refundedAt) return <Badge variant="secondary">환불</Badge>;
+  if (!status) return <span className="text-xs text-[var(--muted-foreground)]">-</span>;
+  const map: Record<string, { variant: "default" | "secondary" | "outline" | "success" | "warning" | "destructive"; label: string }> = {
+    pending: { variant: "outline", label: "대기" },
+    notified: { variant: "warning", label: "안내" },
+    paid: { variant: "success", label: "입금" },
+    overdue: { variant: "destructive", label: "연체" },
+    cancelled: { variant: "secondary", label: "취소" },
+    enrolled: { variant: "success", label: "등록" },
+    refunded: { variant: "secondary", label: "환불" },
+  };
+  const cfg = map[status] ?? { variant: "outline" as const, label: status };
+  return <Badge variant={cfg.variant}>{cfg.label}</Badge>;
 }
