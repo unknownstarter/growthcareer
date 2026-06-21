@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { useParams } from "next/navigation";
 import { LogOut, ShieldCheck, GraduationCap, User } from "lucide-react";
 import { Button } from "@/src/programs/fan-to-pro/interface/components/lms/ui/button";
 import { logoutAction } from "@/src/programs/fan-to-pro/interface/server-actions/lms-auth-actions";
@@ -21,12 +22,14 @@ export function LmsTopbar({
   displayName: string;
   email: string;
 }) {
+  const params = useParams();
+  const locale = (params?.locale as string) ?? "ko";
   const [pending, startTransition] = useTransition();
   const { label, icon: Icon } = roleBadge[role];
 
   function handleLogout() {
     startTransition(async () => {
-      await logoutAction();
+      await logoutAction(locale);
     });
   }
 

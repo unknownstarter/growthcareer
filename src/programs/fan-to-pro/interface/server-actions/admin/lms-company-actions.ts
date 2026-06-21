@@ -5,7 +5,7 @@
  */
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { assertLmsRole } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
+import { assertProgramAdmin } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
 import {
   insertCompany,
   updateCompany,
@@ -33,12 +33,12 @@ export type CompanyActionResult =
 export async function createCompanyAction(
   input: unknown,
 ): Promise<CompanyActionResult> {
-  await assertLmsRole("super_admin");
+  await assertProgramAdmin("fan-to-pro");
   const parsed = InsertSchema.safeParse(input);
   if (!parsed.success) return { status: "error", error: "invalidInput" };
   try {
     const company = await insertCompany(parsed.data as InsertCompanyInput);
-    revalidatePath("/lms/admin/companies");
+    revalidatePath("/ko/fan-to-pro/admin/companies");
     return { status: "ok", id: company.id };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
@@ -53,14 +53,14 @@ const UpdateSchema = InsertSchema.partial().extend({
 export async function updateCompanyAction(
   input: unknown,
 ): Promise<CompanyActionResult> {
-  await assertLmsRole("super_admin");
+  await assertProgramAdmin("fan-to-pro");
   const parsed = UpdateSchema.safeParse(input);
   if (!parsed.success) return { status: "error", error: "invalidInput" };
   const { id, ...patch } = parsed.data;
   try {
     await updateCompany(id, patch);
-    revalidatePath("/lms/admin/companies");
-    revalidatePath("/lms/admin/finance");
+    revalidatePath("/ko/fan-to-pro/admin/companies");
+    revalidatePath("/ko/fan-to-pro/admin/finance");
     return { status: "ok", id };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
@@ -76,7 +76,7 @@ const LinkSchema = z.object({
 export async function linkInstructorCompanyAction(
   input: unknown,
 ): Promise<{ status: "ok" } | { status: "error"; error: string }> {
-  await assertLmsRole("super_admin");
+  await assertProgramAdmin("fan-to-pro");
   const parsed = LinkSchema.safeParse(input);
   if (!parsed.success) return { status: "error", error: "invalidInput" };
   try {
@@ -84,9 +84,9 @@ export async function linkInstructorCompanyAction(
       parsed.data.instructor_id,
       parsed.data.company_id,
     );
-    revalidatePath("/lms/admin/instructors");
-    revalidatePath("/lms/admin/companies");
-    revalidatePath("/lms/admin/finance");
+    revalidatePath("/ko/fan-to-pro/admin/instructors");
+    revalidatePath("/ko/fan-to-pro/admin/companies");
+    revalidatePath("/ko/fan-to-pro/admin/finance");
     return { status: "ok" };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";

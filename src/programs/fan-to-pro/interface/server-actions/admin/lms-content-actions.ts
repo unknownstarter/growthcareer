@@ -6,7 +6,7 @@
  */
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { assertLmsRole } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
+import { assertProgramAdmin } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
 import {
   insertMaterial,
   updateMaterialStatus,
@@ -39,7 +39,7 @@ export type ContentResult =
 export async function createMaterialAction(
   input: unknown,
 ): Promise<ContentResult> {
-  const user = await assertLmsRole("super_admin");
+  const user = await assertProgramAdmin("fan-to-pro");
   const parsed = MaterialInsertSchema.safeParse(input);
   if (!parsed.success) return { status: "error", error: "invalidInput" };
   try {
@@ -47,7 +47,7 @@ export async function createMaterialAction(
       ...parsed.data,
       uploaded_by: user.instructorId, // super_admin 은 보통 null
     });
-    revalidatePath("/lms/admin/materials");
+    revalidatePath("/ko/fan-to-pro/admin/materials");
     return { status: "ok", id: m.id };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
@@ -58,10 +58,10 @@ export async function createMaterialAction(
 export async function publishMaterialAction(input: {
   id: string;
 }): Promise<{ status: "ok" } | { status: "error"; error: string }> {
-  await assertLmsRole("super_admin");
+  await assertProgramAdmin("fan-to-pro");
   try {
     await updateMaterialStatus(input.id, "published");
-    revalidatePath("/lms/admin/materials");
+    revalidatePath("/ko/fan-to-pro/admin/materials");
     return { status: "ok" };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
@@ -72,10 +72,10 @@ export async function publishMaterialAction(input: {
 export async function archiveMaterialAction(input: {
   id: string;
 }): Promise<{ status: "ok" } | { status: "error"; error: string }> {
-  await assertLmsRole("super_admin");
+  await assertProgramAdmin("fan-to-pro");
   try {
     await updateMaterialStatus(input.id, "archived");
-    revalidatePath("/lms/admin/materials");
+    revalidatePath("/ko/fan-to-pro/admin/materials");
     return { status: "ok" };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
@@ -86,10 +86,10 @@ export async function archiveMaterialAction(input: {
 export async function deleteMaterialAction(input: {
   id: string;
 }): Promise<{ status: "ok" } | { status: "error"; error: string }> {
-  await assertLmsRole("super_admin");
+  await assertProgramAdmin("fan-to-pro");
   try {
     await deleteMaterial(input.id);
-    revalidatePath("/lms/admin/materials");
+    revalidatePath("/ko/fan-to-pro/admin/materials");
     return { status: "ok" };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
@@ -110,7 +110,7 @@ const AnnouncementSchema = z.object({
 export async function createAnnouncementAction(
   input: unknown,
 ): Promise<ContentResult> {
-  const user = await assertLmsRole("super_admin");
+  const user = await assertProgramAdmin("fan-to-pro");
   const parsed = AnnouncementSchema.safeParse(input);
   if (!parsed.success) return { status: "error", error: "invalidInput" };
   try {
@@ -118,7 +118,7 @@ export async function createAnnouncementAction(
       ...parsed.data,
       created_by: user.id,
     });
-    revalidatePath("/lms/admin/announcements");
+    revalidatePath("/ko/fan-to-pro/admin/announcements");
     return { status: "ok", id: a.id };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
@@ -129,10 +129,10 @@ export async function createAnnouncementAction(
 export async function publishAnnouncementAction(input: {
   id: string;
 }): Promise<{ status: "ok" } | { status: "error"; error: string }> {
-  await assertLmsRole("super_admin");
+  await assertProgramAdmin("fan-to-pro");
   try {
     await updateAnnouncementStatus(input.id, "published");
-    revalidatePath("/lms/admin/announcements");
+    revalidatePath("/ko/fan-to-pro/admin/announcements");
     return { status: "ok" };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
@@ -143,10 +143,10 @@ export async function publishAnnouncementAction(input: {
 export async function archiveAnnouncementAction(input: {
   id: string;
 }): Promise<{ status: "ok" } | { status: "error"; error: string }> {
-  await assertLmsRole("super_admin");
+  await assertProgramAdmin("fan-to-pro");
   try {
     await updateAnnouncementStatus(input.id, "archived");
-    revalidatePath("/lms/admin/announcements");
+    revalidatePath("/ko/fan-to-pro/admin/announcements");
     return { status: "ok" };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
@@ -157,10 +157,10 @@ export async function archiveAnnouncementAction(input: {
 export async function deleteAnnouncementAction(input: {
   id: string;
 }): Promise<{ status: "ok" } | { status: "error"; error: string }> {
-  await assertLmsRole("super_admin");
+  await assertProgramAdmin("fan-to-pro");
   try {
     await deleteAnnouncement(input.id);
-    revalidatePath("/lms/admin/announcements");
+    revalidatePath("/ko/fan-to-pro/admin/announcements");
     return { status: "ok" };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
@@ -181,7 +181,7 @@ const AssignmentSchema = z.object({
 export async function createAssignmentAction(
   input: unknown,
 ): Promise<ContentResult> {
-  const user = await assertLmsRole("super_admin");
+  const user = await assertProgramAdmin("fan-to-pro");
   const parsed = AssignmentSchema.safeParse(input);
   if (!parsed.success) return { status: "error", error: "invalidInput" };
   try {
@@ -189,7 +189,7 @@ export async function createAssignmentAction(
       ...parsed.data,
       created_by: user.id,
     });
-    revalidatePath("/lms/admin/consultations");
+    revalidatePath("/ko/fan-to-pro/admin/consultations");
     return { status: "ok", id: a.id };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
