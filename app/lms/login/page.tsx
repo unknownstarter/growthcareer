@@ -36,7 +36,7 @@ export default function LmsLoginPage() {
         </div>
 
         <p className="mt-6 text-center text-xs text-[var(--muted-foreground)]">
-          Growth Career / Fan to Pro · 운영: Dropdown
+          Growth Career / Fan to Pro / 운영 Dropdown
         </p>
       </div>
     </main>
