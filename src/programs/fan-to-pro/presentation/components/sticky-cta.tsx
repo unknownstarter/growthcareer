@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { PRICING, formatKRW } from "@/src/programs/fan-to-pro/domain/pricing";
+import { isEnrollmentClosed } from "@/src/programs/fan-to-pro/domain/program";
 import { Button } from "../ui/button";
 import { Container } from "../ui/container";
 
@@ -10,6 +11,7 @@ export function StickyCTA() {
   const locale = useLocale();
   const [scrolled, setScrolled] = useState(false);
   const [applyInView, setApplyInView] = useState(false);
+  const [closed, setClosed] = useState(() => isEnrollmentClosed());
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 600);
@@ -29,6 +31,15 @@ export function StickyCTA() {
     return () => observer.disconnect();
   }, []);
 
+  // 자정 넘어가는 사용자 커버 — 30초마다 재확인.
+  useEffect(() => {
+    if (closed) return;
+    const interval = setInterval(() => {
+      if (isEnrollmentClosed()) setClosed(true);
+    }, 30_000);
+    return () => clearInterval(interval);
+  }, [closed]);
+
   const show = scrolled && !applyInView;
 
   return (
@@ -46,13 +57,19 @@ export function StickyCTA() {
                 className="text-fg-subtle text-[10px] uppercase whitespace-nowrap"
                 style={{ letterSpacing: "0.3em" }}
               >
-                {t("scarcity")}
+                {closed ? t("scarcityClosed") : t("scarcity")}
               </p>
               <p className="font-black text-fg text-lg sm:text-xl">
-                {formatKRW(PRICING.discounted, locale)}
-                <span className="ml-2 text-xs font-normal text-fg-subtle sm:text-sm">
-                  {t("vatNote")}
-                </span>
+                {closed ? (
+                  t("closedValue")
+                ) : (
+                  <>
+                    {formatKRW(PRICING.discounted, locale)}
+                    <span className="ml-2 text-xs font-normal text-fg-subtle sm:text-sm">
+                      {t("vatNote")}
+                    </span>
+                  </>
+                )}
               </p>
             </div>
             <Button
@@ -61,7 +78,7 @@ export function StickyCTA() {
               size="lg"
               className="ml-auto w-full sm:w-auto"
             >
-              {t("cta")}
+              {closed ? t("ctaClosed") : t("cta")}
             </Button>
           </div>
         </Container>

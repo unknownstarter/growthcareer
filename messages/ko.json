@@ -54,9 +54,12 @@
     "subtitleC": "로 경력을 만든다.",
     "tuition": {
       "label": "수강료",
-      "note": "VAT 포함. 결제는 계좌이체만 가능."
+      "note": "VAT 포함. 결제는 계좌이체만 가능.",
+      "closedLabel": "1기 모집 상태",
+      "closedValue": "모집 마감"
     },
     "cta": "지금 신청 →",
+    "ctaClosed": "다음 기수 알림 받기 →",
     "features": [
       "주말 4주, 총 8회 현업 강의",
       "Dropdown 명의 수료증",
@@ -432,6 +435,9 @@
     "offBadge": "{off}% OFF",
     "vatNote": "VAT 포함. 1인 1회 결제. 분할 결제 없음.",
     "cta": "지금 신청 →",
+    "ctaClosed": "다음 기수 알림 받기 →",
+    "closedLabel": "1기 모집 상태",
+    "closedValue": "모집 마감",
     "bullets": [
       "정원 마감 시 즉시 다음 기수 대기열",
       "입금 순서대로 자리 확정",
@@ -704,8 +710,11 @@
   },
   "stickyCta": {
     "scarcity": "선착순 마감",
+    "scarcityClosed": "1기 마감",
     "vatNote": "VAT 포함",
-    "cta": "지금 신청 →"
+    "closedValue": "모집 마감",
+    "cta": "지금 신청 →",
+    "ctaClosed": "다음 기수 알림 받기 →"
   },
   "footer": {
     "brandHeadline": "GROWTH CAREER",

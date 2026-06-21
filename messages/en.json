@@ -54,9 +54,12 @@
     "subtitleC": "puts your name on the record.",
     "tuition": {
       "label": "Tuition",
-      "note": "VAT included. Bank transfer in KRW only."
+      "note": "VAT included. Bank transfer in KRW only.",
+      "closedLabel": "Cohort 1 status",
+      "closedValue": "Enrollment closed"
     },
     "cta": "Reserve your seat →",
+    "ctaClosed": "Notify me about the next cohort →",
     "features": [
       "Four weekends. Eight live sessions taught by working pros.",
       "Certificate issued by Dropdown Co., Ltd.",
@@ -432,6 +435,9 @@
     "offBadge": "{off}% OFF",
     "vatNote": "VAT included. One payment per person. No installments.",
     "cta": "Reserve your seat →",
+    "ctaClosed": "Notify me about the next cohort →",
+    "closedLabel": "Cohort 1 status",
+    "closedValue": "Enrollment closed",
     "bullets": [
       "Class full? You join the waitlist for the next round immediately",
       "Seats confirmed in order of bank transfer received",
@@ -704,8 +710,11 @@
   },
   "stickyCta": {
     "scarcity": "Limited seats",
+    "scarcityClosed": "Cohort 1 closed",
     "vatNote": "VAT included",
-    "cta": "Reserve your seat →"
+    "closedValue": "Enrollment closed",
+    "cta": "Reserve your seat →",
+    "ctaClosed": "Notify me about the next cohort →"
   },
   "footer": {
     "brandHeadline": "GROWTH CAREER",

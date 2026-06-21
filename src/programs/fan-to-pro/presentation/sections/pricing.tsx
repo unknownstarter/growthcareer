@@ -4,6 +4,7 @@ import {
   discountRate,
   formatKRW,
 } from "@/src/programs/fan-to-pro/domain/pricing";
+import { isEnrollmentClosed } from "@/src/programs/fan-to-pro/domain/program";
 import { SectionTracker } from "../components/section-tracker";
 import { Button } from "../ui/button";
 import { Container } from "../ui/container";
@@ -17,6 +18,7 @@ export function Pricing() {
   const unsupportedItems = t.raw(
     "paymentSide.unsupportedItems",
   ) as string[];
+  const closed = isEnrollmentClosed();
 
   return (
     <section id="pricing" className="section-pink px-6 py-28 sm:px-10 sm:py-36">
@@ -54,33 +56,47 @@ export function Pricing() {
               className="mb-3 text-fg-subtle text-xs uppercase"
               style={{ letterSpacing: "0.3em" }}
             >
-              {t("cardLabel")}
+              {closed ? t("closedLabel") : t("cardLabel")}
             </p>
 
-            <div className="mb-8 flex flex-wrap items-end gap-4">
-              <span
-                className="text-fg-subtle text-2xl line-through sm:text-3xl"
-                aria-label={t("originalAriaLabel", {
-                  price: formatKRW(PRICING.original, locale),
-                })}
+            {closed ? (
+              <p
+                className="mb-10 font-black text-fg leading-none"
+                style={{
+                  fontSize: "var(--text-display-md)",
+                  letterSpacing: "-0.05em",
+                }}
               >
-                {formatKRW(PRICING.original, locale)}
-              </span>
-              <span className="bg-brand-pink px-2 py-1 font-black text-fg text-sm whitespace-nowrap">
-                {t("offBadge", { off })}
-              </span>
-            </div>
+                {t("closedValue")}
+              </p>
+            ) : (
+              <>
+                <div className="mb-8 flex flex-wrap items-end gap-4">
+                  <span
+                    className="text-fg-subtle text-2xl line-through sm:text-3xl"
+                    aria-label={t("originalAriaLabel", {
+                      price: formatKRW(PRICING.original, locale),
+                    })}
+                  >
+                    {formatKRW(PRICING.original, locale)}
+                  </span>
+                  <span className="bg-brand-pink px-2 py-1 font-black text-fg text-sm whitespace-nowrap">
+                    {t("offBadge", { off })}
+                  </span>
+                </div>
 
-            <p
-              className="mb-2 font-black text-fg leading-none"
-              style={{
-                fontSize: "var(--text-display-md)",
-                letterSpacing: "-0.05em",
-              }}
-            >
-              {formatKRW(PRICING.discounted, locale)}
-            </p>
-            <p className="mb-10 text-fg-muted text-sm">{t("vatNote")}</p>
+                <p
+                  className="mb-2 font-black text-fg leading-none"
+                  style={{
+                    fontSize: "var(--text-display-md)",
+                    letterSpacing: "-0.05em",
+                  }}
+                >
+                  {formatKRW(PRICING.discounted, locale)}
+                </p>
+                <p className="mb-10 text-fg-muted text-sm">{t("vatNote")}</p>
+              </>
+            )}
 
             <Button
               href="#apply"
@@ -88,7 +104,7 @@ export function Pricing() {
               size="xl"
               className="w-full"
             >
-              {t("cta")}
+              {closed ? t("ctaClosed") : t("cta")}
             </Button>
 
             <ul

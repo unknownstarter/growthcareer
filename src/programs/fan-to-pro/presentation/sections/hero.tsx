@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { PRICING, formatKRW } from "@/src/programs/fan-to-pro/domain/pricing";
+import { isEnrollmentClosed } from "@/src/programs/fan-to-pro/domain/program";
 import { SectionTracker } from "../components/section-tracker";
 import { Button } from "../ui/button";
 import { Container } from "../ui/container";
@@ -13,6 +14,7 @@ export function Hero() {
 
   const features = t.raw("features") as string[];
   const visaItems = t.raw("visa.items") as string[];
+  const closed = isEnrollmentClosed();
 
   return (
     <section id="hero" className="relative flex min-h-screen flex-col justify-center overflow-hidden bg-bg">
@@ -101,28 +103,44 @@ export function Hero() {
                 className="text-fg-subtle mb-2 text-xs uppercase"
                 style={{ letterSpacing: "0.3em" }}
               >
-                {t("tuition.label")}
+                {closed ? t("tuition.closedLabel") : t("tuition.label")}
               </p>
-              <div className="flex flex-wrap items-baseline gap-3">
-                <s className="text-fg-subtle text-xl">
-                  {formatKRW(PRICING.original, locale)}
-                </s>
-                <span
-                  className="font-black text-fg"
-                  style={{
-                    fontSize: "clamp(1.75rem, 4vw, 3rem)",
-                    letterSpacing: "-0.04em",
-                  }}
-                >
-                  {formatKRW(PRICING.discounted, locale)}
-                </span>
-              </div>
-              <p className="mt-1 text-sm font-bold text-brand-pink">
-                {t("tuition.note")}
-              </p>
+              {closed ? (
+                <div>
+                  <span
+                    className="font-black text-fg"
+                    style={{
+                      fontSize: "clamp(1.75rem, 4vw, 3rem)",
+                      letterSpacing: "-0.04em",
+                    }}
+                  >
+                    {t("tuition.closedValue")}
+                  </span>
+                </div>
+              ) : (
+                <>
+                  <div className="flex flex-wrap items-baseline gap-3">
+                    <s className="text-fg-subtle text-xl">
+                      {formatKRW(PRICING.original, locale)}
+                    </s>
+                    <span
+                      className="font-black text-fg"
+                      style={{
+                        fontSize: "clamp(1.75rem, 4vw, 3rem)",
+                        letterSpacing: "-0.04em",
+                      }}
+                    >
+                      {formatKRW(PRICING.discounted, locale)}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-sm font-bold text-brand-pink">
+                    {t("tuition.note")}
+                  </p>
+                </>
+              )}
             </div>
             <Button href="#apply" variant="primary" size="xl">
-              {t("cta")}
+              {closed ? t("ctaClosed") : t("cta")}
             </Button>
             {/* Screen reader hint: applyCta is functionally identical. */}
             <span className="sr-only">{tCommon("applyCta")}</span>
