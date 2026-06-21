@@ -34,6 +34,10 @@
 
 ## ✅ 최근 완료 (2026-06-08 ~ 06-21)
 
+### 6/22 0시 작업
+- **B0039 1기 모집 마감 자동 전환** — isEnrollmentClosed() + cutoffAt + Hero/Pricing/StickyCTA/ApplyForm 자동 전환 + DB status enum 확장 (next_cohort_interest) + cohort_id nullable + XOR check. SSG cache hotfix (force-dynamic). apply form 헤드라인/lead/summary cell/chip/PaymentNotice/SuccessBlock 모두 closed 변형. commit `cd0405a`
+- **B0040 playbook 박제** — `docs/playbook/` 10 파일 (README + 01 overview + 02-build-tracks/{website,admin,lms} + 03 recruitment + 04 marketing + 05 class-ops + 06 finance + 07 timeline ⭐ + 08 automation + 09 features + 10 next-cohort checklist). 다음 기수 운영 자산 + 자동화/기능 후보 추출 기반.
+
 ### 6/21 마감일 작업
 - **B0037 career documents Wave A+** — 이력서/자기소개서/포트폴리오 단일 최신본 (학생 + 어드민). Sage pass + H-2 fix. commit `aa02a44`
 - **cohortKickoff 메시지** (어드민 메시지 종류) — 첫 강의 안내 SMS/email × ko/en (강의장 + 시간 + 카톡 + 준비물 + 8회 일정). commit `8b1c94d`
