@@ -124,6 +124,9 @@ export function CohortsDashboard({ roster }: Props) {
         </CardContent>
       </Card>
 
+      {/* 수강생 명단 — 신청자 정보 풍부하게 */}
+      <StudentRosterCard students={students} />
+
       {/* sessions list */}
       <Card>
         <CardHeader>
@@ -208,6 +211,155 @@ export function CohortsDashboard({ roster }: Props) {
       ) : null}
     </div>
   );
+}
+
+/* ─────────────────── Student Roster ─────────────────── */
+
+function StudentRosterCard({
+  students,
+}: {
+  students: CohortRosterStudentRow[];
+}) {
+  const [query, setQuery] = React.useState("");
+
+  const filtered = React.useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return students;
+    return students.filter((row) => {
+      const fields = [
+        row.student.display_name,
+        row.applicant?.email ?? "",
+        row.applicant?.phone ?? "",
+        row.applicant?.nationality ?? "",
+        row.applicant?.visa ?? "",
+        row.applicant?.depositor_name_observed ?? "",
+      ];
+      return fields.some((f) => f.toLowerCase().includes(q));
+    });
+  }, [students, query]);
+
+  return (
+    <Card>
+      <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between space-y-0">
+        <div>
+          <CardTitle className="text-base">
+            수강생 명단 ({students.length}명)
+          </CardTitle>
+          <CardDescription>
+            신청자 정보 (연락처 / 입금 / 비자 / 출결) 한눈에.
+          </CardDescription>
+        </div>
+        <input
+          type="search"
+          aria-label="수강생 검색"
+          placeholder="이름 / 이메일 / 전화 / 입금자명 검색"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="h-9 w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)] sm:w-72"
+        />
+      </CardHeader>
+      <CardContent className="px-0">
+        {students.length === 0 ? (
+          <p className="px-6 py-10 text-center text-sm text-[var(--muted-foreground)]">
+            등록된 수강생이 없습니다. 상단 [결제 완료 신청자 일괄 등록] 버튼을
+            눌러 paid 신청자를 자동 등록하세요.
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>이름</TableHead>
+                  <TableHead>이메일</TableHead>
+                  <TableHead>연락처</TableHead>
+                  <TableHead>국적</TableHead>
+                  <TableHead>비자</TableHead>
+                  <TableHead>입금</TableHead>
+                  <TableHead>입금자명</TableHead>
+                  <TableHead>금액</TableHead>
+                  <TableHead>출석</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filtered.map((row) => (
+                  <TableRow key={row.student.id}>
+                    <TableCell className="font-semibold text-[var(--foreground)]">
+                      {row.student.display_name}
+                    </TableCell>
+                    <TableCell className="text-xs text-[var(--muted-foreground)]">
+                      {row.applicant?.email ?? "-"}
+                    </TableCell>
+                    <TableCell className="text-xs text-[var(--muted-foreground)]">
+                      {row.applicant?.phone ?? "-"}
+                    </TableCell>
+                    <TableCell className="text-xs">
+                      {row.applicant?.nationality ?? "-"}
+                    </TableCell>
+                    <TableCell className="text-xs">
+                      {row.applicant?.visa ?? "-"}
+                    </TableCell>
+                    <TableCell>
+                      <ApplicantStatusBadge status={row.applicant?.status ?? null} />
+                    </TableCell>
+                    <TableCell className="text-xs">
+                      {row.applicant?.depositor_name_observed ?? "-"}
+                    </TableCell>
+                    <TableCell className="text-xs tabular-nums">
+                      {row.applicant?.paid_amount_krw != null
+                        ? `${row.applicant.paid_amount_krw.toLocaleString("ko-KR")}원`
+                        : "-"}
+                    </TableCell>
+                    <TableCell className="text-xs tabular-nums">
+                      <span className="font-semibold">
+                        {row.presentCount}
+                      </span>
+                      <span className="text-[var(--muted-foreground)]">
+                        {" / "}
+                        {row.totalSessions}
+                      </span>
+                      {row.totalSessions > 0 ? (
+                        <span className="ml-1 text-[var(--muted-foreground)]">
+                          ({Math.round(row.attendanceRate * 100)}%)
+                        </span>
+                      ) : null}
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {filtered.length === 0 && students.length > 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={9}
+                      className="py-8 text-center text-sm text-[var(--muted-foreground)]"
+                    >
+                      검색 결과가 없습니다.
+                    </TableCell>
+                  </TableRow>
+                ) : null}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function ApplicantStatusBadge({ status }: { status: string | null }) {
+  if (!status) return <span className="text-xs text-[var(--muted-foreground)]">-</span>;
+  const map: Record<
+    string,
+    { variant: "default" | "secondary" | "outline" | "success" | "warning" | "destructive"; label: string }
+  > = {
+    pending: { variant: "outline", label: "대기" },
+    notified: { variant: "warning", label: "안내" },
+    paid: { variant: "success", label: "입금" },
+    overdue: { variant: "destructive", label: "연체" },
+    cancelled: { variant: "secondary", label: "취소" },
+    enrolled: { variant: "success", label: "등록" },
+    refunded: { variant: "secondary", label: "환불" },
+  };
+  const cfg = map[status] ?? { variant: "outline", label: status };
+  return <Badge variant={cfg.variant}>{cfg.label}</Badge>;
 }
 
 function CohortStatusBadge({ status }: { status: string }) {
