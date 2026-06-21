@@ -12,7 +12,9 @@
  * 라이트 톤 + 토스 스타일. <div data-theme="light"> wrapper 안에서 동작.
  */
 import * as React from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import type { Route } from "next";
+import { useRouter, useParams } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -22,6 +24,32 @@ import {
 } from "@/src/programs/fan-to-pro/interface/components/lms/ui/card";
 import { Button } from "@/src/programs/fan-to-pro/interface/components/lms/ui/button";
 import { Badge } from "@/src/programs/fan-to-pro/interface/components/lms/ui/badge";
+import type { ApplicantStatus } from "@/src/programs/fan-to-pro/application/dto/applicant-row";
+
+const FUNNEL_LABEL: Record<ApplicantStatus, string> = {
+  pending: "대기",
+  notified: "안내",
+  paid: "입금",
+  overdue: "연체",
+  cancelled: "취소",
+  enrolled: "등록",
+  refunded: "환불",
+};
+
+const FUNNEL_ORDER: ApplicantStatus[] = [
+  "pending",
+  "notified",
+  "paid",
+  "overdue",
+  "cancelled",
+  "enrolled",
+  "refunded",
+];
+
+export type ApplicantFunnel = {
+  total: number;
+  byStatus: Record<ApplicantStatus, number>;
+};
 import {
   Table,
   TableHeader,
@@ -51,11 +79,17 @@ const ATTENDANCE_OPTIONS: { value: AttendanceStatus; label: string }[] = [
 
 type Props = {
   roster: CohortRoster;
+  applicantFunnel?: ApplicantFunnel;
 };
 
-export function CohortsDashboard({ roster }: Props) {
+export function CohortsDashboard({ roster, applicantFunnel }: Props) {
   const router = useRouter();
+  const params = useParams();
+  const locale = (params?.locale as string) ?? "ko";
   const { cohort, sessions, students } = roster;
+  const funnel = applicantFunnel;
+  const paidLike =
+    (funnel?.byStatus.paid ?? 0) + (funnel?.byStatus.enrolled ?? 0);
 
   const [selectedSessionId, setSelectedSessionId] = React.useState<string | null>(
     null,
@@ -99,14 +133,55 @@ export function CohortsDashboard({ roster }: Props) {
             <CardTitle className="flex items-center gap-2">
               {cohort.name}
               <CohortStatusBadge status={cohort.status} />
+              {cohort.accepts_signup_now ? (
+                <Badge variant="success">신청 받는 중</Badge>
+              ) : null}
             </CardTitle>
             <CardDescription className="mt-1.5">
               강의 {fmtDate(cohort.starts_on)} ~ {fmtDate(cohort.ends_on)}
               {cohort.ceremony_on ? ` / 수료식 ${fmtDate(cohort.ceremony_on)}` : ""}
             </CardDescription>
           </div>
+          {cohort.slug ? (
+            <Link
+              href={`/${locale}/fan-to-pro/admin/cohorts/${cohort.slug}` as Route}
+              className="text-xs text-[var(--primary)] underline-offset-2 hover:underline"
+            >
+              상세 보기 →
+            </Link>
+          ) : null}
         </CardHeader>
         <CardContent>
+          {/* 신청 funnel — 노아 critical: paid 가 student 수가 아니라 applicants.status='paid' 카운트 */}
+          {funnel ? (
+            <div className="mb-6">
+              <div className="flex items-baseline justify-between">
+                <h3 className="text-sm font-semibold text-[var(--foreground)]">
+                  신청 퍼널
+                </h3>
+                <p className="text-xs text-[var(--muted-foreground)]">
+                  전체 {funnel.total}명 / 입금 {paidLike}명 / 학생 등록{" "}
+                  {students.length}명
+                </p>
+              </div>
+              <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
+                {FUNNEL_ORDER.map((s) => (
+                  <FunnelStat
+                    key={s}
+                    label={FUNNEL_LABEL[s]}
+                    value={funnel.byStatus[s] ?? 0}
+                  />
+                ))}
+              </div>
+              {students.length < paidLike ? (
+                <p className="mt-3 text-xs text-[var(--destructive)]">
+                  입금 완료 {paidLike}명 중 {paidLike - students.length}명이 아직
+                  학생으로 등록 안 됨. 아래 [결제 완료 신청자 일괄 등록] 누르세요.
+                </p>
+              ) : null}
+            </div>
+          ) : null}
+
           <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <Stat label="정원" value={`${cohort.capacity}명`} />
             <Stat label="최소 개강" value={`${cohort.min_to_open}명`} />
@@ -383,6 +458,19 @@ function Stat({ label, value }: { label: string; value: string }) {
     <div>
       <dt className="text-xs font-medium text-[var(--muted-foreground)]">{label}</dt>
       <dd className="mt-1 text-lg font-bold text-[var(--foreground)]">{value}</dd>
+    </div>
+  );
+}
+
+function FunnelStat({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-md border border-[var(--border)] bg-[var(--card)] px-3 py-2">
+      <p className="text-[10px] font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
+        {label}
+      </p>
+      <p className="mt-0.5 text-lg font-bold tabular-nums text-[var(--foreground)]">
+        {value}
+      </p>
     </div>
   );
 }
