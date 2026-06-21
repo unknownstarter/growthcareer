@@ -629,10 +629,10 @@ const cohortKickoff_sms_ko = `[Fan to Pro] 1기 강좌 확정! 첫 강의 안내
 [카카오톡 오픈채팅 입장 필수]
 링크: ${KAKAO_OPEN_CHAT_URL}
 비밀번호: ${KAKAO_OPEN_CHAT_PASSWORD}
-* 본명으로 닉네임 설정 부탁드려요 (예: 홍길동 - 학생)
+* 프로필 그대로 입장 가능합니다. 본인 카카오 프로필이 본명이 아니면 동기에게 한 마디 자기소개 부탁드려요.
 
 [프로그램 원페이저]
-(별도 안내. 운영자가 본문에 PDF 링크 첨부)
+오픈채팅방 입장하시면 운영자가 원페이저 PDF 를 공유드릴게요.
 
 문의사항은 하단의 카카오톡 채널을 이용해주세요.
 ${KAKAO}`;
@@ -650,10 +650,10 @@ Bring: Laptop or tablet (instructors will share materials in PDF)
 [KAKAOTALK OPEN CHAT / please join]
 Link: ${KAKAO_OPEN_CHAT_URL}
 Password: ${KAKAO_OPEN_CHAT_PASSWORD}
-* Set your nickname as your real name (e.g., John Smith / student)
+* You will join with your KakaoTalk profile as-is. If your profile name is not your real name, a quick self-introduction in the chat is appreciated.
 
 [ONE-PAGER]
-(Will be attached separately by the operator)
+The operator will share the program one-pager PDF in the KakaoTalk open chat after you join.
 
 For any questions, please use the KakaoTalk channel below.
 ${KAKAO}`;
@@ -683,12 +683,12 @@ const cohortKickoff_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 입장 링크: ${KAKAO_OPEN_CHAT_URL}
 비밀번호: ${KAKAO_OPEN_CHAT_PASSWORD}
 
-* 입장하시면 닉네임을 본명으로 설정 부탁드려요 (예: "홍길동 - 학생")
+* 프로필 그대로 입장 가능합니다. 본인 카카오 프로필이 본명이 아니면 입장 후 채팅으로 한 마디 자기소개 부탁드려요.
 * 동기와 강사님과의 그룹챗이에요. 강의 외 잡담 + Q&A + 자료 공유 모두 환영
 * 첫 강의 전까지 꼭 입장해주세요
 
 [프로그램 원페이저]
-(별도 안내. 운영자가 본문에 PDF 링크 첨부)
+오픈채팅방 입장하시면 운영자가 원페이저 PDF 를 공유드릴게요.
 
 * 4주 동안 배우게 될 내용 + 강사 소개 + 강의 일정이 정리되어 있어요
 
@@ -727,12 +727,12 @@ Graduation + networking party: Sat, July 25
 Link: ${KAKAO_OPEN_CHAT_URL}
 Password: ${KAKAO_OPEN_CHAT_PASSWORD}
 
-* Set your nickname as your real name (e.g., "John Smith / student")
+* You will join with your KakaoTalk profile as-is. If your profile name is not your real name, a quick self-introduction in the chat is appreciated.
 * Group chat with fellow students and instructors for outside-class talk + Q&A + sharing materials
 * Please join before the first class
 
 [ONE-PAGER]
-(Will be attached separately by the operator)
+The operator will share the program one-pager PDF in the KakaoTalk open chat after you join.
 
 * Curriculum overview, instructor introduction, and full schedule
 
