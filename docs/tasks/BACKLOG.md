@@ -244,6 +244,25 @@ ADR 0005 (클린 아키텍처 Layered Pragmatic) + ADR 0006 (라이트 디자인
   - 자기소개서 = 구조화 폼 (질문별 답변 fields)
   - 출처: Sage 2026-06-21 B0034 보안 검토
 
+- **B0039** · **1기 모집 마감 자동 전환** — `isEnrollmentClosed()` + cutoff datetime + UI 자동 전환 + DB next_cohort_interest · status: **done** · 2026-06-22 완료 · owner: 메인 어시스턴트
+  - `ENROLLMENT_CAP.cutoffAt = "2026-06-22T00:00:00+09:00"` ISO datetime 박음
+  - `isEnrollmentClosed(now?)` helper (server + client 양쪽 호출 가능)
+  - Hero / Pricing / StickyCTA / ApplyForm 4 surface 자동 전환 (가격 숨김 + "모집 마감" + "다음 기수 알림 받기")
+  - ApplyForm 내부: 헤드라인 / lead / chip / summary 4 cell / PaymentNotice / SuccessBlock 모두 closed 변형
+  - 클라이언트 setInterval 30s 재확인 — 페이지 열어둔 채 자정 넘기는 사용자 커버
+  - 마이그레이션 `20260622000006`: status enum + 'next_cohort_interest', cohort_id NOT NULL → nullable, XOR check
+  - **사고 + hotfix**: `/fan-to-pro` SSG cache 로 자정 지나도 전환 안 됨 → `export const dynamic = "force-dynamic"` 박음 (commit `69cbd7b`)
+  - 사고 박제: `docs/lessons/2026-06-22-ssg-cache-blocks-deadline-transition.md` + CLAUDE.md §7 시간 기반 페이지 룰
+  - 출처: 2026-06-21 노아 발견 / commit `1b1328e` ~ `cd0405a`
+
+- **B0040** · **1기 운영 playbook 박제** — docs/playbook/ 10 파일 · status: **done** · 2026-06-22 완료 · owner: 메인 어시스턴트
+  - 기획 / 빌드 / 마케팅 / 운영 전 과정 카테고리 + 시계열 정리
+  - 다음 기수 운영 자산 + 자동화 후보 + 기능 개발 후보 추출 기반
+  - README + 01 overview + 02-build-tracks/{website,admin,lms} + 03 recruitment + 04 marketing + 05 class-ops + 06 finance + 07 timeline ⭐ + 08 automation candidates + 09 feature candidates + 10 next-cohort checklist
+  - 자동화 후보 A1~A8 (paymentConfirmed 자동 / 리마인드 자동 / 다음 기수 일괄 / 출결 self-check / 토스뱅크 자동 매칭 / 회계 CSV / 챗봇 / 강사 정산)
+  - 기능 후보 F1~F15 (학생 surface / 강사 surface / 수료증 자동 / UI 재활성화 / instructor career viewer / 자기소개서 구조화 / 작품 collection / 알림톡 / 동문 추천 / magic link / 강사 평가 / Realtime / 대량 invite / fluid typography / 주민번호 암호화)
+  - 출처: 2026-06-22 노아 요청 / commit `b9fdf6e`
+
 ---
 
 ---

@@ -17,6 +17,7 @@
 | 2026-06-09 | [Sage 검토 결과 전 production 배포](./2026-06-09-sage-review-skipped.md) | CLAUDE.md §2 phase 9 prerequisite + §7.4 / memory `feedback_sage_block_before_deploy` | ✅ |
 | 2026-06-09 | [Basic Auth logout/timeout 본질적 한계](./2026-06-09-basic-auth-logout-limitations.md) | middleware realm rotation / memory `feedback_basic_auth_limitations` / BACKLOG B0029 | ✅ |
 | 2026-06-09 | [vercel CLI 과다 호출로 일일 quota 도달](./2026-06-09-vercel-cli-overuse.md) | CLAUDE.md §7 git push default 룰 / memory `feedback_vercel_cli_overuse` | ✅ |
+| 2026-06-22 | [SSG 정적 빌드 캐시로 마감 자동 전환 누락](./2026-06-22-ssg-cache-blocks-deadline-transition.md) | `dynamic = "force-dynamic"` hotfix + CLAUDE.md §7 시간 기반 페이지 룰 박제 | ✅ |
 
 ## 다음 사고 발생 시
 

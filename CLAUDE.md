@@ -143,6 +143,7 @@ UI 변경은 항상 `pnpm preview` 로 **자체 캡처 → Read → 사용자에
 - 설정: `vercel.ts` 우선, `vercel.json` 지양
 - AI: `vercel:ai-gateway` 통한 `provider/model` 문자열 우선
 - **배포는 `git push` 가 default**: GitHub integration 이 production 배포 trigger. `vercel --prod` 직접 호출은 (a) 10분 이상 auto deploy 안 들어옴 또는 (b) GitHub integration disconnect 확정 또는 (c) critical hotfix 사고 대응 시만. 매 commit 마다 직접 호출하면 일일 quota 빨리 소모됨 (2026-06-09 사고). 사고 박제: `docs/lessons/2026-06-09-vercel-cli-overuse.md`.
+- **시간 기반 자동 전환 페이지는 SSG 금지**: 마감 cutoff / promo 기간 / countdown / 잔여 인원 등 *서버 시각에 따라 다르게 렌더해야 하는* 페이지는 반드시 `export const dynamic = "force-dynamic"` 또는 `export const revalidate = 60`. SSG 면 빌드 시점 값이 정적 HTML 에 박혀 자정 지나도 안 바뀜 (2026-06-22 사고). 사고 박제: `docs/lessons/2026-06-22-ssg-cache-blocks-deadline-transition.md`. 적용 대상: 마감/시작 cutoff / promo period / D-N 카운트다운 / limited time banner / 인원 가드 표시 / 시즌별 가격 변동 등 모든 "시각에 따른 분기" UI.
 
 ---
 
