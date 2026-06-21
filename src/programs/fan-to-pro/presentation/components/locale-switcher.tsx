@@ -23,6 +23,14 @@ export function LocaleSwitcher() {
   const activeLocale = useLocale();
   const pathname = usePathname();
 
+  // LMS / auth surface 에서는 hide. 마케팅 (랜딩 + apply) 에서만 노출.
+  // LMS 의 i18n 토글은 별도 (라이트 토스 톤, topbar 안) — Wave 4 보강.
+  const isLmsSurface =
+    pathname.startsWith("/auth/") ||
+    pathname === "/auth" ||
+    /^\/fan-to-pro\/(admin|[a-z0-9]{8})(\/|$)/.test(pathname);
+  if (isLmsSurface) return null;
+
   return (
     <nav
       aria-label="Select language"

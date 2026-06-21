@@ -37,9 +37,13 @@ export const CohortSchema = z
     capacity: z.number().int().positive(),
     min_to_open: z.number().int().positive(),
     status: CohortStatusSchema,
-    notes: z.string().nullable(),
+    notes: z.string().nullish(),
     created_at: z.string(),
-    updated_at: z.string().nullable(),
+    updated_at: z.string().nullish(),
+    // 신규 컬럼 (마이그레이션 20260622000001) — 클라이언트가 select * 시 받음
+    program_id: z.string().uuid().nullish(),
+    slug: z.string().nullish(),
+    accepts_signup_now: z.boolean().nullish(),
   })
   .refine((c) => c.min_to_open <= c.capacity, {
     message: "min_to_open must be ≤ capacity",
