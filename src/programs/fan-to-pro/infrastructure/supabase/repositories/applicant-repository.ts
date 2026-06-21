@@ -40,13 +40,17 @@ function maskPhone(raw: string): string {
   return "****";
 }
 
-export async function fetchApplicants(options?: { mask?: boolean }): Promise<{
+export async function fetchApplicants(options?: {
+  mask?: boolean;
+  cohortId?: string | null;
+}): Promise<{
   rows: ApplicantRow[];
   eligibility: AnonymizeEligibility;
   error: string | null;
   supabaseAvailable: boolean;
 }> {
   const mask = options?.mask ?? false;
+  const cohortId = options?.cohortId ?? null;
   const supabase = getSupabaseServer();
   if (!supabase) {
     return {
@@ -57,7 +61,7 @@ export async function fetchApplicants(options?: { mask?: boolean }): Promise<{
     };
   }
 
-  const { data, error } = await supabase
+  let q = supabase
     .from("applicants")
     .select(
       [
@@ -73,6 +77,7 @@ export async function fetchApplicants(options?: { mask?: boolean }): Promise<{
         "address",
         "status",
         "notes",
+        "cohort_id",
         "notified_at",
         "reminder_count",
         "last_reminder_at",
@@ -91,6 +96,10 @@ export async function fetchApplicants(options?: { mask?: boolean }): Promise<{
       ].join(","),
     )
     .order("created_at", { ascending: false });
+
+  if (cohortId) q = q.eq("cohort_id", cohortId);
+
+  const { data, error } = await q;
 
   if (error) {
     return {
@@ -121,6 +130,7 @@ export async function fetchApplicants(options?: { mask?: boolean }): Promise<{
       address: raw.address ? String(raw.address) : null,
       status,
       notes: raw.notes ? String(raw.notes) : null,
+      cohortId: raw.cohort_id ? String(raw.cohort_id) : null,
       notifiedAt: raw.notified_at ? String(raw.notified_at) : null,
       reminderCount:
         typeof raw.reminder_count === "number" ? raw.reminder_count : 0,

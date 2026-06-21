@@ -36,6 +36,9 @@ export type ApplicantRow = {
   status: ApplicantStatus;
   notes: string | null;
 
+  // B0032 cohort 귀속 — 어느 기수에 신청했는지. null = legacy (마이그레이션 전 row).
+  cohortId: string | null;
+
   // 발송 추적
   notifiedAt: string | null;
   reminderCount: number;

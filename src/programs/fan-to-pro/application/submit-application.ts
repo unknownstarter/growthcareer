@@ -5,6 +5,10 @@ import {
   type ApplicationActionState,
 } from "@/src/programs/fan-to-pro/domain/application";
 import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
+import {
+  fetchSignupOpenCohort,
+  fetchActiveCohorts,
+} from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-repository";
 
 const TABLE = "applicants";
 
@@ -36,6 +40,37 @@ export async function submitApplication(
     };
   }
 
+  // B0032 cohort 자동 매칭. 우선순위:
+  //   1) accepts_signup_now=true + status=open (운영자가 명시적으로 모집 받는 cohort)
+  //   2) fallback — 활성 cohort (open/enrollment_closed/in_progress) 중 가장 빠른 starts_on
+  //   3) 없으면 fail (운영자에게 cohort 생성 알림)
+  //
+  // applicants.cohort_id NOT NULL — 자동 매칭 실패 시 INSERT 실패 사고 방지.
+  let cohortId: string | null = null;
+  try {
+    const open = await fetchSignupOpenCohort();
+    if (open) {
+      cohortId = open.id;
+    } else {
+      const active = await fetchActiveCohorts();
+      if (active.length > 0) {
+        // 가장 빠른 starts_on (= 다음 코앞 기수) — fetchActiveCohorts 는 DESC 정렬이므로 마지막.
+        cohortId = active[active.length - 1].id;
+      }
+    }
+  } catch (e) {
+    // cohort fetch 자체 실패는 비치명적 — fallback 으로 cohort_id 없이 INSERT 시도
+    // (이후 NOT NULL constraint 가 실제 fail 을 발생시킴).
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("[applicants] cohort fetch failed", e);
+    }
+  }
+
+  if (!cohortId) {
+    console.error("[applicants] noActiveCohort — signup blocked");
+    return { status: "error", errors: { _form: [FORM_ERROR_KEY] } };
+  }
+
   // B0007 반자동 모델: INSERT 시 status='pending' 명시. 입금 안내는
   // 운영자(/admin/applicants) 가 발송 후 토글 → status='notified' 로 전환.
   // 신규 payment_* / notified_at / reminder_count / last_reminder_at 컬럼은
@@ -59,6 +94,7 @@ export async function submitApplication(
       consent_content_use: true,
       source: "fan-to-pro-landing",
       status: "pending",
+      cohort_id: cohortId,
     })
     .select("id")
     .single();

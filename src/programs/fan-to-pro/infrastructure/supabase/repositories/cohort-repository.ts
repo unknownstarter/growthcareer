@@ -55,6 +55,40 @@ export async function fetchActiveCohorts(): Promise<Cohort[]> {
   return (data ?? []).map((row) => CohortSchema.parse(row));
 }
 
+/** slug 로 단일 cohort. 없으면 null. URL [cohortSlug] 라우트에서 사용. */
+export async function fetchCohortBySlug(slug: string): Promise<Cohort | null> {
+  const supabase = requireClient();
+  const { data, error } = await supabase
+    .from(TABLE)
+    .select("*")
+    .eq("slug", slug)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data) return null;
+  return CohortSchema.parse(data);
+}
+
+/**
+ * 신규 신청을 받을 cohort — accepts_signup_now=true + status=open.
+ *
+ * submit-application 이 이 값으로 cohort_id 자동 매칭.
+ * 0건이면 신청 불가 (운영자가 새 cohort 의 accepts_signup_now toggle 해야 함).
+ * 2건 이상이면 가장 빠른 starts_on 우선 (=다음 코앞 기수).
+ */
+export async function fetchSignupOpenCohort(): Promise<Cohort | null> {
+  const supabase = requireClient();
+  const { data, error } = await supabase
+    .from(TABLE)
+    .select("*")
+    .eq("accepts_signup_now", true)
+    .eq("status", "open")
+    .order("starts_on", { ascending: true })
+    .limit(1);
+  if (error) throw new Error(error.message);
+  if (!data || data.length === 0) return null;
+  return CohortSchema.parse(data[0]);
+}
+
 /** 신규 cohort INSERT. id/created_at/updated_at 은 DB default. */
 export type InsertCohortInput = {
   name: string;
