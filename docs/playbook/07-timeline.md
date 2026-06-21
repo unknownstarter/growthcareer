@@ -27,6 +27,13 @@ _진행 후 추가_
 
 ## 2026-06-22 — 모집 마감 + 다음 기수 알림 + Playbook 박제
 
+### 새벽 (~01:00 직후) — Cowork 12% 마케팅 수수료 박제
+
+- **사건**: 1기 손익 분석에서 Cowork (DEEPI) 마케팅 수수료 항목 누락 발견.
+- **결정**: 결제 인원당 수강료 12% 정산 — 약정 사항. cohort_expenses 의 신규 카테고리 (`partner_commission`) 또는 `marketing` subcategory 로 분기.
+- **인사이트**: B0001 코워크 트래킹 (자동 referral_code / UTM) 은 dropped (Cowork 측 요구 X) 였지만, **수수료 정산은 별개로 존재**. 트래킹 ≠ 정산.
+- **해결**: `06-finance-tax.md` 비용 표에 1,161,600원 추가 → 마진 30% → 17.5% 재계산. `04-marketing.md` Cowork 파트너십 섹션 보강. A8 자동 정산 후보에 Cowork 정산 통합. cohort_expenses 카테고리 갱신 (DB migration 별도 필요).
+
 ### 00:00 — 1기 모집 마감 (자정 KST)
 
 - **사건**: 2026-06-22 00:00 KST 시점 1기 모집 공식 마감. 최종 paid 11명.
