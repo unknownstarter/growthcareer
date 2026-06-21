@@ -4,8 +4,10 @@
  * /lms/admin/students — 학생 list + 일괄 invite.
  */
 import * as React from "react";
-import { useRouter } from "next/navigation";
-import { Mail, CheckCircle2, AlertCircle } from "lucide-react";
+import Link from "next/link";
+import { useRouter, useParams } from "next/navigation";
+import type { Route } from "next";
+import { Mail, CheckCircle2, AlertCircle, FileText } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -37,6 +39,8 @@ type Props = {
 
 export function StudentsDashboard({ cohort_id, cohort_name, students }: Props) {
   const router = useRouter();
+  const params = useParams();
+  const locale = (params?.locale as string) ?? "ko";
   const [pending, startTransition] = React.useTransition();
   const [feedback, setFeedback] = React.useState<string | null>(null);
 
@@ -200,14 +204,31 @@ export function StudentsDashboard({ cohort_id, cohort_name, students }: Props) {
                           : "-"}
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          disabled={pending || !s.email}
-                          onClick={() => onSingleInvite(s)}
-                        >
-                          {s.invited ? "재초대" : "초대"}
-                        </Button>
+                        <div className="flex items-center justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            asChild
+                            disabled={pending}
+                          >
+                            <Link
+                              href={
+                                `/${locale}/fan-to-pro/admin/students/${s.student_id}/career` as Route
+                              }
+                            >
+                              <FileText className="h-3.5 w-3.5 mr-1" />
+                              문서
+                            </Link>
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            disabled={pending || !s.email}
+                            onClick={() => onSingleInvite(s)}
+                          >
+                            {s.invited ? "재초대" : "초대"}
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}

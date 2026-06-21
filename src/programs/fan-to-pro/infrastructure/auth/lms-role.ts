@@ -215,6 +215,68 @@ export async function assertCohortRole(
   return user;
 }
 
+/**
+ * 특정 student 의 career 데이터 (이력서/자기소개서/포트폴리오 등) 접근 가드.
+ *
+ * 통과 조건 (셋 중 하나):
+ *   1) super_admin (user_profiles.is_super_admin=true)
+ *   2) program admin — student.cohort 의 program 에 admin membership
+ *   3) student-self — user_profiles.student_id === target studentId
+ *
+ * 위반 시 throw. server action 첫 줄에서 호출.
+ *
+ * 사용 예:
+ *   await assertCanAccessStudentCareer(studentId);
+ */
+export async function assertCanAccessStudentCareer(
+  studentId: string,
+): Promise<LmsUser> {
+  const user = await getLmsUser();
+  if (!user) throw new Error("[lms-role] unauthenticated.");
+  if (user.isSuperAdmin) return user;
+
+  // student-self 빠른 경로 — DB round-trip 1회 절약.
+  if (user.studentId === studentId) return user;
+
+  const supabase = getSupabaseServer();
+  if (!supabase) throw new Error("[lms-role] supabaseUnavailable.");
+
+  // student 조회 → cohort.program_id 추출 → program_memberships 검사.
+  const { data: student } = await supabase
+    .from("students")
+    .select("id, cohort_id, cohorts!inner(program_id)")
+    .eq("id", studentId)
+    .maybeSingle();
+
+  if (!student) {
+    throw new Error(`[lms-role] unknownStudent: ${studentId}`);
+  }
+
+  const cohortsField = (student as { cohorts: unknown }).cohorts;
+  const cohortObj = Array.isArray(cohortsField)
+    ? (cohortsField[0] as { program_id: string } | undefined)
+    : (cohortsField as { program_id: string } | null);
+  const programId = cohortObj?.program_id;
+  if (!programId) {
+    throw new Error(`[lms-role] studentMissingProgram: ${studentId}`);
+  }
+
+  const { data: pm } = await supabase
+    .from("program_memberships")
+    .select("user_id")
+    .eq("user_id", user.id)
+    .eq("program_id", programId)
+    .eq("role", "admin")
+    .maybeSingle();
+
+  if (!pm) {
+    throw new Error(
+      `[lms-role] forbidden: user ${user.id} cannot access student ${studentId} career.`,
+    );
+  }
+  return user;
+}
+
 // -------------------------------------------------------------------------
 // 기존 호환 — 옛 코드가 assertLmsRole('super_admin') 호출하는 곳 안 깨지게.
 // 새 코드는 위 함수들 사용.
