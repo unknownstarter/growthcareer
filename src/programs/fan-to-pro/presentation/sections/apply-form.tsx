@@ -325,10 +325,12 @@ export function ApplyForm() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Eyebrow n="14">{t("eyebrow")}</Eyebrow>
           <Chip variant="accent" size="md">
-            {t("chipTemplate", {
-              seats: ENROLLMENT_CAP.totalSeats,
-              cutoff: t("summary.cutoffValue"),
-            })}
+            {enrollmentClosed
+              ? t("chipTemplateClosed")
+              : t("chipTemplate", {
+                  seats: ENROLLMENT_CAP.totalSeats,
+                  cutoff: t("summary.cutoffValue"),
+                })}
           </Chip>
         </div>
 
@@ -340,16 +342,18 @@ export function ApplyForm() {
             textWrap: "balance",
           }}
         >
-          {t("headline")}
+          {enrollmentClosed ? t("headlineClosed") : t("headline")}
         </h2>
 
         <p
           className="mb-6 max-w-2xl text-base leading-relaxed text-fg-muted sm:text-lg"
           style={{ textWrap: "pretty" }}
         >
-          {t("leadA", { price: formatKRW(PRICING.discounted, locale) })}
+          {enrollmentClosed
+            ? t("leadAClosed")
+            : t("leadA", { price: formatKRW(PRICING.discounted, locale) })}
           <br />
-          {t("leadB")}
+          {enrollmentClosed ? t("leadBClosed") : t("leadB")}
         </p>
 
         {enrollmentClosed ? (
@@ -389,27 +393,71 @@ export function ApplyForm() {
         {/* Summary Grid */}
         <div className="mx-auto mb-px grid max-w-3xl grid-cols-1 gap-px border border-fg/20 bg-fg/20 sm:grid-cols-2 lg:grid-cols-4">
           <SummaryCell
-            label={t("summary.firstSessionLabel")}
-            value={t("summary.firstSessionValue")}
-            sub={t("summary.firstSessionSub")}
+            label={
+              enrollmentClosed
+                ? t("summary.firstSessionLabelClosed")
+                : t("summary.firstSessionLabel")
+            }
+            value={
+              enrollmentClosed
+                ? t("summary.firstSessionValueClosed")
+                : t("summary.firstSessionValue")
+            }
+            sub={
+              enrollmentClosed
+                ? t("summary.firstSessionSubClosed")
+                : t("summary.firstSessionSub")
+            }
           />
           <SummaryCell
             label={t("summary.locationLabel")}
-            value={t("summary.locationValue")}
-            sub={t("summary.locationSub")}
+            value={
+              enrollmentClosed
+                ? t("summary.locationValueClosed")
+                : t("summary.locationValue")
+            }
+            sub={
+              enrollmentClosed
+                ? t("summary.locationSubClosed")
+                : t("summary.locationSub")
+            }
           />
           <SummaryCell
-            label={t("summary.cutoffLabel")}
-            value={t("summary.cutoffValue")}
-            sub={t("summary.cutoffSubTemplate", {
-              min: ENROLLMENT_CAP.minToProceed,
-            })}
+            label={
+              enrollmentClosed
+                ? t("summary.cutoffLabelClosed")
+                : t("summary.cutoffLabel")
+            }
+            value={
+              enrollmentClosed
+                ? t("summary.cutoffValueClosed")
+                : t("summary.cutoffValue")
+            }
+            sub={
+              enrollmentClosed
+                ? t("summary.cutoffSubClosedTemplate")
+                : t("summary.cutoffSubTemplate", {
+                    min: ENROLLMENT_CAP.minToProceed,
+                  })
+            }
             accent
           />
           <SummaryCell
-            label={t("summary.amountLabel")}
-            value={formatKRW(PRICING.discounted, locale)}
-            sub={t("summary.amountSub")}
+            label={
+              enrollmentClosed
+                ? t("summary.amountLabelClosed")
+                : t("summary.amountLabel")
+            }
+            value={
+              enrollmentClosed
+                ? t("summary.amountValueClosed")
+                : formatKRW(PRICING.discounted, locale)
+            }
+            sub={
+              enrollmentClosed
+                ? t("summary.amountSubClosed")
+                : t("summary.amountSub")
+            }
           />
         </div>
 
@@ -572,7 +620,7 @@ export function ApplyForm() {
                 required
               />
 
-              <PaymentNotice />
+              {enrollmentClosed ? null : <PaymentNotice />}
 
               <RefundSummary />
 

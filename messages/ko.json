@@ -518,9 +518,13 @@
   "applyForm": {
     "eyebrow": "Apply",
     "chipTemplate": "선착순 {seats}석, 마감 {cutoff}",
+    "chipTemplateClosed": "1기 마감 / 다음 기수 알림 리스트 등록",
     "headline": "신청과 결제",
+    "headlineClosed": "다음 기수 알림 등록",
     "leadA": "{price}, 토요일과 일요일 각 2시간 × 4주. 입금 선착순으로 자리가 확정됩니다.",
     "leadB": "폼 제출 후 24시간 이내 입금 안내 메일이 발송됩니다.",
+    "leadAClosed": "1기는 마감되었습니다. 다음 기수 모집 시작 시 가장 먼저 알려드릴게요.",
+    "leadBClosed": "동일한 폼을 제출하시면 알림 리스트에 등록됩니다.",
     "attendanceCommitment": "2026년 6월 27일(토)부터 7월 19일(일)까지 토요일과 일요일 각 2시간씩 총 8회 진행되는 본 프로그램에 참여하는 것에 동의합니다.",
     "contentUseNote": "수강 신청을 완료한 시점부터, 본 프로그램 중 촬영과 녹화되는 영상과 이미지가 Growth Career, Dropdown, DEEPI, 유니온 픽처스의 (1) 프로그램 홍보 (2) 차기 기수 모집 콘텐츠 (3) 수강생 본인 포트폴리오 목적으로 활용되는 것에 동의한 것으로 간주됩니다. 거부 의사가 있는 경우 운영진에게 통보 시 얼굴 후처리나 블러 처리 후 활용합니다.",
     "audienceBanner": {
@@ -540,7 +544,18 @@
       "cutoffValue": "2026년 6월 21일 (일) 자정",
       "cutoffSubTemplate": "이때까지 {min}명 미만 시 전액 환불",
       "amountLabel": "결제 금액",
-      "amountSub": "토스뱅크 계좌이체 (일시납)"
+      "amountSub": "토스뱅크 계좌이체 (일시납)",
+      "firstSessionLabelClosed": "다음 기수 일정",
+      "firstSessionValueClosed": "확정 후 안내",
+      "firstSessionSubClosed": "강의 일정과 회차는 다음 기수 모집 시 별도 공지",
+      "locationValueClosed": "확정 후 안내",
+      "locationSubClosed": "다음 기수 강의장은 모집 시 별도 공지",
+      "cutoffLabelClosed": "1기 운영",
+      "cutoffValueClosed": "모집 마감",
+      "cutoffSubClosedTemplate": "1기 강의는 2026년 6월 27일 시작",
+      "amountLabelClosed": "수강료",
+      "amountValueClosed": "안내 예정",
+      "amountSubClosed": "다음 기수 가격은 모집 시 별도 공지"
     },
     "trust": {
       "certificateLabel": "수료증 발급",
@@ -695,14 +710,14 @@
         "오리엔테이션 일정 별도 안내"
       ],
       "closed": {
-        "headerLabel": "알림 등록 완료",
+        "headerLabel": "알림 리스트 등록 완료",
         "headlineEmphasisLine1": "다음 기수가 열리면",
         "headlineEmphasisLine2": "가장 먼저 알려드릴게요.",
         "bodyA": "다음 기수 모집 안내는",
         "bodyB": "{email} 로 보내드릴게요.",
         "checklist": [
           "다음 기수 일정 / 강사 / 가격이 확정되면 이메일 안내",
-          "1기 우선순위 — 동일 조건 시 알림 등록자 우선",
+          "알림 리스트 등록자 우선 — 정원 제한 시 등록 순서대로",
           "변경 또는 취소 원하시면 hello@dropdown.xyz 로 문의"
         ]
       }

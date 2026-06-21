@@ -518,9 +518,13 @@
   "applyForm": {
     "eyebrow": "Apply",
     "chipTemplate": "{seats} seats, first-come-first-served, deadline {cutoff}",
+    "chipTemplateClosed": "Cohort 1 closed / Join next cohort notification list",
     "headline": "Apply and pay",
+    "headlineClosed": "Join the next cohort list",
     "leadA": "{price}, two hours each Saturday and Sunday for four weeks. Seats are confirmed in the order bank transfers are received.",
     "leadB": "A payment email is sent within 24 hours of form submission.",
+    "leadAClosed": "Cohort 1 is closed. We will notify you first when the next cohort opens.",
+    "leadBClosed": "Submit the same form to be added to the notification list.",
     "attendanceCommitment": "I agree to attend this program, which runs from Saturday, June 27, 2026 through Sunday, July 19, 2026, with two hours each on Saturdays and Sundays for a total of eight sessions.",
     "contentUseNote": "Once your enrollment is complete, you agree that the video and photos captured during this program may be used by Growth Career, Dropdown Co., Ltd., DEEPI, and Union Pictures for (1) program promotion, (2) recruiting content for future classes, and (3) your own portfolio. If you object, tell the operations team and your face will be post-processed or blurred before any use.",
     "audienceBanner": {
@@ -540,7 +544,18 @@
       "cutoffValue": "Midnight, Sunday, June 21, 2026",
       "cutoffSubTemplate": "Full refund if fewer than {min} students by this date",
       "amountLabel": "Tuition",
-      "amountSub": "Toss Bank transfer (lump sum)"
+      "amountSub": "Toss Bank transfer (lump sum)",
+      "firstSessionLabelClosed": "Next cohort schedule",
+      "firstSessionValueClosed": "To be announced",
+      "firstSessionSubClosed": "Schedule and sessions will be announced when the next cohort opens",
+      "locationValueClosed": "To be announced",
+      "locationSubClosed": "Venue will be announced when the next cohort opens",
+      "cutoffLabelClosed": "Cohort 1",
+      "cutoffValueClosed": "Enrollment closed",
+      "cutoffSubClosedTemplate": "Cohort 1 begins on June 27, 2026",
+      "amountLabelClosed": "Tuition",
+      "amountValueClosed": "To be announced",
+      "amountSubClosed": "Next cohort price will be announced at open"
     },
     "trust": {
       "certificateLabel": "Certificate issued by",
@@ -702,7 +717,7 @@
         "bodyB": "to {email}.",
         "checklist": [
           "Email notification when next cohort schedule, instructors, and price are confirmed",
-          "Priority for cohort 1 subscribers when seats are limited",
+          "Notification list priority — first-come basis when seats are limited",
           "To update or cancel, email hello@dropdown.xyz"
         ]
       }
