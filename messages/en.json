@@ -550,6 +550,12 @@
     "step2BackCta": "← Previous step",
     "step2SubmitCta": "Submit application →",
     "step2SubmittingCta": "Submitting...",
+    "step2SubmitCtaClosed": "Notify me about the next cohort →",
+    "step2SubmittingCtaClosed": "Subscribing...",
+    "closedBanner": {
+      "title": "Cohort 1 enrollment is closed.",
+      "body": "Fill out the form and we will notify you first when the next cohort opens."
+    },
     "fields": {
       "name": {
         "label": "Full legal name (as on passport)",
@@ -681,7 +687,19 @@
         "Make the bank transfer using the account details we send",
         "Once payment is confirmed, you join the KakaoTalk open chat automatically",
         "Orientation schedule will be shared separately"
-      ]
+      ],
+      "closed": {
+        "headerLabel": "You are on the list",
+        "headlineEmphasisLine1": "We will notify you first",
+        "headlineEmphasisLine2": "when the next cohort opens.",
+        "bodyA": "We will send next cohort details",
+        "bodyB": "to {email}.",
+        "checklist": [
+          "Email notification when next cohort schedule, instructors, and price are confirmed",
+          "Priority for cohort 1 subscribers when seats are limited",
+          "To update or cancel, email hello@dropdown.xyz"
+        ]
+      }
     }
   },
   "stickyCta": {

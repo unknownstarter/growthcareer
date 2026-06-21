@@ -13,6 +13,7 @@ import {
   ENROLLMENT_CAP,
   OPERATOR,
   REFUND_POLICY,
+  isEnrollmentClosed,
 } from "@/src/programs/fan-to-pro/domain/program";
 import { ApplyConfirmModal } from "../components/apply-confirm-modal";
 import { Chip } from "../ui/chip";
@@ -101,6 +102,19 @@ export function ApplyForm() {
     submitApplication,
     INITIAL,
   );
+
+  // 1기 모집 마감 후 자동 전환 — CTA / 안내 배너 카피.
+  // 사용자가 자정 직전 페이지 열어둔 채 자정 넘기는 경우도 커버하기 위해 30초마다 재확인.
+  const [enrollmentClosed, setEnrollmentClosed] = useState(() =>
+    isEnrollmentClosed(),
+  );
+  useEffect(() => {
+    if (enrollmentClosed) return; // 이미 마감되면 더 재확인 불필요
+    const interval = setInterval(() => {
+      if (isEnrollmentClosed()) setEnrollmentClosed(true);
+    }, 30_000);
+    return () => clearInterval(interval);
+  }, [enrollmentClosed]);
 
   const handleStep1Submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -269,7 +283,12 @@ export function ApplyForm() {
       <Section id="apply" tone="bg" trackingName="Apply Form" trackingOrder={15}>
         <Container>
           <Eyebrow n="14">{t("eyebrow")}</Eyebrow>
-          <SuccessBlock id={state.id} email={step1.email} name={step1.name} />
+          <SuccessBlock
+            id={state.id}
+            email={step1.email}
+            name={step1.name}
+            closed={enrollmentClosed}
+          />
         </Container>
       </Section>
     );
@@ -332,6 +351,24 @@ export function ApplyForm() {
           <br />
           {t("leadB")}
         </p>
+
+        {enrollmentClosed ? (
+          <div
+            className="mb-8 border-2 border-sky-400/70 bg-sky-500/10 p-5 sm:p-6"
+            role="status"
+            aria-live="polite"
+          >
+            <p
+              className="font-black text-fg text-lg sm:text-xl"
+              style={{ letterSpacing: "-0.02em" }}
+            >
+              {t("closedBanner.title")}
+            </p>
+            <p className="mt-2 text-base leading-relaxed text-fg-muted">
+              {t("closedBanner.body")}
+            </p>
+          </div>
+        ) : null}
 
         <div className="mx-auto mb-12 flex max-w-3xl flex-col gap-2 border-2 border-brand-pink bg-brand-pink/5 p-4 sm:flex-row sm:items-center sm:gap-4 sm:p-5">
           <span
@@ -603,7 +640,13 @@ export function ApplyForm() {
                 className="mt-2 flex items-center justify-center gap-2 bg-brand-pink py-5 font-black text-fg text-lg uppercase transition-colors hover:bg-brand-purple disabled:opacity-50 sm:py-6 sm:text-xl"
                 style={{ letterSpacing: "-0.02em" }}
               >
-                {pending ? t("step2SubmittingCta") : t("step2SubmitCta")}
+                {pending
+                  ? enrollmentClosed
+                    ? t("step2SubmittingCtaClosed")
+                    : t("step2SubmittingCta")
+                  : enrollmentClosed
+                    ? t("step2SubmitCtaClosed")
+                    : t("step2SubmitCta")}
               </button>
             </form>
           )}
@@ -968,13 +1011,29 @@ function SuccessBlock({
   id,
   email,
   name,
+  closed,
 }: {
   id: string;
   email: string;
   name: string;
+  closed: boolean;
 }) {
   const t = useTranslations("applyForm.success");
-  const checklist = t.raw("checklist") as string[];
+  const tClosed = useTranslations("applyForm.success.closed");
+  const checklist = (
+    closed ? tClosed.raw("checklist") : t.raw("checklist")
+  ) as string[];
+  const headerLabel = closed ? tClosed("headerLabel") : t("headerLabel");
+  const headlineE1 = closed
+    ? tClosed("headlineEmphasisLine1")
+    : t("headlineEmphasisLine1");
+  const headlineE2 = closed
+    ? tClosed("headlineEmphasisLine2")
+    : t("headlineEmphasisLine2");
+  const bodyA = closed ? tClosed("bodyA") : t("bodyA");
+  const bodyB = closed
+    ? tClosed("bodyB", { email: email || t("fallbackEmail") })
+    : t("bodyB", { email: email || t("fallbackEmail") });
   const blockRef = useRef<HTMLDivElement | null>(null);
 
   // Scroll the success block into view as soon as it mounts so applicants
@@ -994,7 +1053,7 @@ function SuccessBlock({
         className="mb-4 text-brand-pink text-xs font-black uppercase"
         style={{ letterSpacing: "0.3em" }}
       >
-        {t("headerLabel")}
+        {headerLabel}
       </p>
 
       <h3
@@ -1009,15 +1068,14 @@ function SuccessBlock({
         {t("headlineNameSuffix")}
         <br />
         <span className="text-brand-pink">
-          {t("headlineEmphasisLine1")}
+          {headlineE1}
           <br />
-          {t("headlineEmphasisLine2")}
+          {headlineE2}
         </span>
       </h3>
 
       <p className="mb-8 text-fg-muted text-base leading-relaxed sm:text-lg">
-        {t("bodyA")}{" "}
-        {t("bodyB", { email: email || t("fallbackEmail") })}
+        {bodyA} {bodyB}
       </p>
 
       <ul className="mb-2 grid grid-cols-1 gap-2 text-left text-fg-muted text-sm">

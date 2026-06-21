@@ -53,6 +53,7 @@ const STATUS_LABEL: Record<ApplicantStatus, string> = {
   cancelled: "취소",
   enrolled: "등록",
   refunded: "환불",
+  next_cohort_interest: "다음기수",
 };
 
 const STATUS_ORDER: ApplicantStatus[] = [
@@ -476,6 +477,7 @@ const STATUS_COLOR: Record<ApplicantStatus, string> = {
   cancelled: "text-[var(--muted-foreground)]",
   enrolled: "text-emerald-700 dark:text-emerald-400",
   refunded: "text-[var(--muted-foreground)]",
+  next_cohort_interest: "text-sky-700 dark:text-sky-400",
 };
 
 function ApplicantStatusBadge({ status }: { status: ApplicantStatus }) {
@@ -499,6 +501,7 @@ function ApplicantStatusBadge({ status }: { status: ApplicantStatus }) {
     cancelled: { variant: "secondary", label: "취소" },
     enrolled: { variant: "success", label: "등록" },
     refunded: { variant: "secondary", label: "환불" },
+    next_cohort_interest: { variant: "default", label: "다음기수" },
   };
   const cfg = map[status];
   return <Badge variant={cfg.variant}>{cfg.label}</Badge>;

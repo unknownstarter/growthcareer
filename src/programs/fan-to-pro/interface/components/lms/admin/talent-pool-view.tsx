@@ -46,6 +46,7 @@ const STATUS_LABEL: Record<ApplicantStatus, string> = {
   cancelled: "취소",
   enrolled: "등록",
   refunded: "환불",
+  next_cohort_interest: "다음기수",
 };
 
 export function TalentPoolView({ applicants, cohorts }: Props) {
@@ -273,6 +274,7 @@ function ApplicantStatusBadge({ status }: { status: ApplicantStatus }) {
     cancelled: { variant: "secondary", label: "취소" },
     enrolled: { variant: "success", label: "등록" },
     refunded: { variant: "secondary", label: "환불" },
+    next_cohort_interest: { variant: "default", label: "다음기수" },
   };
   const cfg = map[status];
   return <Badge variant={cfg.variant}>{cfg.label}</Badge>;

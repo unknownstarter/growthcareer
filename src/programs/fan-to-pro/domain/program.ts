@@ -47,14 +47,26 @@ export const REFUND_POLICY = {
 
 /**
  * 모집 정원 가드. 모집 마감일 기준 신청자 < 최소 인원이면 강좌를 취소하고 전액 자동 환불.
+ *
+ * `cutoffAt` 은 ISO 8601 + KST(+09:00) 명시. server / client 동일 시각 비교 가능.
+ * 한국어 "6월 21일 자정" = 6/21 → 6/22 전환 시점 = 2026-06-22 00:00 KST.
  */
 export const ENROLLMENT_CAP = {
   totalSeats: 30,
   minToProceed: 20,
   cutoffDaysBeforeStart: 6,
+  cutoffAt: "2026-06-22T00:00:00+09:00",
   autoRefundNote:
     "본 강좌는 총 30인 모집이며, 2026년 6월 21일(일) 자정까지 신청자가 20명 미만일 경우 강좌가 취소되고 결제 금액 전액이 자동 환불된 후 차기 기수로 재모집을 진행합니다.",
 } as const;
+
+/**
+ * 모집 마감 여부 — `now` 이 cutoff datetime 이후면 true.
+ * 서버 / 클라이언트 둘 다 호출 가능 (의존성 0).
+ */
+export function isEnrollmentClosed(now: Date = new Date()): boolean {
+  return now.getTime() >= new Date(ENROLLMENT_CAP.cutoffAt).getTime();
+}
 
 /**
  * 1기 강의 일정. 강의장은 보안·안내 효율을 위해 수강 확정자에게만 개별 공지.

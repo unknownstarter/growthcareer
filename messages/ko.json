@@ -550,6 +550,12 @@
     "step2BackCta": "← 이전 단계",
     "step2SubmitCta": "신청 제출 →",
     "step2SubmittingCta": "신청 처리 중...",
+    "step2SubmitCtaClosed": "다음 기수 알림 받기 →",
+    "step2SubmittingCtaClosed": "알림 등록 중...",
+    "closedBanner": {
+      "title": "1기 모집이 마감되었습니다.",
+      "body": "다음 기수 모집이 시작되면 가장 먼저 알려드릴게요. 폼을 채워서 알림을 등록해주세요."
+    },
     "fields": {
       "name": {
         "label": "이름",
@@ -681,7 +687,19 @@
         "안내 받은 계좌로 입금",
         "입금 확인 → 카카오톡 오픈채팅 자동 입장",
         "오리엔테이션 일정 별도 안내"
-      ]
+      ],
+      "closed": {
+        "headerLabel": "알림 등록 완료",
+        "headlineEmphasisLine1": "다음 기수가 열리면",
+        "headlineEmphasisLine2": "가장 먼저 알려드릴게요.",
+        "bodyA": "다음 기수 모집 안내는",
+        "bodyB": "{email} 로 보내드릴게요.",
+        "checklist": [
+          "다음 기수 일정 / 강사 / 가격이 확정되면 이메일 안내",
+          "1기 우선순위 — 동일 조건 시 알림 등록자 우선",
+          "변경 또는 취소 원하시면 hello@dropdown.xyz 로 문의"
+        ]
+      }
     }
   },
   "stickyCta": {

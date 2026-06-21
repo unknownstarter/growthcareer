@@ -34,6 +34,7 @@ const FUNNEL_LABEL: Record<ApplicantStatus, string> = {
   cancelled: "취소",
   enrolled: "등록",
   refunded: "환불",
+  next_cohort_interest: "다음기수",
 };
 
 const FUNNEL_ORDER: ApplicantStatus[] = [

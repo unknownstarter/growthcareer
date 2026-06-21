@@ -18,6 +18,7 @@ export const APPLICANT_STATUSES = [
   "cancelled",
   "enrolled",
   "refunded",
+  "next_cohort_interest",
 ] as const;
 
 export type ApplicantStatus = (typeof APPLICANT_STATUSES)[number];

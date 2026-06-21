@@ -29,6 +29,7 @@ const STATUS_LABEL: Record<ApplicantStatus, string> = {
   enrolled: "ENROLLED",
   cancelled: "CANCELLED",
   refunded: "REFUNDED",
+  next_cohort_interest: "NEXT COHORT",
 };
 
 const STATUS_KO: Record<ApplicantStatus, string> = {
@@ -39,6 +40,7 @@ const STATUS_KO: Record<ApplicantStatus, string> = {
   enrolled: "수강 확정",
   cancelled: "취소",
   refunded: "환불 완료",
+  next_cohort_interest: "다음 기수 인터레스트",
 };
 
 const STATUS_TONE: Record<ApplicantStatus, string> = {
@@ -49,6 +51,7 @@ const STATUS_TONE: Record<ApplicantStatus, string> = {
   enrolled: "border-brand-pink bg-brand-pink/20 text-brand-pink",
   cancelled: "border-zinc-700 bg-zinc-800/40 text-zinc-400",
   refunded: "border-zinc-700 bg-zinc-800/40 text-zinc-500",
+  next_cohort_interest: "border-sky-400/60 bg-sky-500/15 text-sky-200",
 };
 
 export function StatusChip({

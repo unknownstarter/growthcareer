@@ -277,6 +277,7 @@ function DashboardInner({
       enrolled: 4,
       refunded: 5,
       cancelled: 6,
+      next_cohort_interest: 7,
     };
     const now = new Date();
     return [...items].sort((a, b) => {
