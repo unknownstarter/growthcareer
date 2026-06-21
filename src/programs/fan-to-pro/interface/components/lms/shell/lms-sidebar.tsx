@@ -37,10 +37,19 @@ const adminNav: NavItem[] = [
 
 const instructorNav: NavItem[] = [
   { href: "/lms/instructor/dashboard" as Route, label: "대시보드", icon: LayoutDashboard },
+  { href: "/lms/instructor/students" as Route, label: "학생", icon: Users },
+  { href: "/lms/instructor/sessions" as Route, label: "세션", icon: Layers },
+  { href: "/lms/instructor/consultations" as Route, label: "컨설팅", icon: MessageSquare },
 ];
 
 const studentNav: NavItem[] = [
   { href: "/lms/student/dashboard" as Route, label: "대시보드", icon: LayoutDashboard },
+  { href: "/lms/student/sessions" as Route, label: "수업", icon: Layers },
+  { href: "/lms/student/assignments" as Route, label: "과제", icon: FileText },
+  { href: "/lms/student/materials" as Route, label: "자료", icon: FileText },
+  { href: "/lms/student/announcements" as Route, label: "공지", icon: Megaphone },
+  { href: "/lms/student/consulting" as Route, label: "컨설팅", icon: MessageSquare },
+  { href: "/lms/student/certificates" as Route, label: "수료증", icon: GraduationCap },
 ];
 
 const navByRole: Record<LmsRole, NavItem[]> = {

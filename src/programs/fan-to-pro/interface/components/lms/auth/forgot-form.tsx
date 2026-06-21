@@ -2,19 +2,27 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
+import type { Route } from "next";
 import { Button } from "@/src/programs/fan-to-pro/interface/components/lms/ui/button";
 import { Input } from "@/src/programs/fan-to-pro/interface/components/lms/ui/input";
 import { Label } from "@/src/programs/fan-to-pro/interface/components/lms/ui/label";
-import { Alert, AlertDescription } from "@/src/programs/fan-to-pro/interface/components/lms/ui/alert";
+import {
+  Alert,
+  AlertDescription,
+} from "@/src/programs/fan-to-pro/interface/components/lms/ui/alert";
 import { forgotPasswordAction } from "@/src/programs/fan-to-pro/interface/server-actions/lms-auth-actions";
 
 export function ForgotForm() {
+  const params = useParams();
+  const locale = (params?.locale as string) ?? "ko";
   const [pending, startTransition] = useTransition();
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   function onSubmit(formData: FormData) {
     setError(null);
+    formData.set("locale", locale);
     startTransition(async () => {
       const result = await forgotPasswordAction(formData);
       if (result.status === "ok") {
@@ -30,11 +38,12 @@ export function ForgotForm() {
       <div className="space-y-4">
         <Alert>
           <AlertDescription>
-            입력하신 이메일로 비밀번호 재설정 링크를 보냈습니다. 메일함을 확인해주세요.
+            입력하신 이메일로 비밀번호 재설정 링크를 보냈습니다. 메일함을
+            확인해주세요.
           </AlertDescription>
         </Alert>
         <Link
-          href="/lms/login"
+          href={`/${locale}/auth/login` as Route}
           className="block text-center text-sm text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors"
         >
           로그인 페이지로 돌아가기
@@ -72,7 +81,7 @@ export function ForgotForm() {
 
       <div className="text-center text-sm">
         <Link
-          href="/lms/login"
+          href={`/${locale}/auth/login` as Route}
           className="text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors"
         >
           로그인으로 돌아가기

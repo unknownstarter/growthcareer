@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter, useParams } from "next/navigation";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { Route } from "next";
 import { Button } from "@/src/programs/fan-to-pro/interface/components/lms/ui/button";
 import { Input } from "@/src/programs/fan-to-pro/interface/components/lms/ui/input";
@@ -11,44 +10,43 @@ import {
   Alert,
   AlertDescription,
 } from "@/src/programs/fan-to-pro/interface/components/lms/ui/alert";
-import { resetPasswordAction } from "@/src/programs/fan-to-pro/interface/server-actions/lms-auth-actions";
+import { changePasswordAction } from "@/src/programs/fan-to-pro/interface/server-actions/lms-auth-actions";
 
-export function ResetForm() {
+/**
+ * 첫 로그인 강제 PW 변경 폼 (ADR 0008 §4).
+ *
+ * reset-form 과 다른 점: old PW 확인 X (이미 로그인 상태). 성공 시 user_profiles.
+ * must_change_password=false + role 따라 dashboard redirect.
+ */
+export function ChangePasswordForm({
+  redirectTo,
+}: {
+  redirectTo: string;
+}) {
   const router = useRouter();
-  const params = useParams();
-  const locale = (params?.locale as string) ?? "ko";
   const [pending, startTransition] = useTransition();
-  const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   function onSubmit(formData: FormData) {
     setError(null);
     startTransition(async () => {
-      const result = await resetPasswordAction(formData);
+      const result = await changePasswordAction(formData);
       if (result.status === "ok") {
-        setDone(true);
-        setTimeout(
-          () => router.replace(`/${locale}/auth/login` as Route),
-          2000,
-        );
+        router.replace(redirectTo as Route);
       } else {
         setError(result.message);
       }
     });
   }
 
-  if (done) {
-    return (
-      <Alert>
-        <AlertDescription>
-          비밀번호를 변경했습니다. 잠시 후 로그인 페이지로 이동합니다.
-        </AlertDescription>
-      </Alert>
-    );
-  }
-
   return (
     <form action={onSubmit} className="space-y-5">
+      <Alert>
+        <AlertDescription>
+          첫 로그인입니다. 안전한 비밀번호로 변경해주세요.
+        </AlertDescription>
+      </Alert>
+
       <div className="space-y-2">
         <Label htmlFor="password" className="text-[var(--foreground)]">
           새 비밀번호
@@ -88,17 +86,8 @@ export function ResetForm() {
       ) : null}
 
       <Button type="submit" size="lg" className="w-full" disabled={pending}>
-        {pending ? "변경 중..." : "비밀번호 변경"}
+        {pending ? "변경 중..." : "비밀번호 설정 완료"}
       </Button>
-
-      <div className="text-center text-sm">
-        <Link
-          href={`/${locale}/auth/login` as Route}
-          className="text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors"
-        >
-          로그인으로 돌아가기
-        </Link>
-      </div>
     </form>
   );
 }

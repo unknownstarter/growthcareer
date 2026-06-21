@@ -114,8 +114,11 @@ export async function inviteUser(input: unknown): Promise<InviteUserResult> {
 }
 
 function inviteRedirectTo(): string {
-  // invite 메일 링크의 redirect 처는 reset-password (학생/강사가 첫 PW 설정).
-  const base =
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://growthcareer.xyz";
-  return `${base}/lms/reset-password`;
+  // invite 메일 링크의 redirect — auth/callback 이 PKCE code 교환 후 change-password 로.
+  // ADR 0008 §4: 첫 로그인 강제 PW 변경 (must_change_password=true). user_profiles
+  // INSERT 시 default true 박힘.
+  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://growthcareer.xyz";
+  // locale 은 ko 기본. 외국인 학생 magic link 는 별도 i18n 도입 시 분기.
+  const next = encodeURIComponent("/ko/auth/change-password");
+  return `${base}/ko/auth/callback?next=${next}`;
 }
