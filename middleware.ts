@@ -1,5 +1,5 @@
 /**
- * Edge middleware - 두 책임을 한 번에 처리한다.
+ * Edge middleware - 세 책임을 한 번에 처리한다.
  *
  * 1) `/admin/*` - HTTP Basic Auth 게이트. 두 단계 role:
  *    - admin: ADMIN_BASIC_AUTH_USER / ADMIN_BASIC_AUTH_PASS. 전체 권한.
@@ -12,21 +12,52 @@
  *    응답에 noindex 헤더 박음. robots.ts 의 disallow 와 이중 방어.
  *    next-intl middleware 는 거치지 않는다 (locale prefix 없는 단일 경로).
  *
- * 2) 그 외 경로 - 기존 next-intl middleware 그대로.
+ * 2) `/lms/*` - Supabase Auth (ADR 0007 §2~3). session cookie refresh +
+ *    role-based redirect:
+ *    - /lms/login, /lms/forgot-password, /lms/reset-password = public
+ *    - /lms/admin/*  = super_admin 만 (그 외 → /lms/login)
+ *    - /lms/instructor/* = instructor 만
+ *    - /lms/student/* = student 만
+ *    - /lms (정확히 일치) = 세션 없으면 /lms/login, 있으면 role 의 dashboard
+ *    role 결정은 server component 에서 user_profiles 조회로 한 번 더 검증
+ *    (middleware = URL 1차 차단, server action = mutation 2차 차단).
+ *    응답에 noindex 헤더 박음. 마케팅 SEO 영향 0.
+ *
+ * 3) 그 외 경로 - 기존 next-intl middleware 그대로.
  *
  * 환경에 ADMIN_* 자격이 안 박혀 있으면 503 으로 잠근다. VIEWER_* 는
  * optional — 없으면 viewer 로그인만 거절.
+ * Supabase 환경 변수 (NEXT_PUBLIC_SUPABASE_URL / ANON_KEY) 가 없으면 /lms/*
+ * 는 503.
  * 평문 비밀번호 fallback 절대 금지.
  */
 import { NextResponse, type NextRequest } from "next/server";
 import createMiddleware from "next-intl/middleware";
 import { routing } from "@/src/i18n/routing";
+import { getSupabaseAuthMiddleware } from "@/src/programs/fan-to-pro/infrastructure/auth/supabase-server-auth";
 
 const intlMiddleware = createMiddleware(routing);
 
 const ADMIN_PREFIX = "/admin";
 const ADMIN_LOGOUT_PATH = "/admin/logout";
 const ADMIN_ROLE_HEADER = "x-admin-role";
+
+const LMS_PREFIX = "/lms";
+const LMS_LOGIN_PATH = "/lms/login";
+const LMS_PUBLIC_PATHS = new Set([
+  "/lms/login",
+  "/lms/forgot-password",
+  "/lms/reset-password",
+  "/lms/auth/callback",
+]);
+
+type LmsRoleStr = "super_admin" | "instructor" | "student";
+
+const LMS_ROLE_DASHBOARD: Record<LmsRoleStr, string> = {
+  super_admin: "/lms/admin/dashboard",
+  instructor: "/lms/instructor/dashboard",
+  student: "/lms/student/dashboard",
+};
 
 // 코워크 공유 viewer 가 더 이상 PII 를 볼 수 없는 시점. 종강 = 7/19 24:00 KST.
 const VIEWER_ACCESS_END_UTC = Date.parse("2026-07-19T15:00:00.000Z");
@@ -185,8 +216,120 @@ function resolveRole(req: NextRequest): AuthResult {
   return { kind: "challenge", response: unauthorized() };
 }
 
-export default function middleware(req: NextRequest): NextResponse | Response {
+function lmsNoIndex(res: NextResponse): NextResponse {
+  res.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+  return res;
+}
+
+function lmsLocked(): NextResponse {
+  return new NextResponse("LMS disabled (Supabase env missing)", {
+    status: 503,
+    headers: {
+      "X-Robots-Tag": "noindex, nofollow, noarchive",
+      "Cache-Control": "no-store",
+    },
+  });
+}
+
+async function handleLms(req: NextRequest): Promise<NextResponse> {
+  const { pathname, search } = req.nextUrl;
+
+  // Supabase 환경 변수 점검. 없으면 503 — fallback 동작 금지.
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !anonKey) {
+    return lmsLocked();
+  }
+
+  // session refresh 용 response. handleLms 가 최종 반환할 response 의 base.
+  let res = NextResponse.next({ request: { headers: req.headers } });
+  const supabase = getSupabaseAuthMiddleware(req, res);
+
+  // session refresh (만료 직전이면 자동 갱신, cookie 도 sync).
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const isPublic = LMS_PUBLIC_PATHS.has(pathname);
+
+  // 1) public path — 로그인 안 한 사용자는 그대로 통과. 로그인 한 사용자가
+  //    /lms/login 으로 직접 진입한 경우 dashboard 로 redirect (UX).
+  if (isPublic) {
+    if (user && pathname === LMS_LOGIN_PATH) {
+      // role 결정은 별도 RPC 없이 user_profiles 직접 조회.
+      const { data: profile } = await supabase
+        .from("user_profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+      const role = (profile?.role ?? null) as LmsRoleStr | null;
+      if (role) {
+        const target = new URL(LMS_ROLE_DASHBOARD[role], req.url);
+        return lmsNoIndex(NextResponse.redirect(target, 302));
+      }
+    }
+    return lmsNoIndex(res);
+  }
+
+  // 2) 로그인 필요. 세션 없으면 /lms/login 으로 redirect (원래 path 는 ?next= 로 보존).
+  if (!user) {
+    const loginUrl = new URL(LMS_LOGIN_PATH, req.url);
+    const next = pathname + (search ?? "");
+    if (next && next !== LMS_LOGIN_PATH) {
+      loginUrl.searchParams.set("next", next);
+    }
+    return lmsNoIndex(NextResponse.redirect(loginUrl, 302));
+  }
+
+  // 3) role 결정 + path matcher.
+  const { data: profile } = await supabase
+    .from("user_profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+  const role = (profile?.role ?? null) as LmsRoleStr | null;
+
+  if (!role) {
+    // 로그인은 했지만 user_profiles 가 없음 — invite 이전 상태. 로그아웃 후 login 으로.
+    await supabase.auth.signOut();
+    const loginUrl = new URL(LMS_LOGIN_PATH, req.url);
+    loginUrl.searchParams.set("error", "no_profile");
+    return lmsNoIndex(NextResponse.redirect(loginUrl, 302));
+  }
+
+  // /lms (정확히 일치) → role 의 dashboard 로.
+  if (pathname === LMS_PREFIX) {
+    const target = new URL(LMS_ROLE_DASHBOARD[role], req.url);
+    return lmsNoIndex(NextResponse.redirect(target, 302));
+  }
+
+  // role 별 path 차단.
+  if (pathname.startsWith("/lms/admin") && role !== "super_admin") {
+    const target = new URL(LMS_ROLE_DASHBOARD[role], req.url);
+    return lmsNoIndex(NextResponse.redirect(target, 302));
+  }
+  if (pathname.startsWith("/lms/instructor") && role !== "instructor") {
+    const target = new URL(LMS_ROLE_DASHBOARD[role], req.url);
+    return lmsNoIndex(NextResponse.redirect(target, 302));
+  }
+  if (pathname.startsWith("/lms/student") && role !== "student") {
+    const target = new URL(LMS_ROLE_DASHBOARD[role], req.url);
+    return lmsNoIndex(NextResponse.redirect(target, 302));
+  }
+
+  // 통과 — session cookie 가 res 에 sync 되어 있음.
+  return lmsNoIndex(res);
+}
+
+export default async function middleware(
+  req: NextRequest,
+): Promise<NextResponse | Response> {
   const { pathname } = req.nextUrl;
+
+  // /lms/* 는 Supabase Auth 분기.
+  if (pathname === LMS_PREFIX || pathname.startsWith(`${LMS_PREFIX}/`)) {
+    return handleLms(req);
+  }
 
   if (pathname === ADMIN_PREFIX || pathname.startsWith(`${ADMIN_PREFIX}/`)) {
     // 명시적 로그아웃 — 신청자 페이지로 redirect + logged-out cookie 박음.
