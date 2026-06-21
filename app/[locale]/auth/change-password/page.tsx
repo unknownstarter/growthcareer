@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Route } from "next";
 import { redirect } from "next/navigation";
 import { getLmsUser } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
 import { resolvePostLoginRedirect } from "@/src/programs/fan-to-pro/infrastructure/auth/post-login-redirect";
@@ -31,13 +31,13 @@ export default async function AuthChangePasswordPage({
   const { locale } = await params;
   const user = await getLmsUser();
   if (!user) {
-    redirect(`/${locale}/auth/login`);
+    redirect(`/${locale}/auth/login` as Route);
   }
 
   // 이미 변경한 사용자가 직접 진입 — 본인 role surface 로 보냄.
   if (!user.mustChangePassword) {
     const dest = await resolvePostLoginRedirect(user, locale);
-    redirect(dest);
+    redirect(dest as Route);
   }
 
   const redirectAfter = await resolvePostLoginRedirect(user, locale);

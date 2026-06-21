@@ -1,3 +1,4 @@
+import type { Route } from "next";
 import { redirect } from "next/navigation";
 import { getLmsUser } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
 import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
@@ -20,10 +21,10 @@ export default async function FanToProAdminLayout({
 }) {
   const { locale } = await params;
   const user = await getLmsUser();
-  if (!user) redirect(`/${locale}/auth/login`);
+  if (!user) redirect(`/${locale}/auth/login` as Route);
 
   if (user.mustChangePassword) {
-    redirect(`/${locale}/auth/change-password`);
+    redirect(`/${locale}/auth/change-password` as Route);
   }
 
   // super_admin 통과.
@@ -52,7 +53,7 @@ export default async function FanToProAdminLayout({
   }
 
   if (!allowed) {
-    redirect(`/${locale}/auth/login?error=no_membership`);
+    redirect(`/${locale}/auth/login?error=no_membership` as Route);
   }
 
   return <LmsShell user={user}>{children}</LmsShell>;

@@ -1,35 +1,30 @@
 /**
- * Edge middleware - 세 책임을 한 번에 처리한다.
+ * Edge middleware - 네 책임을 한 번에 처리한다 (ADR 0008).
  *
- * 1) `/admin/*` - HTTP Basic Auth 게이트. 두 단계 role:
+ * 1) `/admin/*` - HTTP Basic Auth 게이트 (변경 X). 두 단계 role:
  *    - admin: ADMIN_BASIC_AUTH_USER / ADMIN_BASIC_AUTH_PASS. 전체 권한.
  *    - viewer: VIEWER_BASIC_AUTH_USER / VIEWER_BASIC_AUTH_PASS. 신청자
  *      명단 read-only. /admin/instructors + /admin/finance 차단. 종강
  *      (2026-07-19 24:00 KST = 2026-07-19 15:00 UTC) 이후 자동 차단.
- *    role 결과는 `x-admin-role` 헤더로 server component / server action 에
- *    전달 (src/programs/fan-to-pro/admin/role.ts 의 getAdminRole 가 읽음).
- *    실패 시 401 + WWW-Authenticate.
- *    응답에 noindex 헤더 박음. robots.ts 의 disallow 와 이중 방어.
- *    next-intl middleware 는 거치지 않는다 (locale prefix 없는 단일 경로).
+ *    role 결과는 `x-admin-role` 헤더로 server component / server action 에 전달.
+ *    응답에 noindex 헤더 박음.
  *
- * 2) `/lms/*` - Supabase Auth (ADR 0007 §2~3). session cookie refresh +
- *    role-based redirect:
- *    - /lms/login, /lms/forgot-password, /lms/reset-password = public
- *    - /lms/admin/*  = super_admin 만 (그 외 → /lms/login)
- *    - /lms/instructor/* = instructor 만
- *    - /lms/student/* = student 만
- *    - /lms (정확히 일치) = 세션 없으면 /lms/login, 있으면 role 의 dashboard
- *    role 결정은 server component 에서 user_profiles 조회로 한 번 더 검증
- *    (middleware = URL 1차 차단, server action = mutation 2차 차단).
- *    응답에 noindex 헤더 박음. 마케팅 SEO 영향 0.
+ * 2) `/[locale]/auth/*` - Supabase Auth 통합 로그인 (ADR 0008 §1).
+ *    - login / forgot-password / reset-password / callback = public
+ *    - change-password = session 필수 + must_change_password 분기
+ *    이미 로그인 한 사용자가 login 직접 진입하면 role 의 dashboard 로 redirect.
  *
- * 3) 그 외 경로 - 기존 next-intl middleware 그대로.
+ * 3) `/[locale]/fan-to-pro/*` - 마케팅 + LMS 공존 (ADR 0008).
+ *    - / (랜딩) / apply = public 마케팅 (변경 X)
+ *    - /admin/* = super_admin 또는 program admin (program_memberships)
+ *    - /<cohortSlug>/instructor/* = cohort_memberships role=instructor
+ *    - /<cohortSlug>/student/* = cohort_memberships role=student
+ *    위 인증 영역에서 must_change_password=true 이면 /auth/change-password 강제.
  *
- * 환경에 ADMIN_* 자격이 안 박혀 있으면 503 으로 잠근다. VIEWER_* 는
- * optional — 없으면 viewer 로그인만 거절.
- * Supabase 환경 변수 (NEXT_PUBLIC_SUPABASE_URL / ANON_KEY) 가 없으면 /lms/*
- * 는 503.
- * 평문 비밀번호 fallback 절대 금지.
+ * 4) 그 외 경로 - 기존 next-intl middleware 그대로.
+ *
+ * 환경에 ADMIN_* 자격이 안 박혀 있으면 503 으로 잠근다.
+ * Supabase 환경 변수가 없으면 인증 영역만 503 (마케팅은 정상 동작).
  */
 import { NextResponse, type NextRequest } from "next/server";
 import createMiddleware from "next-intl/middleware";
@@ -42,45 +37,23 @@ const ADMIN_PREFIX = "/admin";
 const ADMIN_LOGOUT_PATH = "/admin/logout";
 const ADMIN_ROLE_HEADER = "x-admin-role";
 
-const LMS_PREFIX = "/lms";
-const LMS_LOGIN_PATH = "/lms/login";
-const LMS_PUBLIC_PATHS = new Set([
-  "/lms/login",
-  "/lms/forgot-password",
-  "/lms/reset-password",
-  "/lms/auth/callback",
-]);
-
-type LmsRoleStr = "super_admin" | "instructor" | "student";
-
-const LMS_ROLE_DASHBOARD: Record<LmsRoleStr, string> = {
-  super_admin: "/lms/admin/dashboard",
-  instructor: "/lms/instructor/dashboard",
-  student: "/lms/student/dashboard",
-};
-
-// 코워크 공유 viewer 가 더 이상 PII 를 볼 수 없는 시점. 종강 = 7/19 24:00 KST.
+// 종강 = 7/19 24:00 KST = 7/19 15:00 UTC.
 const VIEWER_ACCESS_END_UTC = Date.parse("2026-07-19T15:00:00.000Z");
 
-// viewer 가 절대 접근 못 하는 경로 prefix.
 const ADMIN_ONLY_PREFIXES = ["/admin/instructors", "/admin/finance"];
 
-// HTTP Basic Auth 는 stateless 라 "세션 타임아웃" 을 cookie 의 timestamp 로
-// 강제. 12 시간 후 자격을 통과해도 401 → 사용자가 자격 재입력해야 함. 로그
-// 아웃 시에도 같은 cookie 삭제.
 const ADMIN_SESSION_COOKIE = "gc_admin_session";
 const ADMIN_SESSION_TTL_MS = 12 * 60 * 60 * 1000;
-
-// 로그아웃 직후 1회용 marker. middleware 가 이 cookie 를 보면 자격 헤더가
-// 와도 무시하고 401 응답 + 매번 다른 realm 으로 자격 다이얼로그 강제. 그래야
-// 브라우저가 캐시된 admin 자격을 자동 첨부해서 재로그인되는 현상을 회피.
-// cookie 는 401 보낸 직후 삭제 → 한 번만 효과.
 const ADMIN_LOGGED_OUT_COOKIE = "gc_admin_logged_out";
 
 type Role = "admin" | "viewer";
 
+// -------------------------------------------------------------------------
+// Basic Auth utilities (기존 /admin/* 로직 — 변경 X).
+// -------------------------------------------------------------------------
+
 function unauthorized(): NextResponse {
-  const res = new NextResponse("Authentication required", {
+  return new NextResponse("Authentication required", {
     status: 401,
     headers: {
       "WWW-Authenticate": 'Basic realm="growthcareer-admin", charset="UTF-8"',
@@ -88,13 +61,9 @@ function unauthorized(): NextResponse {
       "Cache-Control": "no-store",
     },
   });
-  return res;
 }
 
 function logoutResponse(req: NextRequest): NextResponse {
-  // 로그아웃 = 신청자 페이지로 redirect + logged-out marker cookie 박음.
-  // 다음 요청에서 middleware 가 cookie 를 보고 매번 다른 realm 으로 자격
-  // 다이얼로그 강제 → 브라우저의 admin 자격 자동 첨부 우회.
   const url = new URL("/admin/applicants", req.url);
   const res = NextResponse.redirect(url, 302);
   res.cookies.set(ADMIN_LOGGED_OUT_COOKIE, "1", {
@@ -114,8 +83,6 @@ function logoutResponse(req: NextRequest): NextResponse {
 }
 
 function freshChallenge(): NextResponse {
-  // 매번 다른 realm 으로 자격 요구. 브라우저는 같은 realm 의 캐시된 자격만
-  // 자동 첨부하므로 realm 이 바뀌면 새 자격 다이얼로그를 띄운다.
   const realm = `growthcareer-admin-${Date.now().toString(36)}`;
   const res = new NextResponse("Authentication required", {
     status: 401,
@@ -206,7 +173,6 @@ function resolveRole(req: NextRequest): AuthResult {
     timingSafeEqual(suppliedUser, viewerUser) &&
     timingSafeEqual(suppliedPass, viewerPass)
   ) {
-    // 종강 후 viewer 자격은 즉시 폐기.
     if (Date.now() > VIEWER_ACCESS_END_UTC) {
       return { kind: "challenge", response: unauthorized() };
     }
@@ -215,6 +181,70 @@ function resolveRole(req: NextRequest): AuthResult {
 
   return { kind: "challenge", response: unauthorized() };
 }
+
+function handleAdmin(req: NextRequest): NextResponse {
+  const { pathname } = req.nextUrl;
+
+  if (pathname === ADMIN_LOGOUT_PATH) {
+    return logoutResponse(req);
+  }
+  if (req.cookies.get(ADMIN_LOGGED_OUT_COOKIE)?.value === "1") {
+    return freshChallenge();
+  }
+
+  const auth = resolveRole(req);
+  if (auth.kind !== "ok") return auth.response;
+
+  const sessionCookie = req.cookies.get(ADMIN_SESSION_COOKIE)?.value;
+  const now = Date.now();
+  let sessionExpired = false;
+  let sessionStartMs: number | null = null;
+  if (sessionCookie) {
+    const parsed = Number(sessionCookie);
+    if (!Number.isFinite(parsed) || now - parsed > ADMIN_SESSION_TTL_MS) {
+      sessionExpired = true;
+    } else {
+      sessionStartMs = parsed;
+    }
+  }
+  if (sessionExpired) {
+    const res = unauthorized();
+    res.cookies.set(ADMIN_SESSION_COOKIE, "", {
+      path: ADMIN_PREFIX,
+      maxAge: 0,
+    });
+    return res;
+  }
+
+  if (
+    auth.role === "viewer" &&
+    ADMIN_ONLY_PREFIXES.some(
+      (p) => pathname === p || pathname.startsWith(`${p}/`),
+    )
+  ) {
+    return forbidden();
+  }
+
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set(ADMIN_ROLE_HEADER, auth.role);
+  const res = NextResponse.next({ request: { headers: requestHeaders } });
+  res.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+  res.headers.set("Cache-Control", "no-store");
+  if (sessionStartMs === null) {
+    res.cookies.set(ADMIN_SESSION_COOKIE, String(now), {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: true,
+      path: ADMIN_PREFIX,
+      maxAge: ADMIN_SESSION_TTL_MS / 1000,
+    });
+  }
+  return res;
+}
+
+// -------------------------------------------------------------------------
+// Supabase Auth (ADR 0008) - /[locale]/auth/* + /[locale]/fan-to-pro/(lms)/*
+// -------------------------------------------------------------------------
 
 function lmsNoIndex(res: NextResponse): NextResponse {
   res.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
@@ -231,94 +261,278 @@ function lmsLocked(): NextResponse {
   });
 }
 
-async function handleLms(req: NextRequest): Promise<NextResponse> {
-  const { pathname, search } = req.nextUrl;
+type ParsedPath =
+  | { kind: "marketing" }
+  | { kind: "auth"; subpath: string }
+  | { kind: "fan-to-pro-marketing" }
+  | { kind: "fan-to-pro-admin" }
+  | { kind: "fan-to-pro-cohort"; cohortSlug: string; role: "instructor" | "student" };
 
-  // Supabase 환경 변수 점검. 없으면 503 — fallback 동작 금지.
+function parsePath(pathname: string, locale: string): ParsedPath | null {
+  const localePrefix = `/${locale}`;
+  if (!pathname.startsWith(localePrefix)) return null;
+  const rest = pathname.slice(localePrefix.length) || "/";
+  const segs = rest.split("/").filter(Boolean);
+
+  // /[locale]/auth/*
+  if (segs[0] === "auth") {
+    return { kind: "auth", subpath: segs.slice(1).join("/") };
+  }
+  // /[locale]/fan-to-pro/*
+  if (segs[0] === "fan-to-pro") {
+    if (segs.length === 1) return { kind: "fan-to-pro-marketing" };
+    if (segs[1] === "apply") return { kind: "fan-to-pro-marketing" };
+    if (segs[1] === "admin") return { kind: "fan-to-pro-admin" };
+    // /[locale]/fan-to-pro/<cohortSlug>/{instructor|student}/...
+    if (segs.length >= 3) {
+      const cohortSlug = segs[1];
+      const surface = segs[2];
+      if (surface === "instructor" || surface === "student") {
+        return { kind: "fan-to-pro-cohort", cohortSlug, role: surface };
+      }
+    }
+    return { kind: "fan-to-pro-marketing" };
+  }
+  return null;
+}
+
+const AUTH_PUBLIC_SUBPATHS = new Set([
+  "login",
+  "forgot-password",
+  "reset-password",
+  "callback",
+]);
+
+async function handleLms(
+  req: NextRequest,
+  locale: string,
+  parsed: ParsedPath,
+): Promise<NextResponse> {
+  const { search } = req.nextUrl;
+
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !anonKey) {
-    return lmsLocked();
-  }
+  if (!url || !anonKey) return lmsLocked();
 
-  // session refresh 용 response. handleLms 가 최종 반환할 response 의 base.
   let res = NextResponse.next({ request: { headers: req.headers } });
   const supabase = getSupabaseAuthMiddleware(req, res);
 
-  // session refresh (만료 직전이면 자동 갱신, cookie 도 sync).
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const isPublic = LMS_PUBLIC_PATHS.has(pathname);
-
-  // 1) public path — 로그인 안 한 사용자는 그대로 통과. 로그인 한 사용자가
-  //    /lms/login 으로 직접 진입한 경우 dashboard 로 redirect (UX).
-  if (isPublic) {
-    if (user && pathname === LMS_LOGIN_PATH) {
-      // role 결정은 별도 RPC 없이 user_profiles 직접 조회.
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single();
-      const role = (profile?.role ?? null) as LmsRoleStr | null;
-      if (role) {
-        const target = new URL(LMS_ROLE_DASHBOARD[role], req.url);
-        return lmsNoIndex(NextResponse.redirect(target, 302));
-      }
+  // ---- auth subpath ----
+  if (parsed.kind === "auth") {
+    const isPublic = AUTH_PUBLIC_SUBPATHS.has(parsed.subpath);
+    // login 직접 진입 + 이미 세션 있음 → 본인 surface 로 redirect.
+    if (parsed.subpath === "login" && user) {
+      const next = await resolveLoggedInDestination(supabase, user.id, locale);
+      return lmsNoIndex(NextResponse.redirect(new URL(next, req.url), 302));
     }
+    if (isPublic) return lmsNoIndex(res);
+    // change-password 는 session 필수.
+    if (parsed.subpath === "change-password") {
+      if (!user) {
+        return lmsNoIndex(
+          NextResponse.redirect(
+            new URL(`/${locale}/auth/login`, req.url),
+            302,
+          ),
+        );
+      }
+      return lmsNoIndex(res);
+    }
+    // 알 수 없는 subpath — public 처럼 통과 (404 는 page level).
     return lmsNoIndex(res);
   }
 
-  // 2) 로그인 필요. 세션 없으면 /lms/login 으로 redirect (원래 path 는 ?next= 로 보존).
+  // ---- fan-to-pro 마케팅 ----
+  if (parsed.kind === "fan-to-pro-marketing") {
+    // 마케팅은 변경 X — 인증 검사 안 함.
+    return res;
+  }
+
+  // ---- LMS 인증 영역 (admin / cohort) ----
   if (!user) {
-    const loginUrl = new URL(LMS_LOGIN_PATH, req.url);
-    const next = pathname + (search ?? "");
-    if (next && next !== LMS_LOGIN_PATH) {
-      loginUrl.searchParams.set("next", next);
-    }
+    const loginUrl = new URL(`/${locale}/auth/login`, req.url);
+    const next = req.nextUrl.pathname + (search ?? "");
+    loginUrl.searchParams.set("next", next);
     return lmsNoIndex(NextResponse.redirect(loginUrl, 302));
   }
 
-  // 3) role 결정 + path matcher.
+  // must_change_password 검사 — change-password 페이지 자체 외엔 모두 redirect.
   const { data: profile } = await supabase
     .from("user_profiles")
-    .select("role")
+    .select("is_super_admin, must_change_password")
     .eq("id", user.id)
     .single();
-  const role = (profile?.role ?? null) as LmsRoleStr | null;
 
-  if (!role) {
-    // 로그인은 했지만 user_profiles 가 없음 — invite 이전 상태. 로그아웃 후 login 으로.
+  if (!profile) {
+    // session 있는데 profile 없음 — invite 이전 상태. 로그아웃 후 login 으로.
     await supabase.auth.signOut();
-    const loginUrl = new URL(LMS_LOGIN_PATH, req.url);
+    const loginUrl = new URL(`/${locale}/auth/login`, req.url);
     loginUrl.searchParams.set("error", "no_profile");
     return lmsNoIndex(NextResponse.redirect(loginUrl, 302));
   }
 
-  // /lms (정확히 일치) → role 의 dashboard 로.
-  if (pathname === LMS_PREFIX) {
-    const target = new URL(LMS_ROLE_DASHBOARD[role], req.url);
-    return lmsNoIndex(NextResponse.redirect(target, 302));
+  if (profile.must_change_password) {
+    return lmsNoIndex(
+      NextResponse.redirect(
+        new URL(`/${locale}/auth/change-password`, req.url),
+        302,
+      ),
+    );
   }
 
-  // role 별 path 차단.
-  if (pathname.startsWith("/lms/admin") && role !== "super_admin") {
-    const target = new URL(LMS_ROLE_DASHBOARD[role], req.url);
-    return lmsNoIndex(NextResponse.redirect(target, 302));
-  }
-  if (pathname.startsWith("/lms/instructor") && role !== "instructor") {
-    const target = new URL(LMS_ROLE_DASHBOARD[role], req.url);
-    return lmsNoIndex(NextResponse.redirect(target, 302));
-  }
-  if (pathname.startsWith("/lms/student") && role !== "student") {
-    const target = new URL(LMS_ROLE_DASHBOARD[role], req.url);
-    return lmsNoIndex(NextResponse.redirect(target, 302));
+  const isSuperAdmin = Boolean(profile.is_super_admin);
+
+  // ---- fan-to-pro/admin/* ----
+  if (parsed.kind === "fan-to-pro-admin") {
+    if (isSuperAdmin) return lmsNoIndex(res);
+    // program admin 검사.
+    const { data: program } = await supabase
+      .from("programs")
+      .select("id")
+      .eq("slug", "fan-to-pro")
+      .single();
+    if (!program) {
+      return lmsNoIndex(
+        NextResponse.redirect(
+          new URL(`/${locale}/auth/login?error=no_program`, req.url),
+          302,
+        ),
+      );
+    }
+    const { data: pm } = await supabase
+      .from("program_memberships")
+      .select("user_id")
+      .eq("user_id", user.id)
+      .eq("program_id", program.id)
+      .eq("role", "admin")
+      .maybeSingle();
+    if (!pm) {
+      const fallback = await resolveLoggedInDestination(
+        supabase,
+        user.id,
+        locale,
+      );
+      return lmsNoIndex(NextResponse.redirect(new URL(fallback, req.url), 302));
+    }
+    return lmsNoIndex(res);
   }
 
-  // 통과 — session cookie 가 res 에 sync 되어 있음.
+  // ---- fan-to-pro/<slug>/{instructor|student}/* ----
+  if (parsed.kind === "fan-to-pro-cohort") {
+    if (isSuperAdmin) return lmsNoIndex(res);
+    // cohort 조회 + 본인 membership 검사.
+    const { data: cohort } = await supabase
+      .from("cohorts")
+      .select("id")
+      .eq("slug", parsed.cohortSlug)
+      .single();
+    if (!cohort) {
+      return lmsNoIndex(
+        NextResponse.redirect(
+          new URL(`/${locale}/auth/login?error=no_cohort`, req.url),
+          302,
+        ),
+      );
+    }
+    const { data: cm } = await supabase
+      .from("cohort_memberships")
+      .select("user_id")
+      .eq("user_id", user.id)
+      .eq("cohort_id", cohort.id)
+      .eq("role", parsed.role)
+      .maybeSingle();
+    if (!cm) {
+      const fallback = await resolveLoggedInDestination(
+        supabase,
+        user.id,
+        locale,
+      );
+      return lmsNoIndex(NextResponse.redirect(new URL(fallback, req.url), 302));
+    }
+    return lmsNoIndex(res);
+  }
+
   return lmsNoIndex(res);
+}
+
+/**
+ * 로그인한 사용자의 본인 surface path 계산. middleware 안에서만 사용 (server
+ * side post-login-redirect.ts 와 동일 로직 단순화 버전 — middleware 는 Edge
+ * runtime 일 가능성 있어 가벼운 select 만).
+ */
+async function resolveLoggedInDestination(
+  supabase: ReturnType<typeof getSupabaseAuthMiddleware>,
+  userId: string,
+  locale: string,
+): Promise<string> {
+  const { data: profile } = await supabase
+    .from("user_profiles")
+    .select("is_super_admin")
+    .eq("id", userId)
+    .single();
+
+  if (profile?.is_super_admin) {
+    return `/${locale}/fan-to-pro/admin/dashboard`;
+  }
+
+  // program admin (현 fan-to-pro 만).
+  const { data: program } = await supabase
+    .from("programs")
+    .select("id, slug")
+    .eq("slug", "fan-to-pro")
+    .single();
+  if (program) {
+    const { data: pm } = await supabase
+      .from("program_memberships")
+      .select("user_id")
+      .eq("user_id", userId)
+      .eq("program_id", program.id)
+      .eq("role", "admin")
+      .maybeSingle();
+    if (pm) return `/${locale}/fan-to-pro/admin/dashboard`;
+  }
+
+  // cohort membership.
+  const { data: memberships } = await supabase
+    .from("cohort_memberships")
+    .select("cohort_id, role")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(5);
+
+  if (memberships && memberships.length > 0) {
+    const instructor = memberships.find((m) => m.role === "instructor");
+    const target = instructor ?? memberships[0];
+    const { data: cohort } = await supabase
+      .from("cohorts")
+      .select("slug, programs(slug)")
+      .eq("id", target.cohort_id)
+      .single();
+    if (cohort?.slug) {
+      const programsObj = Array.isArray(cohort.programs)
+        ? cohort.programs[0]
+        : (cohort.programs as { slug?: string } | null);
+      const progSlug = programsObj?.slug ?? "fan-to-pro";
+      return `/${locale}/${progSlug}/${cohort.slug}/${target.role}/dashboard`;
+    }
+  }
+
+  return `/${locale}/auth/login?error=no_membership`;
+}
+
+// -------------------------------------------------------------------------
+// entry
+// -------------------------------------------------------------------------
+
+function detectLocale(pathname: string): string | null {
+  for (const l of routing.locales) {
+    if (pathname === `/${l}` || pathname.startsWith(`/${l}/`)) return l;
+  }
+  return null;
 }
 
 export default async function middleware(
@@ -326,86 +540,31 @@ export default async function middleware(
 ): Promise<NextResponse | Response> {
   const { pathname } = req.nextUrl;
 
-  // /lms/* 는 Supabase Auth 분기.
-  if (pathname === LMS_PREFIX || pathname.startsWith(`${LMS_PREFIX}/`)) {
-    return handleLms(req);
-  }
-
+  // 1) /admin/* — Basic Auth (변경 X).
   if (pathname === ADMIN_PREFIX || pathname.startsWith(`${ADMIN_PREFIX}/`)) {
-    // 명시적 로그아웃 — 신청자 페이지로 redirect + logged-out cookie 박음.
-    if (pathname === ADMIN_LOGOUT_PATH) {
-      return logoutResponse(req);
-    }
-
-    // 직전 요청이 로그아웃이었으면 자격을 무시하고 새 realm 으로 자격 강제.
-    // 브라우저의 admin 자격 자동 첨부 우회.
-    if (req.cookies.get(ADMIN_LOGGED_OUT_COOKIE)?.value === "1") {
-      return freshChallenge();
-    }
-
-    const auth = resolveRole(req);
-    if (auth.kind !== "ok") return auth.response;
-
-    // 12 시간 세션 타임아웃. cookie 의 timestamp 와 비교.
-    const sessionCookie = req.cookies.get(ADMIN_SESSION_COOKIE)?.value;
-    const now = Date.now();
-    let sessionExpired = false;
-    let sessionStartMs: number | null = null;
-    if (sessionCookie) {
-      const parsed = Number(sessionCookie);
-      if (!Number.isFinite(parsed) || now - parsed > ADMIN_SESSION_TTL_MS) {
-        sessionExpired = true;
-      } else {
-        sessionStartMs = parsed;
-      }
-    }
-    if (sessionExpired) {
-      // 자격은 통과했어도 세션 만료. 자격 재입력 강제.
-      const res = unauthorized();
-      res.cookies.set(ADMIN_SESSION_COOKIE, "", {
-        path: ADMIN_PREFIX,
-        maxAge: 0,
-      });
-      return res;
-    }
-
-    // viewer 는 admin-only 경로 진입 차단.
-    if (
-      auth.role === "viewer" &&
-      ADMIN_ONLY_PREFIXES.some(
-        (p) => pathname === p || pathname.startsWith(`${p}/`),
-      )
-    ) {
-      return forbidden();
-    }
-
-    // role 을 server component 에 전달. NextResponse.next({ request }) 패턴.
-    // Headers.set() 은 동일 key 의 기존 값을 제거 후 set — client 가 보낸
-    // 위조 x-admin-role 헤더가 있어도 여기서 안전하게 덮어쓴다.
-    const requestHeaders = new Headers(req.headers);
-    requestHeaders.set(ADMIN_ROLE_HEADER, auth.role);
-    const res = NextResponse.next({ request: { headers: requestHeaders } });
-    res.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
-    res.headers.set("Cache-Control", "no-store");
-    // 첫 진입이면 세션 timestamp 새로 박음. 기존 세션은 그대로 유지 (롤링
-    // 갱신 안 함 — 12 시간 hard cap).
-    if (sessionStartMs === null) {
-      res.cookies.set(ADMIN_SESSION_COOKIE, String(now), {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: true,
-        path: ADMIN_PREFIX,
-        maxAge: ADMIN_SESSION_TTL_MS / 1000,
-      });
-    }
-    return res;
+    return handleAdmin(req);
   }
 
+  // 2) /[locale]/auth/* + /[locale]/fan-to-pro/* — Supabase Auth 분기.
+  const locale = detectLocale(pathname);
+  if (locale) {
+    const parsed = parsePath(pathname, locale);
+    if (
+      parsed &&
+      (parsed.kind === "auth" ||
+        parsed.kind === "fan-to-pro-admin" ||
+        parsed.kind === "fan-to-pro-cohort")
+    ) {
+      return handleLms(req, locale, parsed);
+    }
+    // fan-to-pro-marketing 은 next-intl 통해 자연 처리.
+  }
+
+  // 3) 그 외 — next-intl.
   return intlMiddleware(req);
 }
 
 export const config = {
-  // Skip Next.js internals and static assets. /admin 은 명시적으로 포함시키기 위해
-  // 기존 matcher 그대로 사용 (admin 도 이 matcher 에 포함됨).
+  // Skip Next.js internals and static assets. /admin 도 이 matcher 안에 들어옴.
   matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
 };

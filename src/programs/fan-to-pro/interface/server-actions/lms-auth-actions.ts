@@ -12,6 +12,7 @@
 import { z } from "zod";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
+import type { Route } from "next";
 import { getSupabaseAuthServer } from "@/src/programs/fan-to-pro/infrastructure/auth/supabase-server-auth";
 import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
 import { resolvePostLoginRedirect } from "@/src/programs/fan-to-pro/infrastructure/auth/post-login-redirect";
@@ -272,5 +273,5 @@ export async function changePasswordAction(
 export async function logoutAction(locale: string = "ko"): Promise<void> {
   const supabase = await getSupabaseAuthServer();
   await supabase.auth.signOut();
-  redirect(`/${locale}/auth/login`);
+  redirect(`/${locale}/auth/login` as Route);
 }
