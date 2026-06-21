@@ -17,7 +17,8 @@ export type MessageKind =
   | "reminderT1"
   | "reminderD3"
   | "reminderD1"
-  | "referralInvite";
+  | "referralInvite"
+  | "cohortKickoff";
 export type MessageChannel = "sms" | "email";
 
 /**
@@ -602,6 +603,153 @@ const referralInvite_email_subject_ko = "[Fan to Pro] 친구초대 이벤트 안
 const referralInvite_email_subject_en = "[Fan to Pro] Friend referral event";
 
 /* ---------------------------------------------------------------------------
+ * 7. cohort 첫 강의 안내 (cohortKickoff) — paid 수강생 전용
+ *
+ * 모집 마감 이후 + 강의 시작 전 보내는 "다음 안내". 강의장 / 일시 / 카톡
+ * 오픈채팅 / 준비물 / 원페이저 안내 통합. paymentConfirmed 가 약속한 후속 메일.
+ * ------------------------------------------------------------------------- */
+
+const KAKAO_OPEN_CHAT_URL = "https://open.kakao.com/o/gCuOABAi";
+const KAKAO_OPEN_CHAT_PASSWORD = "fan06pro";
+const VENUE_NAME = "블루스프링하우스";
+const VENUE_ADDRESS_KO = "서울 마포구 월드컵북로 161";
+const VENUE_NAME_EN = "Blue Spring House";
+const VENUE_ADDRESS_EN = "161 Worldcup-buk-ro, Mapo-gu, Seoul";
+
+const cohortKickoff_sms_ko = `[Fan to Pro] 1기 강좌 확정! 첫 강의 안내드려요 :)
+
+{name} 님 입금 감사드려요. 첫 강의 전 아래 안내 꼭 확인 부탁드려요.
+
+[첫 강의]
+일시: 6/27(토) 14:00~16:00
+강의장: ${VENUE_NAME}
+주소: ${VENUE_ADDRESS_KO}
+준비물: 노트북 또는 태블릿 PC (수업 자료는 강사님이 PDF 로 전달)
+
+[카카오톡 오픈채팅 입장 필수]
+링크: ${KAKAO_OPEN_CHAT_URL}
+비밀번호: ${KAKAO_OPEN_CHAT_PASSWORD}
+* 본명으로 닉네임 설정 부탁드려요 (예: 홍길동 - 학생)
+
+[프로그램 원페이저]
+(별도 안내. 운영자가 본문에 PDF 링크 첨부)
+
+문의사항은 하단의 카카오톡 채널을 이용해주세요.
+${KAKAO}`;
+
+const cohortKickoff_sms_en = `[Fan to Pro] Cohort 1 confirmed! First class details inside :)
+
+Hi {name}, thank you for completing payment. Please review the following before our first class.
+
+[FIRST CLASS]
+Date/Time: Sat, June 27, 14:00 to 16:00 KST
+Venue: ${VENUE_NAME_EN}
+Address: ${VENUE_ADDRESS_EN}
+Bring: Laptop or tablet (instructors will share materials in PDF)
+
+[KAKAOTALK OPEN CHAT / please join]
+Link: ${KAKAO_OPEN_CHAT_URL}
+Password: ${KAKAO_OPEN_CHAT_PASSWORD}
+* Set your nickname as your real name (e.g., John Smith / student)
+
+[ONE-PAGER]
+(Will be attached separately by the operator)
+
+For any questions, please use the KakaoTalk channel below.
+${KAKAO}`;
+
+const cohortKickoff_email_ko = `안녕하세요, Fan to Pro 입니다 :)
+
+{name} 님, 1기 강좌가 확정됐어요. 첫 강의 안내드려요.
+
+[첫 강의 정보]
+- 일시: 2026년 6월 27일(토) 14:00 ~ 16:00 (매 회차 2시간)
+- 강의장: ${VENUE_NAME}
+- 주소: ${VENUE_ADDRESS_KO}
+- 준비물: 노트북 또는 태블릿 PC (수업 자료는 강사님이 PDF 로 전달해주세요)
+
+[전체 강의 일정 / 4주 8회]
+1회: 2026-06-27 (토) 14:00 ~ 16:00
+2회: 2026-06-28 (일) 14:00 ~ 16:00
+3회: 2026-07-04 (토) 14:00 ~ 16:00
+4회: 2026-07-05 (일) 14:00 ~ 16:00
+5회: 2026-07-11 (토) 14:00 ~ 16:00
+6회: 2026-07-12 (일) 14:00 ~ 16:00
+7회: 2026-07-18 (토) 14:00 ~ 16:00
+8회: 2026-07-19 (일) 14:00 ~ 16:00
+수료식 + 네트워킹 파티: 2026-07-25 (토)
+
+[카카오톡 오픈채팅 입장]
+입장 링크: ${KAKAO_OPEN_CHAT_URL}
+비밀번호: ${KAKAO_OPEN_CHAT_PASSWORD}
+
+* 입장하시면 닉네임을 본명으로 설정 부탁드려요 (예: "홍길동 - 학생")
+* 동기와 강사님과의 그룹챗이에요. 강의 외 잡담 + Q&A + 자료 공유 모두 환영
+* 첫 강의 전까지 꼭 입장해주세요
+
+[프로그램 원페이저]
+(별도 안내. 운영자가 본문에 PDF 링크 첨부)
+
+* 4주 동안 배우게 될 내용 + 강사 소개 + 강의 일정이 정리되어 있어요
+
+[운영 문의]
+- 카카오톡 채널: ${KAKAO}
+- 이메일: hello@dropdown.xyz
+
+* 결석 / 일정 변경 / 환불 안내가 필요하시면 카카오톡 채널로 미리 알려주세요
+
+곧 강의장에서 뵐게요!
+
+Fan to Pro 운영진 드림`;
+
+const cohortKickoff_email_en = `Hello, this is Fan to Pro.
+
+Hi {name}, Cohort 1 is confirmed. Here are the details for our first class.
+
+[FIRST CLASS]
+- Date/Time: Saturday, June 27, 2026, 14:00 to 16:00 KST (2 hours per session)
+- Venue: ${VENUE_NAME_EN}
+- Address: ${VENUE_ADDRESS_EN}
+- Bring: Laptop or tablet (instructors will share materials in PDF)
+
+[FULL SCHEDULE / 4 weeks, 8 sessions]
+Session 1: Sat, June 27, 14:00 to 16:00
+Session 2: Sun, June 28, 14:00 to 16:00
+Session 3: Sat, July 4, 14:00 to 16:00
+Session 4: Sun, July 5, 14:00 to 16:00
+Session 5: Sat, July 11, 14:00 to 16:00
+Session 6: Sun, July 12, 14:00 to 16:00
+Session 7: Sat, July 18, 14:00 to 16:00
+Session 8: Sun, July 19, 14:00 to 16:00
+Graduation + networking party: Sat, July 25
+
+[KAKAOTALK OPEN CHAT]
+Link: ${KAKAO_OPEN_CHAT_URL}
+Password: ${KAKAO_OPEN_CHAT_PASSWORD}
+
+* Set your nickname as your real name (e.g., "John Smith / student")
+* Group chat with fellow students and instructors for outside-class talk + Q&A + sharing materials
+* Please join before the first class
+
+[ONE-PAGER]
+(Will be attached separately by the operator)
+
+* Curriculum overview, instructor introduction, and full schedule
+
+[CONTACT]
+- KakaoTalk channel: ${KAKAO}
+- Email: hello@dropdown.xyz
+
+* If you need to be absent, change schedule, or request a refund, please reach out via the KakaoTalk channel in advance.
+
+See you at the venue soon!
+
+Fan to Pro Team`;
+
+const cohortKickoff_email_subject_ko = "[Fan to Pro] 1기 강좌 확정 / 첫 강의 안내";
+const cohortKickoff_email_subject_en = "[Fan to Pro] Cohort 1 confirmed / first class details";
+
+/* ---------------------------------------------------------------------------
  * 통합 매핑
  * ------------------------------------------------------------------------- */
 
@@ -672,6 +820,16 @@ const TEMPLATES: Record<MessageKind, Template> = {
         en: referralInvite_email_subject_en,
       },
       body: { ko: referralInvite_email_ko, en: referralInvite_email_en },
+    },
+  },
+  cohortKickoff: {
+    sms: { ko: cohortKickoff_sms_ko, en: cohortKickoff_sms_en },
+    email: {
+      subject: {
+        ko: cohortKickoff_email_subject_ko,
+        en: cohortKickoff_email_subject_en,
+      },
+      body: { ko: cohortKickoff_email_ko, en: cohortKickoff_email_en },
     },
   },
 };
@@ -1067,6 +1225,7 @@ export const MESSAGE_KIND_LABELS: Record<MessageKind, string> = {
   reminderD3: "리마인드 D-3",
   reminderD1: "리마인드 D-1",
   referralInvite: "친구초대 이벤트",
+  cohortKickoff: "기수 첫 강의 안내",
 };
 
 /**
@@ -1080,4 +1239,5 @@ export const MESSAGE_KIND_LABELS: Record<MessageKind, string> = {
  */
 export const MESSAGE_KIND_PAID_ONLY: ReadonlySet<MessageKind> = new Set([
   "referralInvite",
+  "cohortKickoff",
 ]);

@@ -1,0 +1,683 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>Fan to Pro 1기 / 프로그램 안내</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+/>
+<!-- Paged.js polyfill / DOM 사전 fragmenting 으로 break-inside: avoid 정확 적용 (flex/grid 안 포함) -->
+<script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-soft: #f7f9fc;
+    --bg-card: #ffffff;
+    --border: #e6eaf0;
+    --border-soft: #eef1f5;
+    --fg: #1a1d23;
+    --fg-muted: #4f5763;
+    --fg-subtle: #8b94a3;
+    --brand: #3182f6;
+    --brand-soft: #e9f2ff;
+    --accent: #ff5b6e;
+    --radius: 12px;
+    --radius-lg: 16px;
+    --shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 14px rgba(15, 23, 42, 0.04);
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg-soft);
+    color: var(--fg);
+    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "ss03" on, "ss04" on, "cv01" on;
+  }
+
+  /* 한국어 자연스러운 줄바꿈 / 어절 단위 끊기 */
+  :lang(ko), body {
+    word-break: keep-all;
+    line-break: strict;
+    overflow-wrap: break-word;
+  }
+
+  /* Paged.js / 페이지 마진은 @page 가 통제. 내용은 자연 흐름. */
+  @page {
+    size: A4;
+    margin: 18mm 16mm;
+  }
+
+  body { padding: 0; background: #fff; }
+
+  /* .page = 단순 wrapper (자연 흐름, 페이지 강제 break 없음). Paged.js + break-inside 룰이 카드 안 잘리게 알아서 분할. */
+  .page {
+    color: var(--fg);
+  }
+  /* 첫 페이지는 cover 를 살짝 아래로 내려 시각 균형 잡기 */
+  .page:first-of-type {
+    padding-top: 56px;
+  }
+  /* 섹션 간 여백 */
+  .page + .page { margin-top: 32px; }
+
+  /* 카드와 표 행 / callout / info-box 의 *개별 leaf 요소* 만 페이지 가운데서 안 잘리게.
+     그리드 / 표 전체는 break 허용 (안 그러면 통째로 다음 페이지로 밀려 헤딩만 남고 공백 생김). */
+  .phase-card,
+  .mentor-card,
+  .schedule-row,
+  .info-list li,
+  .callout,
+  .meta-strip,
+  .info-box,
+  .footer {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  /* 헤딩 직후가 페이지 끝에 고립되지 않게 */
+  h1, h2, .section-title, .cover-title {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+  /* 문단 윗줄/아랫줄 고립 방지 */
+  p { orphans: 3; widows: 3; }
+
+  .cover-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--brand-soft);
+    color: var(--brand);
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .cover-eyebrow .dot {
+    width: 6px; height: 6px; border-radius: 999px; background: var(--brand);
+  }
+
+  .cover-title {
+    margin: 20px 0 12px;
+    font-size: 48px;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    color: var(--fg);
+  }
+  .cover-title .accent { color: var(--brand); }
+
+  .cover-sub {
+    margin: 0 0 32px;
+    font-size: 18px;
+    color: var(--fg-muted);
+    line-height: 1.55;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .meta-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 40px;
+  }
+  .meta-cell {
+    padding: 16px 20px;
+    border-right: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .meta-cell:last-child { border-right: none; }
+  .meta-label {
+    font-size: 11px;
+    color: var(--fg-subtle);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+  .meta-value {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--fg);
+    line-height: 1.35;
+  }
+
+  .section {
+    margin-top: 48px;
+  }
+  .section:first-of-type { margin-top: 0; }
+
+  .section-eyebrow {
+    font-size: 12px;
+    color: var(--brand);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .section-title {
+    margin: 0 0 24px;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  .section-lead {
+    margin: 0 0 28px;
+    font-size: 15px;
+    color: var(--fg-muted);
+    line-height: 1.65;
+    font-weight: 500;
+  }
+
+  .phase-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .phase-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .phase-n {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--fg-subtle);
+    letter-spacing: 0.08em;
+  }
+  .phase-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--fg);
+    letter-spacing: -0.01em;
+  }
+  .phase-kr {
+    font-size: 13px;
+    color: var(--brand);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .phase-body {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--fg-muted);
+    font-weight: 500;
+  }
+  .phase-tag {
+    margin-top: auto;
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    padding: 4px 8px;
+    background: var(--brand-soft);
+    color: var(--brand);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .schedule {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg);
+  }
+  .schedule-row {
+    display: grid;
+    grid-template-columns: 70px 130px 100px 1fr;
+    align-items: center;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border-soft);
+    font-size: 14px;
+  }
+  .schedule-row:last-child { border-bottom: none; }
+  .schedule-row.head {
+    background: var(--bg-soft);
+    font-size: 11px;
+    color: var(--fg-subtle);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    padding: 12px 20px;
+  }
+  .schedule-row.ceremony {
+    background: linear-gradient(90deg, var(--brand-soft) 0%, var(--bg) 60%);
+    font-weight: 700;
+  }
+  .schedule-n {
+    font-weight: 800;
+    color: var(--fg);
+  }
+  .schedule-date { color: var(--fg); font-weight: 600; }
+  .schedule-day { color: var(--fg-muted); }
+  .schedule-topic { color: var(--fg-muted); font-weight: 500; }
+
+  .mentor-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .mentor-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    background: var(--bg);
+  }
+  .mentor-role {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--brand);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .mentor-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--fg);
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+  .mentor-body {
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--fg-muted);
+    font-weight: 500;
+  }
+  .mentor-note {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+    font-size: 11px;
+    color: var(--fg-subtle);
+  }
+
+  .info-box {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    background: var(--bg-soft);
+  }
+  .info-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 12px;
+  }
+  .info-list li {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 16px;
+    align-items: start;
+    font-size: 14px;
+  }
+  .info-list .k {
+    color: var(--fg-subtle);
+    font-weight: 600;
+    font-size: 12px;
+    padding-top: 2px;
+  }
+  .info-list .v {
+    color: var(--fg);
+    font-weight: 500;
+    line-height: 1.55;
+  }
+  .info-list .v strong { font-weight: 700; }
+
+  .footer {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .footer-brand {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--fg);
+  }
+  .footer-meta {
+    font-size: 11px;
+    color: var(--fg-subtle);
+    font-weight: 500;
+  }
+  .footer-meta a { color: inherit; text-decoration: none; }
+
+  .callout {
+    margin-top: 32px;
+    padding: 20px 24px;
+    background: var(--brand-soft);
+    border-radius: var(--radius);
+    color: var(--fg);
+    font-size: 14px;
+    line-height: 1.65;
+    font-weight: 500;
+  }
+  .callout strong { color: var(--brand); font-weight: 800; }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 40px 0;
+    border: none;
+  }
+</style>
+</head>
+<body>
+
+<section class="page">
+  <span class="cover-eyebrow"><span class="dot"></span>FAN TO PRO / COHORT 1</span>
+  <h1 class="cover-title">
+    한 달.<br />
+    그리고 <span class="accent">무대.</span>
+  </h1>
+  <p class="cover-sub">
+    K-pop 공연 현장 실무를 4주 안에. 8회 강의와 수료증, 멘토 네트워크,<br />
+    그리고 실제 공연 참여까지 이어지는 프로그램.
+  </p>
+
+  <div class="meta-strip">
+    <div class="meta-cell">
+      <div class="meta-label">강의 기간</div>
+      <div class="meta-value">2026.06.27<br />~ 07.19</div>
+    </div>
+    <div class="meta-cell">
+      <div class="meta-label">강의 시간</div>
+      <div class="meta-value">주말 14:00<br />~ 16:00</div>
+    </div>
+    <div class="meta-cell">
+      <div class="meta-label">강의장</div>
+      <div class="meta-value">블루스프링하우스<br />서울 마포구</div>
+    </div>
+    <div class="meta-cell">
+      <div class="meta-label">정원</div>
+      <div class="meta-value">20명 내외<br />소수정예</div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <div class="section">
+    <div class="section-eyebrow">Program</div>
+    <h2 class="section-title">4가지로 구성된 한 달.</h2>
+    <p class="section-lead">
+      강의로 끝나지 않습니다. 수료증, 네트워크, 그리고 실제 K-pop 공연 현장 참여까지.
+      한 달이 끝나도 손에 남는 것들로 채웠습니다.
+    </p>
+
+    <div class="phase-grid">
+      <div class="phase-card">
+        <span class="phase-n">PHASE 01</span>
+        <div class="phase-title">Class</div>
+        <div class="phase-kr">1개월 현업 강의</div>
+        <p class="phase-body">
+          토요일과 일요일 주말반, 총 8회, 4주 과정. 공연 제작 구조와 음악 디렉팅,
+          플레이백/타임코드, 현장 실무. Music Business, 음반 기획과 제작 전략,
+          A&amp;R, Visual Director 까지 한국어로 압축해 전달합니다.
+        </p>
+      </div>
+
+      <div class="phase-card">
+        <span class="phase-n">PHASE 02</span>
+        <div class="phase-title">Certificate</div>
+        <div class="phase-kr">교육 수료증</div>
+        <p class="phase-body">
+          강의 종료 시 Dropdown 명의 4주 교육 수료증 발급. 4주 동안 다룬
+          주제와 출결 기록이 함께 정리됩니다.
+        </p>
+      </div>
+
+      <div class="phase-card">
+        <span class="phase-n">PHASE 03</span>
+        <div class="phase-title">Network</div>
+        <div class="phase-kr">현업 네트워킹</div>
+        <p class="phase-body">
+          수료생과 현직 멘토 3인이 카카오톡 오픈채팅에 입장합니다. 업계 행사와
+          소개 라인이 강의가 끝난 뒤에도 이어집니다.
+        </p>
+      </div>
+
+      <div class="phase-card">
+        <span class="phase-n">PHASE 04</span>
+        <div class="phase-title">On Stage</div>
+        <div class="phase-kr">공연 프로젝트 실무 체험</div>
+        <p class="phase-body">
+          수료자 전원에게 제공되는 추가 기회. 실제 K-pop 공연 현장에 동행해
+          무대 음향, 비주얼, 스테이지 매니지먼트 실무를 가까이서 체험합니다.
+          별도 결제 없음.
+        </p>
+        <span class="phase-tag">전원, 별도 신청</span>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>실제 공연 참여 확인서.</strong> 동행이 아니라 실제 공연에 참여한
+      분께는 유니온 픽처스 명의의 공연 프로젝트 참여 확인서가 발급됩니다.
+      이력서에 한 줄, 실력은 한 단계 위로.
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+</section>
+
+<section class="page">
+  <div class="section">
+    <div class="section-eyebrow">Schedule</div>
+    <h2 class="section-title">4주 8회.</h2>
+    <p class="section-lead">
+      매주 토요일과 일요일 14:00 ~ 16:00, 2시간씩. 강의장에서 직접 만나 진행합니다.
+      수료식과 네트워킹 파티는 종강 다음 토요일에 별도로.
+    </p>
+
+    <div class="schedule">
+      <div class="schedule-row head">
+        <span>회차</span><span>날짜</span><span>요일</span><span>주제</span>
+      </div>
+      <div class="schedule-row">
+        <span class="schedule-n">01</span>
+        <span class="schedule-date">06.27</span>
+        <span class="schedule-day">토 14:00</span>
+        <span class="schedule-topic">Music Business 입문</span>
+      </div>
+      <div class="schedule-row">
+        <span class="schedule-n">02</span>
+        <span class="schedule-date">06.28</span>
+        <span class="schedule-day">일 14:00</span>
+        <span class="schedule-topic">공연 제작 구조와 음악 디렉팅</span>
+      </div>
+      <div class="schedule-row">
+        <span class="schedule-n">03</span>
+        <span class="schedule-date">07.04</span>
+        <span class="schedule-day">토 14:00</span>
+        <span class="schedule-topic">플레이백과 타임코드 실무</span>
+      </div>
+      <div class="schedule-row">
+        <span class="schedule-n">04</span>
+        <span class="schedule-date">07.05</span>
+        <span class="schedule-day">일 14:00</span>
+        <span class="schedule-topic">음반 기획과 제작 전략</span>
+      </div>
+      <div class="schedule-row">
+        <span class="schedule-n">05</span>
+        <span class="schedule-date">07.11</span>
+        <span class="schedule-day">토 14:00</span>
+        <span class="schedule-topic">현장 실무 / 스테이지 매니지먼트</span>
+      </div>
+      <div class="schedule-row">
+        <span class="schedule-n">06</span>
+        <span class="schedule-date">07.12</span>
+        <span class="schedule-day">일 14:00</span>
+        <span class="schedule-topic">A&amp;R 실무 케이스</span>
+      </div>
+      <div class="schedule-row">
+        <span class="schedule-n">07</span>
+        <span class="schedule-date">07.18</span>
+        <span class="schedule-day">토 14:00</span>
+        <span class="schedule-topic">현장 종합 + Q&amp;A</span>
+      </div>
+      <div class="schedule-row">
+        <span class="schedule-n">08</span>
+        <span class="schedule-date">07.19</span>
+        <span class="schedule-day">일 14:00</span>
+        <span class="schedule-topic">Visual Director / 브랜드 작업</span>
+      </div>
+      <div class="schedule-row ceremony">
+        <span class="schedule-n">★</span>
+        <span class="schedule-date">07.25</span>
+        <span class="schedule-day">토</span>
+        <span class="schedule-topic">수료식 + 네트워킹 파티</span>
+      </div>
+    </div>
+
+    <p class="section-lead" style="margin-top: 16px; font-size: 13px;">
+      * 커리큘럼은 강사님에 따라 일부 변경될 수 있습니다.
+    </p>
+  </div>
+
+  <hr class="divider" />
+
+  <div class="section">
+    <div class="section-eyebrow">Logistics</div>
+    <h2 class="section-title">운영 정보.</h2>
+
+    <div class="info-box">
+      <ul class="info-list">
+        <li>
+          <span class="k">강의장</span>
+          <span class="v">
+            <strong>블루스프링하우스</strong><br />
+            서울 마포구 월드컵북로 161
+          </span>
+        </li>
+        <li>
+          <span class="k">강의 시간</span>
+          <span class="v">매 회차 <strong>14:00 ~ 16:00</strong> (2시간)</span>
+        </li>
+        <li>
+          <span class="k">준비물</span>
+          <span class="v">노트북 또는 태블릿 PC<br />
+            <span style="color: var(--fg-subtle); font-size: 12px;">수업 자료는 강사님이 PDF 로 사전 공유합니다.</span>
+          </span>
+        </li>
+        <li>
+          <span class="k">출결</span>
+          <span class="v">출석률 <strong>75% 이상</strong> 시 수료증 발급<br />
+            <span style="color: var(--fg-subtle); font-size: 12px;">개인 사정 발생 시 카카오톡 오픈채팅으로 사전 안내해주세요.</span>
+          </span>
+        </li>
+        <li>
+          <span class="k">소통 채널</span>
+          <span class="v">강의 외 일정과 자료 공유는 <strong>카카오톡 오픈채팅</strong> 에서.<br />
+            <span style="color: var(--fg-subtle); font-size: 12px;">결제 완료자 한정 입장. 별도 안내 메시지에 링크/비밀번호 포함.</span>
+          </span>
+        </li>
+        <li>
+          <span class="k">수료증</span>
+          <span class="v">Dropdown 명의 4주 교육 수료증<br />
+            <span style="color: var(--fg-subtle); font-size: 12px;">디지털 발급 + 인쇄 가능 PDF.</span>
+          </span>
+        </li>
+        <li>
+          <span class="k">공연 참여</span>
+          <span class="v">유니온 픽처스 공연 프로젝트<br />
+            <span style="color: var(--fg-subtle); font-size: 12px;">수료자 전원에게 별도 신청 안내. 실제 공연 참여 시 참여 확인서 발급.</span>
+          </span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+</section>
+
+<section class="page">
+  <div class="section">
+    <div class="section-eyebrow">Mentors</div>
+    <h2 class="section-title">현직 3인.</h2>
+    <p class="section-lead">
+      K-pop 공연 현장에서 실제로 일하는 분들. 강의장 안과 밖에서 모두 만날 수 있습니다.
+      개인정보 보호를 위해 본문에는 직무로만 표기합니다.
+    </p>
+
+    <div class="mentor-grid">
+      <div class="mentor-card">
+        <div class="mentor-role">Mentor 01</div>
+        <div class="mentor-title">음악 디렉터</div>
+        <p class="mentor-body">
+          공연 음악의 큐, 플레이백, 타임코드를 책임지는 직무. 무대에서 들리는 모든
+          소리의 흐름을 설계합니다.
+        </p>
+        <div class="mentor-note">담당 회차: 02 / 03 / 05</div>
+      </div>
+
+      <div class="mentor-card">
+        <div class="mentor-role">Mentor 02</div>
+        <div class="mentor-title">Music Business</div>
+        <p class="mentor-body">
+          음반 기획, A&amp;R, 아티스트와 레이블 사이의 비즈니스 구조. 산업이
+          어떻게 돈을 벌고 어떻게 새로운 음악을 발굴하는지 다룹니다.
+        </p>
+        <div class="mentor-note">담당 회차: 01 / 04 / 06</div>
+      </div>
+
+      <div class="mentor-card">
+        <div class="mentor-role">Mentor 03</div>
+        <div class="mentor-title">Visual Director</div>
+        <p class="mentor-body">
+          무대 비주얼, 브랜드, 영상 디자인. 음악을 시각으로 번역해 관객의 기억에
+          남기는 작업을 다룹니다.
+        </p>
+        <div class="mentor-note">담당 회차: 07 / 08 + 종합</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <div class="section">
+    <div class="section-eyebrow">After</div>
+    <h2 class="section-title">강의가 끝나도.</h2>
+    <p class="section-lead">
+      Fan to Pro 의 진짜 시작은 종강 이후입니다. 멘토와의 카카오톡 오픈채팅은
+      계속 열려있고, 공연 참여 기회는 수료생 전원에게 안내됩니다.
+      현장에서 다시 만날 수 있도록.
+    </p>
+
+    <div class="callout">
+      <strong>한 줄 요약.</strong> 4주 동안 K-pop 공연 현장의 음악, 비즈니스,
+      비주얼을 압축해 배우고, 멘토 네트워크와 실제 공연 참여로 이어지는 한 시즌.
+    </div>
+  </div>
+
+  <div class="footer">
+    <span class="footer-brand">Fan to Pro / Cohort 1</span>
+    <span class="footer-meta">
+      growthcareer.xyz / 운영: Dropdown (사업자번호 154-28-02110) /
+      문의: hello@dropdown.xyz
+    </span>
+  </div>
+</section>
+
+</body>
+</html>
