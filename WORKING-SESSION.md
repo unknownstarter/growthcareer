@@ -9,28 +9,39 @@
 
 ---
 
-## 📅 Last updated: 2026-06-21
+## 📅 Last updated: 2026-06-21 (밤)
 
-## 🎯 현재 상태 — 1기 모집 마감일 (D-day) + LMS 트랙 신설
+## 🎯 현재 상태 — 1기 모집 마감일 (D-day) / 첫 강의 D-6
 
 - **모집 마감**: 오늘 (6/21 일) 자정
-- **현재 결제**: 9명 (PAID) — 폐강 기준 8명 초과, 강의 확정 가능
-- **첫 강의**: 6/27(토)
+- **현재 결제**: 11명 (PAID) — 폐강 기준 8명 초과, 강의 확정
+- **첫 강의**: 6/27(토) 14:00~16:00 / 블루스프링하우스 (서울 마포구 월드컵북로 161)
 - **종강**: 7/19(일)
 - **수료식**: 7/25(토)
-- **운영자 페이지 배포 완료**: `/admin/{applicants, instructors, finance}` 모두 가동
+- **카톡 오픈채팅**: https://open.kakao.com/o/gCuOABAi (비번 fan06pro)
+- **LMS Wave 1+2 배포 완료**: `/fan-to-pro/(lms)/admin/*` (super_admin) + `/fan-to-pro/[cohortSlug]/student/career` (학생, career documents 만)
 
 ### 새로 박힌 결정 (2026-06-21)
 
-- **LMS 자체 구축 결정** — 1기부터 풀 구축, 데이터 누적 시작
-- **클린 아키텍처 (Layered Pragmatic)** + Strangler Fig 점진 마이그레이션 (ADR 0005)
-- **디자인 시스템 분리** — 기존 다크 (마케팅+어드민 기존) vs 라이트 LMS (토스 톤 + shadcn/ui) (ADR 0006)
-- **기존 영역 변경 금지 룰** — CLAUDE.md §7.4 보강 (모집 페이지 / 어드민 3-tab / 기존 server actions)
-- **B0031 Wave 0 코드 12 commit 완료** — shadcn primitives 4종 + 라이트 토큰 + 6 신규 entity + Strangler Fig Step 1 + /admin/cohorts 페이지. prod 마이그레이션 적용 대기 (노아 manual)
+- **LMS 자체 구축** — Wave 0~2 prod 적용 완료, Wave 1 Step 3/4 (instructor/student 풀 surface) 는 노아가 본인 계정으로 테스트하며 점진 보강
+- **클린 아키텍처 (Layered Pragmatic)** + Strangler Fig (ADR 0005)
+- **URL/디자인 분리** — `/admin/*` (Basic Auth, 다크, 기존) vs `/fan-to-pro/(lms)/*` (Supabase Auth, 라이트, 토스 톤) (ADR 0006 + 0008)
+- **3 권한 계층** — super_admin (글로벌, is_super_admin) / admin (program_memberships) / instructor+student (cohort_memberships) (ADR 0008)
+- **회원가입 X** — 운영자 invite + must_change_password 흐름
+- **B0037 career documents Wave A+ 완료** — 이력서/자기소개서/포트폴리오 단일 최신본 + Storage bucket + RLS 4종. 학생 + 어드민 surface. Sage 검토 pass + H-2 SSRF fix 적용
 
 ---
 
 ## ✅ 최근 완료 (2026-06-08 ~ 06-21)
+
+### 6/21 마감일 작업
+- **B0037 career documents Wave A+** — 이력서/자기소개서/포트폴리오 단일 최신본 (학생 + 어드민). Sage pass + H-2 fix. commit `aa02a44`
+- **cohortKickoff 메시지** (어드민 메시지 종류) — 첫 강의 안내 SMS/email × ko/en (강의장 + 시간 + 카톡 + 준비물 + 8회 일정). commit `8b1c94d`
+- **원페이저 PDF** (Cohort 1 leave-behind) — `tools/onepager-cohort-1.html` 3페이지 A4 토스 톤. Paged.js v2 도 함께 박제. `docs/screenshots/onepager/onepager-cohort-1.pdf`
+- **LMS Wave 1+2** — Supabase Auth + login + admin LMS 페이지 (cohorts/students/finance/instructors/consultations/announcements/materials/comments) + ADR 0008 URL 분리 + cohort slug nanoid 8자
+- **B0018 Wave 2 운영자 페이지** — 강사 정산 + 재무 / `/admin/instructors` + `/admin/finance` 3-tab. commit `8388209`, `29b2c34`
+- **B0019 SEO + GEO** — JSON-LD 5종 + OG locale + llms.txt. commit `9207de3`
+- **세션 핸드오프 문서** — `WORKING-SESSION.md` + `docs/sessions/README.md` 신설. commit `778401c`
 
 ### 1기 모집 운영
 - **친구 초대 이벤트 (referralInvite)** 어드민 메시지 종류 추가 (paid 전용) — 매칭: 친구 결제 후 결제 안내 메시지에 답장으로 추천인 이름
@@ -63,20 +74,21 @@
 
 ## 🔄 진행 중 / 대기 중
 
-### 1기 모집 마감일 (오늘)
+### 6/22 (월) 발송 예정
 
-- 친구 초대 이벤트 + NOTIFIED 15명 catch-up 카톡 발송 완료
-- 답장 대기 + 매칭 + 신규 결제 catch-up
-- 8명 이상 결제 시 강의 확정 (현재 9명 이미 달성, 추가 결제 +α)
+- 어드민 [메시지] > "기수 첫 강의 안내" 선택 → 11명 발송 (메일 본문에 원페이저 PDF 링크 paste)
+- 원페이저 PDF 구글 드라이브 업로드 후 공유 링크 받기
 
-### LMS 트랙 (B0031~B0036)
+### LMS 트랙 (B0031~B0038)
 
-- **B0031 Wave 0** — DB minimum + 출결 UI (Iris) ⭐ **코드 완료 2026-06-21 — prod 마이그레이션 적용 대기**
-- B0032 Wave 1 — Supabase Auth + 강사/학생 로그인 + materials/announcements (Iris+Luna, 6.5일)
-- B0033 Wave 2 — 과제 + 컨설팅 + 수료증 + 캘린더 (Iris+Luna, 5.5일)
-- B0034 Wave 3 — 회사 단위 정산 (Iris, 4.5일)
+- **B0031 Wave 0** — DB minimum + 출결 UI (Iris) ✅ done
+- **B0032 Wave 1** — Supabase Auth + admin LMS 골격 + cohort/student/finance ✅ done (Step 3/4 = instructor/student 풀 surface 는 강의 운영하며 점진)
+- **B0033 Wave 2** — 과제 + 컨설팅 + 수료증 + 캘린더 (Iris+Luna, 5.5일) — 강의 시작 후 점진
+- B0034 Wave 3 — 회사 단위 정산 (Iris) — Wave 1 Step 2 finance 페이지로 흡수, 추가 작업 필요 시 진행
 - B0035 Wave 4 — RLS 본격 + follow-up + 영문 UX (Iris+Sage, 6일)
 - B0036 Wave 5 — Realtime + 자동 정산 (deferred)
+- **B0037 career docs Wave A+** ✅ done 2026-06-21
+- **B0038 career docs Wave B** — instructor surface + path randomness + magic byte + bidi sanitize + 작품 collection — raw
 
 ### B0018 Wave 3 (출결) — LMS B0031 에 통합됨
 
@@ -90,18 +102,17 @@
 
 ## 🛠️ 노아 manual action 잔여
 
-### 즉시 (오늘 마감일)
+### 즉시 (6/22 월요일 아침)
 
-- 친구 초대 이벤트 + catch-up 카톡 답장 응대 (회사 Gmail / 휴대폰 SMS / 카카오톡 채널 주기적 확인)
-- 매칭 + 친구 결제 안내 (880,000 → 830,000원 할인)
+- 어드민 [메시지] > "기수 첫 강의 안내" 선택 → 11명 발송 (메일 본문에 원페이저 PDF 링크 paste)
+- 원페이저 PDF (`docs/screenshots/onepager/onepager-cohort-1.pdf`) 구글 드라이브 업로드 + 공유 링크 받기
 
-### B0031 Wave 0 prod 적용 (강의 시작 6/27 전까지)
+### LMS career docs (B0037) 테스트
 
-1. **Supabase 마이그레이션 적용** — `supabase db push` 또는 Dashboard SQL editor 에 `supabase/migrations/20260621000000_lms_wave0_schema.sql` 적용
-2. **`/admin/cohorts` 접속 확인** — 1기 cohort + sessions 8개 노출 확인 (라이트 톤 + 토스 스타일)
-3. **[결제 완료 신청자 일괄 등록] 버튼 클릭** — paid 신청자 9명 → student 자동 등록
-4. **시각 확인** — 라이트 톤 + 카드 radius 12px + Primary Blue #3182f6 토스 시그니처 정상 적용
-5. **강의 첫날 (6/27) 출결 테스트** — 1회차 [출결] 클릭, student 9명 status dropdown 으로 mark, [출결 저장]
+1. **`/fan-to-pro/(lms)/admin/students` 접속** → 학생 1명 선택 → [문서] 클릭
+2. resume 외부 링크 + cover_letter 파일 업로드 + portfolio 외부 링크 등록/수정/삭제 시나리오 확인
+3. student account (가짜) 로 로그인 → `/[cohortSlug]/student/career` 진입 → 본인 것만 보이는지 확인
+4. 다른 student id URL 직접 입력 시 403 — IDOR 차단 확인
 
 ### LMS Wave 0 → Wave 1 전 결정 보류 (강의 첫주 안에 컨펌)
 

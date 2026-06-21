@@ -222,6 +222,28 @@ ADR 0005 (클린 아키텍처 Layered Pragmatic) + ADR 0006 (라이트 디자인
   - audit log 통합 view
   - 트리거: 100명 규모 (3기+) 또는 강사 10명 이상
 
+- **B0037** · **career docs Wave A+** — 이력서/자기소개서/포트폴리오 단일 최신본 관리 · status: **done** · 2026-06-21 완료 · owner: Iris + Sage
+  - 학생 (본인) + 어드민 (전체 학생) 등록·수정·삭제
+  - 외부 링크 (Notion/Google Drive) OR 파일 업로드 (PDF/DOCX/PPTX/ZIP/이미지, 10MB) XOR
+  - DB: `student_career_documents` + RLS 4종 (super_admin / program admin / student-self / service_role) + Storage `career-documents` private bucket
+  - Server actions 4종 (`assertCanAccessStudentCareer` 가드)
+  - Admin: `/fan-to-pro/(lms)/admin/students/[id]/career`
+  - Student: `/fan-to-pro/[cohortSlug]/student/career` (신규 student surface 첫 페이지)
+  - Sage 검토 pass — H-2 SSRF fix 적용 (URL scheme allowlist + private IP 거부)
+  - 미적용 (다음 wave): H-1 storage path randomness · 강사 instructor surface · 작품 collection (portfolio_items)
+  - 출처: 2026-06-21 노아 요청 / commit `aa02a44`
+
+- **B0038** · **career docs Wave B** — instructor 추가 + path randomness + 안전 강화 · status: **raw** · 2026-06-21 captured · owner: Iris + Sage
+  - **H-1 (Sage High)**: storage path 에 nanoid 추가 — `{student_id}/{doc_type}-{nanoid8}.{ext}`. file_path 추측 차단 한 겹 더.
+  - **M-2 (Sage Med)**: file magic byte 검증 — 첫 N byte 읽어 PDF/PNG/JPEG/ZIP 표지 일치 확인
+  - **M-3 (Sage Med)**: file_name 의 bidi control char (`‪-‮`, `⁦-⁩`) strip + NFC normalize
+  - **M-4 (Sage Med)**: locale-aware revalidate (현재 `/ko/` hardcoded → tag-based or both locales)
+  - **L-1 (Sage Low)**: server action error 의 message → code 매핑 (auth uuid 누설 차단)
+  - Instructor surface — `/[cohortSlug]/instructor/students/[id]/career` (담당 cohort 학생 read-only viewer)
+  - 포트폴리오 = 작품 collection (`portfolio_items` 별도 테이블, 작품별 row, 이미지 + 설명 + 연도)
+  - 자기소개서 = 구조화 폼 (질문별 답변 fields)
+  - 출처: Sage 2026-06-21 B0034 보안 검토
+
 ---
 
 ---
