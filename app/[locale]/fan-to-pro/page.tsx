@@ -24,6 +24,11 @@ import { routing } from "@/src/i18n/routing";
 
 const SITE_URL = "https://growthcareer.xyz";
 
+// B0039 모집 마감 자동 전환 — request-time 평가 강제 (SSG cache 회피).
+// 빌드 시점이 cutoff 전이면 isEnrollmentClosed() false 가 정적 HTML 에 박혀
+// 자정 지나도 안 바뀌는 사고를 방지. 다음 기수 모집 재개 후 재고 가능.
+export const dynamic = "force-dynamic";
+
 type Params = { locale: string };
 
 export async function generateMetadata({
