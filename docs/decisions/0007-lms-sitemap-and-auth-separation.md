@@ -1,6 +1,6 @@
 # ADR 0007 — LMS 사이트맵 + URL 구조 + 권한 분리
 
-**Status**: Accepted
+**Status**: ⚠️ Superseded by ADR 0008 (2026-06-21)
 **Date**: 2026-06-21
 **Deciders**: 노아 + Sophia + Aria
 **Tags**: sitemap, routing, auth, separation, lms

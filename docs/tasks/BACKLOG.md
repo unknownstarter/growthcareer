@@ -174,16 +174,17 @@ ADR 0005 (클린 아키텍처 Layered Pragmatic) + ADR 0006 (라이트 디자인
   - 작업량 5일, 강의 시작 전 (~6/26) 완료 목표
   - Sage critical = 0 (admin only)
 
-- **B0032** · **Wave 1** (옵션 C 병행 진행, 노아 결정 2026-06-21) · status: **active** · owner: Iris + Luna + Sage
-  - **사이트맵 ADR 0007 기반** — /lms/* 신규 URL + Supabase Auth (super_admin/instructor/student) + 라이트 토스 톤
-  - Wave 1 Step 1 — Supabase Auth + (lms) route group + /lms/login + /lms/admin/dashboard 골격
-  - Wave 1 Step 2 — admin LMS 페이지 (cohorts/students/instructors/companies/finance/materials/announcements/consultations)
-  - Wave 1 Step 3 — instructor surface (/lms/instructor/*)
-  - Wave 1 Step 4 — student surface (/lms/student/*)
-  - shadcn primitives + sidebar/topbar (LMS Shell)
-  - 강사/재무 회사 단위 개편 = Wave 1 Step 2 안에 포함 (옵션 C 병행)
-  - 작업량 ~15일 (병행 진행), 강의 진행 중 점진 launch
-  - Sage critical 의무 — 신규 인증 표면 + PII 표면 + RLS 정책
+- **B0032** · **Wave 1** (ADR 0008 기준 재정의) · status: **active** · owner: Iris + Luna + Sage
+  - **새 URL 구조**: /[locale]/auth/* (통합 로그인) + /[locale]/fan-to-pro/(lms)/admin/* (super_admin) + /[locale]/fan-to-pro/[cohortSlug]/{instructor,student}/* (cohort 단위, segment 이름 없음)
+  - **회원가입 X** — 운영자 invite + 첫 로그인 강제 PW 변경 (must_change_password)
+  - **권한 3 계층** — super_admin (글로벌, is_super_admin) / admin (program_memberships) / instructor+student (cohort_memberships)
+  - Wave 1 Step 1 (`/lms/*` Supabase Auth + login + dashboard 골격) — 완료. ADR 0008 기준 재배치 필요 (Step 2 첫 작업).
+  - Wave 1 Step 2 — 코드 이전 (lms → fan-to-pro/(lms)) + 마이그레이션 (programs/program_memberships/cohort_memberships/cohorts.slug+program_id/instructors.program_id/user_profiles.is_super_admin+must_change_password) + admin 9 페이지 + invite 흐름 + 회사 단위 강사/재무
+  - Wave 1 Step 3 — instructor surface (/fan-to-pro/[cohortSlug]/instructor/*)
+  - Wave 1 Step 4 — student surface (/fan-to-pro/[cohortSlug]/student/*)
+  - shadcn primitives + LMS Shell (sidebar/topbar 공유)
+  - 작업량 ~12일 병행, 강의 진행 중 점진 launch
+  - Sage critical 의무 — 신규 인증 표면 + PII 표면 + RLS 정책 + 회사 단위 격리
 
 - **B0033** · **Wave 2** — 과제 + 컨설팅 + 수료증 + 캘린더 · status: **active** (병행) · owner: Iris + Luna
   - assignments / submissions / feedback entity
