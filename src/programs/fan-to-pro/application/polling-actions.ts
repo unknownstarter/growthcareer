@@ -34,12 +34,11 @@ export type PollApplicantsResult = {
 
 export async function pollApplicants(): Promise<PollApplicantsResult> {
   // role 검증 — middleware 가 admin/viewer 만 통과시키지만 헤더 부재면 throw.
-  // viewer 면 mask=true 유지 (server component 진입과 동일 정책).
-  const role = await getAdminRole();
-  const isViewer = role === "viewer";
+  // 2026-06-22: viewer 도 email / phone 전체 노출 (admin 페이지와 동일 정책).
+  await getAdminRole();
 
   const { rows, eligibility, error, supabaseAvailable } = await fetchApplicants(
-    { mask: isViewer },
+    { mask: false },
   );
 
   return {

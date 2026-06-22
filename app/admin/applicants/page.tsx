@@ -17,8 +17,10 @@ export const fetchCache = "force-no-store";
 export default async function AdminApplicantsPage() {
   const role = await getAdminRole();
   const isViewer = role === "viewer";
+  // 2026-06-22: viewer (cowork) 도 email / phone 전체 노출 — 노아 정책 결정.
+  // 신청자 직접 contact 가능성을 위해. mutation 권한은 여전히 admin 만 (readOnly={isViewer}).
   const { rows, eligibility, error, supabaseAvailable } = await fetchApplicants(
-    { mask: isViewer },
+    { mask: false },
   );
 
   return (

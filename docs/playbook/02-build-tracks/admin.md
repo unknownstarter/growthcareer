@@ -32,7 +32,7 @@
 - **PII 파기**: cancelled / refunded 일정 경과 후 PII 마스킹 (PIPA §21)
 - **다중 발송**: broadcast 모드 (여러 신청자 선택 → 같은 메시지 일괄 발송 링크)
 - **현금영수증**: 발급 토글 + 메모
-- **viewer role**: read-only (cowork 공유용)
+- **viewer role**: read-only (cowork 공유용). 2026-06-22 정책 변경 — viewer 도 email / phone 전체 노출 (이전: 마스킹). 신청자 직접 contact 가능성 목적. mutation 은 여전히 admin only.
 
 ### `/admin/instructors`
 
