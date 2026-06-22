@@ -1,7 +1,9 @@
 import type { Route } from "next";
 import { redirect } from "next/navigation";
-import { getLmsUser } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
-import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
+import {
+  getLmsUser,
+  isProgramAdmin,
+} from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
 import { LmsShell } from "@/src/programs/fan-to-pro/interface/components/lms/shell/lms-shell";
 
 /**
@@ -27,30 +29,8 @@ export default async function FanToProAdminLayout({
     redirect(`/${locale}/auth/change-password` as Route);
   }
 
-  // super_admin 통과.
-  let allowed = user.isSuperAdmin;
-
-  // program admin 검사.
-  if (!allowed) {
-    const supabase = getSupabaseServer();
-    if (supabase) {
-      const { data: program } = await supabase
-        .from("programs")
-        .select("id")
-        .eq("slug", "fan-to-pro")
-        .single();
-      if (program) {
-        const { data: membership } = await supabase
-          .from("program_memberships")
-          .select("user_id")
-          .eq("user_id", user.id)
-          .eq("program_id", program.id)
-          .eq("role", "admin")
-          .maybeSingle();
-        allowed = !!membership;
-      }
-    }
-  }
+  // super_admin 또는 program admin (React cache() 적용 — request 당 1회 query).
+  const allowed = user.isSuperAdmin || (await isProgramAdmin(user.id, "fan-to-pro"));
 
   if (!allowed) {
     redirect(`/${locale}/auth/login?error=no_membership` as Route);

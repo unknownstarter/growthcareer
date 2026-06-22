@@ -15,6 +15,7 @@
  * CLAUDE.md §7.4: 모든 LMS server action 첫 줄에 assertSuperAdmin 또는 그에 준하는
  * 가드 의무. middleware path 차단만 신뢰 금지 (viewer role 사고 2026-06-09 lesson).
  */
+import { cache } from "react";
 import { getSupabaseAuthServer } from "@/src/programs/fan-to-pro/infrastructure/auth/supabase-server-auth";
 import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
 
@@ -47,7 +48,12 @@ export interface LmsUser {
  * 기존 role 컬럼이 null 인 새 invite 사용자도 처리 — is_super_admin / 또는
  * cohort_memberships 에서 역으로 추론.
  */
-export async function getLmsUser(): Promise<LmsUser | null> {
+/**
+ * React `cache()` 로 request 당 1회만 실행. layout + page 가 둘 다
+ * `getLmsUser()` 호출해도 user_profiles + cohort_memberships query
+ * 1세트만 발생 — 페이지 진입 속도 개선.
+ */
+export const getLmsUser = cache(async (): Promise<LmsUser | null> => {
   const auth = await getSupabaseAuthServer();
   const {
     data: { user },
@@ -100,7 +106,7 @@ export async function getLmsUser(): Promise<LmsUser | null> {
     studentId: profile.student_id,
     instructorId: profile.instructor_id,
   };
-}
+});
 
 // -------------------------------------------------------------------------
 // 가드 함수 — server action 1차 가드 (RLS 가 2차).
@@ -129,6 +135,34 @@ export async function assertSuperAdmin(): Promise<LmsUser> {
  * 사용 예:
  *   await assertProgramAdmin('fan-to-pro');
  */
+/**
+ * (user × program) 의 admin 여부 — React `cache()` 로 동일 request 안에서 중복 호출 시
+ * 한 번만 DB query. layout + page + server action 이 같은 user 의 권한 검증 시 효율.
+ */
+export const isProgramAdmin = cache(
+  async (userId: string, programSlug: string): Promise<boolean> => {
+    const supabase = getSupabaseServer();
+    if (!supabase) return false;
+
+    const { data: program } = await supabase
+      .from("programs")
+      .select("id")
+      .eq("slug", programSlug)
+      .single();
+    if (!program) return false;
+
+    const { data: membership } = await supabase
+      .from("program_memberships")
+      .select("user_id")
+      .eq("user_id", userId)
+      .eq("program_id", program.id)
+      .eq("role", "admin")
+      .maybeSingle();
+
+    return !!membership;
+  },
+);
+
 export async function assertProgramAdmin(
   programSlug: string,
 ): Promise<LmsUser> {
@@ -136,27 +170,8 @@ export async function assertProgramAdmin(
   if (!user) throw new Error("[lms-role] unauthenticated.");
   if (user.isSuperAdmin) return user;
 
-  const supabase = getSupabaseServer();
-  if (!supabase) throw new Error("[lms-role] supabaseUnavailable.");
-
-  const { data: program } = await supabase
-    .from("programs")
-    .select("id")
-    .eq("slug", programSlug)
-    .single();
-  if (!program) {
-    throw new Error(`[lms-role] unknownProgram: ${programSlug}`);
-  }
-
-  const { data: membership } = await supabase
-    .from("program_memberships")
-    .select("user_id")
-    .eq("user_id", user.id)
-    .eq("program_id", program.id)
-    .eq("role", "admin")
-    .maybeSingle();
-
-  if (!membership) {
+  const ok = await isProgramAdmin(user.id, programSlug);
+  if (!ok) {
     throw new Error(
       `[lms-role] forbidden: user ${user.id} is not admin of program ${programSlug}.`,
     );
