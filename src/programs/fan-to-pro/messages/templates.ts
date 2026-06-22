@@ -688,10 +688,18 @@ const cohortKickoff_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 * 동기와 강사님과의 그룹챗이에요. 강의 외 잡담 + Q&A + 자료 공유 모두 환영
 * 첫 강의 전까지 꼭 입장해주세요
 
-[프로그램 원페이저]
-오픈채팅방 입장하시면 운영자가 원페이저 PDF 를 공유드릴게요.
+[프로그램 가이드 PDF 첨부]
+교육 프로그램 가이드를 PDF 로 본 메일에 첨부드려요.
 
-* 4주 동안 배우게 될 내용 + 강사 소개 + 강의 일정이 정리되어 있어요
+첫 강의 전에 한 번 훑어보시면 프로그램 흐름 파악에 도움이 될 거예요.
+4주 동안 배우게 될 내용, 강사 소개, 회차별 주제가 정리되어 있어요.
+
+[이력서 / 자기소개서 / 포트폴리오 첨삭]
+한국에서 취업을 준비하고 계시거나 K-pop 업계 인턴십 / 정규직을 염두에 두고 계시면,
+본인의 이력서 / 자기소개서 / 포트폴리오를 hello@dropdown.xyz 로 보내주세요.
+
+운영진이 검토 후 피드백을 드릴 수 있어요. 강의와 별개로 진행되는 서비스이고,
+첨삭 횟수는 강의 기간 중 1~2회 권장 (강의 시작 전 / 종강 무렵).
 
 [운영 문의]
 - 카카오톡 채널: ${KAKAO}
@@ -733,10 +741,18 @@ Password: ${KAKAO_OPEN_CHAT_PASSWORD}
 * Group chat with fellow students and instructors for outside-class talk + Q&A + sharing materials
 * Please join before the first class
 
-[ONE-PAGER]
-The operator will share the program one-pager PDF in the KakaoTalk open chat after you join.
+[PROGRAM GUIDE PDF / ATTACHED]
+The program guide PDF is attached to this email.
 
-* Curriculum overview, instructor introduction, and full schedule
+Please take a look before the first class to get familiar with the program flow.
+The guide covers the curriculum, instructor profiles, and session-by-session topics.
+
+[RESUME / COVER LETTER / PORTFOLIO REVIEW]
+If you are preparing for a career in Korea or aiming for a K-pop industry internship or full-time role,
+please send your resume, cover letter, or portfolio to hello@dropdown.xyz.
+
+Our team will review and provide feedback. This is a complimentary service offered separately
+from the classes. We recommend 1~2 rounds during the program (before the first class / near graduation).
 
 [CONTACT]
 - KakaoTalk channel: ${KAKAO}
