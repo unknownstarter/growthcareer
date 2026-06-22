@@ -705,8 +705,6 @@ const cohortKickoff_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 - 카카오톡 채널: ${KAKAO}
 - 이메일: hello@dropdown.xyz
 
-* 결석 / 일정 변경 / 환불 안내가 필요하시면 카카오톡 채널로 미리 알려주세요
-
 곧 강의장에서 뵐게요!
 
 Fan to Pro 운영진 드림`;
@@ -757,8 +755,6 @@ from the classes. We recommend 1~2 rounds during the program (before the first c
 [CONTACT]
 - KakaoTalk channel: ${KAKAO}
 - Email: hello@dropdown.xyz
-
-* If you need to be absent, change schedule, or request a refund, please reach out via the KakaoTalk channel in advance.
 
 See you at the venue soon!
 

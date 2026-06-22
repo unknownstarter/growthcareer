@@ -28,12 +28,14 @@ import {
   MarkAsPaidSchema,
   MarkAsCancelledSchema,
   MarkAsRefundedSchema,
+  MilestoneToggleSchema,
   RecordCashReceiptSchema,
   type AdminActionResult,
   type AnonymizeBatchResult,
   type BatchEnrollResult,
   type BroadcastSendResult,
   type IndividualSendLogResult,
+  type MilestoneToggleResult,
 } from "@/src/programs/fan-to-pro/domain/application";
 import { ENROLLMENT_CAP } from "@/src/programs/fan-to-pro/domain/program";
 import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
@@ -612,6 +614,52 @@ export async function logIndividualSend(
   if (insertErr) return { status: "error", error: insertErr.message };
 
   return { status: "ok" };
+}
+
+/* ---------------------------------------------------------------------------
+ * 11.6 toggleApplicantMilestone - B0042
+ *
+ *   운영자 click 토글 — applicant_milestones row INSERT (mark) / DELETE (unmark).
+ *   milestone_type: guide_sent / feedback_done / ... (도메인 enum 으로 제한).
+ *
+ *   mark 시 marked_at = now(). 이미 있으면 갱신 (upsert).
+ *   unmark 시 row 삭제 (history 보존 안 함 — 운영자 실수 토글 즉시 되돌리기 가능).
+ * ------------------------------------------------------------------------- */
+export async function toggleApplicantMilestone(
+  input: unknown,
+): Promise<MilestoneToggleResult> {
+  const parsed = MilestoneToggleSchema.safeParse(input);
+  if (!parsed.success) return { status: "error", error: "invalidInput" };
+
+  const supabase = await requireSupabase();
+  if (!supabase) return { status: "error", error: "supabaseUnavailable" };
+
+  if (parsed.data.action === "mark") {
+    const markedAt = new Date().toISOString();
+    const { error } = await supabase
+      .from("applicant_milestones")
+      .upsert(
+        {
+          applicant_id: parsed.data.applicantId,
+          milestone_type: parsed.data.milestoneType,
+          marked_at: markedAt,
+          marked_by: OPERATOR_ID,
+          notes: parsed.data.notes ?? null,
+        },
+        { onConflict: "applicant_id,milestone_type" },
+      );
+    if (error) return { status: "error", error: error.message };
+    return { status: "ok", markedAt };
+  }
+
+  // unmark
+  const { error } = await supabase
+    .from("applicant_milestones")
+    .delete()
+    .eq("applicant_id", parsed.data.applicantId)
+    .eq("milestone_type", parsed.data.milestoneType);
+  if (error) return { status: "error", error: error.message };
+  return { status: "ok", markedAt: null };
 }
 
 /* ---------------------------------------------------------------------------

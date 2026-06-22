@@ -116,24 +116,40 @@ export async function fetchApplicants(options?: {
     (r) => String((r as unknown as Record<string, unknown>).id ?? ""),
   );
   const lastSentMap = new Map<string, Record<string, string>>();
+  const milestonesMap = new Map<string, Record<string, string>>();
   if (applicantIds.length > 0) {
-    const { data: logRows } = await supabase
-      .from("messages_log")
-      .select("applicant_id, template_id, sent_at")
-      .in("applicant_id", applicantIds)
-      .order("sent_at", { ascending: false });
-    for (const row of logRows ?? []) {
+    const [logsResult, msResult] = await Promise.all([
+      supabase
+        .from("messages_log")
+        .select("applicant_id, template_id, sent_at")
+        .in("applicant_id", applicantIds)
+        .order("sent_at", { ascending: false }),
+      supabase
+        .from("applicant_milestones")
+        .select("applicant_id, milestone_type, marked_at")
+        .in("applicant_id", applicantIds),
+    ]);
+    for (const row of logsResult.data ?? []) {
       const r = row as Record<string, unknown>;
       const aid = String(r.applicant_id ?? "");
       const kind = String(r.template_id ?? "");
       const sentAt = String(r.sent_at ?? "");
       if (!aid || !kind || !sentAt) continue;
       const bucket = lastSentMap.get(aid) ?? {};
-      // sent_at DESC 정렬됐으니 첫 hit 가 가장 최근.
       if (!bucket[kind]) {
         bucket[kind] = sentAt;
         lastSentMap.set(aid, bucket);
       }
+    }
+    for (const row of msResult.data ?? []) {
+      const r = row as Record<string, unknown>;
+      const aid = String(r.applicant_id ?? "");
+      const mtype = String(r.milestone_type ?? "");
+      const markedAt = String(r.marked_at ?? "");
+      if (!aid || !mtype || !markedAt) continue;
+      const bucket = milestonesMap.get(aid) ?? {};
+      bucket[mtype] = markedAt;
+      milestonesMap.set(aid, bucket);
     }
   }
 
@@ -146,6 +162,7 @@ export async function fetchApplicants(options?: {
         : "pending";
     const aid = String(raw.id ?? "");
     const bucket = lastSentMap.get(aid) ?? {};
+    const msBucket = milestonesMap.get(aid) ?? {};
     return {
       id: aid,
       createdAt: String(raw.created_at ?? ""),
@@ -191,6 +208,10 @@ export async function fetchApplicants(options?: {
         reminderD1: bucket.reminderD1 ?? null,
         referralInvite: bucket.referralInvite ?? null,
         cohortKickoff: bucket.cohortKickoff ?? null,
+      },
+      milestones: {
+        guideSentAt: msBucket.guide_sent ?? null,
+        feedbackDoneAt: msBucket.feedback_done ?? null,
       },
     };
   });

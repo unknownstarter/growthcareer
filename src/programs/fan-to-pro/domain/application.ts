@@ -323,6 +323,34 @@ export type IndividualSendLogResult =
   | { status: "error"; error: string };
 
 /**
+ * B0042 — applicant_milestones 토글.
+ *
+ * milestone_type 은 운영 단계 식별자 (guide_sent / feedback_done 등). 자유 텍스트지만
+ * client/server 가 같이 알아야 하니 enum 으로 제한 (서버 신뢰 X — 추가 시 enum 갱신).
+ *
+ * action='mark' → upsert (이미 있으면 marked_at 갱신)
+ * action='unmark' → DELETE row (history 보존 안 함 — 단순 운영자 toggle 패턴)
+ */
+export const APPLICANT_MILESTONE_TYPES = [
+  "guide_sent",
+  "feedback_done",
+] as const;
+export type ApplicantMilestoneType = (typeof APPLICANT_MILESTONE_TYPES)[number];
+
+export const MilestoneToggleSchema = z.object({
+  applicantId: z.string().uuid("invalidApplicantId"),
+  milestoneType: z.enum(APPLICANT_MILESTONE_TYPES),
+  action: z.enum(["mark", "unmark"]),
+  notes: z.string().trim().max(500).optional(),
+});
+
+export type MilestoneToggleInput = z.infer<typeof MilestoneToggleSchema>;
+
+export type MilestoneToggleResult =
+  | { status: "ok"; markedAt: string | null }
+  | { status: "error"; error: string };
+
+/**
  * B0018 Wave 1 T4 - broadcast 발송 결과.
  *   ok            : messages_log INSERT 완료. insertedCount = 기록된 row 수.
  *                    개별 row N 개 (applicant_id 별) 패턴 채택. broadcast row 0.

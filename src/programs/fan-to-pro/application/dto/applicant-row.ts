@@ -76,6 +76,13 @@ export type ApplicantRow = {
     referralInvite: string | null;
     cohortKickoff: string | null;
   };
+
+  // B0042 - 운영 milestone 토글. row 별 marked_at (없으면 null = 미체크).
+  // 운영자 click 으로 set/unset 가능. status enum 외 추가 단계.
+  milestones: {
+    guideSentAt: string | null;
+    feedbackDoneAt: string | null;
+  };
 };
 
 /** B0018 Wave 1 T2 - 발급 이력 list 표시용. */

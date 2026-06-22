@@ -15,6 +15,7 @@ import {
   markPiiAnonymizeBatch,
   recordCashReceipt,
   sendReminder,
+  toggleApplicantMilestone,
 } from "@/src/programs/fan-to-pro/application/admin-actions";
 import { pollApplicants } from "@/src/programs/fan-to-pro/application/polling-actions";
 import {
@@ -436,12 +437,40 @@ function DashboardInner({
     });
   }
 
+  function runToggleMilestone(
+    applicantId: string,
+    milestoneType: "guide_sent" | "feedback_done",
+    currentValue: string | null,
+  ) {
+    startTransition(async () => {
+      const result = await toggleApplicantMilestone({
+        applicantId,
+        milestoneType,
+        action: currentValue ? "unmark" : "mark",
+      });
+      if (result.status === "ok") {
+        const label =
+          milestoneType === "guide_sent" ? "가이드 안내" : "첨삭";
+        show(
+          currentValue
+            ? `${label} 표시 해제했어요.`
+            : `${label} 완료 표시했어요.`,
+          "success",
+        );
+        refresh();
+        return;
+      }
+      show(friendlyError(result.error), "error");
+    });
+  }
+
   function handleCopied(kind: MessageKind, channel: MessageChannel) {
     show(
       `${MESSAGE_KIND_LABELS[kind]} (${channel === "email" ? "이메일" : "카톡/SMS"}) 복사했어요.`,
       "success",
     );
     // messages_log audit — drawerApplicant 가 현재 열린 신청자. background fire-and-forget.
+    // cohortKickoff 인 경우 milestone guide_sent 도 자동 mark.
     if (drawerApplicant) {
       const applicantId = drawerApplicant.id;
       void (async () => {
@@ -450,8 +479,14 @@ function DashboardInner({
           channel: channel === "email" ? "email" : "sms",
           templateId: kind,
         });
+        if (result.status === "ok" && kind === "cohortKickoff") {
+          await toggleApplicantMilestone({
+            applicantId,
+            milestoneType: "guide_sent",
+            action: "mark",
+          });
+        }
         if (result.status === "ok") {
-          // 다음 polling 또는 refresh 에서 chip 갱신.
           refresh();
         }
       })();
@@ -902,6 +937,9 @@ function DashboardInner({
                             setReceiptTarget(row);
                           }}
                           onHistory={() => setHistoryApplicant(row)}
+                          onToggleMilestone={(type, current) =>
+                            runToggleMilestone(row.id, type, current)
+                          }
                         />
                       </td>
                     )}
@@ -1023,6 +1061,9 @@ function DashboardInner({
                         setReceiptTarget(row);
                       }}
                       onHistory={() => setHistoryApplicant(row)}
+                      onToggleMilestone={(type, current) =>
+                        runToggleMilestone(row.id, type, current)
+                      }
                     />
                   </div>
                 )}
@@ -1120,6 +1161,7 @@ function RowActions({
   onRefund,
   onReceipt,
   onHistory,
+  onToggleMilestone,
 }: {
   row: ApplicantRow;
   busy: boolean;
@@ -1132,6 +1174,10 @@ function RowActions({
   onRefund: () => void;
   onReceipt: () => void;
   onHistory: () => void;
+  onToggleMilestone: (
+    milestoneType: "guide_sent" | "feedback_done",
+    currentValue: string | null,
+  ) => void;
 }) {
   // PII 파기된 row 는 발송/연락 액션이 무의미 → 메시지 버튼 숨김.
   // 거래 처리 액션 (취소/환불/현금영수증 기록) 은 회계 무결성 위해 유지.
@@ -1141,6 +1187,8 @@ function RowActions({
     (row.status === "paid" ||
       row.status === "enrolled" ||
       row.status === "refunded");
+  const milestoneEligible =
+    !redacted && (row.status === "paid" || row.status === "enrolled");
 
   return (
     <div className="flex flex-wrap gap-1">
@@ -1253,6 +1301,50 @@ function RowActions({
         >
           환불 완료
         </button>
+      )}
+      {milestoneEligible && (
+        <>
+          <button
+            type="button"
+            onClick={() =>
+              onToggleMilestone("guide_sent", row.milestones.guideSentAt)
+            }
+            className={cn(
+              compactBtn,
+              row.milestones.guideSentAt &&
+                "border-emerald-500/60 bg-emerald-500/15 text-emerald-200",
+            )}
+            style={compactStyle}
+            disabled={busy}
+            title={
+              row.milestones.guideSentAt
+                ? `가이드 보냄 ${formatDate(row.milestones.guideSentAt)} (클릭으로 해제)`
+                : "첫 수업 안내 메일 발송 완료 표시"
+            }
+          >
+            {row.milestones.guideSentAt ? "가이드 ✓" : "가이드"}
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onToggleMilestone("feedback_done", row.milestones.feedbackDoneAt)
+            }
+            className={cn(
+              compactBtn,
+              row.milestones.feedbackDoneAt &&
+                "border-sky-500/60 bg-sky-500/15 text-sky-200",
+            )}
+            style={compactStyle}
+            disabled={busy}
+            title={
+              row.milestones.feedbackDoneAt
+                ? `첨삭 완료 ${formatDate(row.milestones.feedbackDoneAt)} (클릭으로 해제)`
+                : "이력서/자소서/포폴 첨삭 완료 표시"
+            }
+          >
+            {row.milestones.feedbackDoneAt ? "첨삭 ✓" : "첨삭"}
+          </button>
+        </>
       )}
     </div>
   );
