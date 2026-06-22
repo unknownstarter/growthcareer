@@ -24,6 +24,7 @@
 import {
   ApplicantIdSchema,
   BroadcastSendSchema,
+  IndividualSendLogSchema,
   MarkAsPaidSchema,
   MarkAsCancelledSchema,
   MarkAsRefundedSchema,
@@ -32,6 +33,7 @@ import {
   type AnonymizeBatchResult,
   type BatchEnrollResult,
   type BroadcastSendResult,
+  type IndividualSendLogResult,
 } from "@/src/programs/fan-to-pro/domain/application";
 import { ENROLLMENT_CAP } from "@/src/programs/fan-to-pro/domain/program";
 import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
@@ -562,6 +564,54 @@ export async function logBroadcastSend(
     insertedCount: validIds.length,
     skippedCount,
   };
+}
+
+/* ---------------------------------------------------------------------------
+ * 11.5 logIndividualSend - B0041
+ *
+ *   message-drawer 의 [메일 앱 열기] / [SMS 앱 열기] / [본문 복사] 클릭 시
+ *   호출. messages_log 에 individual row INSERT — 발송 audit trail.
+ *   logBroadcastSend 와 동일 패턴 (direction='individual' 차이만).
+ *
+ *   subject / body_excerpt 는 templates.ts 의 표준 문구라 audit 차원에서 생략.
+ *   (필요 시 향후 client 에서 함께 전달하도록 확장 가능.)
+ *
+ *   중복 호출 시 messages_log row N개 누적 (의도) — 같은 신청자에게 같은 kind
+ *   여러 번 보낼 수 있고 모두 audit 가치 있음 (예: reminder 3회).
+ * ------------------------------------------------------------------------- */
+export async function logIndividualSend(
+  input: unknown,
+): Promise<IndividualSendLogResult> {
+  const parsed = IndividualSendLogSchema.safeParse(input);
+  if (!parsed.success) return { status: "error", error: "invalidInput" };
+
+  const supabase = await requireSupabase();
+  if (!supabase) return { status: "error", error: "supabaseUnavailable" };
+
+  // redacted_at NOT NULL 차단 (PII 파기 row 에 메시지 발송 audit 금지).
+  const { data: target, error: readErr } = await supabase
+    .from(TABLE)
+    .select("id, redacted_at")
+    .eq("id", parsed.data.applicantId)
+    .single();
+  if (readErr) return { status: "error", error: readErr.message };
+  if (!target) return { status: "error", error: "notFound" };
+  if ((target as Record<string, unknown>).redacted_at) {
+    return { status: "error", error: "applicantRedacted" };
+  }
+
+  const { error: insertErr } = await supabase.from("messages_log").insert({
+    applicant_id: parsed.data.applicantId,
+    channel: parsed.data.channel,
+    direction: "individual" as const,
+    template_id: parsed.data.templateId,
+    sent_at: new Date().toISOString(),
+    sent_by: OPERATOR_ID,
+    recipient_count: 1,
+  });
+  if (insertErr) return { status: "error", error: insertErr.message };
+
+  return { status: "ok" };
 }
 
 /* ---------------------------------------------------------------------------

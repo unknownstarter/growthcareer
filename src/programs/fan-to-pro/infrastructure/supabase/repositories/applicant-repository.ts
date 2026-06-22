@@ -110,6 +110,33 @@ export async function fetchApplicants(options?: {
     };
   }
 
+  // B0041 — applicant 별 kind 별 마지막 발송 시각. messages_log 전체 fetch 후 메모리에서 reduce.
+  // applicant 100명 + kind 7종 + 평균 5회 발송 가정 시 ~3500 row. 충분 가벼움.
+  const applicantIds = (data ?? []).map(
+    (r) => String((r as unknown as Record<string, unknown>).id ?? ""),
+  );
+  const lastSentMap = new Map<string, Record<string, string>>();
+  if (applicantIds.length > 0) {
+    const { data: logRows } = await supabase
+      .from("messages_log")
+      .select("applicant_id, template_id, sent_at")
+      .in("applicant_id", applicantIds)
+      .order("sent_at", { ascending: false });
+    for (const row of logRows ?? []) {
+      const r = row as Record<string, unknown>;
+      const aid = String(r.applicant_id ?? "");
+      const kind = String(r.template_id ?? "");
+      const sentAt = String(r.sent_at ?? "");
+      if (!aid || !kind || !sentAt) continue;
+      const bucket = lastSentMap.get(aid) ?? {};
+      // sent_at DESC 정렬됐으니 첫 hit 가 가장 최근.
+      if (!bucket[kind]) {
+        bucket[kind] = sentAt;
+        lastSentMap.set(aid, bucket);
+      }
+    }
+  }
+
   const rows: ApplicantRow[] = (data ?? []).map((r) => {
     const raw = r as unknown as Record<string, unknown>;
     const status =
@@ -117,8 +144,10 @@ export async function fetchApplicants(options?: {
       (APPLICANT_STATUSES as readonly string[]).includes(raw.status)
         ? (raw.status as ApplicantStatus)
         : "pending";
+    const aid = String(raw.id ?? "");
+    const bucket = lastSentMap.get(aid) ?? {};
     return {
-      id: String(raw.id ?? ""),
+      id: aid,
       createdAt: String(raw.created_at ?? ""),
       name: String(raw.name ?? ""),
       email: mask ? maskEmail(String(raw.email ?? "")) : String(raw.email ?? ""),
@@ -154,6 +183,15 @@ export async function fetchApplicants(options?: {
       redactedAt: raw.redacted_at ? String(raw.redacted_at) : null,
       cashReceiptCount: extractAggregateCount(raw.cash_receipts),
       messageCount: extractAggregateCount(raw.messages_log),
+      messageLastSentByKind: {
+        paymentGuide: bucket.paymentGuide ?? null,
+        paymentConfirmed: bucket.paymentConfirmed ?? null,
+        reminderT1: bucket.reminderT1 ?? null,
+        reminderD3: bucket.reminderD3 ?? null,
+        reminderD1: bucket.reminderD1 ?? null,
+        referralInvite: bucket.referralInvite ?? null,
+        cohortKickoff: bucket.cohortKickoff ?? null,
+      },
     };
   });
 

@@ -298,6 +298,31 @@ export const BroadcastSendSchema = z.object({
 export type BroadcastSendInput = z.infer<typeof BroadcastSendSchema>;
 
 /**
+ * 개별 메시지 발송 audit (B0041) — 운영자가 신청자 단일 대상 message-drawer
+ * 에서 [메일 앱 열기] / [SMS 앱 열기] / [본문 복사] 클릭 시 호출.
+ *
+ * 채널: email | sms (kakao 채널 / 알림톡 미적용).
+ * direction: 'individual' 고정. recipient_count = 1 고정.
+ * templateId: paymentGuide / paymentConfirmed / reminderT1/D3/D1 / referralInvite / cohortKickoff
+ * subject / body 는 audit 차원에서 X — drawer 가 templates.ts 의 표준 문구만 사용.
+ */
+export const IndividualSendLogSchema = z.object({
+  applicantId: z.string().uuid("invalidApplicantId"),
+  channel: z.enum(["email", "sms"]),
+  templateId: z
+    .string()
+    .trim()
+    .min(1, "templateIdRequired")
+    .max(60, "templateIdMax"),
+});
+
+export type IndividualSendLogInput = z.infer<typeof IndividualSendLogSchema>;
+
+export type IndividualSendLogResult =
+  | { status: "ok" }
+  | { status: "error"; error: string };
+
+/**
  * B0018 Wave 1 T4 - broadcast 발송 결과.
  *   ok            : messages_log INSERT 완료. insertedCount = 기록된 row 수.
  *                    개별 row N 개 (applicant_id 별) 패턴 채택. broadcast row 0.

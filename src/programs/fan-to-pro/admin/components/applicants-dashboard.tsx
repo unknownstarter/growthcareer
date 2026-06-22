@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/src/programs/fan-to-pro/presentation/components/cn";
 import {
   logBroadcastSend,
+  logIndividualSend,
   markAsCancelled,
   markAsEnrolledBatch,
   markAsNotified,
@@ -440,6 +441,21 @@ function DashboardInner({
       `${MESSAGE_KIND_LABELS[kind]} (${channel === "email" ? "이메일" : "카톡/SMS"}) 복사했어요.`,
       "success",
     );
+    // messages_log audit — drawerApplicant 가 현재 열린 신청자. background fire-and-forget.
+    if (drawerApplicant) {
+      const applicantId = drawerApplicant.id;
+      void (async () => {
+        const result = await logIndividualSend({
+          applicantId,
+          channel: channel === "email" ? "email" : "sms",
+          templateId: kind,
+        });
+        if (result.status === "ok") {
+          // 다음 polling 또는 refresh 에서 chip 갱신.
+          refresh();
+        }
+      })();
+    }
   }
 
   function toggleStatusFilter(status: ApplicantStatus) {
@@ -845,6 +861,15 @@ function DashboardInner({
                       <div className="flex flex-wrap gap-1">
                         <StatusChip status={row.status} />
                         {row.redactedAt ? <RedactedChip /> : null}
+                        {row.messageLastSentByKind.cohortKickoff ? (
+                          <span
+                            className="inline-flex items-center gap-1 border border-emerald-500/60 bg-emerald-500/15 px-2 py-0.5 text-[10px] font-black uppercase text-emerald-200 whitespace-nowrap"
+                            style={{ letterSpacing: "0.18em" }}
+                            title={`가이드 메일 발송 ${formatDate(row.messageLastSentByKind.cohortKickoff)}`}
+                          >
+                            가이드 ✓
+                          </span>
+                        ) : null}
                       </div>
                     </td>
                     <td className="px-3 py-2 align-top text-fg whitespace-nowrap">
@@ -950,6 +975,15 @@ function DashboardInner({
                   <div className="flex shrink-0 flex-col items-end gap-1">
                     <StatusChip status={row.status} />
                     {row.redactedAt ? <RedactedChip /> : null}
+                    {row.messageLastSentByKind.cohortKickoff ? (
+                      <span
+                        className="inline-flex items-center gap-1 border border-emerald-500/60 bg-emerald-500/15 px-2 py-0.5 text-[10px] font-black uppercase text-emerald-200 whitespace-nowrap"
+                        style={{ letterSpacing: "0.18em" }}
+                        title={`가이드 메일 발송 ${formatDate(row.messageLastSentByKind.cohortKickoff)}`}
+                      >
+                        가이드 ✓
+                      </span>
+                    ) : null}
                   </div>
                 </header>
                 <dl className="mt-2.5 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-[11px] text-fg/70">
