@@ -101,22 +101,29 @@
 - 채널 URL: `https://pf.kakao.com/_nxhDGX/chat`
 - 사이트 우측 하단 고정 노란 버튼 (B0008) — SDK 없이 단순 anchor
 
-## 1기 모집 결과 (2026-06-22 자정 기준)
+## 1기 모집 결과 (2026-06-23 갱신)
 
 | status | 인원 |
 |---|---|
 | pending | (마감 직전 추가 신청 catch-up 완료) |
 | notified | (모두 paid 또는 cancelled 처리) |
-| **paid** | **11명** |
+| **paid** | **10명** (6/22 11명 → 6/23 1명 환불 처리) |
 | overdue | 0 |
 | cancelled | (실수 신청 / 사후 취소) |
-| refunded | 0 |
+| **refunded** | **1명** (6/23 환불 처리) |
 | enrolled | (강의 첫날 6/27 등록 토글) |
 | next_cohort_interest | (6/22 자정 이후 카운팅 시작) |
 
 **총 신청자**: 26명 (cohort 1 backfill 기준)
-**paid 전환율**: 11 / 26 ≈ 42%
-**폐강 기준 (8명)**: 초과 → 강의 확정
+**paid 전환율**: 10 / 26 ≈ 38.5% (환불 후)
+**폐강 기준 (8명)**: 초과 — 강의 확정 (여유 2명, 추가 환불 시 위험)
+
+## 운영 도구 (2026-06-22 보강분)
+
+- **개별 메시지 audit (B0041)**: 메시지 모달에서 [메일 앱 열기] / [SMS 앱 열기] / [본문 복사] 클릭 시 messages_log 자동 INSERT. 신청자 row 의 발송 chip 으로 즉시 확인.
+- **applicant_milestones 토글 (B0042)**: paid/enrolled 신청자의 액션 영역에 [가이드] [첨삭] 토글 버튼. 클릭 시 INSERT/DELETE 로 set/unset. emerald(가이드) / sky(첨삭) 색 chip.
+- **자동 milestone mark**: cohortKickoff 메일 발송 시 → guide_sent 자동 mark.
+- **CSV 다운로드 (viewer 포함)**: 마스킹 해제 — cowork 측이 신청자 직접 contact 가능. 23 컬럼 UTF-8 BOM.
 
 ## 환불 정책 (REFUND_POLICY)
 

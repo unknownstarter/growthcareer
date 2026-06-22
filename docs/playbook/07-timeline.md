@@ -25,7 +25,37 @@ _진행 후 추가_
 
 ---
 
-## 2026-06-22 — 모집 마감 + 다음 기수 알림 + Playbook 박제
+## 2026-06-23 — 환불 1건 + 운영 시스템 보강
+
+### 환불 처리 (1명)
+
+- **사건**: paid 학생 1명 환불 요청 → 운영자 처리. paid 11명 → **10명** 으로 변경.
+- **결정**: refund_policy 따라 100% 환불 (수강 시작 전). cohort_expenses 에 `other` 카테고리로 환불 송금 비용 + 매출 차감.
+- **인사이트**: 폐강 기준 8명 까지 여유 2명. 추가 환불 시 위험. cowork 수수료 환불자 차감 여부 약정 확인 필요.
+- **해결**: applicants.status=refunded + refunded_at 토글. 06-finance-tax.md 손익 재계산 (마진율 17.5% → 10.5%).
+
+---
+
+## 2026-06-22 — 모집 마감 + 다음 기수 알림 + Playbook + 운영 시스템 보강
+
+### 오후 ~ 저녁 — viewer PII 마스킹 해제 + LMS 성능 + 메시지 audit + milestone 시스템
+
+- **사건**: 1기 강의 D-5 시점에 운영 관련 추가 보강 요청 다수.
+- **결정** + **해결**:
+  - **viewer (cowork) email/phone 마스킹 해제** — 신청자 직접 contact 가능 목적. `mask: false` 로 변경. CSV 다운로드 = 26명 전체 데이터 포함. (commit `dda10b8`)
+  - **LMS admin 페이지 loading.tsx + cache()** — Skeleton UI + React `cache()` 로 페이지 전환 체감 속도 개선. layout 권한 검증 DB query 2→1. (commit `3eaf6f6`)
+  - **cohortKickoff 이메일 본문 보강** — 가이드 PDF 첨부 안내 + 이력서/자소서/포폴 첨삭 서비스 안내 추가. 환불/결석 안내는 제거 (신규 학생에게 negative 톤 X). (commit `8c5305f`, `7ddc075`)
+  - **카카오 오픈채팅 새 링크** — gCuOABAi → gX12jFAi (오픈프로필 모드, 닉네임 변경 가능). "한국어 발음 이름 (영문 본명)" 형식 안내. (commit `f9e9e5e`)
+  - **individual 메시지 audit** (B0041) — messages_log INSERT 자동화 + "가이드 ✓" chip. broadcast 만 audit 됐던 사고 해결. (commit `9d00cf5`)
+  - **applicant_milestones 시스템** (B0042) — guide_sent / feedback_done 토글 버튼 + chip. 운영자 click 으로 단계 mark. (commit `7ddc075`)
+- **인사이트**: 운영자 본인 (노아) 일상 사용하면서 발견한 빈틈 → 즉시 fix 가 가장 가치 높은 dev 흐름 (6/13 모바일 반응형 패턴 재현).
+
+### 새벽 (00:08) — Vercel auto deploy 누락 + `vercel --prod` 강제
+
+- **사건**: commit push 후 10분+ 새 deploy 안 들어옴. 노아 직접 발견 ("문자 내용!! 오픈채널 URL도 틀리고!!").
+- **결정**: CLAUDE.md §7 의 "10분+ auto deploy 안 들어옴 시 `vercel --prod` 직접 호출" 룰 적용. 강제 trigger.
+- **인사이트**: GitHub → Vercel integration auto deploy 가 가끔 누락. CLAUDE.md §7 룰이 정확히 이 상황 대비. 직접 호출 후 38초 만에 Ready.
+- **해결**: `vercel deploy --prod --yes` 명령 + 노아 새로고침 확인.
 
 ### 새벽 (~01:00 직후) — Cowork 12% 마케팅 수수료 박제
 

@@ -1,6 +1,15 @@
 # ADR 0009 — 데이터 모델 통합 + LMS 단순화 + 이중 어드민 deprecation roadmap
 
-**Status**: Accepted (전략) / Pending implementation (코드 변경은 2기 준비 phase 부터)
+> ⚠️ **STATUS: PARTIALLY SUPERSEDED by [ADR 0010](./0010-data-model-applicants-immutable-lms-additive.md) (2026-06-23)**
+>
+> 본 ADR 의 Wave A/B/C (persons / applications / enrollments split) = **Rejected** by 노아.
+> 이유: 1기 데이터 risk + rollback 어려움 + 같은 사람 dedup 사고 위험.
+> 대안 (Accepted): applicants 영구 불변 + LMS 만 신규 entity 로 깨끗하게 (ADR 0010).
+> 본 ADR 의 단일 audit (person_events) / clean architecture 청소 / Settlement aggregate 아이디어는 ADR 0010 에 부분 흡수.
+
+---
+
+**Status**: PARTIALLY SUPERSEDED by ADR 0010 (Wave A/B/C Rejected, 일부 아이디어 흡수)
 **Date**: 2026-06-22
 **Deciders**: 노아 + Sophia (Tech Architect)
 **Tags**: data-model, clean-architecture, lms, strangler-fig, applicants, milestones, audit, deprecation
