@@ -702,10 +702,6 @@ const cohortKickoff_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 운영진이 검토 후 피드백을 드릴 수 있어요. 강의와 별개로 진행되는 서비스이고,
 첨삭 횟수는 강의 기간 중 1~2회 권장 (강의 시작 전 / 종강 무렵).
 
-[운영 문의]
-- 카카오톡 채널: ${KAKAO}
-- 이메일: hello@dropdown.xyz
-
 곧 강의장에서 뵐게요!
 
 Fan to Pro 운영진 드림`;
@@ -752,10 +748,6 @@ please send your resume, cover letter, or portfolio to hello@dropdown.xyz.
 
 Our team will review and provide feedback. This is a complimentary service offered separately
 from the classes. We recommend 1~2 rounds during the program (before the first class / near graduation).
-
-[CONTACT]
-- KakaoTalk channel: ${KAKAO}
-- Email: hello@dropdown.xyz
 
 See you at the venue soon!
 
@@ -838,10 +830,6 @@ const week1Materials_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 * 강의 중: 강사님 설명과 사진 매칭 + 본인 노트 메모
 * 강의 후: 복습 + 동기들과 카카오톡 오픈채팅에서 질문 / 토론
 
-[운영 문의]
-- 카카오톡 채널: ${KAKAO}
-- 이메일: hello@dropdown.xyz
-
 강의장에서 뵐게요!
 
 Fan to Pro 운영진 드림`;
@@ -881,10 +869,6 @@ The following actions are strictly prohibited and may carry legal consequences.
 * Before class: A quick browse to get familiar with the flow (photo-heavy, quick to skim)
 * During class: Match instructor's explanation with the photos + take your own notes
 * After class: Review + discuss with peers in the KakaoTalk open chat
-
-[CONTACT]
-- KakaoTalk channel: ${KAKAO}
-- Email: hello@dropdown.xyz
 
 See you at the venue!
 
