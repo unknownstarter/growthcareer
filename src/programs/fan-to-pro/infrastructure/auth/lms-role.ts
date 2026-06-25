@@ -293,6 +293,362 @@ export async function assertCanAccessStudentCareer(
 }
 
 // -------------------------------------------------------------------------
+// B0044 LMS Launch Phase 1 — lecture_materials + student_notes + student_profile 가드.
+// 각 함수 React `cache()` 적용 — 같은 request 안에서 중복 호출 시 1회만 DB query.
+// -------------------------------------------------------------------------
+
+/**
+ * (user × cohort) 의 cohort_membership 조회 — instructor / student / null.
+ * cache 로 동일 request 안에서 중복 조회 회피.
+ */
+export const getCohortMembershipRole = cache(
+  async (
+    userId: string,
+    cohortId: string,
+  ): Promise<"instructor" | "student" | null> => {
+    const supabase = getSupabaseServer();
+    if (!supabase) return null;
+    const { data } = await supabase
+      .from("cohort_memberships")
+      .select("role")
+      .eq("user_id", userId)
+      .eq("cohort_id", cohortId)
+      .maybeSingle();
+    if (!data) return null;
+    const role = data.role as string;
+    if (role === "instructor" || role === "student") return role;
+    return null;
+  },
+);
+
+/**
+ * cohort 의 program_id 조회 — cache.
+ */
+const getCohortProgramId = cache(
+  async (cohortId: string): Promise<string | null> => {
+    const supabase = getSupabaseServer();
+    if (!supabase) return null;
+    const { data } = await supabase
+      .from("cohorts")
+      .select("program_id")
+      .eq("id", cohortId)
+      .maybeSingle();
+    return (data?.program_id as string | undefined) ?? null;
+  },
+);
+
+/**
+ * 자료 업로드 가드. (cohortId 또는 session 기반.)
+ *
+ * 통과: super_admin OR program admin (cohort.program) OR cohort instructor.
+ *
+ * sessionId 가 주어지면 session.cohort_id == cohortId 검증 추가.
+ */
+export async function assertCanUploadMaterial(
+  cohortId: string,
+  sessionId?: string | null,
+): Promise<LmsUser> {
+  const user = await getLmsUser();
+  if (!user) throw new Error("[lms-role] unauthenticated.");
+  if (user.isSuperAdmin) {
+    await assertSessionMatchesCohort(sessionId, cohortId);
+    return user;
+  }
+
+  // program admin?
+  const programId = await getCohortProgramId(cohortId);
+  if (!programId) throw new Error(`[lms-role] unknownCohort: ${cohortId}`);
+
+  const supabase = getSupabaseServer();
+  if (!supabase) throw new Error("[lms-role] supabaseUnavailable.");
+
+  const { data: pm } = await supabase
+    .from("program_memberships")
+    .select("user_id")
+    .eq("user_id", user.id)
+    .eq("program_id", programId)
+    .eq("role", "admin")
+    .maybeSingle();
+  if (pm) {
+    await assertSessionMatchesCohort(sessionId, cohortId);
+    return user;
+  }
+
+  // cohort instructor?
+  const cohortRole = await getCohortMembershipRole(user.id, cohortId);
+  if (cohortRole === "instructor") {
+    await assertSessionMatchesCohort(sessionId, cohortId);
+    return user;
+  }
+
+  throw new Error(
+    `[lms-role] forbidden: user ${user.id} cannot upload material to cohort ${cohortId}.`,
+  );
+}
+
+async function assertSessionMatchesCohort(
+  sessionId: string | null | undefined,
+  cohortId: string,
+): Promise<void> {
+  if (!sessionId) return;
+  const supabase = getSupabaseServer();
+  if (!supabase) throw new Error("[lms-role] supabaseUnavailable.");
+  const { data } = await supabase
+    .from("sessions")
+    .select("cohort_id")
+    .eq("id", sessionId)
+    .maybeSingle();
+  if (!data) throw new Error(`[lms-role] unknownSession: ${sessionId}`);
+  if (data.cohort_id !== cohortId) {
+    throw new Error(
+      `[lms-role] sessionCohortMismatch: session=${sessionId} cohort=${cohortId}`,
+    );
+  }
+}
+
+/**
+ * 자료 다운로드 가드.
+ *
+ * 통과: super_admin OR program admin OR cohort member (instructor / student).
+ * student 인 경우 material visibility 검증 추가 (RLS 와 동기).
+ *
+ * @returns { user, material } — 호출자가 file_path / external_url 사용.
+ */
+export async function assertCanDownloadMaterial(
+  materialId: string,
+): Promise<{
+  user: LmsUser;
+  material: {
+    id: string;
+    cohort_id: string;
+    storage_method: "file_upload" | "external_url";
+    file_path: string | null;
+    file_name: string | null;
+    external_url: string | null;
+    visibility: "draft" | "scheduled" | "published" | "archived";
+    visible_from: string | null;
+  };
+}> {
+  const user = await getLmsUser();
+  if (!user) throw new Error("[lms-role] unauthenticated.");
+
+  const supabase = getSupabaseServer();
+  if (!supabase) throw new Error("[lms-role] supabaseUnavailable.");
+
+  const { data: material, error: matErr } = await supabase
+    .from("lecture_materials")
+    .select(
+      "id, cohort_id, storage_method, file_path, file_name, external_url, visibility, visible_from",
+    )
+    .eq("id", materialId)
+    .maybeSingle();
+  if (matErr) throw new Error(matErr.message);
+  if (!material) throw new Error(`[lms-role] unknownMaterial: ${materialId}`);
+
+  if (user.isSuperAdmin) return { user, material: material as never };
+
+  // program admin?
+  const programId = await getCohortProgramId(material.cohort_id);
+  if (programId) {
+    const { data: pm } = await supabase
+      .from("program_memberships")
+      .select("user_id")
+      .eq("user_id", user.id)
+      .eq("program_id", programId)
+      .eq("role", "admin")
+      .maybeSingle();
+    if (pm) return { user, material: material as never };
+  }
+
+  // cohort member?
+  const cohortRole = await getCohortMembershipRole(user.id, material.cohort_id);
+  if (!cohortRole) {
+    throw new Error(
+      `[lms-role] forbidden: user ${user.id} not member of cohort ${material.cohort_id}.`,
+    );
+  }
+
+  // student 는 visibility 검증 추가.
+  if (cohortRole === "student") {
+    const vis = material.visibility as string;
+    const visibleFrom = material.visible_from as string | null;
+    const ok =
+      vis === "published" ||
+      (vis === "scheduled" &&
+        visibleFrom !== null &&
+        new Date(visibleFrom).getTime() <= Date.now());
+    if (!ok) {
+      throw new Error(
+        `[lms-role] forbidden: material ${materialId} not visible to student.`,
+      );
+    }
+  }
+
+  return { user, material: material as never };
+}
+
+/**
+ * student_notes 쓰기 가드.
+ *
+ * 통과: super_admin OR program admin OR cohort instructor of student.
+ * 학생 본인은 차단 (학생은 student_notes 안 봄).
+ */
+export async function assertCanWriteStudentNote(
+  studentId: string,
+): Promise<{ user: LmsUser; authorRole: "super_admin" | "admin" | "instructor" }> {
+  const user = await getLmsUser();
+  if (!user) throw new Error("[lms-role] unauthenticated.");
+
+  if (user.isSuperAdmin) return { user, authorRole: "super_admin" };
+
+  const supabase = getSupabaseServer();
+  if (!supabase) throw new Error("[lms-role] supabaseUnavailable.");
+
+  const { data: student } = await supabase
+    .from("students")
+    .select("id, cohort_id, cohorts!inner(program_id)")
+    .eq("id", studentId)
+    .maybeSingle();
+  if (!student) throw new Error(`[lms-role] unknownStudent: ${studentId}`);
+
+  const cohortsField = (student as { cohorts: unknown }).cohorts;
+  const cohortObj = Array.isArray(cohortsField)
+    ? (cohortsField[0] as { program_id: string } | undefined)
+    : (cohortsField as { program_id: string } | null);
+  const programId = cohortObj?.program_id;
+
+  if (programId) {
+    const { data: pm } = await supabase
+      .from("program_memberships")
+      .select("user_id")
+      .eq("user_id", user.id)
+      .eq("program_id", programId)
+      .eq("role", "admin")
+      .maybeSingle();
+    if (pm) return { user, authorRole: "admin" };
+  }
+
+  // cohort instructor?
+  const cohortId = (student as { cohort_id: string }).cohort_id;
+  const cohortRole = await getCohortMembershipRole(user.id, cohortId);
+  if (cohortRole === "instructor") {
+    return { user, authorRole: "instructor" };
+  }
+
+  throw new Error(
+    `[lms-role] forbidden: user ${user.id} cannot write notes for student ${studentId}.`,
+  );
+}
+
+/**
+ * student_notes 읽기 가드. 쓰기와 권한 동일 (학생 본인은 차단).
+ */
+export async function assertCanReadStudentNote(
+  studentId: string,
+): Promise<LmsUser> {
+  // 학생은 read X — 본인 차단 명시.
+  const { user } = await assertCanWriteStudentNote(studentId);
+  return user;
+}
+
+/**
+ * student_profile / student_career_target / student_resume_item 쓰기 가드.
+ *
+ * 통과: super_admin OR program admin OR student-self.
+ * instructor 는 쓰기 X.
+ */
+export async function assertCanWriteStudentProfile(
+  studentId: string,
+): Promise<LmsUser> {
+  const user = await getLmsUser();
+  if (!user) throw new Error("[lms-role] unauthenticated.");
+  if (user.isSuperAdmin) return user;
+  if (user.studentId === studentId) return user;
+
+  // program admin?
+  const supabase = getSupabaseServer();
+  if (!supabase) throw new Error("[lms-role] supabaseUnavailable.");
+
+  const { data: student } = await supabase
+    .from("students")
+    .select("id, cohorts!inner(program_id)")
+    .eq("id", studentId)
+    .maybeSingle();
+  if (!student) throw new Error(`[lms-role] unknownStudent: ${studentId}`);
+
+  const cohortsField = (student as { cohorts: unknown }).cohorts;
+  const cohortObj = Array.isArray(cohortsField)
+    ? (cohortsField[0] as { program_id: string } | undefined)
+    : (cohortsField as { program_id: string } | null);
+  const programId = cohortObj?.program_id;
+  if (!programId) {
+    throw new Error(`[lms-role] studentMissingProgram: ${studentId}`);
+  }
+
+  const { data: pm } = await supabase
+    .from("program_memberships")
+    .select("user_id")
+    .eq("user_id", user.id)
+    .eq("program_id", programId)
+    .eq("role", "admin")
+    .maybeSingle();
+  if (pm) return user;
+
+  throw new Error(
+    `[lms-role] forbidden: user ${user.id} cannot write profile for student ${studentId}.`,
+  );
+}
+
+/**
+ * student_profile / student_career_target / student_resume_item 읽기 가드.
+ *
+ * 통과: super_admin OR program admin OR student-self OR cohort instructor.
+ */
+export async function assertCanReadStudentProfile(
+  studentId: string,
+): Promise<LmsUser> {
+  const user = await getLmsUser();
+  if (!user) throw new Error("[lms-role] unauthenticated.");
+  if (user.isSuperAdmin) return user;
+  if (user.studentId === studentId) return user;
+
+  const supabase = getSupabaseServer();
+  if (!supabase) throw new Error("[lms-role] supabaseUnavailable.");
+
+  const { data: student } = await supabase
+    .from("students")
+    .select("id, cohort_id, cohorts!inner(program_id)")
+    .eq("id", studentId)
+    .maybeSingle();
+  if (!student) throw new Error(`[lms-role] unknownStudent: ${studentId}`);
+
+  const cohortsField = (student as { cohorts: unknown }).cohorts;
+  const cohortObj = Array.isArray(cohortsField)
+    ? (cohortsField[0] as { program_id: string } | undefined)
+    : (cohortsField as { program_id: string } | null);
+  const programId = cohortObj?.program_id;
+
+  if (programId) {
+    const { data: pm } = await supabase
+      .from("program_memberships")
+      .select("user_id")
+      .eq("user_id", user.id)
+      .eq("program_id", programId)
+      .eq("role", "admin")
+      .maybeSingle();
+    if (pm) return user;
+  }
+
+  const cohortId = (student as { cohort_id: string }).cohort_id;
+  const cohortRole = await getCohortMembershipRole(user.id, cohortId);
+  if (cohortRole === "instructor") return user;
+
+  throw new Error(
+    `[lms-role] forbidden: user ${user.id} cannot read profile for student ${studentId}.`,
+  );
+}
+
+// -------------------------------------------------------------------------
 // 기존 호환 — 옛 코드가 assertLmsRole('super_admin') 호출하는 곳 안 깨지게.
 // 새 코드는 위 함수들 사용.
 // -------------------------------------------------------------------------
