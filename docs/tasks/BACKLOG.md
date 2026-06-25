@@ -265,6 +265,50 @@ ADR 0005 (클린 아키텍처 Layered Pragmatic) + ADR 0006 (라이트 디자인
 
 ---
 
+## LMS 정식 런칭 트랙 (B0044 ~ B0047) — 1기 2주차 (7/4 토) 가동
+
+D-9. 1주차 강의 자료 Google Drive 모바일 다운로드 사고 → 자체 LMS 자료 호스팅 시급.
+로드맵: [`docs/playbook/12-lms-launch-roadmap.md`](../playbook/12-lms-launch-roadmap.md).
+기존 영역 변경 금지 (CLAUDE.md §7.4). Sage 검토 필수 (CLAUDE.md §7.4).
+
+- **B0044** · **LMS Launch Phase 1** — 인프라 + entity · status: **ready** · 2026-06-25 captured · owner: Iris
+  - 신규 entity 2개: `lecture_materials` (cohort_id + session_no + file_path + uploaded_by) + `student_career_profiles` (target_role + certifications + experience + education + visa_type)
+  - Storage bucket `lecture-materials` private + RLS 4 policies (super_admin write / cohort_memberships read)
+  - server actions: `uploadLectureMaterial` / `listLectureMaterials` / `deleteLectureMaterial` / `signLectureMaterialUrl` (TTL 600s) + `upsertCareerProfile` / `getCareerProfile`
+  - `assertAdmin` / `assertCohortMember` / `assertCanAccessStudentCareer` (B0037 재사용) 가드 첫 줄
+  - Mira Phase 1 self-test (4 시나리오 PASS)
+  - 기간: 6/25 (목) ~ 6/27 (토) evening · 2.5일
+  - 출처: 노아 요청 2026-06-25 + 로드맵 §3 Phase 1
+
+- **B0045** · **LMS Launch Phase 2** — admin + student UI · status: **ready** · 2026-06-25 captured · owner: Luna
+  - admin: `/fan-to-pro/(lms)/admin/cohorts/[cohortId]/materials` (자료 upload + list + delete) + `/admin/students/[id]/profile`
+  - student: `/fan-to-pro/[cohortSlug]/student/materials` (자료 list + signed URL 다운로드) + `/student/profile` (career profile 폼)
+  - 자료 list 컬럼: 회차 / 제목 / 파일명 / 크기 / 업로드 일시 / 다운로드 / 삭제
+  - career profile 폼 필드: 희망 직무 (select) / 자격증 / 경력 / 학력 / 비자 (B0006 비자 칩 재사용)
+  - LMS shell 사이드바: materials / career / profile 3 항목 (KO + EN 라벨)
+  - 모바일 반응형 + 대용량 파일 다운로드 진행률 hint 카피
+  - 기간: 6/28 (일) ~ 7/1 (수) · 4일
+  - 출처: 로드맵 §3 Phase 2
+
+- **B0046** · **LMS Launch Phase 3** — 보안 + QA + 배포 · status: **ready** · 2026-06-25 captured · owner: Sage + Mira + Vera
+  - Sage 보안 검토 (신규 entity + bucket + server actions) — critical = 0, high ≤ 1
+  - B0037 패턴 사전 적용 (URL allowlist / private IP 거부 / path randomness nanoid8 / Content-Disposition attachment)
+  - Mira E2E 8 시나리오 (KO 4 + EN 4) + 모바일 200MB+ PPT 회귀 (iOS Safari + Android Chrome)
+  - Vera invite 흐름 dry-run + prod 배포 (git push)
+  - 노아 prod final check (운영자 + 가짜 학생 계정)
+  - 기간: 7/2 (목) ~ 7/3 (금) · 2일
+  - 출처: 로드맵 §3 Phase 3
+
+- **B0047** · **LMS Launch Phase 4** — 가동 · status: **ready** · 2026-06-25 captured · owner: Vera + 노아
+  - 7/4 (토) 09:00 자료 업로드 / 10:00 학생 11명 invite + 카톡/이메일 발송 / 12:00 진입률 체크 / 13:00 smoke check / 14:00 강의 시작 + 강의실 진입 확인 + 다운로드 시연 / 16:00 회고
+  - 카피: 로드맵 §8 (한/영 카톡 안내 + 1:1 발송 템플릿)
+  - 7/4 ~ 7/11 monitoring — 진입률 / 다운로드 성공률 / career profile 입력률
+  - 회고 박제: `docs/sessions/SESSION-2026-07-04-lms-launch.md`
+  - 기간: 7/4 (토) 1일 + 7/11 까지 monitoring
+  - 출처: 로드맵 §3 Phase 4 + §9 monitoring
+
+---
+
 ---
 
 ## Raw  (T1 dump · 미분류)
