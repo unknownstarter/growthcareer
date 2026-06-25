@@ -36,6 +36,7 @@
 | `08-automation-candidates.md` | 자동화 후보 (정리/추출) |
 | `09-feature-candidates.md` | 기능 개발 후보 (정리/추출) |
 | `10-next-cohort-checklist.md` | 다음 기수 운영 전 점검 리스트 |
+| `11-tax-invoicing-howto.md` | 세금계산서 / 원천징수 / 현금영수증 운영 매뉴얼 (강사료 / Cowork / 강의장 / 학생) |
 
 `02-build-tracks/` 는 폴더, 나머지는 단일 파일.
 
