@@ -48,6 +48,8 @@
     position: relative;
     overflow: hidden;
     page-break-after: always;
+    display: flex;
+    flex-direction: column;
   }
   .page:last-child { page-break-after: auto; }
 
@@ -56,10 +58,10 @@
     .page { margin: 0; }
   }
 
-  /* === HERO 영역 (상단 50%) === */
+  /* === HERO 영역 (상단 절반 가량) === */
   .hero {
     position: relative;
-    height: 49%;
+    flex: 0 0 47%;
     overflow: hidden;
   }
   .hero-bg {
@@ -153,13 +155,14 @@
     letter-spacing: -0.01em;
   }
 
-  /* === BODY (하단 50%) === */
+  /* === BODY (하단 절반 가량) === */
   .body-area {
-    padding: 12mm 18mm 12mm;
-    height: calc(51% - 70px);
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 10mm 18mm 8mm;
     display: flex;
     flex-direction: column;
-    gap: 8mm;
+    gap: 6mm;
   }
 
   .section-header {
@@ -224,9 +227,8 @@
 
   /* === CONTACT === */
   .contact {
-    margin-top: auto;
     border-top: 1px solid var(--brand-pink);
-    padding-top: 6mm;
+    padding-top: 5mm;
     display: grid;
     grid-template-columns: 1.4fr 1fr;
     gap: 8mm;
@@ -255,10 +257,9 @@
 
   /* === FOOTER === */
   .footer {
-    position: absolute;
-    bottom: 8mm;
-    left: 18mm;
-    right: 18mm;
+    margin-top: auto;
+    padding-top: 5mm;
+    border-top: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -407,12 +408,12 @@
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Footer -->
-  <div class="footer">
-    <span><strong>FAN TO PRO</strong> / Cohort 1 / Dropdown</span>
-    <span>growthcareer.xyz</span>
+    <!-- Footer -->
+    <div class="footer">
+      <span><strong>FAN TO PRO</strong> / Cohort 1 / Dropdown</span>
+      <span>growthcareer.xyz</span>
+    </div>
   </div>
 </section>
 
