@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>Fan to Pro 1기 / 강의장 포스터</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+/>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg-soft: #14141a;
+    --fg: #fafafa;
+    --fg-muted: #c0c0c8;
+    --fg-subtle: #8a8a92;
+    --brand-pink: #ff5b6e;
+    --brand-purple: #8b5cf6;
+    --border: rgba(255, 255, 255, 0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: #000;
+    color: var(--fg);
+    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "ss03" on, "cv01" on;
+  }
+  :lang(ko), body {
+    word-break: keep-all;
+    line-break: strict;
+    overflow-wrap: break-word;
+  }
+  body { padding: 24px 0; }
+
+  @page { size: A4 portrait; margin: 0; }
+
+  .page {
+    width: 210mm;
+    height: 297mm;
+    margin: 0 auto;
+    background: var(--bg);
+    color: var(--fg);
+    position: relative;
+    overflow: hidden;
+    page-break-after: always;
+  }
+  .page:last-child { page-break-after: auto; }
+
+  @media print {
+    body { padding: 0; background: #000; }
+    .page { margin: 0; }
+  }
+
+  /* === HERO 영역 (상단 50%) === */
+  .hero {
+    position: relative;
+    height: 49%;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background-image: url("file:///Users/noah/growthcareer/public/images/stock/boy-group-concert-stage-3.jpg");
+    background-size: cover;
+    background-position: center 30%;
+    filter: grayscale(0.2) brightness(0.6);
+  }
+  .hero-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.4) 0%,
+      rgba(0, 0, 0, 0.65) 50%,
+      rgba(10, 10, 10, 0.95) 100%
+    );
+  }
+  .hero-inner {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    padding: 22mm 18mm 14mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    align-self: flex-start;
+    padding: 6px 14px;
+    background: var(--brand-pink);
+    color: #000;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+  }
+
+  .hero-title {
+    font-size: 92px;
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.05em;
+    color: #fff;
+  }
+  .hero-title .accent { color: var(--brand-pink); }
+
+  .hero-sub {
+    font-size: 18px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.85);
+    max-width: 140mm;
+    font-weight: 500;
+  }
+
+  /* === META BAR === */
+  .meta-bar {
+    position: relative;
+    z-index: 3;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--brand-pink);
+    border-bottom: 1px solid var(--brand-pink);
+    background: rgba(10, 10, 10, 0.92);
+    backdrop-filter: blur(4px);
+  }
+  .meta-cell {
+    padding: 10px 14px;
+    border-right: 1px solid var(--border);
+  }
+  .meta-cell:last-child { border-right: none; }
+  .meta-label {
+    font-size: 9px;
+    font-weight: 800;
+    color: var(--brand-pink);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .meta-value {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+
+  /* === BODY (하단 50%) === */
+  .body-area {
+    padding: 12mm 18mm 12mm;
+    height: calc(51% - 70px);
+    display: flex;
+    flex-direction: column;
+    gap: 8mm;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 5mm;
+  }
+  .section-num {
+    font-size: 10px;
+    font-weight: 900;
+    color: var(--brand-pink);
+    letter-spacing: 0.3em;
+  }
+  .section-title {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+
+  /* === SCHEDULE === */
+  .schedule {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4mm 8mm;
+  }
+  .session {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    align-items: baseline;
+    gap: 12px;
+    padding-bottom: 2mm;
+    border-bottom: 1px solid var(--border);
+  }
+  .session.ceremony { border-bottom-color: var(--brand-pink); }
+  .session-num {
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--brand-pink);
+    letter-spacing: -0.02em;
+  }
+  .session.ceremony .session-num { font-size: 16px; }
+  .session-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .session-date {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--fg-muted);
+    letter-spacing: 0.04em;
+  }
+  .session-topic {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.35;
+  }
+  .session.ceremony .session-topic { color: var(--brand-pink); }
+
+  /* === CONTACT === */
+  .contact {
+    margin-top: auto;
+    border-top: 1px solid var(--brand-pink);
+    padding-top: 6mm;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 8mm;
+  }
+  .contact-block .contact-label {
+    font-size: 9px;
+    font-weight: 900;
+    color: var(--brand-pink);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .contact-block .contact-value {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+  }
+  .contact-block .contact-sub {
+    font-size: 10px;
+    color: var(--fg-muted);
+    margin-top: 2px;
+    line-height: 1.35;
+  }
+
+  /* === FOOTER === */
+  .footer {
+    position: absolute;
+    bottom: 8mm;
+    left: 18mm;
+    right: 18mm;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 9.5px;
+    color: var(--fg-subtle);
+    letter-spacing: 0.06em;
+  }
+  .footer strong {
+    color: #fff;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+  }
+</style>
+</head>
+<body>
+
+<section class="page">
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-bg" aria-hidden></div>
+    <div class="hero-gradient" aria-hidden></div>
+    <div class="hero-inner">
+      <span class="hero-eyebrow">FAN TO PRO / COHORT 1</span>
+      <h1 class="hero-title">
+        한 달.<br />그리고 <span class="accent">무대.</span>
+      </h1>
+      <p class="hero-sub">
+        K-pop 공연 현장 실무를 4주 안에. 8회 강의와 수료증, 멘토 네트워크,
+        그리고 실제 공연 참여까지 이어지는 프로그램.
+      </p>
+    </div>
+  </div>
+
+  <!-- Meta -->
+  <div class="meta-bar">
+    <div class="meta-cell">
+      <div class="meta-label">기간</div>
+      <div class="meta-value">2026.06.27<br />~ 07.19</div>
+    </div>
+    <div class="meta-cell">
+      <div class="meta-label">시간</div>
+      <div class="meta-value">주말 14:00<br />~ 16:00</div>
+    </div>
+    <div class="meta-cell">
+      <div class="meta-label">장소</div>
+      <div class="meta-value">블루스프링하우스<br />서울 마포구</div>
+    </div>
+    <div class="meta-cell">
+      <div class="meta-label">정원</div>
+      <div class="meta-value">소수정예<br />1기 운영</div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="body-area">
+    <!-- Schedule -->
+    <div>
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2 class="section-title">4주 8회 일정</h2>
+      </div>
+
+      <div class="schedule">
+        <div class="session">
+          <span class="session-num">01</span>
+          <div class="session-content">
+            <span class="session-date">06.27 토 14:00 ~ 16:00</span>
+            <span class="session-topic">Music Business 입문</span>
+          </div>
+        </div>
+        <div class="session">
+          <span class="session-num">02</span>
+          <div class="session-content">
+            <span class="session-date">06.28 일 14:00 ~ 16:00</span>
+            <span class="session-topic">공연 제작 구조와 음악 디렉팅</span>
+          </div>
+        </div>
+        <div class="session">
+          <span class="session-num">03</span>
+          <div class="session-content">
+            <span class="session-date">07.04 토 14:00 ~ 16:00</span>
+            <span class="session-topic">플레이백과 타임코드 실무</span>
+          </div>
+        </div>
+        <div class="session">
+          <span class="session-num">04</span>
+          <div class="session-content">
+            <span class="session-date">07.05 일 14:00 ~ 16:00</span>
+            <span class="session-topic">음반 기획과 제작 전략</span>
+          </div>
+        </div>
+        <div class="session">
+          <span class="session-num">05</span>
+          <div class="session-content">
+            <span class="session-date">07.11 토 14:00 ~ 16:00</span>
+            <span class="session-topic">현장 실무 / 스테이지 매니지먼트</span>
+          </div>
+        </div>
+        <div class="session">
+          <span class="session-num">06</span>
+          <div class="session-content">
+            <span class="session-date">07.12 일 14:00 ~ 16:00</span>
+            <span class="session-topic">A&amp;R 실무 케이스</span>
+          </div>
+        </div>
+        <div class="session">
+          <span class="session-num">07</span>
+          <div class="session-content">
+            <span class="session-date">07.18 토 14:00 ~ 16:00</span>
+            <span class="session-topic">현장 종합 + Q&amp;A</span>
+          </div>
+        </div>
+        <div class="session">
+          <span class="session-num">08</span>
+          <div class="session-content">
+            <span class="session-date">07.19 일 14:00 ~ 16:00</span>
+            <span class="session-topic">Visual Director / 브랜드 작업</span>
+          </div>
+        </div>
+        <div class="session ceremony" style="grid-column: span 2;">
+          <span class="session-num">★</span>
+          <div class="session-content">
+            <span class="session-date">07.25 토 / 수료식 + 네트워킹 파티</span>
+            <span class="session-topic">강의 종료 후 별도 행사 (전원 초대)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact -->
+    <div class="contact">
+      <div class="contact-block">
+        <div class="contact-label">강의장</div>
+        <div class="contact-value">블루스프링하우스</div>
+        <div class="contact-sub">서울 마포구 월드컵북로 161</div>
+        <div class="contact-sub" style="margin-top: 4px;">
+          준비물: 노트북 또는 태블릿 PC (자료는 PDF 로 전달)
+        </div>
+      </div>
+      <div class="contact-block">
+        <div class="contact-label">소통 채널</div>
+        <div class="contact-value">카카오톡 오픈채팅</div>
+        <div class="contact-sub">결제 완료자 전용 그룹챗</div>
+        <div class="contact-sub" style="margin-top: 4px;">
+          별도 안내 메시지 / 카카오 채널 문의
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <span><strong>FAN TO PRO</strong> / Cohort 1 / Dropdown</span>
+    <span>growthcareer.xyz</span>
+  </div>
+</section>
+
+</body>
+</html>
