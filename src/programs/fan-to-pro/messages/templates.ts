@@ -774,39 +774,47 @@ const cohortKickoff_email_subject_en = "[Fan to Pro] Cohort 1 confirmed / first 
 const WEEK1_MATERIALS_URL =
   "https://docs.google.com/presentation/d/1-tsy8vdgq57EMGdePFWbHNY7xJUCzMR7/edit?usp=sharing&ouid=112552924148016723858&rtpof=true&sd=true";
 
-const week1Materials_sms_ko = `[Fan to Pro] 1주차 강의 자료 안내
+const week1Materials_sms_ko = `[Fan to Pro] 1주차 일요일 강의 (6/28) 자료 안내
 
-{name} 님, 1주차 강의 자료 공유드려요.
+{name} 님, 1주차 일요일 강의 자료 공유드려요.
+
+본 자료는 실제 현업에서 진행한 공연 현장 사진 위주로 구성되어 있어요. 상세한 설명과 실무 노하우는 강사님께서 강의에서 직접 진행해주세요. 강의 시간에 사진과 함께 들으시는 것을 권장드려요.
 
 [Google Drive 링크]
 ${WEEK1_MATERIALS_URL}
 
-⚠️ 본 자료는 강사님의 지적 재산물입니다.
-외부 유출, SNS / 블로그 / 커뮤니티 공유, 다른 강의 재사용 모두 금지입니다.
-본인 학습 용도로만 활용 부탁드려요.
+⚠️ 본 자료는 강사님의 지적 재산물입니다. 외부 유출 / 공유 / 재사용 금지. 본인 학습 용도로만 활용 부탁드려요.
 
 문의는 카톡 채널로 :)
 ${KAKAO}`;
 
-const week1Materials_sms_en = `[Fan to Pro] Week 1 class materials
+const week1Materials_sms_en = `[Fan to Pro] Week 1 Sunday class materials (Jun 28)
 
-Hi {name}, here are the Week 1 class materials.
+Hi {name}, here are the Week 1 Sunday class materials.
+
+These materials are mostly photos from actual K-pop concert sites the instructor worked on. The detailed explanation and behind-the-scenes context will be delivered live by the instructor in class, so we recommend reviewing alongside the live lecture.
 
 [Google Drive link]
 ${WEEK1_MATERIALS_URL}
 
-⚠️ These materials are the instructor's intellectual property.
-External sharing, posting on SNS / blogs / communities, or reuse in other settings is strictly prohibited.
-For your personal study only.
+⚠️ These materials are the instructor's intellectual property. External sharing, reuse, or redistribution is strictly prohibited. For your personal study only.
 
 Questions? Use the KakaoTalk channel.
 ${KAKAO}`;
 
 const week1Materials_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 
-{name} 님, 1주차 강의 자료 공유드려요. 강의 전 한 번 훑어보시고 강의 중 본인 노트로 활용해주세요.
+{name} 님, 1주차 일요일 강의 (6/28, 공연 제작 구조와 음악 디렉팅) 자료 공유드려요.
 
-[1주차 강의 자료 / Google Drive]
+[자료 구성 안내]
+
+본 자료는 실제 현업에서 진행한 공연 현장의 사진 위주로 구성되어 있어요.
+강의 흐름의 시각 자료 역할이에요.
+
+상세한 설명과 비하인드 / 의사결정 / 실무 노하우는 강사님께서 강의에서 직접 진행해주세요.
+강의 시간에 사진과 함께 들으시는 것을 권장드려요.
+
+[1주차 일요일 강의 자료 / Google Drive]
 링크: ${WEEK1_MATERIALS_URL}
 
 [자료 사용 규칙 / 매우 중요]
@@ -826,8 +834,8 @@ const week1Materials_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 
 [자료 활용 권장]
 
-* 강의 전: 한 번 훑어보시면 흐름 파악 도움
-* 강의 중: 본인 노트 메모 추가
+* 강의 전: 한 번 훑어보시면 흐름 파악 도움 (사진 위주라 빠르게 가능)
+* 강의 중: 강사님 설명과 사진 매칭 + 본인 노트 메모
 * 강의 후: 복습 + 동기들과 카카오톡 오픈채팅에서 질문 / 토론
 
 [운영 문의]
@@ -840,9 +848,17 @@ Fan to Pro 운영진 드림`;
 
 const week1Materials_email_en = `Hello, this is Fan to Pro.
 
-Hi {name}, here are the Week 1 class materials. We recommend a quick read-through before class and using it as your note base during class.
+Hi {name}, here are the Week 1 Sunday class materials (Jun 28, Concert Production & Music Direction).
 
-[WEEK 1 MATERIALS / Google Drive]
+[ABOUT THE MATERIALS]
+
+These materials are mostly photos from actual K-pop concert sites the instructor has worked on.
+They serve as visual reference for the lecture flow.
+
+The detailed explanation, behind-the-scenes context, decision-making, and on-the-ground know-how
+will be delivered live by the instructor in class. We recommend reviewing alongside the live lecture.
+
+[WEEK 1 SUNDAY MATERIALS / Google Drive]
 Link: ${WEEK1_MATERIALS_URL}
 
 [USE POLICY / IMPORTANT]
@@ -862,8 +878,8 @@ The following actions are strictly prohibited and may carry legal consequences.
 
 [RECOMMENDED USE]
 
-* Before class: A quick read-through to get familiar with the flow
-* During class: Take your own notes
+* Before class: A quick browse to get familiar with the flow (photo-heavy, quick to skim)
+* During class: Match instructor's explanation with the photos + take your own notes
 * After class: Review + discuss with peers in the KakaoTalk open chat
 
 [CONTACT]
@@ -874,8 +890,8 @@ See you at the venue!
 
 Fan to Pro Team`;
 
-const week1Materials_email_subject_ko = "[Fan to Pro] 1주차 강의 자료 안내";
-const week1Materials_email_subject_en = "[Fan to Pro] Week 1 class materials";
+const week1Materials_email_subject_ko = "[Fan to Pro] 1주차 일요일 강의 (6/28) 자료 안내";
+const week1Materials_email_subject_en = "[Fan to Pro] Week 1 Sunday class materials (Jun 28)";
 
 /* ---------------------------------------------------------------------------
  * 통합 매핑
@@ -1364,7 +1380,7 @@ export const MESSAGE_KIND_LABELS: Record<MessageKind, string> = {
   reminderD1: "리마인드 D-1",
   referralInvite: "친구초대 이벤트",
   cohortKickoff: "기수 첫 강의 안내",
-  week1Materials: "1주차 강의 자료",
+  week1Materials: "1주차 일요일 자료 (6/28)",
 };
 
 /**
