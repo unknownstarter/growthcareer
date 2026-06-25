@@ -107,19 +107,29 @@
   }
 
   .hero-title {
-    font-size: 92px;
+    font-size: 110px;
     font-weight: 900;
-    line-height: 0.95;
-    letter-spacing: -0.05em;
+    line-height: 0.92;
+    letter-spacing: -0.06em;
     color: #fff;
+    font-family: "Pretendard Variable", Pretendard, system-ui, sans-serif;
   }
   .hero-title .accent { color: var(--brand-pink); }
+  .hero-title-ko {
+    margin-top: 8px;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    color: rgba(255, 255, 255, 0.92);
+  }
+  .hero-title-ko .accent { color: var(--brand-pink); }
 
   .hero-sub {
-    font-size: 18px;
-    line-height: 1.5;
-    color: rgba(255, 255, 255, 0.85);
-    max-width: 140mm;
+    font-size: 16px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.8);
+    max-width: 145mm;
     font-weight: 500;
   }
 
@@ -282,10 +292,15 @@
     <div class="hero-bg" aria-hidden></div>
     <div class="hero-gradient" aria-hidden></div>
     <div class="hero-inner">
-      <span class="hero-eyebrow">FAN TO PRO / COHORT 1</span>
-      <h1 class="hero-title">
-        한 달.<br />그리고 <span class="accent">무대.</span>
-      </h1>
+      <span class="hero-eyebrow">COHORT 1 / 2026</span>
+      <div>
+        <h1 class="hero-title">
+          FAN TO <span class="accent">PRO.</span>
+        </h1>
+        <p class="hero-title-ko">
+          팬에서, K-pop <span class="accent">무대 위로.</span>
+        </p>
+      </div>
       <p class="hero-sub">
         K-pop 공연 현장 실무를 4주 안에. 8회 강의와 수료증, 멘토 네트워크,
         그리고 실제 공연 참여까지 이어지는 프로그램.
