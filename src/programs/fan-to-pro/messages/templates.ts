@@ -18,7 +18,8 @@ export type MessageKind =
   | "reminderD3"
   | "reminderD1"
   | "referralInvite"
-  | "cohortKickoff";
+  | "cohortKickoff"
+  | "week1Materials";
 export type MessageChannel = "sms" | "email";
 
 /**
@@ -764,6 +765,119 @@ const cohortKickoff_email_subject_ko = "[Fan to Pro] 1기 강좌 확정 / 첫 �
 const cohortKickoff_email_subject_en = "[Fan to Pro] Cohort 1 confirmed / first class details";
 
 /* ---------------------------------------------------------------------------
+ * 8. week1Materials — 1주차 강의 자료 안내 (paid 수강생 전용)
+ *
+ * 강사가 준비한 강의 자료를 Google Drive 링크로 공유. 자료 보안 룰 (외부 유출 /
+ * 공유 / 재사용 금지) 명시 의무. paid / enrolled 학생만 발송.
+ * ------------------------------------------------------------------------- */
+
+const WEEK1_MATERIALS_URL =
+  "https://docs.google.com/presentation/d/1-tsy8vdgq57EMGdePFWbHNY7xJUCzMR7/edit?usp=sharing&ouid=112552924148016723858&rtpof=true&sd=true";
+
+const week1Materials_sms_ko = `[Fan to Pro] 1주차 강의 자료 안내
+
+{name} 님, 1주차 강의 자료 공유드려요.
+
+[Google Drive 링크]
+${WEEK1_MATERIALS_URL}
+
+⚠️ 본 자료는 강사님의 지적 재산물입니다.
+외부 유출, SNS / 블로그 / 커뮤니티 공유, 다른 강의 재사용 모두 금지입니다.
+본인 학습 용도로만 활용 부탁드려요.
+
+문의는 카톡 채널로 :)
+${KAKAO}`;
+
+const week1Materials_sms_en = `[Fan to Pro] Week 1 class materials
+
+Hi {name}, here are the Week 1 class materials.
+
+[Google Drive link]
+${WEEK1_MATERIALS_URL}
+
+⚠️ These materials are the instructor's intellectual property.
+External sharing, posting on SNS / blogs / communities, or reuse in other settings is strictly prohibited.
+For your personal study only.
+
+Questions? Use the KakaoTalk channel.
+${KAKAO}`;
+
+const week1Materials_email_ko = `안녕하세요, Fan to Pro 입니다 :)
+
+{name} 님, 1주차 강의 자료 공유드려요. 강의 전 한 번 훑어보시고 강의 중 본인 노트로 활용해주세요.
+
+[1주차 강의 자료 / Google Drive]
+링크: ${WEEK1_MATERIALS_URL}
+
+[자료 사용 규칙 / 매우 중요]
+
+본 자료는 강사님께서 직접 준비하신 지적 재산물입니다.
+다음 행위는 절대 금지이며 위반 시 법적 책임이 따를 수 있어요.
+
+❌ 외부 유출 (제 3자에게 링크 / 파일 공유)
+❌ 다른 강의나 발표에서 재사용
+❌ SNS / 블로그 / 커뮤니티 게시
+❌ 다운로드 후 가공 / 편집해서 배포
+❌ 회사 / 동료 / 친구에게 공유
+
+✅ 본인 학습 용도로만 활용
+✅ 강의 진행 중 본인 노트 메모
+✅ 강의 종료 후 복습
+
+[자료 활용 권장]
+
+* 강의 전: 한 번 훑어보시면 흐름 파악 도움
+* 강의 중: 본인 노트 메모 추가
+* 강의 후: 복습 + 동기들과 카카오톡 오픈채팅에서 질문 / 토론
+
+[운영 문의]
+- 카카오톡 채널: ${KAKAO}
+- 이메일: hello@dropdown.xyz
+
+강의장에서 뵐게요!
+
+Fan to Pro 운영진 드림`;
+
+const week1Materials_email_en = `Hello, this is Fan to Pro.
+
+Hi {name}, here are the Week 1 class materials. We recommend a quick read-through before class and using it as your note base during class.
+
+[WEEK 1 MATERIALS / Google Drive]
+Link: ${WEEK1_MATERIALS_URL}
+
+[USE POLICY / IMPORTANT]
+
+These materials are the instructor's intellectual property, prepared specifically for this program.
+The following actions are strictly prohibited and may carry legal consequences.
+
+❌ External sharing (link or file to third parties)
+❌ Reuse in other lectures or presentations
+❌ Posting on SNS, blogs, or online communities
+❌ Downloading, modifying, or redistributing
+❌ Sharing with employers, colleagues, or friends
+
+✅ Personal study only
+✅ Note-taking during class
+✅ Personal review after class
+
+[RECOMMENDED USE]
+
+* Before class: A quick read-through to get familiar with the flow
+* During class: Take your own notes
+* After class: Review + discuss with peers in the KakaoTalk open chat
+
+[CONTACT]
+- KakaoTalk channel: ${KAKAO}
+- Email: hello@dropdown.xyz
+
+See you at the venue!
+
+Fan to Pro Team`;
+
+const week1Materials_email_subject_ko = "[Fan to Pro] 1주차 강의 자료 안내";
+const week1Materials_email_subject_en = "[Fan to Pro] Week 1 class materials";
+
+/* ---------------------------------------------------------------------------
  * 통합 매핑
  * ------------------------------------------------------------------------- */
 
@@ -844,6 +958,16 @@ const TEMPLATES: Record<MessageKind, Template> = {
         en: cohortKickoff_email_subject_en,
       },
       body: { ko: cohortKickoff_email_ko, en: cohortKickoff_email_en },
+    },
+  },
+  week1Materials: {
+    sms: { ko: week1Materials_sms_ko, en: week1Materials_sms_en },
+    email: {
+      subject: {
+        ko: week1Materials_email_subject_ko,
+        en: week1Materials_email_subject_en,
+      },
+      body: { ko: week1Materials_email_ko, en: week1Materials_email_en },
     },
   },
 };
@@ -1240,6 +1364,7 @@ export const MESSAGE_KIND_LABELS: Record<MessageKind, string> = {
   reminderD1: "리마인드 D-1",
   referralInvite: "친구초대 이벤트",
   cohortKickoff: "기수 첫 강의 안내",
+  week1Materials: "1주차 강의 자료",
 };
 
 /**
@@ -1254,4 +1379,5 @@ export const MESSAGE_KIND_LABELS: Record<MessageKind, string> = {
 export const MESSAGE_KIND_PAID_ONLY: ReadonlySet<MessageKind> = new Set([
   "referralInvite",
   "cohortKickoff",
+  "week1Materials",
 ]);
