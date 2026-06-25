@@ -64,14 +64,24 @@
 | 수료증 | 7/25 manual (Dropdown 명의 PDF) | certificates entity (B0033) |
 | Realtime | X (새로고침) | Supabase Realtime (B0036 Wave 5) |
 
+### RBAC (4 계층 권한, ADR 0011 §5.6)
+
+| Role | 1기 LMS 활성 여부 | 핵심 권한 |
+|---|---|---|
+| **super_admin** (노아) | ✅ | 모든 entity RW + 모든 cohort |
+| **admin (program admin)** | ✅ (현재 노아 본인 = 동일 계정) | program 단위 RW |
+| **instructor** | ❌ 1기 NO / 2기+ ✅ | 1기는 운영자 대신 자료 upload + 코멘트 입력. 2기+ 본인 surface |
+| **student** | ✅ | 본인 자료 다운로드 + career documents/profile 입력. student_notes 는 read X (운영 private) |
+
 ### 1기 핵심 (must ship by 7/4)
 
 1. **자료 다운로드** (학생 + 운영자 업로드)
 2. **career documents** (B0037 이미 done — 회귀만 확인)
 3. **career profile** (취업 정보 폼 — 신규 entity)
-4. **학생 invite + 첫 로그인 강제 PW 변경** (must_change_password 흐름은 LMS Wave 1 에 박혀있음 — invite UI 만 검증)
+4. **운영 코멘트 (student_notes)** — admin / 강사 의견 입력 (1기는 운영자 only 입력, 학생은 read X)
+5. **학생 invite + 첫 로그인 강제 PW 변경** (must_change_password 흐름은 LMS Wave 1 에 박혀있음 — invite UI 만 검증)
 
-→ 4개 surface 만. 그 외는 전부 cut.
+→ 5개 surface 만. 그 외는 전부 cut.
 
 ---
 
@@ -89,6 +99,8 @@
 | 6/25 목 | Iris | Storage bucket `lecture-materials` 생성 + RLS (super_admin write / cohort_memberships read) | bucket + 4 policies | supabase dashboard 확인 |
 | 6/25 목 | Iris | server actions: `uploadLectureMaterial` / `listLectureMaterials` / `deleteLectureMaterial` / `signLectureMaterialUrl` (signed URL TTL 10분) | `application/lecture-material-actions.ts` | unit-level: `assertAdmin` + `assertCohortMember` 가드 박음 |
 | **6/26 금** | Iris | server actions: `upsertCareerProfile` / `getCareerProfile` (학생 본인 + admin) | `application/career-profile-actions.ts` | `assertCanAccessStudentCareer` (B0037 헬퍼 재사용) |
+| 6/26 금 | Iris | DB 마이그레이션 — `student_notes` entity + RLS 4 정책 (super_admin / program admin / instructor read + own author write / student NO) | `supabase/migrations/20260626_student_notes.sql` | ADR 0011 §5.5 schema 그대로 |
+| 6/26 금 | Iris | server actions: `createStudentNote` / `listStudentNotes` / `updateStudentNote` / `deleteStudentNote` / `togglePinStudentNote` + `assertCanWriteStudentNote` / `assertCanReadStudentNote` 가드 신설 | `application/student-note-actions.ts` + `infrastructure/auth/lms-role.ts` 보강 | author_role 자동 추론 (user.is_super_admin / program admin / instructor) |
 | 6/26 금 | Luna | shadcn primitives 확인 — Form / Input / Select / Textarea / Badge (이미 있으면 skip) | - | 컴포넌트 import 가능 |
 | **6/27 토 evening** | Mira | Phase 1 자체 테스트 — server action 시그니처 + RLS 가드 검증 | 결과 리포트 | 4 시나리오 (admin upload / student download / 비-cohort 차단 / IDOR 차단) PASS |
 
@@ -105,6 +117,7 @@
 | **6/30 화** | Luna | student career profile 폼 — `/fan-to-pro/[cohortSlug]/student/profile` | `app/[locale]/fan-to-pro/[cohortSlug]/student/profile/page.tsx` | 폼 필드 검증 + draft autosave (옵션) |
 | 6/30 화 | Luna | career profile 필드 — 희망 직무 (select) / 자격증 (textarea) / 경력 (textarea) / 학력 (textarea) / 비자 (select, B0006 비자 칩 재사용) | - | KO + EN 카피 동기화 |
 | **7/1 수** | Luna | admin LMS — `/fan-to-pro/(lms)/admin/students/[id]/profile` (학생 career profile view, read-only 또는 edit) | - | super_admin only |
+| 7/1 수 | Luna | admin LMS — `/fan-to-pro/(lms)/admin/students/[id]` 에 "운영 코멘트" 패널 추가 (student_notes timeline + 작성 form + pin toggle) | `interface/components/lms/admin/student-notes-panel.tsx` | 학생 본인 surface 에서 read X 검증 |
 | 7/1 수 | Luna | student LMS shell — 사이드바에 materials / career / profile 3 항목 + 다국어 라벨 | `interface/components/lms/student-nav.tsx` | KO + EN 라벨 정합 |
 
 **Phase 2 cut line**: 6/30 시점에 자료 다운로드 + career documents (B0037 done) 만 동작하면 7/4 가능. career profile 폼은 7/4 후 (7/11 2주차 강의 후) defer 옵션. 노아가 Day 5~6 시점에 진척 보고 결정.

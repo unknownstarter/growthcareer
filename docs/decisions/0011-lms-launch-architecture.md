@@ -433,6 +433,182 @@ async function inviteStudentToLms(studentId: string) {
 
 ---
 
+## 5.5 결정 4-bis — `student_notes` Entity 신설 (운영자 / 강사 코멘트)
+
+> 노아 추가 요구 (2026-06-25): "강사님, 또는 내가 학생에 대한 코멘트도 남길 수 있도록.
+> 첨삭이 아니라 강의를 듣는 수강생을 관리하기 위한."
+
+### 5.5.1 분리 이유
+
+- **첨삭 (feedback_done milestone, B0042)**: 이력서/자기소개서/포트폴리오에 대한 강사 / 운영자 피드백 → 학생이 결과를 받아봄
+- **운영 코멘트 (student_notes, 신규)**: 학생의 출석 / 태도 / 진로 의지 / 강의 중 발언 / 운영 특이사항 → 학생 본인은 안 봄 (private operational note)
+- 둘은 목적 다름 → 별도 entity
+
+### 5.5.2 Entity 설계
+
+```sql
+create table public.student_notes (
+  id           uuid primary key default gen_random_uuid(),
+  student_id   uuid not null references public.students(id) on delete cascade,
+  author_id    uuid not null references auth.users(id),
+  author_role  text not null check (author_role in ('super_admin', 'admin', 'instructor')),
+  body         text not null check (char_length(trim(body)) >= 1 and char_length(body) <= 2000),
+  is_pinned    boolean not null default false,
+  created_at   timestamptz not null default now(),
+  updated_at   timestamptz
+);
+
+comment on table public.student_notes is
+  '운영 코멘트 (operational notes). 학생 본인은 안 봄. super_admin / program admin / cohort instructor 만 read+write.';
+
+create index student_notes_student_idx on public.student_notes(student_id, created_at desc);
+create index student_notes_pinned_idx on public.student_notes(student_id) where is_pinned = true;
+```
+
+### 5.5.3 RLS (CLAUDE.md §7.4 + ADR 0008 의 4 계층 반영)
+
+- **service_role all** (server action)
+- **super_admin all** (SELECT/INSERT/UPDATE/DELETE)
+- **program admin** — 본인 program 의 cohort 의 student notes 모두
+- **instructor** — 본인 cohort 학생의 notes read + 본인이 작성한 note 만 update/delete
+- **student** — **read X / write X** (본인이 안 봄)
+
+### 5.5.4 UI
+
+- `/[locale]/fan-to-pro/(lms)/admin/students/[id]` 에 "운영 코멘트" 패널 추가 (career 페이지 옆)
+- 신규 note 작성 form + 기존 notes timeline (최신순)
+- pin (is_pinned=true) 기능: 상단 fix (중요 메모)
+- author 표기 (super_admin / 강사 이름 / etc)
+
+### 5.5.5 1기 운영 흐름
+
+1기 강사 access 1기 NO 정책 유지 → 강사 코멘트는 **운영자 (노아) 가 카톡으로 받아서 admin UI 에 대신 입력**.
+- author_role = 'admin' + 본문에 "[강사 X 의견] ..." prefix
+- 2기+ 에서 강사 self-input 활성화 시 author_role = 'instructor' 자동
+
+---
+
+## 5.6 결정 4-ter — RBAC (Role-Based Access Control) 명시 매트릭스
+
+> ADR 0008 의 권한 3 계층을 + student_notes 등 신규 entity 까지 확장.
+
+### 5.6.1 4 계층 권한 (Hierarchy)
+
+```
+super_admin (글로벌, user_profiles.is_super_admin = true)
+    ↓ subset
+admin (program 단위, program_memberships role='admin')
+    ↓ subset (per cohort)
+instructor (cohort 단위, cohort_memberships role='instructor')
+    ↓ different scope
+student (cohort 단위, cohort_memberships role='student')
+```
+
+> Note: instructor 와 student 는 같은 cohort_memberships 에서 role 만 다름. 상하 관계가 아니라 **다른 목적의 역할**.
+
+### 5.6.2 역할별 목적 + LMS surface
+
+| Role | 목적 | LMS surface |
+|---|---|---|
+| **super_admin** | 우산 브랜드 (Growth Career) 전체 운영. 모든 program / cohort 관리 + 결정 권한. | `/admin/*` (Basic Auth, 다크 / 모집 운영) + `/fan-to-pro/(lms)/admin/*` (LMS 라이트) 전부 |
+| **admin (program admin)** | 위임된 program 운영자. 현재 1명 (노아 본인). 본인 program 의 모든 cohort 관리 + 자료 / 학생 / 강사 / 재무. | `/fan-to-pro/(lms)/admin/*` 전부 (본인 program 한정) |
+| **instructor (cohort instructor)** | 본인 cohort 강의 진행 + 학생 관리. 자료 upload / 출결 mark / 학생 코멘트 / career 열람. | `/[cohortSlug]/instructor/*` (1기 NO, 2기+ 활성) |
+| **student (cohort student)** | 학습 진행 + 취업 준비. 본인 자료 다운로드 + career documents / profile 입력 / 본인 데이터만 access. | `/[cohortSlug]/student/*` (1기 활성) |
+
+### 5.6.3 Entity 별 권한 매트릭스
+
+| Entity | super_admin | admin (program) | instructor (own cohort) | student (own) |
+|---|---|---|---|---|
+| `applicants` | RW (모집 surface, `/admin/applicants` only) | RW (program 단위) | X | X |
+| `students` | RW | R (own program) + W (promote/cohort 변경) | R (own cohort 학생) | R (own row) |
+| `cohorts` | RW | RW (own program) | R (own cohort) | R (own cohort) |
+| `sessions` | RW | RW | RW (own cohort 본인 회차) | R (own cohort) |
+| `attendance` | RW | RW | RW (own cohort) | R (own row) |
+| `lecture_materials` (신규) | RW | RW (own program) | RW (own cohort 본인 회차) | R (own cohort) |
+| `student_profile` (신규) | RW | RW | R (own cohort 학생) | RW (own row) |
+| `student_career_target` (신규) | RW | RW | R (own cohort) | RW (own row) |
+| `student_resume_item` (신규) | RW | RW | R (own cohort) | RW (own row) |
+| `student_career_documents` (B0037) | RW | RW | R (own cohort, 2기+) | RW (own row) |
+| `student_notes` (신규, 5.5) | RW | RW | R (own cohort) + W (own author) | **X** (학생은 안 봄) |
+| `applicant_milestones` (B0042) | RW | RW | X (1기) / R (2기+) | X |
+| `messages_log` | RW | RW | X | X |
+| `cash_receipts` | RW | RW | X | X |
+| `cohort_expenses` | RW | RW | X | X |
+| `tax_filings` | RW | RW | X | X |
+| `instructors` | RW | RW (own program) | R (own row) | X |
+
+### 5.6.4 1기 vs 2기+ Access 적용 시점
+
+1기 Wave 1 (7/4 런칭):
+- ✅ super_admin / admin 활성 (이미 done)
+- ✅ student 활성 (Wave 1 출시)
+- ❌ instructor surface 비활성 (운영자 대행 자료 업로드 / 코멘트 입력)
+
+2기 Wave 2 (8월~):
+- ✅ instructor surface 활성 (자료 upload / 코멘트 / 학생 career 열람)
+- ✅ instructor 가 own cohort 학생 student_notes / career 열람 가능
+- 단 student 의 자기소개서 본문 등 민감 데이터 분리 검토 (privacy)
+
+### 5.6.5 Server Action 가드 패턴
+
+기존 `assertSuperAdmin` / `assertProgramAdmin` / `assertCanAccessStudentCareer` + 신규 추가:
+
+- `assertCanWriteStudentNote(studentId)` — super_admin OR program admin OR instructor of student's cohort
+- `assertCanReadStudentNote(studentId)` — 위 + student 본인 차단 (명시적)
+- `assertCanUploadMaterial(cohortId, sessionId?)` — super_admin OR program admin OR instructor of cohort/session
+- `assertCanDownloadMaterial(materialId)` — super_admin OR program admin OR cohort member (student/instructor)
+
+각 함수 React `cache()` 적용 (request 당 1회만 DB query). 기존 lms-role.ts 패턴 따름.
+
+### 5.6.6 RLS 정책 패턴 (모든 신규 entity 공통)
+
+```sql
+-- pattern: 4 정책 / entity
+alter table public.<entity> enable row level security;
+revoke all on public.<entity> from anon, authenticated;
+grant all on public.<entity> to service_role;
+
+-- super_admin: ALL
+create policy super_admin_all on public.<entity>
+  for all using (
+    exists (select 1 from user_profiles where id = auth.uid() and is_super_admin = true)
+  );
+
+-- program admin: ALL within program
+create policy program_admin_all on public.<entity>
+  for all using (
+    exists (
+      select 1 from program_memberships pm
+       join cohorts c on c.program_id = pm.program_id
+       where pm.user_id = auth.uid() and pm.role = 'admin'
+         and c.id = <entity>.cohort_id  -- (또는 students.cohort_id 조인)
+    )
+  );
+
+-- instructor: SELECT within own cohort (per-entity W policy 별도)
+create policy instructor_read on public.<entity>
+  for select using (
+    exists (
+      select 1 from cohort_memberships cm
+       where cm.user_id = auth.uid() and cm.role = 'instructor'
+         and cm.cohort_id = <entity>.cohort_id
+    )
+  );
+
+-- student: SELECT own row (per-entity 분기)
+create policy student_self on public.<entity>
+  for select using (
+    exists (
+      select 1 from user_profiles up
+       where up.id = auth.uid() and up.student_id = <entity>.student_id
+    )
+  );
+```
+
+> **참조**: ADR 0008 (Program Modularization) + B0037 (career documents Wave A+) RLS 정책 그대로 재활용. 신규 entity 마이그레이션 시 본 패턴 복사.
+
+---
+
 ## 6. 결정 5 — 강사 Access 정책 (1기 한정 / 2기+ 분기)
 
 ### 6.1 1기 한정 (Wave 1 launch)
