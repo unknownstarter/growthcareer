@@ -34,6 +34,21 @@ export const RESUME_ITEM_LABELS: Record<ResumeItemType, string> = {
   project: "프로젝트",
 };
 
+/**
+ * credential_url scheme allowlist — Sage CRIT-1 fix (2026-06-26).
+ * `javascript:` / `data:` / `vbscript:` 등 비-http(s) scheme 차단.
+ * 학생이 폼에서 저장 → 운영자가 admin/students/[id] 페이지 클릭 시
+ * stored XSS 로 admin 세션 탈취 가능 → http/https 만 허용.
+ */
+const httpsUrl = (max = 2048) =>
+  z
+    .string()
+    .url()
+    .max(max)
+    .refine((v) => /^https?:\/\//i.test(v), {
+      message: "credential_url must use http or https scheme",
+    });
+
 export const StudentResumeItemSchema = z
   .object({
     id: z.string().uuid(),
@@ -44,7 +59,7 @@ export const StudentResumeItemSchema = z
     start_date: z.string().nullable(),
     end_date: z.string().nullable(),
     description: z.string().max(1000).nullable(),
-    credential_url: z.string().url().nullable(),
+    credential_url: httpsUrl().nullable(),
     order_index: z.number().int(),
     created_at: z.string(),
     updated_at: z.string().nullable(),
@@ -69,12 +84,7 @@ export const StudentResumeItemCreateInputSchema = z.object({
   start_date: isoDate.nullable().optional(),
   end_date: isoDate.nullable().optional(),
   description: z.string().trim().max(1000).nullable().optional(),
-  credential_url: z
-    .string()
-    .url()
-    .max(2048)
-    .nullable()
-    .optional(),
+  credential_url: httpsUrl().nullable().optional(),
   order_index: z.number().int().nonnegative().optional(),
 });
 
@@ -91,12 +101,7 @@ export const StudentResumeItemUpdateInputSchema = z.object({
   start_date: isoDate.nullable().optional(),
   end_date: isoDate.nullable().optional(),
   description: z.string().trim().max(1000).nullable().optional(),
-  credential_url: z
-    .string()
-    .url()
-    .max(2048)
-    .nullable()
-    .optional(),
+  credential_url: httpsUrl().nullable().optional(),
   order_index: z.number().int().nonnegative().optional(),
 });
 

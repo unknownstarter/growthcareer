@@ -153,7 +153,14 @@ export function StudentsDashboard({ cohort_id, cohort_name, students }: Props) {
                   {students.map((s) => (
                     <TableRow key={s.student_id}>
                       <TableCell className="font-semibold">
-                        {s.display_name}
+                        <Link
+                          href={
+                            `/${locale}/fan-to-pro/admin/students/${s.student_id}` as Route
+                          }
+                          className="text-[var(--foreground)] hover:text-[var(--primary)] hover:underline"
+                        >
+                          {s.display_name}
+                        </Link>
                       </TableCell>
                       <TableCell className="text-[var(--muted-foreground)] text-xs">
                         {s.email ?? "-"}

@@ -15,6 +15,7 @@ import {
   MessageSquare,
   Sparkles,
   Briefcase,
+  User,
 } from "lucide-react";
 import { cn } from "@/src/programs/fan-to-pro/interface/components/lms/lib/utils";
 import type { LmsRole } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
@@ -68,6 +69,7 @@ function studentItems(locale: string, cohortSlug: string): NavItem[] {
     { href: `${base}/announcements`, label: "공지", icon: Megaphone },
     { href: `${base}/consulting`, label: "컨설팅", icon: MessageSquare },
     { href: `${base}/career`, label: "커리어 문서", icon: Briefcase },
+    { href: `${base}/profile`, label: "내 프로필", icon: User },
     { href: `${base}/certificates`, label: "수료증", icon: GraduationCap },
   ];
 }

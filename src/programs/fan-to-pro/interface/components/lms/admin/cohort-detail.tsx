@@ -14,7 +14,10 @@
  *   paid 만 student promote → 그 기수의 실 학생.
  */
 import * as React from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import type { Route } from "next";
+import { useParams, useRouter } from "next/navigation";
+import { FileText } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -68,6 +71,8 @@ const STATUS_ORDER: ApplicantStatus[] = [
 
 export function CohortDetail({ cohort, applicants, studentCount }: Props) {
   const router = useRouter();
+  const params = useParams();
+  const locale = (params?.locale as string) ?? "ko";
 
   // funnel 계산
   const byStatus = React.useMemo(() => {
@@ -248,8 +253,20 @@ export function CohortDetail({ cohort, applicants, studentCount }: Props) {
             {cohort.capacity}명 / 최소 개강 {cohort.min_to_open}명
           </p>
         </div>
-        <div className="text-right text-xs text-[var(--muted-foreground)]">
-          slug: <code className="font-mono">{cohort.slug}</code>
+        <div className="flex flex-col items-end gap-2">
+          <Button asChild variant="outline" size="sm">
+            <Link
+              href={
+                `/${locale}/fan-to-pro/admin/cohorts/${cohort.slug}/materials` as Route
+              }
+            >
+              <FileText className="h-3.5 w-3.5 mr-1.5" />
+              강의 자료
+            </Link>
+          </Button>
+          <div className="text-right text-xs text-[var(--muted-foreground)]">
+            slug: <code className="font-mono">{cohort.slug}</code>
+          </div>
         </div>
       </header>
 
