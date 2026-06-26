@@ -13,7 +13,7 @@
 | **High** | A1. 입금 확인 토글 + paymentConfirmed 자동 발송 | 11회 | 5분 | 중 | ★★★★★ |
 | **High** | A2. 리마인드 자동 발송 (T+1 / D-3 / D-1) | 15회+ | 3분 | 중 | ★★★★ |
 | **High** | A3. 다음 기수 알림 리스트 일괄 이메일 | (2기 시작 시 N회) | 30분 (수동 인쇄 → 폼) | 낮음 | ★★★★ |
-| Med | A4. 출결 mark 자동화 (학생 self check-in QR) | 회차당 11명 × 8회 = 88회 | 3분 (수동 mark) | 중 | ★★★ |
+| Med | A4. 출결 mark 자동화 (학생 self check-in QR) | 회차당 10명 × 8회 = 80회 | 3분 (수동 mark) | 중 | ★★★ |
 | Med | A5. 토스뱅크 입금 알림 → applicants 자동 매칭 | 11회 | 10분 (수동 확인 + paid 토글) | 높음 | ★★★ |
 | Med | A6. 회계 CSV export 매월 자동 발송 | 매월 1회 | 30분 | 중 | ★★★ |
 | Low | A7. 카카오톡 채널 응대 챗봇 (FAQ) | 일 5건+ | 5분 | 높음 (관리 비용) | ★★ |
@@ -117,7 +117,7 @@
 
 ### 현재
 
-회차마다 운영자가 student 11명 status dropdown 으로 mark.
+회차마다 운영자가 student 10명 status dropdown 으로 mark.
 
 ### 자동화 안
 

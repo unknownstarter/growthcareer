@@ -146,7 +146,7 @@ current 13 entity 들이 이 3 aggregate 에 분배됨.
 단점 / 트레이드오프:
 - query 복잡도 ↑ (현재 status enum 으로 0.1ms 조회되던 게 event timeline 의 last-event 계산으로 5ms)
 - jsonb payload 의 schema drift 위험 → zod schema per event_type 박아야 함
-- KISS 원칙 위배 가능성. 1인 개발자 + 11명 운영에 event sourcing 은 over-engineering 일 수도.
+- KISS 원칙 위배 가능성. 1인 개발자 + 10명 운영에 event sourcing 은 over-engineering 일 수도.
 
 **결정 (안)**: hybrid. **status / current state 는 derived column 으로 유지** (read 최적화), **이벤트 trail 은 person_events 에 박음** (audit / replay). materialized view 또는 trigger 로 동기화.
 

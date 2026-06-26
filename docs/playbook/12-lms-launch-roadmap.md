@@ -2,7 +2,7 @@
 
 > Owner: Aria · Captured: 2026-06-25 · D-9 to launch
 >
-> 본 문서는 Fan to Pro 1기 학생 11명을 2026-07-04 (토) 2주차 강의부터 LMS 본격 사용하게 만드는 9일 plan 이다. 1기 한정 minimum + 2기+ 확장 가능 구조 (ADR 0010 정신).
+> 본 문서는 Fan to Pro 1기 학생 10명을 2026-07-04 (토) 2주차 강의부터 LMS 본격 사용하게 만드는 9일 plan 이다. 1기 한정 minimum + 2기+ 확장 가능 구조 (ADR 0010 정신).
 >
 > 관련 문서:
 > - 운영 매뉴얼: [`CLAUDE.md`](../../CLAUDE.md) §7.4 (production 보호), §6.5 (카피 룰)
@@ -31,7 +31,7 @@
 ## 1. 목표 + 성공 기준
 
 ### Goal
-**2026-07-04 (토) 2주차 강의 시작 (14:00) 전까지** 1기 학생 11명이 본인 계정으로 LMS 에 로그인하여 (a) 강의 자료 다운로드 (200MB+ 대용량 PPT 안전), (b) 이력서/자기소개서/포트폴리오 (B0037) 단일 최신본 관리, (c) 취업 필요 정보 (희망 직무 / 자격증 / 경력 / 학력 / 비자) 등록 — 3개 핵심 기능 가동.
+**2026-07-04 (토) 2주차 강의 시작 (14:00) 전까지** 1기 학생 10명이 본인 계정으로 LMS 에 로그인하여 (a) 강의 자료 다운로드 (200MB+ 대용량 PPT 안전), (b) 이력서/자기소개서/포트폴리오 (B0037) 단일 최신본 관리, (c) 취업 필요 정보 (희망 직무 / 자격증 / 경력 / 학력 / 비자) 등록 — 3개 핵심 기능 가동.
 
 ### Why
 - Google Drive 모바일 다운로드 1주차 사고 재발 방지 (실측 400MB PPT 안 받아짐)
@@ -39,9 +39,9 @@
 - 외국인 학생 (D-2/D-4/D-10/E/F 비자) 영문 UX 동등 보장 필수
 
 ### 성공 기준 (Done When)
-1. 학생 11/11 명 7/4 (토) 13:00 까지 LMS 첫 로그인 + PW 변경 완료
-2. 강의 자료 (PPT / 추가 자료) Storage 업로드 + 학생 11명 다운로드 시 모바일 포함 성공률 100%
-3. 학생 11명 중 최소 8명 (73%) 이 career profile (job preference + visa) 최소 1 field 입력
+1. 학생 10/10 명 7/4 (토) 13:00 까지 LMS 첫 로그인 + PW 변경 완료
+2. 강의 자료 (PPT / 추가 자료) Storage 업로드 + 학생 10명 다운로드 시 모바일 포함 성공률 100%
+3. 학생 10명 중 최소 8명 (73%) 이 career profile (job preference + visa) 최소 1 field 입력
 4. Sage critical = 0, high ≤ 1 (즉시 fix 가능)
 5. 7/4 강의 시간 (14:00~16:00) 동안 LMS down 0 분, 자료 다운로드 에러 0 건
 6. 2기+ 확장 시 변경 없이 강사 invite 만 추가하면 강사 surface 가동 가능한 구조
@@ -141,8 +141,8 @@
 | 시각 | 담당 | 작업 | 산출물 | 검증 기준 |
 |---|---|---|---|---|
 | **7/4 토 09:00** | 노아 | 강의 자료 2주차 PPT + 보조 자료 admin 에서 업로드 | Storage 에 자료 박힘 | 다운로드 가능 |
-| 7/4 토 10:00 | 노아 | 학생 11명 invite — admin LMS 의 invite UI 또는 직접 user_profiles row 생성 + temp PW 박음 | 11개 row | must_change_password=true |
-| 7/4 토 10:00 | 노아 | 카톡 오픈채팅 + 1:1 SMS / 이메일로 안내 발송 (§8 카피 사용) | 11명 모두 발송 확인 | 답장 / 읽음 트래킹 |
+| 7/4 토 10:00 | 노아 | 학생 10명 invite — admin LMS 의 invite UI 또는 직접 user_profiles row 생성 + temp PW 박음 | 10개 row | must_change_password=true |
+| 7/4 토 10:00 | 노아 | 카톡 오픈채팅 + 1:1 SMS / 이메일로 안내 발송 (§8 카피 사용) | 10명 모두 발송 확인 | 답장 / 읽음 트래킹 |
 | 7/4 토 13:00 | 노아 | 강의 시작 1시간 전 — LMS smoke check (학생 1명 본인 계정으로 다운로드 PASS 확인) | - | 자료 받아짐 |
 | 7/4 토 13:30 | Mira | 강의 시작 30분 전 — production sentry / vercel 로그 점검 | - | error 0 |
 | 7/4 토 14:00 | 노아 | 강의 시작 — 강의실에서 학생들이 LMS 본인 계정 진입 확인 | 11/11 로그인 | 100% |
@@ -187,8 +187,8 @@ Sage 검토 (7/2) ── 모든 server action / bucket 가 input
 ## 5. 노아 manual action 체크리스트
 
 ### 6/25 (목) — Phase 1 시작 전
-- [ ] 학생 11명 이메일 list 추출 (`/admin/applicants` status=paid filter → email 컬럼) → `docs/private/cohort-1-students.csv` 박음 (gitignore 확인)
-- [ ] 학생 11명 중 외국인 (visa D-2/D-4/D-10/E/F) 비율 확인 → 영문 카피 우선순위 가늠
+- [ ] 학생 10명 이메일 list 추출 (`/admin/applicants` status=paid filter → email 컬럼) → `docs/private/cohort-1-students.csv` 박음 (gitignore 확인)
+- [ ] 학생 10명 중 외국인 (visa D-2/D-4/D-10/E/F) 비율 확인 → 영문 카피 우선순위 가늠
 - [ ] Storage 비용 예상 — 8회 × 200MB PPT + 보조 자료 ≈ 2GB 예상. Supabase free tier (1GB) 초과 → Pro plan ($25/mo) 사전 결재 결정
 
 ### 6/26 (금)
@@ -209,15 +209,15 @@ Sage 검토 (7/2) ── 모든 server action / bucket 가 input
 ### 7/3 (금)
 - [ ] Mira E2E 결과 확인 + 모바일 다운로드 회귀 PASS 확인
 - [ ] Vera 배포 후 본인 운영자 + 가짜 학생 계정으로 prod final check
-- [ ] 학생 11명 temp PW 생성 — `nanoid(12)` 11개 + `cohort-1-students.csv` 에 매핑 박음 (로컬, gitignore)
+- [ ] 학생 10명 temp PW 생성 — `nanoid(12)` 10개 + `cohort-1-students.csv` 에 매핑 박음 (로컬, gitignore)
 - [ ] 카톡 / SMS / 이메일 발송 채널 결정 (이메일 + 카톡 1:1 권장 — 외국인 학생 SMS 안 들어갈 risk)
 
 ### 7/4 (토) — 가동 day
 - [ ] 09:00 자료 업로드
-- [ ] 10:00 invite + 안내 발송 (11명)
+- [ ] 10:00 invite + 안내 발송 (10명)
 - [ ] 12:00 진입률 중간 체크 (5명 이상 첫 로그인 했는지 — 안 됐으면 카톡 1:1 follow-up)
 - [ ] 13:00 smoke check
-- [ ] 14:00 강의 시작 — 강의실에서 학생 11명 본인 휴대폰으로 LMS 진입 확인 + 자료 다운로드 시연
+- [ ] 14:00 강의 시작 — 강의실에서 학생 10명 본인 휴대폰으로 LMS 진입 확인 + 자료 다운로드 시연
 - [ ] 16:00 회고 + 미해결 이슈 기록
 
 ### 7/5 (일) ~ 7/11 (다음 강의 전)
@@ -231,7 +231,7 @@ Sage 검토 (7/2) ── 모든 server action / bucket 가 input
 | ID | 위험 | 발생 확률 | 영향 | Mitigation | Escape Plan |
 |---|---|---|---|---|---|
 | R1 | 9일 안 모든 surface 안 끝남 | High | 7/4 가동 실패 | Phase 1 마지막 (6/27) + Phase 2 중간 (6/30) 두 시점에 cut 결정 | career profile 폼 defer (7/11 후) + 자료 다운로드 + B0037 만 우선 |
-| R2 | 학생 11명 중 invite 이메일 못 받음 | Med | 일부 학생 진입 실패 | 이메일 + 카톡 1:1 양 채널 발송 | 강의 시간에 노아가 학생 휴대폰으로 직접 도와줌 + temp PW manual 전달 |
+| R2 | 학생 10명 중 invite 이메일 못 받음 | Med | 일부 학생 진입 실패 | 이메일 + 카톡 1:1 양 채널 발송 | 강의 시간에 노아가 학생 휴대폰으로 직접 도와줌 + temp PW manual 전달 |
 | R3 | 모바일 다운로드 다시 깨짐 (Google Drive 재발) | Med | LMS 가치 lost | signed URL TTL 10분 + Content-Disposition: attachment + 진행률 hint 카피 + 7/3 모바일 실기기 회귀 | 비상용 Google Drive 링크 백업 (1주차 사고 학습) |
 | R4 | Sage critical 1건 이상 | Med | 배포 지연 → 7/4 가동 실패 | B0037 패턴 (URL allowlist / private IP 거부 / path randomness) 사전 적용 | invite 학생 수 11 → 5 축소 + 나머지 7/11 후 |
 | R5 | Storage 비용 초과 (free 1GB → 8회 자료) | High | $25/mo 추가 | 6/25 노아 결정 (Pro plan 사전 결재) | 이미지 압축 + 자료 ZIP 처리 + 회차 종료 후 압축 보관 |
@@ -245,7 +245,7 @@ Sage 검토 (7/2) ── 모든 server action / bucket 가 input
 ## 7. 1기 vs 2기+ 분리
 
 ### 본 런칭 (1기 한정 — 7/4 ~ 7/25)
-- 학생 11명, cohort 1개
+- 학생 10명, cohort 1개
 - 강사 0명 invite (운영자 대신 업로드)
 - 자료 다운로드 + career documents + career profile 3 기능
 - 카톡 / 이메일 알림 manual
@@ -285,7 +285,7 @@ growthcareer.xyz 안에 여러분 본인 계정으로 들어가는 학습 공간
 3. 취업 정보 입력 (희망 직무 자격증 경력 학력 비자)
 
 [첫 로그인 안내]
-7/4 토요일 오전 10시쯤 11명 전원에게 이메일과 카톡 1:1 로 다음 정보를 보냅니다.
+7/4 토요일 오전 10시쯤 10명 전원에게 이메일과 카톡 1:1 로 다음 정보를 보냅니다.
 - LMS 주소
 - 본인 이메일
 - 임시 비밀번호
@@ -361,7 +361,7 @@ Growth Career / Fan to Pro
 
 ## 9. 출시 후 모니터링 (7/4 ~ 7/11 1주일)
 
-### Metric (학생 11명 기준)
+### Metric (학생 10명 기준)
 - **진입률**: LMS 첫 로그인 학생 수 / 11 (목표 100% by 7/4 13:00)
 - **자료 다운로드 성공률**: 학생당 최소 1회 다운로드 / 11 (목표 100% by 7/4 16:00)
 - **career profile 입력률**: 최소 1 field 입력 학생 수 / 11 (목표 73% by 7/11)
@@ -404,7 +404,7 @@ Growth Career / Fan to Pro
 
 본 시점에 Echo `docs/research/lms-launch-research.md` 가 없으므로 다음 가정으로 진행. Echo 가 나오면 본 §A 를 그 산출물로 대체 + Phase 1 Day 1 재검토.
 
-1. **파일 호스팅**: Supabase Storage private bucket + signed URL (TTL 10분). Cloudflare R2 / S3 의 cost / latency 우위는 1기 11명 규모에서 marginal — 2기+ 100명 규모 시 재검토.
+1. **파일 호스팅**: Supabase Storage private bucket + signed URL (TTL 10분). Cloudflare R2 / S3 의 cost / latency 우위는 1기 10명 규모에서 marginal — 2기+ 100명 규모 시 재검토.
 2. **모바일 다운로드 안전성**: `Content-Disposition: attachment` 헤더 + signed URL 새 탭 open. PWA / native app 안 사용.
 3. **학생 onboarding 사례**: 운영자 invite + must_change_password 흐름 (이미 LMS Wave 1 에 박힘). 회원가입 페이지 없음 (CLAUDE.md §7.4).
 4. **취업 정보 entity 필드**: 희망 직무 / 자격증 / 경력 / 학력 / 비자 5 field 로 시작. LinkedIn 수준 풀 필드는 2기+.
@@ -431,7 +431,7 @@ Growth Career / Fan to Pro
 |---|---|---|---|
 | career profile 폼 | Day 6 (6/30) 시점에 Phase 2 not done | 7/11 2주차 강의 후 defer | low (취업 활동은 다음 주 시작) |
 | admin career profile view | Day 7 (7/1) 시점에 student 폼 not done | 학생 본인만 access 가능, admin 은 supabase dashboard | low (운영자가 직접 dashboard 봄) |
-| 영문 UX | Day 8 (7/2) 시점에 한국어 surface unstable | 외국인 학생 1:1 영문 카톡 핸드오프 | med (외국인 11명 중 ~3명 추정) |
+| 영문 UX | Day 8 (7/2) 시점에 한국어 surface unstable | 외국인 학생 1:1 영문 카톡 핸드오프 | med (외국인 10명 중 ~3명 추정) |
 | invite 학생 수 11 → 5 | Sage critical 1건 이상 | 5명 (한국인 우선) 만 7/4 invite + 6명 7/11 invite | med (학생 균등 불가, but 안전) |
 | 전체 가동 7/4 → 7/11 | Phase 3 7/3 까지 Sage / Mira PASS 못 함 | Google Drive 비상 백업 1주 추가 사용 | high (LMS 가치 1주 지연) |
 
@@ -441,8 +441,8 @@ cut 결정은 노아가 6/30 + 7/2 + 7/3 3 시점에 검토.
 
 ## 12. Done When (재확인)
 
-- [ ] 7/4 13:00 까지 학생 11/11 명 LMS 첫 로그인 + PW 변경
-- [ ] 7/4 16:00 까지 학생 11/11 명 자료 다운로드 (모바일 포함)
+- [ ] 7/4 13:00 까지 학생 10/10 명 LMS 첫 로그인 + PW 변경
+- [ ] 7/4 16:00 까지 학생 10/10 명 자료 다운로드 (모바일 포함)
 - [ ] 7/11 까지 학생 8/11 명 career profile 최소 1 field 입력
 - [ ] Sage critical = 0, high ≤ 1
 - [ ] 7/4 강의 시간 LMS down 0분, 다운로드 에러 0건

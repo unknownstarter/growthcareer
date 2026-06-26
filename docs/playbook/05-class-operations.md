@@ -37,11 +37,11 @@
 - [ ] 음향 / 마이크 / 빔프로젝터 / 스크린 점검
 - [ ] WiFi 사용 가능 확인
 - [ ] 자료 PDF 강사 3인 사전 수령
-- [ ] 출석부 (학생 11명 명단) 인쇄 / 디지털 양쪽
+- [ ] 출석부 (학생 10명 명단) 인쇄 / 디지털 양쪽
 - [ ] 명찰 (선택) — 외국인 학생 이름 표기 헷갈림 방지
 - [ ] 다과 / 음료 준비 (회차당 예산 결정)
 - [ ] 카카오톡 오픈채팅 (https://open.kakao.com/o/gX12jFAi, 비번 fan06pro) 입장 안내
-- [ ] cohortKickoff 메시지 11명 발송 완료 + 원페이저 PDF 링크 첨부 확인
+- [ ] cohortKickoff 메시지 10명 발송 완료 + 원페이저 PDF 링크 첨부 확인
 
 ### 회차마다
 
@@ -55,7 +55,7 @@
 ## 출결 시스템
 
 - `/fan-to-pro/admin/cohorts/[slug]` → sessions list
-- 각 session 의 [출결] 클릭 → student 11명 status dropdown
+- 각 session 의 [출결] 클릭 → student 10명 status dropdown
 - status: `present` / `late` / `absent` / `excused`
 - [출결 저장] 클릭 → DB attendance 테이블에 INSERT
 
@@ -71,10 +71,10 @@
 
 ## 학생 운영
 
-### 1기 11명 상태
+### 1기 10명 상태 (6/22 11명 → 6/23 환불 1명)
 
 - DB: `students` 테이블 (`cohort_id` = 1기 + `applicant_id` lineage)
-- `applicants` 의 `status='paid'` 인 11명 → `students` promote (수동 또는 [결제 완료자 일괄 등록] 버튼)
+- `applicants` 의 `status='paid'` 인 10명 → `students` promote (수동 또는 [결제 완료자 일괄 등록] 버튼)
 - 학생 LMS access 정책 (1기): **access 안 줌** — 카톡 오픈채팅으로 모든 커뮤니케이션
 
 ### 다음 기수부터 학생 access

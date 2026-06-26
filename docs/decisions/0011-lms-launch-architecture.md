@@ -12,7 +12,7 @@
 
 1기 운영 중 (paid 10명, 첫 강의 6/27 토). 1주차 강의 자료 약 400MB PPT 가 Google Drive 모바일 다운로드 사고 발생 → 자체 LMS hosting 필요성이 D+1 사고로 급부상.
 
-**목표**: 2주차 강의 (7/4 토, D+8) 까지 LMS 정식 런칭. 학생 11명이 본인 Supabase Auth 계정으로 로그인하여:
+**목표**: 2주차 강의 (7/4 토, D+8) 까지 LMS 정식 런칭. 학생 10명이 본인 Supabase Auth 계정으로 로그인하여:
 - 강의 자료 다운로드 (회차별)
 - 이력서 / 자기소개서 / 포트폴리오 등록 (B0037 Wave A+ 이미 prod)
 - 본인 취업 정보 (희망 직무 / 자격증 / 경력 / 학력 / SNS 등) 입력
@@ -88,7 +88,7 @@ create index on lecture_materials (visibility) where visibility in ('scheduled',
 
 **State machine**: `draft → scheduled → published → archived`. archived 는 student 비가시. published 는 즉시 visible. scheduled 는 `visible_from <= now()` 일 때 student 가시 (Edge Config 캐시 안 함 — 단순 query 시점 비교).
 
-**다운로드 audit (옵션)**: Wave 1 launch 시점에서는 *기록 보류*. 이유: 학생 11명 + 자료 ~30개 = 약 330 row / 기수. audit 부재로 사고 시 누가 다운로드했는지 모를 risk vs row 폭증. **결정**: 본 ADR 에서는 **audit 미도입**. 대신 `signed_url` 생성 시점만 server log (Vercel function log) 에 stdout 으로 남김. Wave 1 후 회고에서 audit table 도입 여부 결정 (3회 사용 사례 룰).
+**다운로드 audit (옵션)**: Wave 1 launch 시점에서는 *기록 보류*. 이유: 학생 10명 + 자료 ~30개 = 약 330 row / 기수. audit 부재로 사고 시 누가 다운로드했는지 모를 risk vs row 폭증. **결정**: 본 ADR 에서는 **audit 미도입**. 대신 `signed_url` 생성 시점만 server log (Vercel function log) 에 stdout 으로 남김. Wave 1 후 회고에서 audit table 도입 여부 결정 (3회 사용 사례 룰).
 
 ### 2.3 RLS 정책
 
@@ -150,7 +150,7 @@ issueDownloadUrl(materialId: Id, viewer: ViewerContext): Promise<Result<{url: st
 **Hybrid**: parent `student_career_profile` 단일 row (PK = student_id) + child tables 4종 (자격증 / 경력 / 학력 / 외부 링크). 자유도 높은 짧은 필드는 parent jsonb 1개 컬럼에 격리.
 
 거부:
-- Option 1 (단일 jsonb 컬럼) — 검색 / index / 보고서 빌드 비용 ↑. 학생 11명일 땐 OK 지만 3기+ 100명 시점 schema 부재가 갉아먹음
+- Option 1 (단일 jsonb 컬럼) — 검색 / index / 보고서 빌드 비용 ↑. 학생 10명일 땐 OK 지만 3기+ 100명 시점 schema 부재가 갉아먹음
 - Option 2 (모든 필드 strict columns) — 자격증 / 경력은 N개 → child table 강제. 단일 row 에 자격증_1~5 식 컬럼 폭증 안 됨
 
 ### 3.2 Parent table
@@ -320,7 +320,7 @@ lecture-materials/
 
 **Option A — Supabase Pro storage (default)**:
 - $25/mo 포함 + $0.021/GB-month + egress $0.09/GB
-- 1기 자료 30개 × 평균 200MB = 6GB. 학생 11명 × 평균 5회 다운로드 = 330GB egress / 기수
+- 1기 자료 30개 × 평균 200MB = 6GB. 학생 10명 × 평균 5회 다운로드 = 330GB egress / 기수
 - **추정 월 비용**: $0.13 storage + $29.7 egress = 약 $30 / 기수
 
 **Option B — Cloudflare R2**:
@@ -331,7 +331,7 @@ lecture-materials/
 
 **결정 (Sophia 권장)**: **Option A (Supabase Pro) — Wave 1 launch**.
 이유:
-1. 1기 학생 11명 / 기수 30~50 자료 / egress ~330GB → 월 $30 비용은 budget 안. Wave 1 시간 박스 9일에 R2 통합 위험 회피
+1. 1기 학생 10명 / 기수 30~50 자료 / egress ~330GB → 월 $30 비용은 budget 안. Wave 1 시간 박스 9일에 R2 통합 위험 회피
 2. RLS 한 곳 (Supabase Storage policy) 에서 권한 = code reuse ↑
 3. Echo 가 다른 결론 (R2 가 압도적) 내면 Wave 2+ 에 migration. file_path 컬럼 그대로, storage 만 swap → 격리됨
 
@@ -421,7 +421,7 @@ async function inviteStudentToLms(studentId: string) {
 - **Wave 1**: 운영자가 server action 결과 (email + temp PW) 를 받아서 카톡 1:1 또는 이메일로 직접 전송
 - **Wave 2+**: 자동 발송 (이메일 우선, 알림톡 옵트인 추가)
 
-이유: 자동 발송은 추가 외부 의존 (이메일 서비스 / 알림톡 API) + temp PW 가 평문으로 transit. Wave 1 의 11명은 운영자가 1:1 채팅 보유 → manual 이 더 안전 + 비용 0.
+이유: 자동 발송은 추가 외부 의존 (이메일 서비스 / 알림톡 API) + temp PW 가 평문으로 transit. Wave 1 의 10명은 운영자가 1:1 채팅 보유 → manual 이 더 안전 + 비용 0.
 
 ### 5.5 onboarding 페이지 흐름
 
@@ -704,7 +704,7 @@ async function verifyCareerProfile() {
 
 | 위험 | 영향 | 대응 |
 |---|---|---|
-| 학생 11명 동시 invite 시 임시 PW 누설 | 계정 탈취 | manual 카톡 1:1 + 첫 로그인 PW 강제 변경 |
+| 학생 10명 동시 invite 시 임시 PW 누설 | 계정 탈취 | manual 카톡 1:1 + 첫 로그인 PW 강제 변경 |
 | 자료 1GB 업로드 시 timeout | 운영자 UX 실패 | Vercel Function 타임아웃 = `maxDuration: 60` + chunked upload는 Wave 2. 1기는 운영자가 외부 압축 후 < 500MB upload |
 | signed URL 만료 (60초) 동안 다운로드 미완 시 실패 | 학생 UX 실패 | TTL = 5분 (300초) 로 launch. download 시작 직후 만료 무관 |
 | career profile schema 변경이 잦아짐 | refactor 비용 | parent.extras jsonb 사용. 3회 반복 시 child 또는 column 으로 graduate (CLAUDE.md 추상화 룰) |
@@ -766,7 +766,7 @@ async function verifyCareerProfile() {
 
 ### 10.6 자동 알림 발송 (Wave 1)
 
-- **거부 (Wave 1)**: 이메일 서비스 + 알림톡 API 통합 = 박스 초과. 11명 = manual 더 효율
+- **거부 (Wave 1)**: 이메일 서비스 + 알림톡 API 통합 = 박스 초과. 10명 = manual 더 효율
 - Wave 2+ 도입 (옵트인 알림톡 권장)
 
 ### 10.7 강사 surface 1기 정식 운영
@@ -784,7 +784,7 @@ async function verifyCareerProfile() {
 
 ### 10.10 cohort 외 cross-cohort 자료 공유 (template / 라이브러리)
 
-- **거부 (Wave 1)**: 3회 반복 사용 사례 미관찰. 자료 중복 upload 가 더 단순 (11명 / 자료 30개)
+- **거부 (Wave 1)**: 3회 반복 사용 사례 미관찰. 자료 중복 upload 가 더 단순 (10명 / 자료 30개)
 - 2기 운영 후 사용 패턴 보고 도입
 
 ---

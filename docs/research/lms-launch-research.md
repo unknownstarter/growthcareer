@@ -23,7 +23,7 @@
 - **[HIGH] Supabase Storage = 500GB 단일 파일 limit (Pro 이상)** — 400MB PPT 가뿐히 처리.
 - **[HIGH] Smart CDN + signed URL 캐시 재사용 = 대용량 다운로드 성능 최적화** — 동일 signed URL 재사용 시 edge cache hit.
 - **[HIGH] Cloudflare R2 = egress 영구 무료 + S3 호환** — 코드 마이그레이션 시 endpoint URL 만 교체. 그러나 우리는 이미 Supabase 통합돼 있어 추가 통합 비용이 *현재 시점에선* 무가치.
-- **[MED] Wasabi 의 "무료 egress" 는 1:1 ratio 제한** — 월 다운로드가 저장량보다 크면 추가 요금 또는 throttle. 부트캠프 패턴은 다운 >> 저장 (학생 11명 × 8회 다운로드) 이라 *위험*.
+- **[MED] Wasabi 의 "무료 egress" 는 1:1 ratio 제한** — 월 다운로드가 저장량보다 크면 추가 요금 또는 throttle. 부트캠프 패턴은 다운 >> 저장 (학생 10명 × 8회 다운로드) 이라 *위험*.
 - **[MED] Backblaze B2 free egress 도 CF 경유 조건 필수** — 코드 컴플렉시티 증가 vs 비용 절감 미미.
 
 ### Recommendation
@@ -103,13 +103,13 @@ student_resume_item (id PK, student_id FK, type, ...)
 
 ### Findings
 
-- **[HIGH] Supabase magic link = 60초 rate limit + 1시간 만료 + 1회 사용** — 우리 11명 invite 패턴에 충분.
+- **[HIGH] Supabase magic link = 60초 rate limit + 1시간 만료 + 1회 사용** — 우리 10명 invite 패턴에 충분.
 - **[HIGH] Magic link 베스트 프랙티스** = (1) 발송 후 로딩 indicator (2) 성공 메시지 "이메일 확인하세요" (3) rate limit / invalid email 에러 핸들 (4) 템플릿 커스터마이즈
 - **[MED] 외국인 학생 친화 = 영문 magic link 가 임시 비밀번호 안내보다 단순** — 임시 PW 는 카톡/이메일 분실 + change-password 2단계 부담. magic link 는 클릭 1번.
 
 ### Recommendation — 1기 onboarding 흐름
 
-**6/27 강의 시작 전까지 11명 invite 완료 시나리오**:
+**6/27 강의 시작 전까지 10명 invite 완료 시나리오**:
 
 1. **운영자 invite** (admin UI) — 학생 이메일 입력 + 이름 + cohort 지정 → `student_profile` row 생성 + `must_change_password=true` 임시 계정 + `student_invitations` row
 2. **카톡 / 이메일 으로 안내** — "Fan to Pro 1기 LMS 가 열렸어요. 다음 링크로 접속해서 비밀번호를 설정해 주세요."
