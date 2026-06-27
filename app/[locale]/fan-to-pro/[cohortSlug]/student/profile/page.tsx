@@ -10,6 +10,7 @@ import { fetchStudentProfile } from "@/src/programs/fan-to-pro/infrastructure/su
 import { fetchStudentCareerTarget } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/student-career-target-repository";
 import { fetchStudentResumeItems } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/student-resume-item-repository";
 import { StudentProfileForm } from "@/src/programs/fan-to-pro/interface/components/lms/student/student-profile-form";
+import { StudentRealNameEdit } from "@/src/programs/fan-to-pro/interface/components/lms/admin/student-real-name-edit";
 import { StudentCareerTargetForm } from "@/src/programs/fan-to-pro/interface/components/lms/student/student-career-target-form";
 import { StudentResumeItemsEditor } from "@/src/programs/fan-to-pro/interface/components/lms/student/student-resume-items-editor";
 import {
@@ -111,6 +112,12 @@ export default async function StudentProfilePage({
           isEn
             ? "Fill in your career profile so we can match opportunities and review your documents."
             : "프로필을 채우면 운영진이 취업 매칭 / 문서 첨삭 시 활용해요."
+        }
+        action={
+          <StudentRealNameEdit
+            studentId={student.id}
+            currentName={student.display_name}
+          />
         }
       />
 

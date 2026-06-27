@@ -16,7 +16,10 @@ import {
   type MarkAttendanceResult,
 } from "@/src/programs/fan-to-pro/application/use-cases/attendance/mark-attendance";
 import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
-import { assertProgramAdmin } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
+import {
+  assertProgramAdmin,
+  assertCanWriteStudentProfile,
+} from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
 
 const OPERATOR_ID = process.env.ADMIN_OPERATOR_ID ?? "noah";
 
@@ -36,17 +39,22 @@ function revalidateLmsCohorts() {
 }
 
 /**
- * 신청서 원본 이름 정정 — admin only.
+ * 신청서 원본 이름 정정 — admin OR student-self.
  * applicants.name + students.display_name 둘 다 update (data integrity).
  *
- * 권한: super_admin OR program admin. 학생 본인 + 강사 X.
- * 사용처: 학생 detail 페이지의 [원본 이름 정정] dialog.
+ * 권한: super_admin OR program admin OR student-self. 강사 X.
+ * 노아 통찰 (2026-06-27): "본인 (학생)도 원본 이름 변경 가능해야"
+ * 사용처: 학생 detail 페이지 + 학생 본인 profile 페이지 [원본 이름 정정] dialog.
  */
 export async function updateStudentRealNameAction(input: {
   student_id: string;
   new_name: string;
 }): Promise<{ status: "ok" } | { status: "error"; error: string }> {
-  await assertProgramAdmin("fan-to-pro");
+  try {
+    await assertCanWriteStudentProfile(input.student_id);
+  } catch {
+    return { status: "error", error: "forbidden" };
+  }
   const supabase = getSupabaseServer();
   if (!supabase) return { status: "error", error: "supabaseUnavailable" };
 
