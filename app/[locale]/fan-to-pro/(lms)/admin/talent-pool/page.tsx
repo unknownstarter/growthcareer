@@ -28,8 +28,13 @@ export const dynamic = "force-dynamic";
  *   - 단순 list view (검색 + cohort filter)
  *   - 본격 outreach / 동일인 history merge 는 Wave 4.
  */
-export default async function FanToProAdminTalentPoolPage() {
+export default async function FanToProAdminTalentPoolPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
   await assertProgramAdmin("fan-to-pro");
+  const { locale } = await params;
 
   const [applicantsResult, cohorts] = await Promise.all([
     fetchApplicants({}),
@@ -61,6 +66,7 @@ export default async function FanToProAdminTalentPoolPage() {
           name: c.name,
           slug: c.slug ?? null,
         }))}
+        locale={locale}
       />
     </PageContainer>
   );

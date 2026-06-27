@@ -10,6 +10,8 @@
  * Wave 1 hotfix 범위: 단순 list. 동일인 merge / 자동 outreach 는 Wave 4.
  */
 import * as React from "react";
+import type { Route } from "next";
+import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -36,6 +38,7 @@ type CohortSummary = { id: string; name: string; slug: string | null };
 type Props = {
   applicants: ApplicantRow[];
   cohorts: CohortSummary[];
+  locale: string;
 };
 
 const STATUS_LABEL: Record<ApplicantStatus, string> = {
@@ -49,7 +52,7 @@ const STATUS_LABEL: Record<ApplicantStatus, string> = {
   next_cohort_interest: "다음기수",
 };
 
-export function TalentPoolView({ applicants, cohorts }: Props) {
+export function TalentPoolView({ applicants, cohorts, locale }: Props) {
   const [cohortFilter, setCohortFilter] = React.useState<string>("all");
   const [statusFilter, setStatusFilter] = React.useState<string>("all");
   const [query, setQuery] = React.useState("");
@@ -211,7 +214,14 @@ export function TalentPoolView({ applicants, cohorts }: Props) {
                     return (
                       <TableRow key={r.id}>
                         <TableCell className="font-semibold text-[var(--foreground)]">
-                          {r.name}
+                          <Link
+                            href={
+                              `/${locale}/fan-to-pro/admin/applicants/${r.id}` as Route
+                            }
+                            className="hover:text-[var(--primary)] hover:underline underline-offset-2"
+                          >
+                            {r.name}
+                          </Link>
                         </TableCell>
                         <TableCell className="text-xs text-[var(--muted-foreground)]">
                           {r.email}

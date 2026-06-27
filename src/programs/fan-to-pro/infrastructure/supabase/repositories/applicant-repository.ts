@@ -249,6 +249,149 @@ function extractAggregateCount(value: unknown): number {
   return 0;
 }
 
+/**
+ * 단일 applicant 조회 (B0051 LMS detail 페이지용).
+ *
+ * fetchApplicants 의 SELECT 와 같은 컬럼 + messages_log/milestones 보강을 적용해
+ * 동일한 ApplicantRow 모양으로 반환. cohort filter 없이 단일 id.
+ *
+ * 없으면 null. 호출처가 notFound() 호출.
+ */
+export async function fetchApplicantById(
+  id: string,
+): Promise<ApplicantRow | null> {
+  const supabase = getSupabaseServer();
+  if (!supabase) return null;
+
+  const { data, error } = await supabase
+    .from("applicants")
+    .select(
+      [
+        "id",
+        "created_at",
+        "name",
+        "email",
+        "phone",
+        "nationality",
+        "birthdate",
+        "university",
+        "visa",
+        "address",
+        "status",
+        "notes",
+        "cohort_id",
+        "notified_at",
+        "reminder_count",
+        "last_reminder_at",
+        "payment_due_at",
+        "payment_confirmed_at",
+        "paid_amount_krw",
+        "depositor_name_observed",
+        "paid_confirmed_by",
+        "cancelled_at",
+        "cancel_reason",
+        "refunded_at",
+        "refund_txn_id",
+        "redacted_at",
+        "cash_receipts(count)",
+        "messages_log(count)",
+      ].join(","),
+    )
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+  if (!data) return null;
+
+  const raw = data as unknown as Record<string, unknown>;
+  const status =
+    typeof raw.status === "string" &&
+    (APPLICANT_STATUSES as readonly string[]).includes(raw.status)
+      ? (raw.status as ApplicantStatus)
+      : "pending";
+
+  // kind 별 마지막 발송 시각.
+  const lastSent: Record<string, string> = {};
+  const { data: logs } = await supabase
+    .from("messages_log")
+    .select("template_id, sent_at")
+    .eq("applicant_id", id)
+    .order("sent_at", { ascending: false });
+  for (const row of logs ?? []) {
+    const r = row as Record<string, unknown>;
+    const kind = String(r.template_id ?? "");
+    const sentAt = String(r.sent_at ?? "");
+    if (!kind || !sentAt) continue;
+    if (!lastSent[kind]) lastSent[kind] = sentAt;
+  }
+
+  // milestones.
+  const msBucket: Record<string, string> = {};
+  const { data: ms } = await supabase
+    .from("applicant_milestones")
+    .select("milestone_type, marked_at")
+    .eq("applicant_id", id);
+  for (const row of ms ?? []) {
+    const r = row as Record<string, unknown>;
+    const mtype = String(r.milestone_type ?? "");
+    const markedAt = String(r.marked_at ?? "");
+    if (!mtype || !markedAt) continue;
+    msBucket[mtype] = markedAt;
+  }
+
+  return {
+    id: String(raw.id ?? ""),
+    createdAt: String(raw.created_at ?? ""),
+    name: String(raw.name ?? ""),
+    email: String(raw.email ?? ""),
+    phone: String(raw.phone ?? ""),
+    nationality: raw.nationality ? String(raw.nationality) : null,
+    birthdate: raw.birthdate ? String(raw.birthdate) : null,
+    university: raw.university ? String(raw.university) : null,
+    visa: raw.visa ? String(raw.visa) : null,
+    address: raw.address ? String(raw.address) : null,
+    status,
+    notes: raw.notes ? String(raw.notes) : null,
+    cohortId: raw.cohort_id ? String(raw.cohort_id) : null,
+    notifiedAt: raw.notified_at ? String(raw.notified_at) : null,
+    reminderCount:
+      typeof raw.reminder_count === "number" ? raw.reminder_count : 0,
+    lastReminderAt: raw.last_reminder_at ? String(raw.last_reminder_at) : null,
+    paymentDueAt: raw.payment_due_at ? String(raw.payment_due_at) : null,
+    paymentConfirmedAt: raw.payment_confirmed_at
+      ? String(raw.payment_confirmed_at)
+      : null,
+    paidAmountKrw:
+      typeof raw.paid_amount_krw === "number" ? raw.paid_amount_krw : null,
+    depositorNameObserved: raw.depositor_name_observed
+      ? String(raw.depositor_name_observed)
+      : null,
+    paidConfirmedBy: raw.paid_confirmed_by
+      ? String(raw.paid_confirmed_by)
+      : null,
+    cancelledAt: raw.cancelled_at ? String(raw.cancelled_at) : null,
+    cancelReason: raw.cancel_reason ? String(raw.cancel_reason) : null,
+    refundedAt: raw.refunded_at ? String(raw.refunded_at) : null,
+    refundTxnId: raw.refund_txn_id ? String(raw.refund_txn_id) : null,
+    redactedAt: raw.redacted_at ? String(raw.redacted_at) : null,
+    cashReceiptCount: extractAggregateCount(raw.cash_receipts),
+    messageCount: extractAggregateCount(raw.messages_log),
+    messageLastSentByKind: {
+      paymentGuide: lastSent.paymentGuide ?? null,
+      paymentConfirmed: lastSent.paymentConfirmed ?? null,
+      reminderT1: lastSent.reminderT1 ?? null,
+      reminderD3: lastSent.reminderD3 ?? null,
+      reminderD1: lastSent.reminderD1 ?? null,
+      referralInvite: lastSent.referralInvite ?? null,
+      cohortKickoff: lastSent.cohortKickoff ?? null,
+    },
+    milestones: {
+      guideSentAt: msBucket.guide_sent ?? null,
+      feedbackDoneAt: msBucket.feedback_done ?? null,
+    },
+  };
+}
+
 /** 단일 applicant 의 현금영수증 발급 이력 fetch. */
 export async function fetchCashReceipts(applicantId: string): Promise<{
   rows: CashReceiptRow[];
