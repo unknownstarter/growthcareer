@@ -16,18 +16,32 @@ import {
   type MarkAttendanceResult,
 } from "@/src/programs/fan-to-pro/application/use-cases/attendance/mark-attendance";
 import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
-import { assertAdmin } from "@/src/programs/fan-to-pro/infrastructure/auth/admin-role";
+import { assertProgramAdmin } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
 
 const OPERATOR_ID = process.env.ADMIN_OPERATOR_ID ?? "noah";
 
-const ADMIN_COHORTS_PATH = "/admin/cohorts";
+/**
+ * 본 server actions 의 호출처는 모두 LMS surface (`/[locale]/fan-to-pro/admin/*`).
+ * Basic Auth `/admin/cohorts` 호출처 0건 (2026-06-27 grep 확인).
+ * 가드 = assertProgramAdmin("fan-to-pro") — Supabase Auth.
+ * revalidate = LMS cohorts path (ko + en).
+ */
+const LMS_COHORTS_PATHS = [
+  "/ko/fan-to-pro/admin/cohorts",
+  "/en/fan-to-pro/admin/cohorts",
+];
+
+function revalidateLmsCohorts() {
+  for (const p of LMS_COHORTS_PATHS) revalidatePath(p);
+}
 
 export async function promoteApplicantAction(input: {
   applicant_id: string;
   cohort_id: string;
 }): Promise<PromoteResult> {
+  await assertProgramAdmin("fan-to-pro");
   const result = await promoteApplicantToStudent(input);
-  if (result.status === "ok") revalidatePath(ADMIN_COHORTS_PATH);
+  if (result.status === "ok") revalidateLmsCohorts();
   return result;
 }
 
@@ -35,18 +49,19 @@ export async function markAttendanceAction(input: {
   session_id: string;
   entries: { student_id: string; status: "present" | "late" | "absent" | "excused"; late_minutes?: number | null; notes?: string | null }[];
 }): Promise<MarkAttendanceResult> {
+  await assertProgramAdmin("fan-to-pro");
   const result = await markAttendance({
     session_id: input.session_id,
     marked_by: OPERATOR_ID,
     entries: input.entries,
   });
-  if (result.status === "ok") revalidatePath(ADMIN_COHORTS_PATH);
+  if (result.status === "ok") revalidateLmsCohorts();
   return result;
 }
 
 /**
- * 1기 paid 신청자 전원 promote — 운영자 1-click backfill.
- * 신청자 페이지에서 paid → cohort 의 student 로 자동 이전.
+ * paid 신청자 전원 promote — 운영자 1-click backfill.
+ * 신청자 페이지에서 paid → cohort 의 student 로 자동 이전. 멱등.
  */
 export async function backfillPaidApplicantsAction(input: {
   cohort_id: string;
@@ -54,7 +69,7 @@ export async function backfillPaidApplicantsAction(input: {
   | { status: "ok"; inserted: number; skipped: number }
   | { status: "error"; error: string }
 > {
-  await assertAdmin();
+  await assertProgramAdmin("fan-to-pro");
   const supabase = getSupabaseServer();
   if (!supabase) return { status: "error", error: "supabaseUnavailable" };
 
@@ -80,7 +95,7 @@ export async function backfillPaidApplicantsAction(input: {
       input.cohort_id,
       applicants,
     );
-    revalidatePath(ADMIN_COHORTS_PATH);
+    revalidateLmsCohorts();
     return { status: "ok", ...result };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
