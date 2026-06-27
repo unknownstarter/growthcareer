@@ -35,6 +35,58 @@ function revalidateLmsCohorts() {
   for (const p of LMS_COHORTS_PATHS) revalidatePath(p);
 }
 
+/**
+ * 신청서 원본 이름 정정 — admin only.
+ * applicants.name + students.display_name 둘 다 update (data integrity).
+ *
+ * 권한: super_admin OR program admin. 학생 본인 + 강사 X.
+ * 사용처: 학생 detail 페이지의 [원본 이름 정정] dialog.
+ */
+export async function updateStudentRealNameAction(input: {
+  student_id: string;
+  new_name: string;
+}): Promise<{ status: "ok" } | { status: "error"; error: string }> {
+  await assertProgramAdmin("fan-to-pro");
+  const supabase = getSupabaseServer();
+  if (!supabase) return { status: "error", error: "supabaseUnavailable" };
+
+  const newName = input.new_name.trim();
+  if (newName.length < 2) return { status: "error", error: "invalidInput" };
+
+  // 1. student → applicant_id 조회
+  const { data: student, error: sErr } = await supabase
+    .from("students")
+    .select("id, applicant_id")
+    .eq("id", input.student_id)
+    .single();
+  if (sErr || !student) return { status: "error", error: "studentNotFound" };
+
+  // 2. applicants.name update (원본)
+  const { error: aErr } = await supabase
+    .from("applicants")
+    .update({ name: newName, updated_at: new Date().toISOString() })
+    .eq("id", student.applicant_id);
+  if (aErr) {
+    console.error("[updateStudentRealName] applicants update fail", aErr);
+    return { status: "error", error: "internal" };
+  }
+
+  // 3. students.display_name update (동기화)
+  const { error: dErr } = await supabase
+    .from("students")
+    .update({ display_name: newName, updated_at: new Date().toISOString() })
+    .eq("id", input.student_id);
+  if (dErr) {
+    console.error("[updateStudentRealName] students update fail", dErr);
+    return { status: "error", error: "internal" };
+  }
+
+  revalidateLmsCohorts();
+  revalidatePath(`/ko/fan-to-pro/admin/students/${input.student_id}`);
+  revalidatePath(`/en/fan-to-pro/admin/students/${input.student_id}`);
+  return { status: "ok" };
+}
+
 export async function promoteApplicantAction(input: {
   applicant_id: string;
   cohort_id: string;

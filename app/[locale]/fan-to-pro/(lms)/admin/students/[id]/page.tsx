@@ -7,6 +7,7 @@ import {
   Briefcase,
 } from "lucide-react";
 import { BackButton } from "@/src/programs/fan-to-pro/interface/components/lms/admin/back-button";
+import { StudentRealNameEdit } from "@/src/programs/fan-to-pro/interface/components/lms/admin/student-real-name-edit";
 import { assertProgramAdmin } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
 import { fetchStudentById } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/student-repository";
 import { fetchStudentProfile } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/student-profile-repository";
@@ -75,6 +76,10 @@ export default async function AdminStudentDetailPage({
         description={`학생 상태 ${student.status}. 한국 이름, 진로, 이력서, 운영 코멘트를 관리합니다.`}
         action={
           <div className="flex items-center gap-2">
+            <StudentRealNameEdit
+              studentId={id}
+              currentName={student.display_name}
+            />
             <Button asChild variant="outline" className="h-12">
               <Link
                 href={
