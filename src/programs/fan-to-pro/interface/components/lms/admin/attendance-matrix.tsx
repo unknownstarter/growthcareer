@@ -47,6 +47,11 @@ import {
 import { Input } from "@/src/programs/fan-to-pro/interface/components/lms/ui/input";
 import { Textarea } from "@/src/programs/fan-to-pro/interface/components/lms/ui/textarea";
 import { Label } from "@/src/programs/fan-to-pro/interface/components/lms/ui/label";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/src/programs/fan-to-pro/interface/components/lms/ui/popover";
 import { cn } from "@/src/programs/fan-to-pro/interface/components/lms/lib/utils";
 import {
   markAttendanceLmsAction,
@@ -217,15 +222,60 @@ export function AttendanceMatrix({ sessions, students }: Props) {
       return next;
     });
 
-  // cell click = OptionsDialog 열기 (status 선택 + late_minutes + notes + clear)
-  // 노아 요청 2026-06-27: cycle 보다 dropdown 이 직관적.
-  function onCellClick(student: CohortRosterStudentRow, session: Session) {
+  // cell popover open state — 1개만 동시 열림.
+  const [openCellKey, setOpenCellKey] = React.useState<string | null>(null);
+
+  // popover 안의 빠른 상태 선택 (출/지/결/공/미체크).
+  async function onPopoverPick(
+    student: CohortRosterStudentRow,
+    session: Session,
+    pick: AttendanceStatus | "clear",
+  ) {
     const k = cellKey(student.student.id, session.id);
-    setOptionsDialog({
-      student,
-      session,
-      currentStatus: matrix[k] ?? "unmarked",
-    });
+    setOpenCellKey(null);
+    const current = matrix[k] ?? "unmarked";
+    const nextStatus: CellStatus = pick === "clear" ? "unmarked" : pick;
+
+    setMatrix((prev) => ({ ...prev, [k]: nextStatus }));
+    startKey(k);
+    setFeedback(null);
+
+    try {
+      if (pick === "clear") {
+        const r = await markAttendanceClearLmsAction({
+          session_id: session.id,
+          student_id: student.student.id,
+        });
+        if (r.status === "error") {
+          setMatrix((prev) => ({ ...prev, [k]: current }));
+          setFeedback({ kind: "error", message: `취소 실패: ${errorMessage(r.error)}` });
+        } else {
+          setFeedback({
+            kind: "ok",
+            message: `${student.student.display_name} ${session.idx ?? "?"}회차 미체크`,
+          });
+        }
+      } else {
+        const r = await markAttendanceLmsAction({
+          session_id: session.id,
+          student_id: student.student.id,
+          status: pick,
+        });
+        if (r.status === "error") {
+          setMatrix((prev) => ({ ...prev, [k]: current }));
+          setFeedback({ kind: "error", message: `저장 실패: ${errorMessage(r.error)}` });
+        } else {
+          const normalized = (r.normalizedStatus ?? pick) as CellStatus;
+          setMatrix((prev) => ({ ...prev, [k]: normalized }));
+          setFeedback({
+            kind: "ok",
+            message: `${student.student.display_name} ${session.idx ?? "?"}회차 ${STATUS_META[normalized].label} 저장`,
+          });
+        }
+      }
+    } finally {
+      endKey(k);
+    }
   }
 
   // (legacy) cycle 동작은 OptionsDialog 안의 빠른 status 버튼으로 흡수됨.
@@ -577,26 +627,84 @@ export function AttendanceMatrix({ sessions, students }: Props) {
                             key={session.id}
                             className="border-r border-[var(--border)] p-1 last:border-r-0"
                           >
-                            <button
-                              type="button"
-                              onClick={() => onCellClick(row, session)}
-                              onContextMenu={(e) =>
-                                onCellContextMenu(e, row, session)
-                              }
-                              disabled={pending}
-                              aria-label={`${row.student.display_name} ${session.idx ?? "?"}회차 ${meta.label}. 탭하면 상태 선택.`}
-                              title={`${meta.label} / 탭 = 상태 선택`}
-                              className={cn(
-                                "relative flex h-12 w-full items-center justify-center rounded-md text-sm font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:ring-offset-1",
-                                meta.cellClass,
-                              )}
+                            <Popover
+                              open={openCellKey === k}
+                              onOpenChange={(o) => setOpenCellKey(o ? k : null)}
                             >
-                              {pending ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                              ) : (
-                                <Icon className="h-5 w-5" />
-                              )}
-                            </button>
+                              <PopoverTrigger asChild>
+                                <button
+                                  type="button"
+                                  onContextMenu={(e) =>
+                                    onCellContextMenu(e, row, session)
+                                  }
+                                  disabled={pending}
+                                  aria-label={`${row.student.display_name} ${session.idx ?? "?"}회차 ${meta.label}. 탭하면 상태 선택.`}
+                                  title={`${meta.label} / 탭 = 상태 선택`}
+                                  className={cn(
+                                    "relative flex h-12 w-full items-center justify-center gap-1 rounded-md text-xs font-bold whitespace-nowrap transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:ring-offset-1",
+                                    meta.cellClass,
+                                  )}
+                                >
+                                  {pending ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                  ) : (
+                                    <>
+                                      <Icon className="h-3.5 w-3.5" />
+                                      <span>{meta.label}</span>
+                                    </>
+                                  )}
+                                </button>
+                              </PopoverTrigger>
+                              <PopoverContent align="center" sideOffset={4} className="w-56 p-2">
+                                <div className="grid grid-cols-1 gap-1">
+                                  {(["present", "late", "absent", "excused", "unmarked"] as CellStatus[]).map((s) => {
+                                    const m = STATUS_META[s];
+                                    const I = m.icon;
+                                    const isCurrent = s === status;
+                                    return (
+                                      <button
+                                        key={s}
+                                        type="button"
+                                        onClick={async () => {
+                                          // close popover via radix Escape pattern — re-render handles it
+                                          if (s === "unmarked") {
+                                            await onPopoverPick(row, session, "clear");
+                                          } else {
+                                            await onPopoverPick(row, session, s);
+                                          }
+                                        }}
+                                        className={cn(
+                                          "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold transition-colors text-left",
+                                          m.legendClass,
+                                          isCurrent && "ring-2 ring-[var(--ring)] ring-offset-1",
+                                        )}
+                                      >
+                                        <I className="h-4 w-4" />
+                                        <span>{m.label}</span>
+                                        {isCurrent ? (
+                                          <span className="ml-auto text-[10px] text-[var(--muted-foreground)]">현재</span>
+                                        ) : null}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                                <div className="mt-2 border-t border-[var(--border)] pt-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setOptionsDialog({
+                                        student: row,
+                                        session,
+                                        currentStatus: status,
+                                      });
+                                    }}
+                                    className="w-full rounded-md px-3 py-1.5 text-xs text-[var(--muted-foreground)] hover:bg-[var(--muted)] text-left"
+                                  >
+                                    옵션 더 보기 (지각 분 / 메모)
+                                  </button>
+                                </div>
+                              </PopoverContent>
+                            </Popover>
                           </td>
                         );
                       })}
