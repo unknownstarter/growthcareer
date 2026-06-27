@@ -67,7 +67,11 @@ export default async function AdminStudentDetailPage({
         />
       </div>
       <PageHeader
-        title={student.display_name}
+        title={
+          profile?.name_ko
+            ? `${student.display_name} (${profile.name_ko})`
+            : student.display_name
+        }
         description={`학생 상태 ${student.status}. profile, 진로, 이력서, 운영 코멘트를 관리합니다.`}
         action={
           <div className="flex items-center gap-2">

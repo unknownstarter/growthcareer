@@ -67,7 +67,8 @@ export function StudentProfileForm({
     setFeedback(null);
     setError(null);
     const nameKo = String(formData.get("name_ko") ?? "").trim();
-    const nameEn = String(formData.get("name_en") ?? "").trim();
+    // 영문 이름은 신청서 원본 사용 — 폼에서 입력 받지 않음. existing 값만 유지.
+    const nameEn = initialProfile?.name_en ?? null;
     const phone = String(formData.get("phone") ?? "").trim();
     const birthYearRaw = String(formData.get("birth_year") ?? "").trim();
     const birthDateRaw = String(formData.get("birth_date") ?? "").trim();
@@ -89,7 +90,7 @@ export function StudentProfileForm({
       const result = await upsertStudentProfileAction({
         student_id: studentId,
         name_ko: nameKo.length > 0 ? nameKo : null,
-        name_en: nameEn.length > 0 ? nameEn : null,
+        name_en: nameEn,
         phone: phone.length > 0 ? phone : null,
         birth_year: birthYear,
         birth_date: birthDate,
@@ -137,31 +138,22 @@ export function StudentProfileForm({
           </div>
         ) : null}
         <form action={onSubmit} className="space-y-5">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="name_ko" className="text-xs">
-                {isEn ? "Korean name" : "한글 이름"}
-              </Label>
-              <Input
-                id="name_ko"
-                name="name_ko"
-                maxLength={100}
-                defaultValue={initialProfile?.name_ko ?? ""}
-                placeholder={isEn ? "(optional)" : "예: 김민지"}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="name_en" className="text-xs">
-                {isEn ? "English name" : "영문 이름"}
-              </Label>
-              <Input
-                id="name_en"
-                name="name_en"
-                maxLength={100}
-                defaultValue={initialProfile?.name_en ?? ""}
-                placeholder="Minji Kim"
-              />
-            </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="name_ko" className="text-xs">
+              {isEn ? "Korean name / nickname" : "한국 이름 (닉네임 또는 본인이 쓰는 한국식 이름)"}
+            </Label>
+            <Input
+              id="name_ko"
+              name="name_ko"
+              maxLength={100}
+              defaultValue={initialProfile?.name_ko ?? ""}
+              placeholder={isEn ? "예: 마티나, 추엔" : "예: 마티나, 추엔, 본인이 쓰는 한국식 이름"}
+            />
+            <p className="text-[11px] text-[var(--muted-foreground)]">
+              {isEn
+                ? "English name uses the original signup name."
+                : "영문 이름은 신청서의 원본 이름을 그대로 사용해요."}
+            </p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
