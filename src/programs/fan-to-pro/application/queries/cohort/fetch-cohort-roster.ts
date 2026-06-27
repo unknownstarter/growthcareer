@@ -44,6 +44,8 @@ export type StudentApplicantInfo = {
 export type CohortRosterStudentRow = {
   student: Student;
   applicant: StudentApplicantInfo | null;
+  /** student_profile.name_ko — 강사님 한국어 인식용 (B0052). */
+  nameKo: string | null;
   attendanceRate: number;
   /** 출석 회차 수 / 전체 회차 (text "5/8" 등). */
   presentCount: number;
@@ -86,7 +88,11 @@ export async function fetchCohortRoster(
 
     // applicant join — students 가 0명이면 skip.
     const applicantIds = students.map((s) => s.applicant_id);
-    const applicantMap = await fetchApplicantInfoMap(applicantIds);
+    const studentIds = students.map((s) => s.id);
+    const [applicantMap, namekoMap] = await Promise.all([
+      fetchApplicantInfoMap(applicantIds),
+      fetchNameKoMap(studentIds),
+    ]);
 
     const totalSessions = sessions.length;
 
@@ -109,6 +115,7 @@ export async function fetchCohortRoster(
       return {
         student,
         applicant: applicantMap.get(student.applicant_id) ?? null,
+        nameKo: namekoMap.get(student.id) ?? null,
         attendanceRate,
         presentCount,
         totalSessions,
@@ -136,6 +143,30 @@ export async function fetchCohortRoster(
  * applicants 테이블이 비어있거나 join 실패해도 throw 하지 않고 빈 Map 반환 —
  * roster 자체는 student 만으로도 표시 가능해야 함.
  */
+/**
+ * student_profile.name_ko join — 강사님 한국어 인식용 (B0052).
+ * 비어있거나 join 실패 시 빈 Map.
+ */
+async function fetchNameKoMap(
+  studentIds: string[],
+): Promise<Map<string, string | null>> {
+  const map = new Map<string, string | null>();
+  if (studentIds.length === 0) return map;
+  const supabase = getSupabaseServer();
+  if (!supabase) return map;
+  const { data, error } = await supabase
+    .from("student_profile")
+    .select("student_id, name_ko")
+    .in("student_id", studentIds);
+  if (error || !data) return map;
+  for (const row of data as Array<Record<string, unknown>>) {
+    const sid = String(row.student_id ?? "");
+    if (!sid) continue;
+    map.set(sid, row.name_ko ? String(row.name_ko) : null);
+  }
+  return map;
+}
+
 async function fetchApplicantInfoMap(
   applicantIds: string[],
 ): Promise<Map<string, StudentApplicantInfo>> {

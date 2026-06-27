@@ -600,13 +600,18 @@ export function AttendanceMatrix({ sessions, students }: Props) {
                           href={
                             `/${locale}/fan-to-pro/admin/students/${row.student.id}` as Route
                           }
-                          className="flex flex-col hover:text-[var(--primary)]"
+                          className="flex flex-col text-[var(--primary)] underline-offset-4 hover:underline"
                         >
-                          <span className="text-sm underline-offset-4 hover:underline">
+                          <span className="text-sm">
                             {row.student.display_name}
                           </span>
+                          {row.nameKo ? (
+                            <span className="text-[11px] font-semibold text-[var(--foreground)] no-underline">
+                              {row.nameKo}
+                            </span>
+                          ) : null}
                           {row.applicant?.nationality ? (
-                            <span className="text-[10px] text-[var(--muted-foreground)]">
+                            <span className="text-[10px] font-normal text-[var(--muted-foreground)] no-underline">
                               {row.applicant.nationality}
                               {row.applicant.visa
                                 ? ` / ${row.applicant.visa}`

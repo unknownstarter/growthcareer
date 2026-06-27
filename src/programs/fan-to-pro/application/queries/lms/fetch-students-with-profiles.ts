@@ -9,6 +9,7 @@ export type StudentWithProfile = {
   student_id: string;
   applicant_id: string;
   display_name: string;
+  name_ko: string | null;
   status: string;
   email: string | null;
   phone: string | null;
@@ -60,6 +61,7 @@ export async function fetchStudentsWithProfiles(input: {
   // profile 조회 (student_id 인덱스).
   const ids = rows.map((r) => r.id);
   let profileMap = new Map<string, { last_login_at: string | null }>();
+  let namekoMap = new Map<string, string | null>();
   if (ids.length > 0) {
     const { data: profiles, error: pErr } = await supabase
       .from("user_profiles")
@@ -77,6 +79,21 @@ export async function fetchStudentsWithProfiles(input: {
         ];
       }),
     );
+
+    // student_profile.name_ko join (B0052 — 강사님 한국어 인식용)
+    const { data: sps } = await supabase
+      .from("student_profile")
+      .select("student_id, name_ko")
+      .in("student_id", ids);
+    namekoMap = new Map(
+      (sps ?? []).map((p) => {
+        const raw = p as Record<string, unknown>;
+        return [
+          String(raw.student_id ?? ""),
+          raw.name_ko ? String(raw.name_ko) : null,
+        ];
+      }),
+    );
   }
 
   return {
@@ -87,6 +104,7 @@ export async function fetchStudentsWithProfiles(input: {
         student_id: r.id,
         applicant_id: r.applicant_id,
         display_name: r.display_name,
+        name_ko: namekoMap.get(r.id) ?? null,
         status: r.status,
         email: r.applicants?.email ?? null,
         phone: r.applicants?.phone ?? null,

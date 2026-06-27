@@ -157,9 +157,14 @@ export function StudentsDashboard({ cohort_id, cohort_name, students }: Props) {
                           href={
                             `/${locale}/fan-to-pro/admin/students/${s.student_id}` as Route
                           }
-                          className="text-[var(--foreground)] hover:text-[var(--primary)] hover:underline"
+                          className="flex flex-col text-[var(--primary)] underline-offset-4 hover:underline"
                         >
-                          {s.display_name}
+                          <span>{s.display_name}</span>
+                          {s.name_ko ? (
+                            <span className="text-[11px] font-normal text-[var(--muted-foreground)] no-underline">
+                              {s.name_ko}
+                            </span>
+                          ) : null}
                         </Link>
                       </TableCell>
                       <TableCell className="text-[var(--muted-foreground)] text-xs">
