@@ -7,6 +7,8 @@ import { BackButton } from "@/src/programs/fan-to-pro/interface/components/lms/a
 import { fetchInstructorDetail } from "@/src/programs/fan-to-pro/application/queries/lms/fetch-instructor-detail";
 import { fetchAllCompanies } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/company-repository";
 import { InstructorDetailView } from "@/src/programs/fan-to-pro/interface/components/lms/admin/instructor-detail";
+import { PageGuideBot } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guide-bot";
+import { PAGE_GUIDES } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guides";
 import {
   PageContainer,
   PageHeader,
@@ -85,6 +87,7 @@ export default async function AdminInstructorDetailPage({
 
   return (
     <PageContainer>
+      <PageGuideBot {...PAGE_GUIDES["instructor-detail"]} />
       <div className="mb-2">
         <BackButton
           fallbackHref={`/${locale}/fan-to-pro/admin/instructors` as Route}

@@ -19,6 +19,8 @@ import {
   CardDescription,
 } from "@/src/programs/fan-to-pro/interface/components/lms/ui/card";
 import { DashboardKpiCard } from "@/src/programs/fan-to-pro/interface/components/lms/admin/dashboard-kpi-card";
+import { PageGuideBot } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guide-bot";
+import { PAGE_GUIDES } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guides";
 
 export const metadata: Metadata = {
   title: "운영자 대시보드 - Fan to Pro",
@@ -44,6 +46,7 @@ export default async function FanToProAdminDashboardPage({
 
   return (
     <div className="px-6 py-8 md:px-10 md:py-10 max-w-7xl mx-auto space-y-8">
+      <PageGuideBot {...PAGE_GUIDES.dashboard} />
       <header className="space-y-1">
         <h1 className="text-[1.75rem] font-bold tracking-tight text-[var(--foreground)]">
           안녕하세요, {user.displayName} 님

@@ -6,6 +6,8 @@ import { fetchApplicants } from "@/src/programs/fan-to-pro/infrastructure/supaba
 import { fetchStudentsByCohort } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/student-repository";
 import { fetchCohortOverview } from "@/src/programs/fan-to-pro/application/queries/cohort/fetch-cohort-overview";
 import { CohortDetail } from "@/src/programs/fan-to-pro/interface/components/lms/admin/cohort-detail";
+import { PageGuideBot } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guide-bot";
+import { PAGE_GUIDES } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guides";
 import {
   PageContainer,
   PageHeader,
@@ -50,6 +52,7 @@ export default async function FanToProAdminCohortDetailPage({
 
   return (
     <PageContainer>
+      <PageGuideBot {...PAGE_GUIDES["cohort-detail"]} />
       <CohortDetail
         cohort={cohort}
         applicants={applicantsResult.rows}

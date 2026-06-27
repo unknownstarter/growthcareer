@@ -3,6 +3,8 @@ import { assertProgramAdmin } from "@/src/programs/fan-to-pro/infrastructure/aut
 import { fetchActiveCohorts } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-repository";
 import { fetchCohortRoster } from "@/src/programs/fan-to-pro/application/queries/cohort/fetch-cohort-roster";
 import { AttendanceMatrix } from "@/src/programs/fan-to-pro/interface/components/lms/admin/attendance-matrix";
+import { PageGuideBot } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guide-bot";
+import { PAGE_GUIDES } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guides";
 import {
   PageContainer,
   PageHeader,
@@ -88,6 +90,7 @@ export default async function FanToProAdminAttendancePage() {
 
   return (
     <PageContainer>
+      <PageGuideBot {...PAGE_GUIDES.attendance} />
       <PageHeader
         title="출결"
         description={`${cohort.name} / 학생 ${students.length}명 / 회차 ${sessions.length}회`}

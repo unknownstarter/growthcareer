@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>Fan to Pro 1기 / 공연 현장 실무 가이드</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-soft: #f7f9fc;
+    --border: #e6eaf0;
+    --border-soft: #eef1f5;
+    --fg: #1a1d23;
+    --fg-muted: #4f5763;
+    --fg-subtle: #8b94a3;
+    --brand: #3182f6;
+    --brand-soft: #e9f2ff;
+    --accent: #ff5b6e;
+    --accent-soft: #ffe8eb;
+    --green: #067647;
+    --green-soft: #dcfae6;
+    --yellow: #b54708;
+    --yellow-soft: #fef0c7;
+    --red: #b42318;
+    --red-soft: #fee4e2;
+    --radius: 12px;
+    --radius-lg: 16px;
+    --shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 14px rgba(15, 23, 42, 0.04);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg-soft);
+    color: var(--fg);
+    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "ss03" on, "ss04" on, "cv01" on;
+  }
+  body { padding: 32px 16px; }
+  .page {
+    width: 794px;
+    max-width: 100%;
+    margin: 0 auto 24px;
+    background: var(--bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 48px 52px 56px;
+    color: var(--fg);
+  }
+  @page { size: A4; margin: 0; }
+  @media print {
+    body { padding: 0; background: #fff; }
+    .page {
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      padding: 18mm 18mm;
+      box-shadow: none;
+      border-radius: 0;
+      page-break-after: always;
+    }
+    .page:last-child { page-break-after: auto; }
+  }
+
+  /* Cover */
+  .cover-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 12px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: 999px;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.04em;
+  }
+  .cover-eyebrow .dot { width: 6px; height: 6px; border-radius: 999px; background: var(--accent); }
+  .cover-title {
+    margin: 24px 0 16px;
+    font-size: 44px; font-weight: 800;
+    letter-spacing: -0.025em; line-height: 1.15;
+  }
+  .cover-title .accent { color: var(--accent); }
+  .cover-sub {
+    margin: 0 0 36px;
+    font-size: 17px; color: var(--fg-muted);
+    line-height: 1.6; font-weight: 500;
+  }
+  .cover-intro {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    font-size: 14px; line-height: 1.75;
+    color: var(--fg-muted);
+    margin-bottom: 32px;
+  }
+  .cover-intro strong { color: var(--fg); font-weight: 700; }
+  .toc {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .toc-row {
+    display: grid;
+    grid-template-columns: 40px 1fr 60px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border-soft);
+    font-size: 14px;
+    align-items: center;
+  }
+  .toc-row:last-child { border-bottom: none; }
+  .toc-n { font-weight: 800; color: var(--accent); font-size: 13px; }
+  .toc-title { color: var(--fg); font-weight: 600; }
+  .toc-page { text-align: right; color: var(--fg-subtle); font-size: 12px; font-weight: 600; }
+
+  /* Section header */
+  .section-eyebrow {
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .section-title {
+    margin: 0 0 28px;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--fg);
+  }
+
+  /* Sub-topic */
+  .sub {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px dashed var(--border);
+  }
+  .sub:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+  .sub-no {
+    font-size: 11px; font-weight: 800;
+    color: var(--fg-subtle); letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+  .sub-title {
+    font-size: 18px; font-weight: 800;
+    color: var(--fg);
+    letter-spacing: -0.01em;
+    margin: 0 0 12px;
+  }
+  .sub-lead {
+    font-style: italic;
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+    margin: 0 0 14px;
+    padding: 10px 14px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+  }
+  .sub-body {
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: var(--fg-muted);
+    font-weight: 500;
+    margin: 0 0 14px;
+  }
+  .sub-body strong { color: var(--fg); font-weight: 700; }
+  .check-list {
+    background: var(--bg-soft);
+    border: 1px solid var(--border-soft);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin: 0 0 12px;
+  }
+  .check-list li {
+    list-style: none;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--fg);
+    padding-left: 22px;
+    position: relative;
+    font-weight: 500;
+  }
+  .check-list li::before {
+    content: "✓";
+    position: absolute;
+    left: 0; top: 0;
+    color: var(--green);
+    font-weight: 800;
+  }
+  .check-list ul { margin: 0; padding: 0; }
+  .tip {
+    font-size: 12.5px;
+    color: var(--fg);
+    background: var(--brand-soft);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 0;
+    line-height: 1.6;
+  }
+  .tip-label {
+    font-weight: 800;
+    color: var(--brand);
+    margin-right: 6px;
+  }
+
+  /* Tables (appendix) */
+  table.glossary, table.venue {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+    margin-top: 8px;
+  }
+  table.glossary th, table.glossary td,
+  table.venue th, table.venue td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-soft);
+    text-align: left;
+    vertical-align: top;
+  }
+  table.glossary th, table.venue th {
+    background: var(--bg-soft);
+    font-size: 11px;
+    color: var(--fg-subtle);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+  }
+  table.glossary td:nth-child(1) { font-weight: 700; color: var(--fg); }
+  table.glossary td:nth-child(2) { color: var(--brand); font-weight: 600; }
+
+  .footer-card {
+    margin-top: 28px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+  }
+  .footer-card h4 {
+    margin: 0 0 10px;
+    font-size: 13px; font-weight: 800;
+    color: var(--fg);
+  }
+  .footer-card ul { margin: 0; padding: 0 0 0 18px; }
+  .footer-card li {
+    font-size: 12.5px; line-height: 1.7;
+    color: var(--fg-muted);
+  }
+  .credits {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 11px;
+    color: var(--fg-subtle);
+  }
+  .credits .brand { color: var(--accent); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="page">
+  <span class="cover-eyebrow"><span class="dot"></span>Fan to Pro 1기 / 부록 가이드</span>
+  <h1 class="cover-title">공연 현장 <span class="accent">실무 가이드</span></h1>
+  <p class="cover-sub">K-pop 공연 현장에 처음 투입되는 여러분을 위한 실전 매뉴얼.<br/>사전 학습 + 현장 휴대용.</p>
+
+  <div class="cover-intro">
+    안녕하세요, Fan to Pro 1기 여러분. 이 가이드는 여러분이 처음 K-pop 공연 현장에 투입되었을 때 손에 들고 다닐 수 있도록 만든 실무 매뉴얼입니다. 사전에 한 번 정독하고, 현장에서는 해당 섹션만 빠르게 펼쳐 확인하세요. 모든 항목은 <strong>한국 공연장 안전 기준법</strong>과 <strong>K-pop 콘서트 실무 표준</strong>을 기반으로 작성되었습니다. 외국인 학생을 위해 핵심 용어는 한국어 옆에 영어를 함께 표기했습니다.<br/><br/>
+    <strong>모르는 것을 모른다고 말하는 것이 가장 안전합니다.</strong> 의심되면 무전으로 선임자에게 즉시 확인하세요.
+  </div>
+
+  <div class="toc">
+    <div class="toc-row"><span class="toc-n">01</span><span class="toc-title">공연장 안전 및 비상상황 대응</span><span class="toc-page">p.2</span></div>
+    <div class="toc-row"><span class="toc-n">02</span><span class="toc-title">아티스트 응대 및 백스테이지 운영</span><span class="toc-page">p.3</span></div>
+    <div class="toc-row"><span class="toc-n">03</span><span class="toc-title">관객 입퇴장 및 현장 운영</span><span class="toc-page">p.4</span></div>
+    <div class="toc-row"><span class="toc-n">04</span><span class="toc-title">리허설 및 공연 진행 프로세스</span><span class="toc-page">p.5</span></div>
+    <div class="toc-row"><span class="toc-n">05</span><span class="toc-title">파트별 체크리스트 및 현장 커뮤니케이션</span><span class="toc-page">p.6</span></div>
+    <div class="toc-row"><span class="toc-n">06</span><span class="toc-title">돌발 상황 대응 및 CS 매뉴얼</span><span class="toc-page">p.7</span></div>
+    <div class="toc-row"><span class="toc-n">부록</span><span class="toc-title">영어 용어 사전 / Venue 규모별 차이 / 사전 학습 체크</span><span class="toc-page">p.8</span></div>
+  </div>
+
+  <div class="credits">
+    Fan to Pro 1기 / 발행 2026-06-27 / <span class="brand">Growth Career</span> · Dropdown
+  </div>
+</div>
+
+<!-- 1. 공연장 안전 -->
+<div class="page">
+  <div class="section-eyebrow">01 / SAFETY</div>
+  <h2 class="section-title">공연장 안전 및 비상상황 대응</h2>
+
+  <div class="sub">
+    <div class="sub-no">1-1</div>
+    <h3 class="sub-title">공연장 내 안전 수칙 및 기본 안전 교육</h3>
+    <p class="sub-lead">안전은 "내가 위험하지 않다"가 아니라 "관객이 위험하지 않다"이다.</p>
+    <p class="sub-body">K-pop 공연장은 좁은 구역에 수천 명이 밀집하는 고밀도 공간입니다. 한국 공연법상 1천 명 이상이 모이는 공연은 관할 지자체에 재해대처계획을 신고해야 하며, 모든 스태프는 공연 시작 전 안전교육을 받을 의무가 있습니다. 여러분이 현장에 도착하면 먼저 <strong>(1) 비상구 4방위 위치, (2) 소화기 비치 지점, (3) 가장 가까운 AED (자동심장충격기), (4) 본인 무전 채널, (5) 안전총괄책임자 호출 코드</strong> 다섯 가지를 머릿속에 박아두세요. 안전 교육은 형식이 아니라 본인 생존 매뉴얼입니다. 받지 않았다면 받지 않았다고 말하세요.</p>
+    <div class="check-list"><ul>
+      <li>도착 즉시 비상구 4방위 확인 (East/West/North/South)</li>
+      <li>가장 가까운 소화기, AED, 구급함 위치 머리에 박기</li>
+      <li>안전총괄책임자 (Safety Director) 이름과 무전 호출명 외우기</li>
+      <li>본인 담당 구역 동선 막힘 여부 직접 걷기로 확인</li>
+      <li>안전조끼, 인이어, 무전기 배터리 풀충전 확인</li>
+    </ul></div>
+    <p class="tip"><span class="tip-label">현장 팁</span>첫 출근일에 venue 평면도 (floor plan) 사진 한 장 찍어두면 비상시 1초가 빨라집니다.</p>
+  </div>
+
+  <div class="sub">
+    <div class="sub-no">1-2</div>
+    <h3 class="sub-title">관객 사고 및 응급 환자 발생 시 대응 절차</h3>
+    <p class="sub-lead">현장 1순위는 "구급차 부르기"가 아니라 "주변 안전 확보"이다.</p>
+    <p class="sub-body">K-pop 공연 중 가장 빈번한 응급 상황은 <strong>(1) 실신 (장시간 기립, 흥분, 저혈당), (2) 압사 위험 (스탠딩 구역 쏠림), (3) 부상 (난간 충돌, 응원봉 휘두름)</strong>입니다. 환자를 발견하면 큰 소리로 "환자 발생, [구역명]" 외쳐 동료를 호출하고, 즉시 무전으로 메디컬 팀을 콜합니다. 환자 주변에 1.5미터 공간을 확보하고 다른 관객 쏠림을 차단하세요. 의식 없으면 119를 직접 호출하지 말고 안전총괄책임자에게 보고합니다. venue 자체 의료팀이 1차 처치 후 119 콜 여부를 결정합니다. 임의 응급처치는 자격증 보유자만.</p>
+    <div class="check-list"><ul>
+      <li>"환자 발생, [구역명]" 큰 소리 + 무전 동시 콜</li>
+      <li>환자 주변 1.5미터 안전 공간 확보</li>
+      <li>다른 관객의 휴대폰 촬영 차단 (개인정보 + 환자 보호)</li>
+      <li>메디컬팀 도착까지 환자 자세 변경 금지 (목/척추 손상 가능)</li>
+      <li>처치 완료 후 사고 보고서 (Incident Report) 작성, 본인 목격 사실 그대로</li>
+    </ul></div>
+    <p class="tip"><span class="tip-label">현장 팁</span>외국인 관객 응급 시 영어로 "Are you okay? Medical is coming." 한 문장만 침착하게 반복.</p>
+  </div>
+
+  <div class="sub">
+    <div class="sub-no">1-3</div>
+    <h3 class="sub-title">화재, 정전 등 비상상황 발생 시 대피 및 보고 체계</h3>
+    <p class="sub-lead">비상 안내 방송 (PA)이 나오기 전에 관객이 먼저 알아채면 이미 늦었다.</p>
+    <p class="sub-body">화재 감지 시 첫 행동은 <strong>"불이야" 큰 소리 외침 + 무전 보고 + 가장 가까운 소화기 확인 동시 실행</strong>입니다. 한국 공연법상 공연장 운영자는 피난안내도와 대피 절차를 공연 시작 전 관객에게 주지시킬 의무가 있으며, 화재 시 스태프는 관객을 비상구로 질서 있게 유도해야 합니다. 정전 시에는 절대 무전을 끊지 않고, 비상조명 (emergency light) 작동 여부 확인 후 본인 구역 관객에게 "자리에서 일어나지 마세요, 곧 복구됩니다" 안내합니다. 패닉 확산 방지가 최우선. 본인이 모르는 정보는 절대 추측해서 말하지 않습니다.</p>
+    <div class="check-list"><ul>
+      <li>화재 감지: "불이야" 외침 + 무전 + 소화기 위치 확인 (3초 안)</li>
+      <li>관객 유도: "낮은 자세, 손수건으로 코/입 가리고, 비상구 방향" 반복</li>
+      <li>정전: 비상조명 확인 후 "곧 복구됩니다" 안내, 절대 추측 발언 금지</li>
+      <li>노약자/휠체어 관객 우선 대피 지원 (지정 인력에게 인계)</li>
+      <li>본인 구역 완전 대피 확인 후 마지막에 이동, 집결지 보고</li>
+    </ul></div>
+    <p class="tip"><span class="tip-label">현장 팁</span>"Fire" "Evacuate" "This way" 영어 3단어는 무조건 외워두세요. 외국인 관객 50% 이상입니다.</p>
+  </div>
+</div>
+
+<!-- 2. 아티스트 응대 -->
+<div class="page">
+  <div class="section-eyebrow">02 / ARTIST</div>
+  <h2 class="section-title">아티스트 응대 및 백스테이지 운영</h2>
+
+  <div class="sub">
+    <div class="sub-no">2-1</div>
+    <h3 class="sub-title">아티스트 대기실 운영 방법</h3>
+    <p class="sub-lead">대기실 (green room)은 아티스트의 마지막 보호 공간이다. 침묵과 청결이 기본.</p>
+    <p class="sub-body">대기실 운영의 핵심은 <strong>(1) 출입자 명단 (Access List) 엄수, (2) 케이터링 (catering) 사전 세팅, (3) 의상/메이크업 동선 분리, (4) 소음 차단</strong> 4가지입니다. 아티스트 도착 1시간 전에 대기실 온도 (22~24도), 조명, 거울 상태, 음료/간식 (소속사 요청 기준), 옷걸이, 전신 거울, 콘센트, Wi-Fi를 모두 점검합니다. 출입은 사전 승인된 access pass 소지자만, 매니저 동의 없는 외부인 (스폰서/미디어/팬) 절대 차단. 사진 촬영은 소속사 사전 동의 없으면 무조건 금지입니다.</p>
+    <div class="check-list"><ul>
+      <li>아티스트 도착 1시간 전 대기실 5종 점검 (온도, 조명, 케이터링, 콘센트, Wi-Fi)</li>
+      <li>Access List 출력본 + 디지털본 동시 보유, 출입 시 ID 대조</li>
+      <li>외부인 접근 시도 시 매니저 직접 호출 (스태프 단독 판단 금지)</li>
+      <li>대기실 앞 휴대폰 촬영 차단, "사진 금지" 안내판 사전 부착</li>
+      <li>공연 종료 후 대기실 분실물 전수 확인 후 사진 보고</li>
+    </ul></div>
+    <p class="tip"><span class="tip-label">현장 팁</span>아티스트와 눈 마주쳐도 먼저 말 걸지 마세요. 인사는 가벼운 목례까지만이 프로의 거리감입니다.</p>
+  </div>
+
+  <div class="sub">
+    <div class="sub-no">2-2</div>
+    <h3 class="sub-title">출입 통제 및 동선 관리</h3>
+    <p class="sub-lead">"이 사람이 여기 있어도 되는가?"가 헷갈리면 무조건 통과 금지.</p>
+    <p class="sub-body">백스테이지 출입증은 색상/바코드/등급으로 구분됩니다. 일반적으로 <strong>(1) All Access (제작진 최상위), (2) Backstage (백스테이지 출입), (3) Stage (무대 출입), (4) Guest (특정 구역만), (5) Crew (스태프)</strong> 5등급입니다. 본인 담당 게이트의 허용 등급을 명확히 인지하고, 사진과 실제 얼굴이 일치하는지 항상 확인합니다. 아티스트 동선은 사전에 walkthrough (사전 답사)로 외워두며, 동선이 겹치는 시점 (입장 직전, 무대 직후)에는 외부인 진입을 완전 차단합니다. 의심되면 무전으로 상급자 확인 후 통과시키세요.</p>
+    <div class="check-list"><ul>
+      <li>본인 게이트의 허용 패스 등급 5종 색상 외우기</li>
+      <li>모든 출입자 ID 사진 + 실물 대조 (특히 첫날)</li>
+      <li>아티스트 동선 시간대에는 외부인 100% 차단</li>
+      <li>의심되면 무전 "확인 요청" 후 대기, 본인 판단으로 통과 금지</li>
+      <li>출입 기록 (시간, 이름, 패스 번호) 종이 로그에 수기 기록</li>
+    </ul></div>
+    <p class="tip"><span class="tip-label">현장 팁</span>아티스트 가족/지인이라며 패스 없이 들어오려는 시도가 가장 흔합니다. "죄송합니다, 패스 없으면 매니저님 호출 후 안내드립니다" 한 문장으로 정중하게 차단.</p>
+  </div>
+
+  <div class="sub">
+    <div class="sub-no">2-3</div>
+    <h3 class="sub-title">백스테이지 에티켓 및 현장 보안 관리</h3>
+    <p class="sub-lead">백스테이지는 일터다. 팬심은 집에 두고 온다.</p>
+    <p class="sub-body">여러분은 팬에서 프로로 전환하는 트랙에 있습니다. 백스테이지에서 아티스트를 마주쳐도 <strong>(1) 사진 요청 금지, (2) 사인 요청 금지, (3) 개인 SNS 업로드 금지, (4) 대화 먼저 시작 금지</strong>가 절대 룰입니다. 휴대폰 카메라는 백스테이지 진입 시 스티커로 가리거나, 잠금 화면을 켜두는 것이 표준입니다. 보안 관점에서 <strong>(1) 무대 셋리스트, (2) 큐시트, (3) 아티스트 동선표</strong>는 절대 외부 유출 금지 문서이며, 분실 시 즉시 보고해야 합니다. 모든 백스테이지 콘텐츠는 NDA (비밀유지 계약)의 대상이라고 생각하세요.</p>
+    <div class="check-list"><ul>
+      <li>백스테이지 진입 시 휴대폰 카메라 가림 처리</li>
+      <li>아티스트와 시선 마주쳐도 먼저 말 걸지 않기, 인사는 목례까지</li>
+      <li>셋리스트/큐시트/동선표는 본인 보관 또는 즉시 폐기, 분실 시 즉시 보고</li>
+      <li>SNS 업로드는 공연 종료 + 소속사 공식 발표 후에만, 공개 콘텐츠만</li>
+      <li>동료 스태프와 대화도 백스테이지에서는 최소화 (소음 + 정보 유출)</li>
+    </ul></div>
+    <p class="tip"><span class="tip-label">현장 팁</span>"오늘 본 것은 오늘 잊는다"가 K-pop 백스테이지의 1번 룰입니다. 이걸 지켜야 다음 현장에 다시 부릅니다.</p>
+  </div>
+</div>
+
+<!-- 3. 관객 운영 -->
+<div class="page">
+  <div class="section-eyebrow">03 / AUDIENCE</div>
+  <h2 class="section-title">관객 입퇴장 및 현장 운영</h2>
+
+  <div class="sub">
+    <div class="sub-no">3-1</div>
+    <h3 class="sub-title">티켓 확인 및 입장 프로세스</h3>
+    <p class="sub-lead">입장 게이트는 공연의 첫인상이다. 관객의 하루를 망치지 않도록.</p>
+    <p class="sub-body">입장 게이트 운영은 <strong>(1) 티켓 진위 확인, (2) 신분증 대조 (본인 확인 공연), (3) 반입 금지물 검사, (4) 좌석 안내</strong> 4단계로 구성됩니다. K-pop 공연의 반입 금지물은 일반적으로 카메라 (DSLR/미러리스), 셀카봉, 음식/음료 (생수 제외), 큰 가방, 응원봉 외 응원도구 등입니다. 외국인 관객은 여권 확인이 필수이며, "Passport please" "Ticket please" 두 문장으로 충분합니다. 줄이 길어지면 본인 판단으로 검사를 생략하지 말고, 추가 인력 요청을 무전으로 콜하세요. 속도보다 정확성이 우선입니다.</p>
+    <div class="check-list"><ul>
+      <li>티켓 QR/바코드 스캐너 작동 확인 (입장 30분 전)</li>
+      <li>본인 확인 공연이면 신분증 사진 + 티켓 이름 + 실물 얼굴 3대 대조</li>
+      <li>반입 금지물 리스트 게이트에 부착 (한/영 동시)</li>
+      <li>외국인 응대 핵심 영어 5문장 (Passport, Ticket, Section, This way, Enjoy)</li>
+      <li>줄 정체 시 본인 판단 생략 금지, 무전으로 인력 요청</li>
+    </ul></div>
+    <p class="tip"><span class="tip-label">현장 팁</span>티켓 확인 시 관객 얼굴 보고 미소 한 번. 30초의 친절이 컴플레인 1건을 막습니다.</p>
+  </div>
+
+  <div class="sub">
+    <div class="sub-no">3-2</div>
+    <h3 class="sub-title">좌석 안내 및 관객 동선 관리</h3>
+    <p class="sub-lead">안내는 손가락이 아니라 손바닥으로. 팔 전체로 방향을 가리킨다.</p>
+    <p class="sub-body">좌석 안내는 <strong>(1) 구역 (Section) → (2) 열 (Row) → (3) 번호 (Number)</strong> 순으로 정확히 호명합니다. 관객이 헤매면 본인이 직접 좌석까지 동행 안내하는 것이 표준입니다. 통로 (aisle) 적치 금지가 핵심 규칙이며, 짐/우산/외투는 좌석 아래 또는 클락룸 (cloak room) 이용을 안내합니다. 공연 시작 후 늦은 입장은 다음 곡 종료 시점까지 대기 시켜야 하며 (다른 관객 시야 방해 방지), 본인이 임의로 입장시키지 않습니다. 휠체어/시각장애 관객은 사전 등록된 좌석으로 전담 인력이 동행합니다.</p>
+    <div class="check-list"><ul>
+      <li>Section → Row → Number 순서로 호명</li>
+      <li>손가락 X, 손바닥 전체로 방향 안내</li>
+      <li>통로 적치물 (가방/우산/외투) 즉시 제거 요청</li>
+      <li>공연 시작 후 지각 입장은 곡간 (between songs)에만 안내</li>
+      <li>휠체어/노약자 좌석은 전담 인력 사전 배정, 본인 즉흥 대응 금지</li>
+    </ul></div>
+    <p class="tip"><span class="tip-label">현장 팁</span>외국인 관객 좌석 안내 시 "Follow me, please" 한 마디 + 직접 안내가 가장 빠르고 정확합니다.</p>
+  </div>
+
+  <div class="sub">
+    <div class="sub-no">3-3</div>
+    <h3 class="sub-title">민원 응대 및 특전회 운영 방법</h3>
+    <p class="sub-lead">컴플레인 1순위 응대는 "해결"이 아니라 "경청"이다.</p>
+    <p class="sub-body">민원 발생 시 첫 30초는 무조건 들어주세요. 관객의 말을 끊지 말고, "네, 말씀하신 부분 확인하겠습니다"로 받습니다. 본인이 해결할 수 없으면 즉시 "팀장님 호출해드리겠습니다" 후 무전 콜. <strong>임의 약속 (환불, 좌석 변경, 굿즈 보상)은 절대 금지</strong>입니다. 특전회 (Hi-Touch, Photo, Fan Sign)는 사전 추첨된 명단 기준으로 1열 정렬, 1인당 2~3초 진행, <strong>신체 접촉 (악수/포옹) 절대 금지</strong>가 글로벌 K-pop 표준입니다. 위반 시 다음 특전 참가 자격 박탈 가능성을 명확히 안내합니다. 보안 인력이 항상 1~2미터 뒤에서 모니터링합니다.</p>
+    <div class="check-list"><ul>
+      <li>민원 첫 30초 경청 후 "확인하겠습니다" 응답</li>
+      <li>임의 보상 약속 절대 금지, 팀장 즉시 호출</li>
+      <li>특전회 동선 사전 walkthrough (관객 입장 → 진행 → 퇴장)</li>
+      <li>신체 접촉 시도 발견 시 즉시 보안에 콜, 본인 물리적 제지 금지</li>
+      <li>영상/사진 촬영 금지 (특전회 룰) 위반 시 정중하게 1회 경고 후 보안 콜</li>
+    </ul></div>
+    <p class="tip"><span class="tip-label">현장 팁</span>컴플레인 응대 후에는 본인 멘탈 케어도 챙기세요. 동료에게 "잠깐 5분만" 요청하고 물 한 잔 마시고 돌아오세요.</p>
+  </div>
+</div>
+
+<!-- 4. 리허설 -->
+<div class="page">
+  <div class="section-eyebrow">04 / REHEARSAL</div>
+  <h2 class="section-title">리허설 및 공연 진행 프로세스</h2>
+
+  <div class="sub">
+    <div class="sub-no">4-1</div>
+    <h3 class="sub-title">콜타임 및 현장 운영 흐름 이해</h3>
+    <p class="sub-lead">콜타임 (call time)은 "도착 시간"이 아니라 "준비 완료 시간"이다.</p>
+    <p class="sub-body">콜타임은 본인이 본인 위치에서 업무 준비 완료된 상태여야 하는 시각입니다. 즉, 콜타임 09:00이면 09:00 도착이 아니라 08:30~08:45 도착 + 09:00에 무전 켜고 안전조끼 착용 완료 + 본인 구역 대기 상태입니다. 일반적인 K-pop 공연 콜타임 흐름은 <strong>(1) Crew Call (스태프 집결, T-10시간), (2) Load-in (장비 반입, T-8시간), (3) Soundcheck (사운드 점검, T-5시간), (4) Rehearsal (리허설, T-3시간), (5) Doors Open (관객 입장, T-1시간), (6) Showtime (공연 시작, T-0), (7) Load-out (장비 반출, T+2시간)</strong> 순서입니다. 본인 콜타임이 어떤 단계인지 정확히 파악하세요.</p>
+    <div class="check-list"><ul>
+      <li>콜타임 = 준비 완료 시각, 도착은 15~30분 전</li>
+      <li>콜타임 흐름 7단계 (Crew Call → Load-out) 머리에 박기</li>
+      <li>본인 단계가 무엇인지 매니저에게 첫날 확인</li>
+      <li>지각 예상 시 즉시 무전 보고, 도착 후 사과보다 사전 보고가 프로</li>
+      <li>본인 단계 종료 후에도 무전은 계속 켜두기 (다음 큐 대기)</li>
+    </ul></div>
+    <p class="tip"><span class="tip-label">현장 팁</span>콜타임 15분 전 도착 = 정시, 정시 도착 = 지각이 K-pop 공연계 암묵 룰입니다.</p>
+  </div>
+
+  <div class="sub">
+    <div class="sub-no">4-2</div>
+    <h3 class="sub-title">리허설 진행 순서 및 체크 포인트</h3>
+    <p class="sub-lead">리허설은 공연의 축소판이 아니라 공연의 디버깅 (debugging)이다.</p>
+    <p class="sub-body">리허설은 일반적으로 <strong>(1) 테크 리허설 (Tech Rehearsal, 장비/조명/음향 점검), (2) 사운드체크 (Soundcheck, 마이크/악기/모니터 점검), (3) 드레스 리허설 (Dress Rehearsal, 의상/동선 포함 풀런)</strong> 3단계입니다. 여러분은 본인 파트의 큐 (cue)가 언제 발생하는지, 어떤 무전 신호로 시작하고 끝나는지를 리허설에서 반드시 확인해야 합니다. "공연 중에 알게 되겠지"는 사고로 이어집니다. 리허설 중 발견한 문제 (조명 사각, 동선 충돌, 무전 음영 지역)는 즉시 메모하고 리허설 종료 직후 매니저에게 보고하세요.</p>
+    <div class="check-list"><ul>
+      <li>리허설 3단계 (Tech → Sound → Dress) 본인 참여 여부 확인</li>
+      <li>본인 큐 발생 시점 + 무전 신호 + 종료 시점 종이 메모</li>
+      <li>리허설 중 문제 즉시 메모 (조명 사각, 무전 음영, 동선 충돌)</li>
+      <li>리허설 종료 직후 매니저에게 발견 사항 보고</li>
+      <li>드레스 리허설은 본 공연과 동일하게 행동, "리허설이니까" 마음가짐 금지</li>
+    </ul></div>
+    <p class="tip"><span class="tip-label">현장 팁</span>본인 큐를 손목에 마스킹테이프로 적어두는 베테랑이 많습니다. 무전 음영 지역에서도 시각 신호로 대체 가능.</p>
+  </div>
+
+  <div class="sub">
+    <div class="sub-no">4-3</div>
+    <h3 class="sub-title">큐 전달 체계 및 공연 진행 구조 이해</h3>
+    <p class="sub-lead">큐는 "Standby" 다음 "Go"로만 작동한다. 다른 단어는 큐가 아니다.</p>
+    <p class="sub-body">공연 큐 전달의 글로벌 표준은 <strong>(1) Standby (대기): "Standby Cue 5" → 해당 큐의 담당자 모두 준비 완료 응답, (2) Go (실행): "Cue 5 Go" → 즉시 실행</strong>입니다. "Go"는 큐 실행 전용 단어이므로 일반 대화에서 사용 금지입니다. 큐 콜러 (Cue Caller, 보통 무대감독 Stage Manager)가 FOH (Front of House, 객석 중앙 컨트롤)와 백스테이지를 잇는 중앙 신호자이며, 모든 조명/음향/영상/특수효과 큐가 한 사람의 입에서 나옵니다. 본인은 큐를 받으면 즉시 실행, 큐를 받지 않으면 절대 임의 행동 금지입니다.</p>
+    <div class="check-list"><ul>
+      <li>"Standby" 들으면 즉시 준비 완료 응답</li>
+      <li>"Go" 들으면 즉시 실행, 0.5초 안</li>
+      <li>"Go" 단어는 큐 외 사용 금지 (오작동 방지)</li>
+      <li>큐 미수신 시 임의 행동 금지, 무전 "Cue 5 confirm" 재확인</li>
+      <li>본인 큐 종료 후 "Cue 5 complete" 보고 (큐 콜러 추적용)</li>
+    </ul></div>
+    <p class="tip"><span class="tip-label">현장 팁</span>큐 콜러는 공연의 지휘자입니다. 큐 콜러와 본인 인이어가 같은 채널인지 첫날 반드시 확인하세요.</p>
+  </div>
+</div>
+
+<!-- 5. 커뮤니케이션 -->
+<div class="page">
+  <div class="section-eyebrow">05 / COMMS</div>
+  <h2 class="section-title">파트별 체크리스트 및 현장 커뮤니케이션</h2>
+
+  <div class="sub">
+    <div class="sub-no">5-1</div>
+    <h3 class="sub-title">무전기 사용법 및 현장 용어 교육</h3>
+    <p class="sub-lead">무전은 짧고, 분명하고, 한 번에 한 사람만.</p>
+    <p class="sub-body">무전기 사용의 기본 룰은 <strong>(1) PTT (Push-to-Talk) 버튼 누르고 1초 뒤 말 시작 (앞부분 잘림 방지), (2) 호출명 + 본인 → "팀장님, 게이트 3입니다", (3) 한 문장 이내, (4) 응답 대기, (5) PTT 떼기</strong>입니다. 표준 응답어는 "Copy" (수신 확인), "Standby" (잠시 대기), "Go ahead" (말씀하세요), "Roger" (이해함), "Negative" (아니오), "Affirmative" (예), "Over" (말 끝), "Out" (대화 종료)입니다. 무전은 모두가 듣고 있다는 점을 기억하세요. 욕설/잡담/사적 대화 절대 금지, 위반 시 무전 권한 회수 + 징계 사유입니다.</p>
+    <div class="check-list"><ul>
+      <li>PTT 누르고 1초 뒤 말 시작 (앞부분 잘림 방지)</li>
+      <li>"호출명 + 본인" 순서로 시작 ("팀장님, 게이트 3입니다")</li>
+      <li>한 문장 이내, 응답 대기 후 PTT 떼기</li>
+      <li>표준 응답어 8개 (Copy, Standby, Go ahead, Roger, Negative, Affirmative, Over, Out) 외우기</li>
+      <li>욕설/잡담/사적 대화 절대 금지, 모두가 듣고 있음</li>
+    </ul></div>
+    <p class="tip"><span class="tip-label">현장 팁</span>무전 시작 전 "잠깐 호흡 → 한 문장 정리 → PTT" 3단계만 지켜도 베테랑처럼 들립니다.</p>
+  </div>
+
+  <div class="sub">
+    <div class="sub-no">5-2</div>
+    <h3 class="sub-title">보고 체계 및 상황 공유 방법</h3>
+    <p class="sub-lead">나쁜 뉴스일수록 빨리, 사실 그대로 보고한다.</p>
+    <p class="sub-body">보고 체계의 핵심은 <strong>SBAR (Situation, Background, Assessment, Recommendation) 4단계</strong>입니다. (1) Situation: 무슨 일이 일어났는지, (2) Background: 배경 정보 (시간/장소/관련자), (3) Assessment: 본인 판단, (4) Recommendation: 권고 행동입니다. 예: "게이트 3, 관객 1명 실신 (S), 입장 줄 30분 대기 중 (B), 메디컬 즉시 필요 (A), 게이트 일시 폐쇄 권고 (R)". 본인 판단을 두려워하지 마세요. 단, 사실과 판단은 명확히 구분해서 보고합니다. "내 생각엔" "아마도"는 정보가 아니라 추측이므로 분리해서 말합니다.</p>
+    <div class="check-list"><ul>
+      <li>SBAR 4단계 (상황 → 배경 → 판단 → 권고) 순서로 보고</li>
+      <li>사실 (Fact)과 판단 (Opinion) 명확히 구분</li>
+      <li>나쁜 뉴스는 30초 이내 보고, 미루지 않기</li>
+      <li>모르면 "확인 후 보고드리겠습니다" 솔직하게 말하기</li>
+      <li>보고 후 후속 조치 결과까지 끝까지 follow-up</li>
+    </ul></div>
+    <p class="tip"><span class="tip-label">현장 팁</span>보고 받는 사람의 결정을 돕는 게 보고의 목적입니다. 본인이 다 해결하려 하지 마세요.</p>
+  </div>
+
+  <div class="sub">
+    <div class="sub-no">5-3</div>
+    <h3 class="sub-title">파트 간 협업 및 업무 인수인계 방법</h3>
+    <p class="sub-lead">인수인계는 문서로, 확인은 구두로.</p>
+    <p class="sub-body">K-pop 공연은 음향/조명/영상/무대/아티스트팀/운영팀/보안팀/메디컬팀 등 10개 이상 파트가 동시 작동합니다. 파트 간 협업 시 <strong>(1) 본인 파트의 한계와 다른 파트의 권한을 명확히 인지, (2) 본인 권한 밖은 절대 단독 결정 금지, (3) 교대/인수인계 시 반드시 종이 또는 디지털 인수인계서 작성</strong>이 표준입니다. 인수인계서에는 진행 중 이슈, 미해결 사항, 다음 시점 큐, 특이 사항 4가지를 명시합니다. 인수자가 "확인했습니다" 구두 확답한 후에야 본인 임무 종료입니다.</p>
+    <div class="check-list"><ul>
+      <li>본인 파트의 권한 범위 + 다른 파트의 권한 범위 명확히 인지</li>
+      <li>본인 권한 밖 결정은 해당 파트장에게 즉시 이관</li>
+      <li>교대 시 인수인계서 작성 (이슈, 미해결, 다음 큐, 특이사항 4종)</li>
+      <li>인수자 구두 확답 ("확인했습니다") 받기 전 자리 이탈 금지</li>
+      <li>인수인계 후 30분은 무전 켜두기 (인수자 추가 문의 대비)</li>
+    </ul></div>
+    <p class="tip"><span class="tip-label">현장 팁</span>"잠깐 화장실"도 인수인계 후 이동입니다. 무전 끄지 말고, 동료에게 한 마디 후 이동하세요.</p>
+  </div>
+</div>
+
+<!-- 6. 돌발 상황 -->
+<div class="page">
+  <div class="section-eyebrow">06 / EMERGENCY</div>
+  <h2 class="section-title">돌발 상황 대응 및 CS 매뉴얼</h2>
+
+  <div class="sub">
+    <div class="sub-no">6-1</div>
+    <h3 class="sub-title">공연 지연 및 장비 이슈 발생 시 대응</h3>
+    <p class="sub-lead">지연의 1순위 대응은 "관객에게 알리는 것"이다.</p>
+    <p class="sub-body">공연 지연 사유는 <strong>(1) 장비 이슈 (음향/조명/영상 시스템), (2) 아티스트 이슈 (컨디션/교통), (3) 안전 이슈 (관객 사고/날씨), (4) 외부 이슈 (정전/화재경보 오작동)</strong>입니다. 지연이 5분 이상 예상되면 즉시 PA (Public Address) 공지를 통해 관객에게 알리는 것이 표준입니다. "잠시만 기다려주세요" 같은 모호한 표현보다 "기술 점검으로 약 10분 지연됩니다. 양해 부탁드립니다"가 정확합니다. 본인 구역 관객이 동요하면 차분히 "곧 안내 방송이 나옵니다"로 받고, 본인 판단으로 추가 정보 발설 금지입니다.</p>
+    <div class="check-list"><ul>
+      <li>지연 5분 이상 예상되면 즉시 PA 공지 요청</li>
+      <li>관객 안내는 "약 N분 지연됩니다" 구체적 시간 명시</li>
+      <li>본인 구역 관객 동요 시 "곧 안내 방송이 나옵니다"로만 응대</li>
+      <li>본인 판단의 추가 정보 발설 금지 (잘못된 정보 확산 위험)</li>
+      <li>지연 해소 후에도 관객 안전 동선 다시 한 번 점검</li>
+    </ul></div>
+    <p class="tip"><span class="tip-label">현장 팁</span>지연 시 관객이 가장 짜증나는 건 "정보 없음"입니다. 모르면 모른다고, 알면 정확히. 둘 다 정직.</p>
+  </div>
+
+  <div class="sub">
+    <div class="sub-no">6-2</div>
+    <h3 class="sub-title">관객 컴플레인 응대 방법</h3>
+    <p class="sub-lead">컴플레인 응대의 1순위는 해결이 아니라 "감정 인정"이다.</p>
+    <p class="sub-body">컴플레인 응대 표준 5단계는 <strong>(1) 경청 (30초 이상 끊지 않기), (2) 공감 ("불편하셨겠습니다"), (3) 사과 (책임 인정이 아닌 불편에 대한 사과: "불편드려 죄송합니다"), (4) 해결 또는 이관, (5) 확인 ("이렇게 처리해드리면 괜찮으실까요?")</strong>입니다. 절대 금지 표현은 "그건 제 책임이 아닙니다", "원래 그래요", "다른 분들은 괜찮은데요"입니다. 외국인 관객 컴플레인은 "I will check and get back to you" 한 문장으로 시간을 벌고, 영어 가능한 매니저를 즉시 호출하세요.</p>
+    <div class="check-list"><ul>
+      <li>경청 30초 이상, 절대 끊지 않기</li>
+      <li>"불편하셨겠습니다" 공감 한 마디 먼저</li>
+      <li>책임 인정 아닌 불편 사과 ("불편드려 죄송합니다")</li>
+      <li>권한 내 즉시 해결, 권한 밖 즉시 이관</li>
+      <li>금지 표현 3종 ("제 책임 아닙니다", "원래 그래요", "다른 분들은 괜찮은데요") 절대 금지</li>
+    </ul></div>
+    <p class="tip"><span class="tip-label">현장 팁</span>화난 관객 응대 후 본인 멘탈은 동료에게 30초 털어놓고 리셋하세요. 누적되면 다음 응대가 무너집니다.</p>
+  </div>
+
+  <div class="sub">
+    <div class="sub-no">6-3</div>
+    <h3 class="sub-title">현장 이슈 발생 시 보고 및 해결 프로세스</h3>
+    <p class="sub-lead">"보고 → 판단 → 행동" 순서를 거꾸로 하지 않는다.</p>
+    <p class="sub-body">현장 이슈 발생 시 표준 프로세스는 <strong>(1) 즉시 보고 (30초 이내 무전 콜), (2) 안전 확보 (관객/아티스트/스태프 순), (3) 상급자 판단 대기, (4) 지시받은 행동만 실행, (5) 종료 후 사고 보고서 작성</strong>입니다. 본인이 단독으로 "이거 이렇게 하면 되겠지"는 금물입니다. 1기 여러분은 베테랑이 아니므로, 판단보다 보고와 실행이 우선입니다. 모든 이슈는 종이 또는 디지털 사고 보고서 (Incident Report)로 박제되며, 향후 유사 사고 예방의 1차 자료가 됩니다. 본인의 솔직한 사실 기록이 가장 큰 기여입니다.</p>
+    <div class="check-list"><ul>
+      <li>이슈 발생 30초 이내 무전 보고</li>
+      <li>안전 확보 우선순위: 관객 → 아티스트 → 스태프</li>
+      <li>단독 판단 금지, 상급자 지시 대기 후 행동</li>
+      <li>사고 보고서는 사실 그대로, 본인 감정/추측 분리</li>
+      <li>종료 후 본인 멘탈 케어 + 동료 디브리프 (debrief) 짧게 진행</li>
+    </ul></div>
+    <p class="tip"><span class="tip-label">현장 팁</span>사고 보고서는 본인을 보호하는 문서이기도 합니다. 사실 기록을 두려워하지 마세요.</p>
+  </div>
+</div>
+
+<!-- 부록 -->
+<div class="page">
+  <div class="section-eyebrow">APPENDIX A / GLOSSARY</div>
+  <h2 class="section-title">영어 핵심 용어 사전</h2>
+  <p class="sub-body" style="margin-bottom:16px;">외국인 학생을 위한, 그리고 외국인 관객 응대를 위한 K-pop 공연 현장 핵심 용어.</p>
+  <table class="glossary">
+    <thead><tr><th>한국어</th><th>영어</th><th>의미</th></tr></thead>
+    <tbody>
+      <tr><td>콜타임</td><td>Call Time</td><td>본인 위치에서 준비 완료되어야 하는 시각</td></tr>
+      <tr><td>큐</td><td>Cue</td><td>정해진 동작/신호를 실행하는 시점</td></tr>
+      <tr><td>큐시트</td><td>Cue Sheet</td><td>공연 전체 큐를 시간순으로 정리한 문서</td></tr>
+      <tr><td>무대감독</td><td>Stage Manager (SM)</td><td>큐 콜러, 백스테이지 총괄</td></tr>
+      <tr><td>FOH</td><td>Front of House</td><td>객석 중앙 음향/조명 컨트롤 위치</td></tr>
+      <tr><td>모니터</td><td>Monitor</td><td>무대 위 아티스트가 듣는 사운드 시스템</td></tr>
+      <tr><td>사운드체크</td><td>Soundcheck</td><td>마이크/악기/모니터 점검 단계</td></tr>
+      <tr><td>백스테이지</td><td>Backstage</td><td>무대 뒤편, 아티스트/스태프 전용 공간</td></tr>
+      <tr><td>케이터링</td><td>Catering</td><td>대기실 음료/식사 서비스</td></tr>
+      <tr><td>인이어</td><td>In-Ear (Monitor)</td><td>아티스트/스태프 귀에 꽂는 통신/모니터 장치</td></tr>
+      <tr><td>패스</td><td>Access Pass</td><td>출입 권한 증명, 색상/등급별 구분</td></tr>
+      <tr><td>로드인/로드아웃</td><td>Load-in / Load-out</td><td>장비 반입 / 반출</td></tr>
+      <tr><td>PA</td><td>Public Address</td><td>관객 대상 안내 방송 시스템</td></tr>
+      <tr><td>그린룸</td><td>Green Room</td><td>아티스트 대기실의 표준 영어 표현</td></tr>
+      <tr><td>AED</td><td>Automated External Defibrillator</td><td>자동심장충격기</td></tr>
+    </tbody>
+  </table>
+
+  <div class="footer-card">
+    <h4>응급 영어 5문장 (외국인 관객 응대용)</h4>
+    <ul>
+      <li>"Ticket, please." (티켓 보여주세요)</li>
+      <li>"Your section is this way." (구역은 이쪽입니다)</li>
+      <li>"Are you okay? Medical is coming." (괜찮으세요? 의료팀 부르겠습니다)</li>
+      <li>"Please follow the staff to the exit." (스태프 따라 비상구로 가주세요)</li>
+      <li>"Photos and videos are not allowed." (사진/영상 촬영 금지입니다)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 부록 B + C -->
+<div class="page">
+  <div class="section-eyebrow">APPENDIX B / VENUE</div>
+  <h2 class="section-title">Venue 규모별 운영 차이</h2>
+  <table class="venue">
+    <thead><tr><th>항목</th><th>대형 (잠실/고척돔/KSPO돔/인스파이어)</th><th>중소형 (블루스프링하우스 등 클럽급)</th></tr></thead>
+    <tbody>
+      <tr><td>관객 규모</td><td>5,000~25,000명</td><td>200~1,000명</td></tr>
+      <tr><td>스태프 수</td><td>100~300명</td><td>10~30명</td></tr>
+      <tr><td>의료팀 상주</td><td>의무 (구급차 대기)</td><td>권장, 자체 응급키트</td></tr>
+      <tr><td>무전 채널</td><td>파트별 5~10채널 분리</td><td>단일 또는 2채널</td></tr>
+      <tr><td>입장 게이트</td><td>4~8개 동시 운영</td><td>1~2개</td></tr>
+      <tr><td>큐 시스템</td><td>전문 큐 콜러 + Clear-Com</td><td>무대감독 1인 + 무전</td></tr>
+      <tr><td>보안</td><td>외주 보안 + venue 자체</td><td>자체 스태프 겸직</td></tr>
+      <tr><td>화재 대처</td><td>자체 방재 + 119 연계 자동</td><td>119 즉시 콜 + 수동 대처</td></tr>
+      <tr><td>본인 역할</td><td>한 가지 파트 전담</td><td>멀티 롤 (입장/안내/보안 겸직)</td></tr>
+    </tbody>
+  </table>
+  <p class="sub-body" style="margin-top:12px;">블루스프링하우스 (1기 강의장)는 중소형 클럽급이지만, 여러분이 향후 투입될 협력 공연은 대형 venue 일 가능성이 높습니다. 두 규모의 차이를 미리 인지하고, 어느 쪽에 가도 본인 위치를 빠르게 파악하는 능력이 핵심입니다.</p>
+
+  <div style="margin-top:32px;">
+    <div class="section-eyebrow">APPENDIX C / CHECK</div>
+    <h2 class="section-title" style="font-size:22px;">사전 학습 체크 (출발 전 점검)</h2>
+    <div class="check-list" style="background:var(--accent-soft);border-color:var(--accent);"><ul>
+      <li>본 가이드 1독 완료</li>
+      <li>영어 용어 15개 + 응급 5문장 암기</li>
+      <li>본인 콜타임 + 본인 파트 + 본인 무전 채널 확인</li>
+      <li>안전조끼 + 인이어 + 무전기 + 신분증 + 본 가이드 인쇄본 5종 휴대</li>
+      <li>venue 평면도 사전 확인 (제공받은 경우)</li>
+      <li>비상 연락처 (매니저, 안전총괄, 119) 휴대폰 저장</li>
+      <li>"오늘 본 것은 오늘 잊는다" NDA 룰 숙지</li>
+    </ul></div>
+  </div>
+
+  <div class="credits">
+    Fan to Pro 1기 / 공연 현장 실무 가이드 / <span class="brand">Growth Career</span> · Dropdown · 발행 2026-06-27<br/>
+    참고: 한국 공연법, 문화체육관광부 공연장 안전매뉴얼, YG 공연장 안전 가이드, K-pop 콘서트 실무 표준
+  </div>
+</div>
+
+</body>
+</html>

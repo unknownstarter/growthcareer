@@ -4,6 +4,8 @@ import { fetchActiveCohorts } from "@/src/programs/fan-to-pro/infrastructure/sup
 import { fetchCohortRoster } from "@/src/programs/fan-to-pro/application/queries/cohort/fetch-cohort-roster";
 import { fetchApplicants } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/applicant-repository";
 import { CohortsDashboard } from "@/src/programs/fan-to-pro/interface/components/lms/admin/cohorts-dashboard";
+import { PageGuideBot } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guide-bot";
+import { PAGE_GUIDES } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guides";
 import {
   PageContainer,
   PageHeader,
@@ -90,6 +92,7 @@ export default async function FanToProAdminCohortsPage() {
 
   return (
     <PageContainer>
+      <PageGuideBot {...PAGE_GUIDES.cohorts} />
       <PageHeader
         title="기수 관리"
         description={`현재 활성: ${cohort.name} (${cohort.starts_on} 부터 ${cohort.ends_on} 까지)`}

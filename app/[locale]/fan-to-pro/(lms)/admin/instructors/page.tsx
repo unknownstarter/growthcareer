@@ -3,6 +3,8 @@ import { assertProgramAdmin } from "@/src/programs/fan-to-pro/infrastructure/aut
 import { fetchInstructorsWithProfiles } from "@/src/programs/fan-to-pro/application/queries/lms/fetch-instructors-with-profiles";
 import { fetchAllCompanies } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/company-repository";
 import { InstructorsDashboard } from "@/src/programs/fan-to-pro/interface/components/lms/admin/instructors-dashboard";
+import { PageGuideBot } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guide-bot";
+import { PAGE_GUIDES } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guides";
 import {
   PageContainer,
   PageHeader,
@@ -48,6 +50,7 @@ export default async function FanToProAdminInstructorsPage() {
 
   return (
     <PageContainer>
+      <PageGuideBot {...PAGE_GUIDES.instructors} />
       <PageHeader
         title="강사 관리"
         description="회사 연결과 LMS invite. 강사 마스터는 기존 어드민에서."

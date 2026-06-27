@@ -7,6 +7,8 @@ import { assertProgramAdmin } from "@/src/programs/fan-to-pro/infrastructure/aut
 import { fetchCohortBySlug } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-repository";
 import { fetchLectureMaterialsByCohort } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/lecture-material-repository";
 import { CohortMaterialsDashboard } from "@/src/programs/fan-to-pro/interface/components/lms/admin/cohort-materials-dashboard";
+import { PageGuideBot } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guide-bot";
+import { PAGE_GUIDES } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guides";
 import {
   PageContainer,
   PageHeader,
@@ -49,6 +51,7 @@ export default async function FanToProAdminCohortMaterialsPage({
 
   return (
     <PageContainer>
+      <PageGuideBot {...PAGE_GUIDES["cohort-materials"]} />
       <div className="mb-2">
         <Link
           href={

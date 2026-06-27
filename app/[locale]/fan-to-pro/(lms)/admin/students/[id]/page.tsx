@@ -21,6 +21,8 @@ import {
   PageHeader,
 } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-header";
 import { Button } from "@/src/programs/fan-to-pro/interface/components/lms/ui/button";
+import { PageGuideBot } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guide-bot";
+import { PAGE_GUIDES } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guides";
 
 export const metadata: Metadata = {
   title: "학생 상세 - Fan to Pro",
@@ -61,6 +63,7 @@ export default async function AdminStudentDetailPage({
 
   return (
     <PageContainer>
+      <PageGuideBot {...PAGE_GUIDES["student-detail"]} />
       <div className="mb-2">
         <BackButton
           fallbackHref={`/${locale}/fan-to-pro/admin/students` as Route}

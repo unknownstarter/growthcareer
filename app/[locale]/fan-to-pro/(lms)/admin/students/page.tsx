@@ -3,6 +3,8 @@ import { assertProgramAdmin } from "@/src/programs/fan-to-pro/infrastructure/aut
 import { fetchActiveCohorts } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-repository";
 import { fetchStudentsWithProfiles } from "@/src/programs/fan-to-pro/application/queries/lms/fetch-students-with-profiles";
 import { StudentsDashboard } from "@/src/programs/fan-to-pro/interface/components/lms/admin/students-dashboard";
+import { PageGuideBot } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guide-bot";
+import { PAGE_GUIDES } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guides";
 import {
   PageContainer,
   PageHeader,
@@ -65,6 +67,7 @@ export default async function FanToProAdminStudentsPage() {
 
   return (
     <PageContainer>
+      <PageGuideBot {...PAGE_GUIDES.students} />
       <PageHeader
         title="학생 관리"
         description={`${cohort.name} 학생 ${result.data.length}명. invite 발송과 진행 현황을 관리합니다.`}
