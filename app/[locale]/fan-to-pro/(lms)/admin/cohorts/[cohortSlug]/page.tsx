@@ -4,6 +4,7 @@ import { assertProgramAdmin } from "@/src/programs/fan-to-pro/infrastructure/aut
 import { fetchCohortBySlug } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-repository";
 import { fetchApplicants } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/applicant-repository";
 import { fetchStudentsByCohort } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/student-repository";
+import { fetchCohortOverview } from "@/src/programs/fan-to-pro/application/queries/cohort/fetch-cohort-overview";
 import { CohortDetail } from "@/src/programs/fan-to-pro/interface/components/lms/admin/cohort-detail";
 import {
   PageContainer,
@@ -29,9 +30,10 @@ export default async function FanToProAdminCohortDetailPage({
   const cohort = await fetchCohortBySlug(cohortSlug);
   if (!cohort) notFound();
 
-  const [applicantsResult, students] = await Promise.all([
+  const [applicantsResult, students, overview] = await Promise.all([
     fetchApplicants({ cohortId: cohort.id }),
     fetchStudentsByCohort(cohort.id).catch(() => []),
+    fetchCohortOverview(cohort.id).catch(() => null),
   ]);
 
   if (applicantsResult.error) {
@@ -52,6 +54,7 @@ export default async function FanToProAdminCohortDetailPage({
         cohort={cohort}
         applicants={applicantsResult.rows}
         studentCount={students.length}
+        overview={overview}
       />
     </PageContainer>
   );

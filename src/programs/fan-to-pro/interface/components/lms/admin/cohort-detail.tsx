@@ -17,7 +17,17 @@ import * as React from "react";
 import Link from "next/link";
 import type { Route } from "next";
 import { useParams, useRouter } from "next/navigation";
-import { FileText, ClipboardCheck } from "lucide-react";
+import {
+  FileText,
+  ClipboardCheck,
+  ArrowRight,
+  Users,
+  GraduationCap,
+  CalendarCheck,
+  BookOpen,
+  Wallet,
+  TrendingUp,
+} from "lucide-react";
 import {
   Card,
   CardContent,
@@ -38,6 +48,7 @@ import {
 import { backfillPaidApplicantsAction } from "@/src/programs/fan-to-pro/interface/server-actions/admin/lms-cohort-actions";
 import type { ApplicantRow, ApplicantStatus } from "@/src/programs/fan-to-pro/application/dto/applicant-row";
 import type { Cohort } from "@/src/programs/fan-to-pro/domain/entities/cohort";
+import type { CohortOverview } from "@/src/programs/fan-to-pro/application/queries/cohort/fetch-cohort-overview";
 
 type SortKey = "createdAt" | "name" | "status" | "paidAmount";
 type SortDir = "asc" | "desc";
@@ -46,6 +57,8 @@ type Props = {
   cohort: Cohort;
   applicants: ApplicantRow[];
   studentCount: number;
+  /** B0049 — 6 KPI 카드용 통합 aggregate. null = query 실패 (카드 미표시). */
+  overview: CohortOverview | null;
 };
 
 const STATUS_LABEL: Record<ApplicantStatus, string> = {
@@ -69,7 +82,7 @@ const STATUS_ORDER: ApplicantStatus[] = [
   "refunded",
 ];
 
-export function CohortDetail({ cohort, applicants, studentCount }: Props) {
+export function CohortDetail({ cohort, applicants, studentCount, overview }: Props) {
   const router = useRouter();
   const params = useParams();
   const locale = (params?.locale as string) ?? "ko";
@@ -278,8 +291,21 @@ export function CohortDetail({ cohort, applicants, studentCount }: Props) {
         </div>
       </header>
 
+      {/* B0049 — 6 KPI 카드 grid */}
+      {overview ? (
+        <OverviewKpiGrid
+          locale={locale}
+          cohort={cohort}
+          overview={overview}
+          applicantsTotal={applicants.length}
+          paidLikeCount={paidLikeCount}
+          studentCount={studentCount}
+          minToOpen={cohort.min_to_open}
+        />
+      ) : null}
+
       {/* Funnel KPI */}
-      <Card>
+      <Card id="funnel-section">
         <CardHeader>
           <CardTitle className="text-base">신청 퍼널</CardTitle>
           <CardDescription>
@@ -457,6 +483,303 @@ export function CohortDetail({ cohort, applicants, studentCount }: Props) {
       </Card>
     </div>
   );
+}
+
+/* ─────────────────── B0049 — KPI 카드 ─────────────────── */
+
+function OverviewKpiGrid({
+  locale,
+  cohort,
+  overview,
+  applicantsTotal,
+  paidLikeCount,
+  studentCount,
+  minToOpen,
+}: {
+  locale: string;
+  cohort: Cohort;
+  overview: CohortOverview;
+  applicantsTotal: number;
+  paidLikeCount: number;
+  studentCount: number;
+  minToOpen: number;
+}) {
+  // 카드 6 데이터 ─────────────────────────────────────────
+  const { students, instructors, attendance, materials, finance } = overview;
+
+  const paidPct =
+    applicantsTotal > 0
+      ? Math.round((paidLikeCount / applicantsTotal) * 100)
+      : 0;
+  const minToOpenMet = paidLikeCount >= minToOpen;
+
+  const invitedPct =
+    students.paidApplicantCount > 0
+      ? Math.round(
+          (students.invitedCount / students.paidApplicantCount) * 100,
+        )
+      : 0;
+
+  const sessionProgress =
+    attendance.totalSessions > 0
+      ? `${attendance.endedSessions}/${attendance.totalSessions}`
+      : "0/0";
+  const attendancePct = Math.round(attendance.averageRate * 100);
+
+  const materialPct =
+    materials.totalWeekCount > 0
+      ? Math.round((materials.coveredWeekCount / materials.totalWeekCount) * 100)
+      : 0;
+
+  const netSign = finance.netKrw >= 0 ? "+" : "";
+
+  return (
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {/* 1. 신청 현황 */}
+      <KpiCard
+        href={`#funnel-section`}
+        icon={<Users className="h-4 w-4" />}
+        title="신청 현황"
+        description={
+          minToOpenMet
+            ? "개강 기준 충족"
+            : `개강 기준 ${minToOpen}명 ${minToOpen - paidLikeCount}명 부족`
+        }
+        primary={`${applicantsTotal}명 신청`}
+        secondary={
+          <>
+            입금 {paidLikeCount}명 ({paidPct}%) / 개강 기준 {minToOpen}명
+          </>
+        }
+        accent={
+          minToOpenMet
+            ? "text-emerald-600 dark:text-emerald-400"
+            : "text-amber-600 dark:text-amber-400"
+        }
+      />
+
+      {/* 2. 학생 invite 진척 */}
+      <KpiCard
+        href={`/${locale}/fan-to-pro/admin/students` as Route}
+        icon={<GraduationCap className="h-4 w-4" />}
+        title="학생 등록 + 초대"
+        description={
+          students.paidApplicantCount === 0
+            ? "아직 입금 완료 신청자 없음"
+            : students.invitedCount === students.paidApplicantCount
+              ? "전원 초대 완료"
+              : `${students.paidApplicantCount - students.invitedCount}명 초대 미발송`
+        }
+        primary={
+          students.paidApplicantCount === 0
+            ? "0명"
+            : `${students.invitedCount} / ${students.paidApplicantCount}명`
+        }
+        secondary={
+          <>
+            paid {students.paidApplicantCount} → student {studentCount} →
+            Auth {students.invitedCount} ({invitedPct}%)
+          </>
+        }
+        accent={
+          students.invitedCount === students.paidApplicantCount &&
+          students.paidApplicantCount > 0
+            ? "text-emerald-600 dark:text-emerald-400"
+            : "text-[var(--foreground)]"
+        }
+      />
+
+      {/* 3. 강사 배정 */}
+      <KpiCard
+        href={`/${locale}/fan-to-pro/admin/instructors` as Route}
+        icon={<Users className="h-4 w-4" />}
+        title="강사 배정"
+        description={
+          instructors.assignedCount === 0
+            ? "아직 강사 미배정"
+            : instructors.unassignedSessionCount === 0
+              ? "전 회차 배정 완료"
+              : `${instructors.unassignedSessionCount}회 미배정`
+        }
+        primary={
+          instructors.assignedCount === 0
+            ? "0명"
+            : `${instructors.assignedCount}명`
+        }
+        secondary={
+          instructors.assignedCount === 0
+            ? "회차에 강사를 배정하면 표시됩니다"
+            : `${instructors.companyCount}개 회사 / 미배정 회차 ${instructors.unassignedSessionCount}회`
+        }
+        accent={
+          instructors.unassignedSessionCount === 0 &&
+          instructors.assignedCount > 0
+            ? "text-emerald-600 dark:text-emerald-400"
+            : instructors.assignedCount === 0
+              ? "text-[var(--muted-foreground)]"
+              : "text-amber-600 dark:text-amber-400"
+        }
+      />
+
+      {/* 4. 회차 / 출결 */}
+      <KpiCard
+        href={`/${locale}/fan-to-pro/admin/attendance` as Route}
+        icon={<CalendarCheck className="h-4 w-4" />}
+        title="회차 / 출결"
+        description={
+          attendance.totalSessions === 0
+            ? "회차가 아직 생성되지 않음"
+            : attendance.endedSessions === 0
+              ? "강의 시작 전"
+              : `진행률 ${Math.round(
+                  (attendance.endedSessions / attendance.totalSessions) * 100,
+                )}%`
+        }
+        primary={`${sessionProgress}회`}
+        secondary={
+          attendance.endedSessions === 0
+            ? "출석률은 1회차 종료 후 표시됩니다"
+            : `평균 출석률 ${attendancePct}%`
+        }
+        accent={
+          attendance.endedSessions === 0
+            ? "text-[var(--muted-foreground)]"
+            : attendancePct >= 75
+              ? "text-emerald-600 dark:text-emerald-400"
+              : "text-amber-600 dark:text-amber-400"
+        }
+      />
+
+      {/* 5. 강의 자료 */}
+      <KpiCard
+        href={
+          `/${locale}/fan-to-pro/admin/cohorts/${cohort.slug}/materials` as Route
+        }
+        icon={<BookOpen className="h-4 w-4" />}
+        title="강의 자료"
+        description={
+          materials.totalCount === 0
+            ? "아직 업로드된 자료 없음"
+            : materials.coveredWeekCount === materials.totalWeekCount
+              ? "전 회차 자료 등록"
+              : `${materials.totalWeekCount - materials.coveredWeekCount}회 자료 미등록`
+        }
+        primary={`${materials.totalCount}개`}
+        secondary={
+          <>
+            회차 cover {materials.coveredWeekCount} / {materials.totalWeekCount}
+            회 ({materialPct}%)
+          </>
+        }
+        accent={
+          materials.totalCount === 0
+            ? "text-[var(--muted-foreground)]"
+            : materials.coveredWeekCount === materials.totalWeekCount
+              ? "text-emerald-600 dark:text-emerald-400"
+              : "text-[var(--foreground)]"
+        }
+      />
+
+      {/* 6. 재무 */}
+      <KpiCard
+        href={`/${locale}/fan-to-pro/admin/finance` as Route}
+        icon={<Wallet className="h-4 w-4" />}
+        title="재무 (VAT 별도)"
+        description={
+          finance.revenue.paid_count === 0
+            ? "아직 매출 없음"
+            : `매출 ${finance.revenue.paid_count}건 / 비용 ${formatKrw(finance.expenseTotalKrw)}`
+        }
+        primary={
+          <span className="inline-flex items-center gap-1">
+            <TrendingUp
+              className={`h-4 w-4 ${
+                finance.netKrw >= 0
+                  ? "text-emerald-600 dark:text-emerald-400"
+                  : "text-red-600 dark:text-red-400"
+              }`}
+            />
+            {netSign}
+            {formatKrw(finance.netKrw)}
+          </span>
+        }
+        secondary={
+          finance.revenue.paid_count === 0 ? (
+            "매출이 발생하면 손익을 표시합니다"
+          ) : (
+            <>
+              매출 {formatKrw(finance.revenue.revenue_exclusive_krw)} / 강사료{" "}
+              {formatKrw(finance.instructorFeeKrw)} / Cowork{" "}
+              {formatKrw(finance.coworkCommissionKrw)}
+            </>
+          )
+        }
+        accent={
+          finance.revenue.paid_count === 0
+            ? "text-[var(--muted-foreground)]"
+            : finance.netKrw >= 0
+              ? "text-emerald-600 dark:text-emerald-400"
+              : "text-red-600 dark:text-red-400"
+        }
+      />
+    </div>
+  );
+}
+
+function KpiCard({
+  href,
+  icon,
+  title,
+  description,
+  primary,
+  secondary,
+  accent,
+}: {
+  href: string;
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  primary: React.ReactNode;
+  secondary: React.ReactNode;
+  accent: string;
+}) {
+  return (
+    <Link
+      href={href as Route}
+      className="group block rounded-[var(--radius)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+    >
+      <Card className="h-full transition group-hover:border-[var(--ring)] group-hover:shadow-sm">
+        <CardHeader className="pb-2">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex items-center gap-2 text-[var(--muted-foreground)]">
+              {icon}
+              <CardTitle className="text-sm font-medium">{title}</CardTitle>
+            </div>
+            <ArrowRight
+              aria-hidden="true"
+              className="h-4 w-4 text-[var(--muted-foreground)] transition group-hover:translate-x-0.5 group-hover:text-[var(--foreground)]"
+            />
+          </div>
+          <CardDescription className="text-xs">{description}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-1">
+          <div
+            className={`text-2xl font-bold tabular-nums ${accent}`}
+          >
+            {primary}
+          </div>
+          <div className="text-xs text-[var(--muted-foreground)]">
+            {secondary}
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
+  );
+}
+
+function formatKrw(value: number): string {
+  if (value === 0) return "0원";
+  return `${value.toLocaleString("ko-KR")}원`;
 }
 
 /* ─────────────────── helpers ─────────────────── */
