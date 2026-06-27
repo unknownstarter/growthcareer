@@ -23,6 +23,8 @@ import type { StudentResumeItem } from "@/src/programs/fan-to-pro/domain/entitie
 
 type Props = {
   studentId: string;
+  /** 신청서 원본 이름 — 폼의 영문 이름 자동 채움 (readonly). */
+  originalName: string;
   profile: StudentProfile | null;
   target: StudentCareerTarget | null;
   resumeItems: StudentResumeItem[];
@@ -30,6 +32,7 @@ type Props = {
 
 export function StudentProfileView({
   studentId,
+  originalName,
   profile,
   target,
   resumeItems,
@@ -41,6 +44,7 @@ export function StudentProfileView({
       <StudentProfileForm
         studentId={studentId}
         initialProfile={profile}
+        originalName={originalName}
         locale={locale}
       />
       <StudentCareerTargetForm

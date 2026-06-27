@@ -131,6 +131,7 @@ export default async function StudentProfilePage({
         <StudentProfileForm
           studentId={student.id}
           initialProfile={profile}
+          originalName={student.display_name}
           locale={locale}
         />
         <StudentCareerTargetForm

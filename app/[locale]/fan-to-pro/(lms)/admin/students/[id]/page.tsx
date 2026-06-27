@@ -72,7 +72,7 @@ export default async function AdminStudentDetailPage({
             ? `${student.display_name} (${profile.name_ko})`
             : student.display_name
         }
-        description={`학생 상태 ${student.status}. profile, 진로, 이력서, 운영 코멘트를 관리합니다.`}
+        description={`학생 상태 ${student.status}. 한국 이름, 진로, 이력서, 운영 코멘트를 관리합니다.`}
         action={
           <div className="flex items-center gap-2">
             <Button asChild variant="outline" className="h-12">
@@ -93,6 +93,7 @@ export default async function AdminStudentDetailPage({
         <div className="lg:col-span-2 space-y-6">
           <StudentProfileView
             studentId={id}
+            originalName={student.display_name}
             profile={profile}
             target={target}
             resumeItems={resumeItems}

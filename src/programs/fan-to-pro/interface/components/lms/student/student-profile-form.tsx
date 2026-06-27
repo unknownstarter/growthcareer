@@ -48,12 +48,15 @@ const GENDER_LABELS_EN: Record<(typeof STUDENT_GENDERS)[number], string> = {
 type Props = {
   studentId: string;
   initialProfile: StudentProfile | null;
+  /** 신청서 원본 이름 (students.display_name = applicants.name) — 영문 이름 자동 채움. */
+  originalName: string;
   locale: string;
 };
 
 export function StudentProfileForm({
   studentId,
   initialProfile,
+  originalName,
   locale,
 }: Props) {
   const router = useRouter();
@@ -138,22 +141,38 @@ export function StudentProfileForm({
           </div>
         ) : null}
         <form action={onSubmit} className="space-y-5">
-          <div className="space-y-1.5">
-            <Label htmlFor="name_ko" className="text-xs">
-              {isEn ? "Korean name / nickname" : "한국 이름 (닉네임 또는 본인이 쓰는 한국식 이름)"}
-            </Label>
-            <Input
-              id="name_ko"
-              name="name_ko"
-              maxLength={100}
-              defaultValue={initialProfile?.name_ko ?? ""}
-              placeholder={isEn ? "예: 마티나, 추엔" : "예: 마티나, 추엔, 본인이 쓰는 한국식 이름"}
-            />
-            <p className="text-[11px] text-[var(--muted-foreground)]">
-              {isEn
-                ? "English name uses the original signup name."
-                : "영문 이름은 신청서의 원본 이름을 그대로 사용해요."}
-            </p>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="name_ko" className="text-xs">
+                {isEn ? "Korean name / nickname" : "한국 이름 (닉네임 또는 본인이 쓰는 이름)"}
+              </Label>
+              <Input
+                id="name_ko"
+                name="name_ko"
+                maxLength={100}
+                defaultValue={initialProfile?.name_ko ?? ""}
+                placeholder={isEn ? "예: 마티나, 추엔" : "예: 마티나, 추엔"}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="name_en" className="text-xs">
+                {isEn ? "English name" : "영문 이름"}
+              </Label>
+              <Input
+                id="name_en"
+                name="name_en_display"
+                maxLength={100}
+                defaultValue={initialProfile?.name_en || originalName}
+                readOnly
+                disabled
+                className="bg-[var(--muted)]/40 cursor-not-allowed"
+              />
+              <p className="text-[11px] text-[var(--muted-foreground)]">
+                {isEn
+                  ? "Auto-filled from signup form."
+                  : "신청서 원본의 이름으로 자동 채워져요."}
+              </p>
+            </div>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
