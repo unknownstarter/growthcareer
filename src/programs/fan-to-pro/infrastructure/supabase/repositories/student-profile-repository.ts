@@ -57,12 +57,20 @@ export async function upsertStudentProfile(
       input.birth_year !== undefined
         ? input.birth_year
         : (existing?.birth_year ?? null),
+    birth_date:
+      input.birth_date !== undefined
+        ? input.birth_date
+        : (existing?.birth_date ?? null),
     gender:
       input.gender !== undefined ? input.gender : (existing?.gender ?? null),
     visa_type:
       input.visa_type !== undefined
         ? input.visa_type
         : (existing?.visa_type ?? null),
+    months_in_korea:
+      input.months_in_korea !== undefined
+        ? input.months_in_korea
+        : (existing?.months_in_korea ?? null),
   };
 
   const { data, error } = await supabase

@@ -23,8 +23,11 @@ import { Label } from "@/src/programs/fan-to-pro/interface/components/lms/ui/lab
 import { upsertStudentProfileAction } from "@/src/programs/fan-to-pro/application/student-profile/upsert-profile";
 import {
   MAX_BIRTH_YEAR,
+  MAX_MONTHS_IN_KOREA,
   MIN_BIRTH_YEAR,
+  MIN_MONTHS_IN_KOREA,
   STUDENT_GENDERS,
+  deriveBirthYearFromDate,
   type StudentProfile,
 } from "@/src/programs/fan-to-pro/domain/entities/student-profile";
 
@@ -66,11 +69,21 @@ export function StudentProfileForm({
     const nameKo = String(formData.get("name_ko") ?? "").trim();
     const nameEn = String(formData.get("name_en") ?? "").trim();
     const phone = String(formData.get("phone") ?? "").trim();
-    const birthRaw = String(formData.get("birth_year") ?? "").trim();
+    const birthYearRaw = String(formData.get("birth_year") ?? "").trim();
+    const birthDateRaw = String(formData.get("birth_date") ?? "").trim();
+    const monthsRaw = String(formData.get("months_in_korea") ?? "").trim();
     const gender = String(formData.get("gender") ?? "").trim();
     const visa = String(formData.get("visa_type") ?? "").trim();
 
-    const birth = birthRaw.length > 0 ? Number(birthRaw) : null;
+    const birthDate = birthDateRaw.length > 0 ? birthDateRaw : null;
+    // birth_date 가 있으면 derive, 없으면 birth_year input 사용
+    const birthYear =
+      birthDate !== null
+        ? deriveBirthYearFromDate(birthDate)
+        : birthYearRaw.length > 0
+          ? Number(birthYearRaw)
+          : null;
+    const monthsInKorea = monthsRaw.length > 0 ? Number(monthsRaw) : null;
 
     startTransition(async () => {
       const result = await upsertStudentProfileAction({
@@ -78,12 +91,14 @@ export function StudentProfileForm({
         name_ko: nameKo.length > 0 ? nameKo : null,
         name_en: nameEn.length > 0 ? nameEn : null,
         phone: phone.length > 0 ? phone : null,
-        birth_year: birth,
+        birth_year: birthYear,
+        birth_date: birthDate,
         gender:
           gender.length > 0
             ? (gender as (typeof STUDENT_GENDERS)[number])
             : null,
         visa_type: visa.length > 0 ? visa : null,
+        months_in_korea: monthsInKorea,
       });
       if (result.status === "error") {
         setError(
@@ -164,8 +179,26 @@ export function StudentProfileForm({
               />
             </div>
             <div className="space-y-1.5">
+              <Label htmlFor="birth_date" className="text-xs">
+                {isEn ? "Date of birth" : "생년월일"}
+              </Label>
+              <Input
+                id="birth_date"
+                name="birth_date"
+                type="date"
+                min={`${MIN_BIRTH_YEAR}-01-01`}
+                max={`${MAX_BIRTH_YEAR}-12-31`}
+                defaultValue={initialProfile?.birth_date ?? ""}
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
               <Label htmlFor="birth_year" className="text-xs">
-                {isEn ? "Birth year" : "출생연도"}
+                {isEn
+                  ? "Birth year (if no exact date)"
+                  : "출생연도 (정확한 날짜를 모르면)"}
               </Label>
               <Input
                 id="birth_year"
@@ -175,6 +208,24 @@ export function StudentProfileForm({
                 max={MAX_BIRTH_YEAR}
                 defaultValue={initialProfile?.birth_year ?? ""}
                 placeholder={isEn ? "e.g. 1998" : "예: 1998"}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="months_in_korea" className="text-xs">
+                {isEn ? "Months in Korea" : "한국 거주 기간 (개월)"}
+              </Label>
+              <Input
+                id="months_in_korea"
+                name="months_in_korea"
+                type="number"
+                min={MIN_MONTHS_IN_KOREA}
+                max={MAX_MONTHS_IN_KOREA}
+                defaultValue={initialProfile?.months_in_korea ?? ""}
+                placeholder={
+                  isEn
+                    ? "e.g. 18 (1 year 6 months) / leave blank if Korean"
+                    : "예: 18 (1년 6개월) / 한국 국적이면 빈칸"
+                }
               />
             </div>
           </div>
