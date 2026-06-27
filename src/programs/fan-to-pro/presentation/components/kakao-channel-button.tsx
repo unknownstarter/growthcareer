@@ -1,12 +1,52 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { usePathname } from "next/navigation";
 
 const KAKAO_CHANNEL_CHAT_URL = "https://pf.kakao.com/_nxhDGX/chat";
 const KAKAO_BRAND_YELLOW = "#FEE500";
 
+/**
+ * LMS surface (admin / student / instructor) 에서는 노출 X.
+ *
+ * B0056: 어드민에는 PageGuideBot 이 우측 하단에 위치. Kakao 와 겹치면 안 됨.
+ * 학생/강사 surface 도 LMS 인증된 학습 공간이라 마케팅 채널 노출 부적합.
+ *
+ * 모집 페이지 (/fan-to-pro 와 그 하위 marketing) 에는 그대로 노출 — CLAUDE.md
+ * §7.4 보호 룰 (모집 페이지 변경 금지) 준수.
+ *
+ * URL 패턴 (ADR 0008):
+ *   /[locale]/fan-to-pro/admin/*       → LMS admin (숨김)
+ *   /[locale]/fan-to-pro/<slug>/student/*    → student (숨김)
+ *   /[locale]/fan-to-pro/<slug>/instructor/* → instructor (숨김)
+ *   /[locale]/auth/*                   → LMS auth (숨김)
+ *   /[locale]/fan-to-pro               → marketing (노출)
+ */
+function isLmsSurface(pathname: string | null): boolean {
+  if (!pathname) return false;
+  // /admin/* (마케팅 사이트 어드민 / fan-to-pro 어드민 모두 포함).
+  if (/^\/(?:[a-z]{2}\/)?(?:fan-to-pro\/)?admin(?:\/|$)/.test(pathname)) {
+    return true;
+  }
+  // /[locale]/fan-to-pro/<cohortSlug>/(student|instructor)/*.
+  if (
+    /^\/(?:[a-z]{2}\/)?fan-to-pro\/[^/]+\/(?:student|instructor)(?:\/|$)/.test(
+      pathname,
+    )
+  ) {
+    return true;
+  }
+  // LMS auth (login / change-password / reset 등).
+  if (/^\/(?:[a-z]{2}\/)?auth(?:\/|$)/.test(pathname)) {
+    return true;
+  }
+  return false;
+}
+
 export function KakaoChannelButton() {
   const t = useTranslations("kakao");
+  const pathname = usePathname();
+  if (isLmsSurface(pathname)) return null;
   return (
     <a
       href={KAKAO_CHANNEL_CHAT_URL}

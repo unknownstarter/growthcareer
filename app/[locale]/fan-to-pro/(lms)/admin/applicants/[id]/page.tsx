@@ -12,6 +12,8 @@ import {
 import { fetchAllCohorts } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-repository";
 import { fetchStudentByApplicantId } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/student-repository";
 import { ApplicantDetail } from "@/src/programs/fan-to-pro/interface/components/lms/admin/applicant-detail";
+import { PageGuideBot } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guide-bot";
+import { PAGE_GUIDES } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guides";
 import {
   PageContainer,
   PageHeader,
@@ -57,6 +59,7 @@ export default async function FanToProAdminApplicantDetailPage({
 
   return (
     <PageContainer>
+      <PageGuideBot {...PAGE_GUIDES["applicant-detail"]} />
       <div className="mb-2">
         <BackButton
           fallbackHref={`/${locale}/fan-to-pro/admin/talent-pool` as Route}

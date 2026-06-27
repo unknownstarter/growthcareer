@@ -4,6 +4,8 @@ import { fetchActiveCohorts } from "@/src/programs/fan-to-pro/infrastructure/sup
 import { fetchAnnouncementsByCohort } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/announcement-repository";
 import { isMissingTableError } from "@/src/programs/fan-to-pro/infrastructure/supabase/error-utils";
 import { AnnouncementsDashboard } from "@/src/programs/fan-to-pro/interface/components/lms/admin/announcements-dashboard";
+import { PageGuideBot } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guide-bot";
+import { PAGE_GUIDES } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guides";
 import {
   PageContainer,
   PageHeader,
@@ -84,6 +86,7 @@ export default async function FanToProAdminAnnouncementsPage() {
 
   return (
     <PageContainer>
+      <PageGuideBot {...PAGE_GUIDES.announcements} />
       <PageHeader
         title="공지"
         description={`${cohort.name} / ${announcements.length}개`}

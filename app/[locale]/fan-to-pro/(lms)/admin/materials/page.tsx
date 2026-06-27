@@ -5,6 +5,8 @@ import { fetchSessionsByCohort } from "@/src/programs/fan-to-pro/infrastructure/
 import { fetchMaterialsByCohort } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/material-repository";
 import { isMissingTableError } from "@/src/programs/fan-to-pro/infrastructure/supabase/error-utils";
 import { MaterialsDashboard } from "@/src/programs/fan-to-pro/interface/components/lms/admin/materials-dashboard";
+import { PageGuideBot } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guide-bot";
+import { PAGE_GUIDES } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guides";
 import {
   PageContainer,
   PageHeader,
@@ -89,6 +91,7 @@ export default async function FanToProAdminMaterialsPage() {
 
   return (
     <PageContainer>
+      <PageGuideBot {...PAGE_GUIDES.materials} />
       <PageHeader
         title="강의 자료"
         description={`${cohort.name} / ${materials.length}개`}

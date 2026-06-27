@@ -23,6 +23,8 @@ import {
   PageHeader,
   EmptyState,
 } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-header";
+import { PageGuideBot } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guide-bot";
+import { PAGE_GUIDES } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guides";
 
 export const metadata: Metadata = {
   title: "컨설팅 - Fan to Pro",
@@ -81,6 +83,7 @@ export default async function FanToProAdminConsultationsPage() {
 
   return (
     <PageContainer>
+      <PageGuideBot {...PAGE_GUIDES.consultations} />
       <PageHeader
         title="컨설팅 진행 현황"
         description="이력서, 자소서, 포트폴리오 컨설팅 진행 추적"

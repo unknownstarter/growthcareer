@@ -20,6 +20,8 @@ import {
   EmptyState,
 } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-header";
 import { FinanceDashboard } from "@/src/programs/fan-to-pro/interface/components/lms/admin/finance-dashboard";
+import { PageGuideBot } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guide-bot";
+import { PAGE_GUIDES } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guides";
 
 export const metadata: Metadata = {
   title: "재무 / 회계 - Fan to Pro",
@@ -91,6 +93,7 @@ export default async function FanToProAdminFinancePage() {
 
   return (
     <PageContainer>
+      <PageGuideBot {...PAGE_GUIDES.finance} />
       <PageHeader
         title="재무 / 회계 / 세무"
         description="cohort 단위 손익, 비용 entry, 세무 신고 일정, 회계 가이드. 일반 과세 사업자 (학원 미등록) 기준."

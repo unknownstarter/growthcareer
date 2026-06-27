@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { assertProgramAdmin } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
 import { fetchAllCompanies } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/company-repository";
 import { CompaniesDashboard } from "@/src/programs/fan-to-pro/interface/components/lms/admin/companies-dashboard";
+import { PageGuideBot } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guide-bot";
+import { PAGE_GUIDES } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guides";
 import {
   PageContainer,
   PageHeader,
@@ -40,6 +42,7 @@ export default async function FanToProAdminCompaniesPage() {
 
   return (
     <PageContainer>
+      <PageGuideBot {...PAGE_GUIDES.companies} />
       <PageHeader
         title="회사 관리"
         description="강사 정산 단위. 사업자번호, 계좌, VAT 여부 필수."

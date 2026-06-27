@@ -41,7 +41,7 @@ export type PageGuide = {
   pageId: string;
   /** 봇 제목 (예: "기수 페이지 가이드") */
   title: string;
-  /** 본문 안내 — 워크플로우 step list */
+  /** 본문 안내. 워크플로우 step list */
   steps: PageGuideStep[];
   /** 선택: 운영자 자주 묻는 질문 / 주의사항 */
   tips?: string[];
@@ -201,7 +201,7 @@ export function PageGuideBot({ pageId, title, steps, tips }: PageGuide) {
             </div>
           ) : null}
 
-          {/* Footer — 다시 보지 않기 */}
+          {/* Footer: 다시 보지 않기 */}
           <div className="sticky bottom-0 px-5 py-3 bg-[var(--card)] border-t border-[var(--border)] rounded-b-2xl">
             <label className="flex items-center gap-2 cursor-pointer select-none">
               <input

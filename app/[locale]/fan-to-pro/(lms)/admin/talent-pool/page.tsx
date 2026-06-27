@@ -3,6 +3,8 @@ import { assertProgramAdmin } from "@/src/programs/fan-to-pro/infrastructure/aut
 import { fetchApplicants } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/applicant-repository";
 import { fetchAllCohorts } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-repository";
 import { TalentPoolView } from "@/src/programs/fan-to-pro/interface/components/lms/admin/talent-pool-view";
+import { PageGuideBot } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guide-bot";
+import { PAGE_GUIDES } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guides";
 import {
   PageContainer,
   PageHeader,
@@ -55,6 +57,7 @@ export default async function FanToProAdminTalentPoolPage({
 
   return (
     <PageContainer>
+      <PageGuideBot {...PAGE_GUIDES["talent-pool"]} />
       <PageHeader
         title="인재풀"
         description={`모든 기수 신청자 ${applicantsResult.rows.length}명. 다음 기수 outreach 자산.`}
