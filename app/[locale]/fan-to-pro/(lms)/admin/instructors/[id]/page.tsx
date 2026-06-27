@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import type { Route } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
 import { assertProgramAdmin } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
+import { BackButton } from "@/src/programs/fan-to-pro/interface/components/lms/admin/back-button";
 import { fetchInstructorDetail } from "@/src/programs/fan-to-pro/application/queries/lms/fetch-instructor-detail";
 import { fetchAllCompanies } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/company-repository";
 import { InstructorDetailView } from "@/src/programs/fan-to-pro/interface/components/lms/admin/instructor-detail";
@@ -65,13 +65,9 @@ export default async function AdminInstructorDetailPage({
     return (
       <PageContainer>
         <div className="mb-2">
-          <Link
-            href={`/${locale}/fan-to-pro/admin/instructors` as Route}
-            className="inline-flex items-center gap-1 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-          >
-            <ChevronLeft className="h-4 w-4" />
-            강사 목록으로
-          </Link>
+          <BackButton
+            fallbackHref={`/${locale}/fan-to-pro/admin/instructors` as Route}
+          />
         </div>
         <PageHeader title="강사 상세" />
         <EmptyState
@@ -90,13 +86,9 @@ export default async function AdminInstructorDetailPage({
   return (
     <PageContainer>
       <div className="mb-2">
-        <Link
-          href={`/${locale}/fan-to-pro/admin/instructors` as Route}
-          className="inline-flex items-center gap-1 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          강사 목록으로
-        </Link>
+        <BackButton
+          fallbackHref={`/${locale}/fan-to-pro/admin/instructors` as Route}
+        />
       </div>
       <PageHeader
         title={detail.name}

@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import type { Route } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
 import { assertProgramAdmin } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
+import { BackButton } from "@/src/programs/fan-to-pro/interface/components/lms/admin/back-button";
 import {
   fetchApplicantById,
   fetchCashReceipts,
@@ -58,13 +58,9 @@ export default async function FanToProAdminApplicantDetailPage({
   return (
     <PageContainer>
       <div className="mb-2">
-        <Link
-          href={`/${locale}/fan-to-pro/admin/talent-pool` as Route}
-          className="inline-flex items-center gap-1 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          인재풀로
-        </Link>
+        <BackButton
+          fallbackHref={`/${locale}/fan-to-pro/admin/talent-pool` as Route}
+        />
       </div>
       <PageHeader
         title={applicant.name}

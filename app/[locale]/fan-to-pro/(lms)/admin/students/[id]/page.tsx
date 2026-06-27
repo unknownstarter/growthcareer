@@ -3,10 +3,10 @@ import type { Route } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  ChevronLeft,
   FileText as FileIcon,
   Briefcase,
 } from "lucide-react";
+import { BackButton } from "@/src/programs/fan-to-pro/interface/components/lms/admin/back-button";
 import { assertProgramAdmin } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
 import { fetchStudentById } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/student-repository";
 import { fetchStudentProfile } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/student-profile-repository";
@@ -61,13 +61,10 @@ export default async function AdminStudentDetailPage({
   return (
     <PageContainer>
       <div className="mb-2">
-        <Link
-          href={`/${locale}/fan-to-pro/admin/students` as Route}
-          className="inline-flex items-center gap-1 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          학생 목록으로
-        </Link>
+        <BackButton
+          fallbackHref={`/${locale}/fan-to-pro/admin/students` as Route}
+          label="뒤로"
+        />
       </div>
       <PageHeader
         title={student.display_name}
