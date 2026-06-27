@@ -17,6 +17,9 @@
  *   → 실패 시 rollback + toast.
  */
 import * as React from "react";
+import Link from "next/link";
+import type { Route } from "next";
+import { useParams } from "next/navigation";
 import {
   Check,
   Clock,
@@ -218,13 +221,6 @@ export function AttendanceMatrix({ sessions, students }: Props) {
     student: CohortRosterStudentRow,
     session: Session,
   ) {
-    if (!isSessionStarted(session)) {
-      setFeedback({
-        kind: "error",
-        message: `${session.idx ?? "?"}회차는 강의 시작 전이에요.`,
-      });
-      return;
-    }
     const k = cellKey(student.student.id, session.id);
     const current = matrix[k] ?? "unmarked";
     const next = nextStatus(current);
@@ -293,7 +289,6 @@ export function AttendanceMatrix({ sessions, students }: Props) {
     session: Session,
   ) {
     e.preventDefault();
-    if (!isSessionStarted(session)) return;
     const k = cellKey(student.student.id, session.id);
     setOptionsDialog({
       student,
@@ -303,15 +298,11 @@ export function AttendanceMatrix({ sessions, students }: Props) {
   }
 
   async function onHeaderClick(session: Session) {
-    if (!isSessionStarted(session)) {
-      setFeedback({
-        kind: "error",
-        message: `${session.idx ?? "?"}회차는 강의 시작 전이에요.`,
-      });
-      return;
-    }
     setBulkConfirm({ session });
   }
+
+  const params = useParams();
+  const locale = (params?.locale as string) ?? "ko";
 
   async function confirmBulkPresent() {
     if (!bulkConfirm) return;
@@ -487,19 +478,12 @@ export function AttendanceMatrix({ sessions, students }: Props) {
                           <button
                             type="button"
                             onClick={() => onHeaderClick(session)}
-                            disabled={!started}
                             className={cn(
                               "mt-1 inline-flex items-center gap-1 rounded-md px-2 py-1 text-[10px] font-semibold transition-colors",
-                              started
-                                ? "bg-[var(--primary)]/10 text-[var(--primary)] hover:bg-[var(--primary)]/20"
-                                : "cursor-not-allowed bg-transparent text-[var(--muted-foreground)]",
+                              "bg-[var(--primary)]/10 text-[var(--primary)] hover:bg-[var(--primary)]/20",
                             )}
                             aria-label={`${session.idx ?? "?"}회차 전원 출석`}
-                            title={
-                              started
-                                ? "이 회차 전원 출석으로 일괄 기록"
-                                : "강의 시작 전이라 일괄 기록 불가"
-                            }
+                            title="이 회차 전원 출석으로 일괄 기록"
                           >
                             <Users className="h-3 w-3" />
                             전원 출석
@@ -550,8 +534,13 @@ export function AttendanceMatrix({ sessions, students }: Props) {
                           rowIdx % 2 === 1 ? "bg-[var(--card)]" : "bg-[var(--background)]",
                         )}
                       >
-                        <div className="flex flex-col">
-                          <span className="text-sm">
+                        <Link
+                          href={
+                            `/${locale}/fan-to-pro/admin/students/${row.student.id}` as Route
+                          }
+                          className="flex flex-col hover:text-[var(--primary)]"
+                        >
+                          <span className="text-sm underline-offset-4 hover:underline">
                             {row.student.display_name}
                           </span>
                           {row.applicant?.nationality ? (
@@ -562,13 +551,12 @@ export function AttendanceMatrix({ sessions, students }: Props) {
                                 : ""}
                             </span>
                           ) : null}
-                        </div>
+                        </Link>
                       </th>
                       {sessions.map((session) => {
                         const k = cellKey(row.student.id, session.id);
                         const status = matrix[k] ?? "unmarked";
                         const pending = pendingCells.has(k);
-                        const started = isSessionStarted(session);
                         const meta = STATUS_META[status];
                         const Icon = meta.icon;
 
@@ -583,18 +571,12 @@ export function AttendanceMatrix({ sessions, students }: Props) {
                               onContextMenu={(e) =>
                                 onCellContextMenu(e, row, session)
                               }
-                              disabled={!started || pending}
+                              disabled={pending}
                               aria-label={`${row.student.display_name} ${session.idx ?? "?"}회차 ${meta.label}. 탭하면 다음 상태로 변경.`}
-                              title={
-                                !started
-                                  ? "강의 시작 전"
-                                  : `${meta.label} / 탭=다음 상태 / 우클릭=메모`
-                              }
+                              title={`${meta.label} / 탭=다음 상태 / 우클릭=메모`}
                               className={cn(
                                 "relative flex h-12 w-full items-center justify-center rounded-md text-sm font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:ring-offset-1",
-                                !started
-                                  ? "cursor-not-allowed bg-[var(--muted)]/40 text-[var(--muted-foreground)]/40"
-                                  : meta.cellClass,
+                                meta.cellClass,
                               )}
                             >
                               {pending ? (
