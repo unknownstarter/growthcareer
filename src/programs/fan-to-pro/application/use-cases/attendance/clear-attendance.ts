@@ -9,6 +9,7 @@
  *   assertSuperAdmin 으로 한 번 더 가드.
  */
 import { z } from "zod";
+import { assertAdmin } from "@/src/programs/fan-to-pro/infrastructure/auth/admin-role";
 import { deleteAttendance } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/attendance-repository";
 import { fetchSessionById } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/session-repository";
 
@@ -25,6 +26,8 @@ export type ClearAttendanceResult =
 export async function clearAttendance(
   input: unknown,
 ): Promise<ClearAttendanceResult> {
+  await assertAdmin();
+
   const parsed = InputSchema.safeParse(input);
   if (!parsed.success) {
     return { status: "error", error: "invalidInput" };
