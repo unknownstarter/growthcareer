@@ -7,7 +7,9 @@
  * 본 페이지는 LMS 운영 (회사 단위 정산 + invite) 에 집중.
  */
 import * as React from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useRouter, useParams } from "next/navigation";
+import type { Route } from "next";
 import { Mail, CheckCircle2, AlertCircle } from "lucide-react";
 import {
   Card,
@@ -41,6 +43,8 @@ type Props = {
 
 export function InstructorsDashboard({ instructors, companies }: Props) {
   const router = useRouter();
+  const params = useParams();
+  const locale = (params?.locale as string) ?? "ko";
   const [pending, startTransition] = React.useTransition();
   const [feedback, setFeedback] = React.useState<string | null>(null);
 
@@ -173,7 +177,16 @@ export function InstructorsDashboard({ instructors, companies }: Props) {
             <TableBody>
               {instructors.map((i) => (
                 <TableRow key={i.instructor_id}>
-                  <TableCell className="font-semibold">{i.name}</TableCell>
+                  <TableCell className="font-semibold">
+                    <Link
+                      href={
+                        `/${locale}/fan-to-pro/admin/instructors/${i.instructor_id}` as Route
+                      }
+                      className="text-[var(--foreground)] hover:text-[var(--primary)] hover:underline"
+                    >
+                      {i.name}
+                    </Link>
+                  </TableCell>
                   <TableCell className="text-[var(--muted-foreground)]">
                     {i.email ?? "-"}
                   </TableCell>
