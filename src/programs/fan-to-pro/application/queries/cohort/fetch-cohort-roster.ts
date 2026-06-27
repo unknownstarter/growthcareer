@@ -11,7 +11,6 @@
  *   - students list (display_name + applicant 정보 + 출석 통계)
  *   - 각 student × session attendance matrix (UI 가 표 렌더)
  */
-import { assertAdmin } from "@/src/programs/fan-to-pro/infrastructure/auth/admin-role";
 import { fetchCohortById } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-repository";
 import { fetchSessionsByCohort } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/session-repository";
 import { fetchStudentsByCohort } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/student-repository";
@@ -63,11 +62,18 @@ export type CohortRosterResult =
   | { status: "ok"; data: CohortRoster }
   | { status: "error"; error: string };
 
+/**
+ * 가드는 호출 page.tsx 에 위임:
+ *   - LMS surface (`(lms)/admin/cohorts/page.tsx`) — layout assertProgramAdmin + page assertProgramAdmin
+ *   - Basic Auth (`app/admin/cohorts/page.tsx`) — middleware Basic Auth + page assertAdmin
+ *
+ * 이전: 본 함수 첫 줄 `assertAdmin()` 으로 Basic Auth `x-admin-role` header 강제.
+ * LMS surface 는 Supabase Auth 라 header 없음 → throw → 500. 두 surface 가 같은
+ * query 를 공유하므로 가드를 호출처로 끌어올림 (2026-06-27 fix).
+ */
 export async function fetchCohortRoster(
   cohortId: string,
 ): Promise<CohortRosterResult> {
-  await assertAdmin();
-
   try {
     const cohort = await fetchCohortById(cohortId);
     if (!cohort) return { status: "error", error: "cohortNotFound" };
