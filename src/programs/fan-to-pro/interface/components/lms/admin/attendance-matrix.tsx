@@ -217,7 +217,20 @@ export function AttendanceMatrix({ sessions, students }: Props) {
       return next;
     });
 
-  async function onCellClick(
+  // cell click = OptionsDialog 열기 (status 선택 + late_minutes + notes + clear)
+  // 노아 요청 2026-06-27: cycle 보다 dropdown 이 직관적.
+  function onCellClick(student: CohortRosterStudentRow, session: Session) {
+    const k = cellKey(student.student.id, session.id);
+    setOptionsDialog({
+      student,
+      session,
+      currentStatus: matrix[k] ?? "unmarked",
+    });
+  }
+
+  // (legacy) cycle 동작은 OptionsDialog 안의 빠른 status 버튼으로 흡수됨.
+  // 본 함수는 더 이상 호출 안 함 — 향후 keyboard shortcut 또는 bulk action 에서 재사용 가능.
+  async function _cycleStatusAt(
     student: CohortRosterStudentRow,
     session: Session,
   ) {
@@ -397,10 +410,9 @@ export function AttendanceMatrix({ sessions, students }: Props) {
         <CardHeader className="pb-3">
           <CardTitle className="text-sm">사용 가이드</CardTitle>
           <CardDescription className="text-xs">
-            셀을 탭하면 미체크 → 출석 → 지각 → 결석 → 공결 → 미체크 순으로
-            바뀌어요. 회차 헤더의 [전원 출석] 버튼은 그 회차 모든 학생을 한
-            번에 출석으로 기록해요. 셀에서 우클릭(또는 길게 누르기)하면 지각
-            분 / 메모 입력 창이 열려요.
+            셀을 탭하면 상태 선택 창이 열려요 (출석 / 지각 / 결석 / 공결 / 미체크).
+            지각 분, 메모도 같은 창에서 입력 가능해요.
+            회차 헤더의 [전원 출석] 버튼은 그 회차 모든 학생을 한 번에 출석으로 기록해요.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2 pb-4">
@@ -572,8 +584,8 @@ export function AttendanceMatrix({ sessions, students }: Props) {
                                 onCellContextMenu(e, row, session)
                               }
                               disabled={pending}
-                              aria-label={`${row.student.display_name} ${session.idx ?? "?"}회차 ${meta.label}. 탭하면 다음 상태로 변경.`}
-                              title={`${meta.label} / 탭=다음 상태 / 우클릭=메모`}
+                              aria-label={`${row.student.display_name} ${session.idx ?? "?"}회차 ${meta.label}. 탭하면 상태 선택.`}
+                              title={`${meta.label} / 탭 = 상태 선택`}
                               className={cn(
                                 "relative flex h-12 w-full items-center justify-center rounded-md text-sm font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:ring-offset-1",
                                 meta.cellClass,
@@ -582,10 +594,7 @@ export function AttendanceMatrix({ sessions, students }: Props) {
                               {pending ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />
                               ) : (
-                                <span className="flex items-center gap-1">
-                                  <Icon className="h-3.5 w-3.5" />
-                                  <span>{meta.short}</span>
-                                </span>
+                                <Icon className="h-5 w-5" />
                               )}
                             </button>
                           </td>
