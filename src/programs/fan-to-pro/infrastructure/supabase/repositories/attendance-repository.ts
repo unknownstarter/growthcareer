@@ -131,3 +131,20 @@ export async function upsertAttendanceBulk(
   if (error) throw new Error(error.message);
   return (data ?? []).map((row) => AttendanceSchema.parse(row));
 }
+
+/**
+ * 출석 mark 삭제 (unmarked 상태로 되돌리기) — 운영자가 실수 mark 시 정정.
+ * (session_id, student_id) UNIQUE 기준 1 row 삭제. 없으면 no-op.
+ */
+export async function deleteAttendance(
+  sessionId: string,
+  studentId: string,
+): Promise<void> {
+  const supabase = requireClient();
+  const { error } = await supabase
+    .from(TABLE)
+    .delete()
+    .eq("session_id", sessionId)
+    .eq("student_id", studentId);
+  if (error) throw new Error(error.message);
+}

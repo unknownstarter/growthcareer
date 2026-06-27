@@ -16,6 +16,7 @@ import {
   Sparkles,
   Briefcase,
   User,
+  ClipboardCheck,
 } from "lucide-react";
 import { cn } from "@/src/programs/fan-to-pro/interface/components/lms/lib/utils";
 import type { LmsRole } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
@@ -38,6 +39,7 @@ function adminItems(locale: string): NavItem[] {
   return [
     { href: `${base}/dashboard`, label: "대시보드", icon: LayoutDashboard },
     { href: `${base}/cohorts`, label: "기수", icon: Layers },
+    { href: `${base}/attendance`, label: "출결", icon: ClipboardCheck },
     { href: `${base}/talent-pool`, label: "인재풀", icon: Sparkles },
     { href: `${base}/students`, label: "학생", icon: Users },
     { href: `${base}/instructors`, label: "강사", icon: GraduationCap },

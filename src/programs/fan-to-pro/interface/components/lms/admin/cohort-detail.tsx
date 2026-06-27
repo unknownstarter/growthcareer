@@ -17,7 +17,7 @@ import * as React from "react";
 import Link from "next/link";
 import type { Route } from "next";
 import { useParams, useRouter } from "next/navigation";
-import { FileText } from "lucide-react";
+import { FileText, ClipboardCheck } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -254,16 +254,24 @@ export function CohortDetail({ cohort, applicants, studentCount }: Props) {
           </p>
         </div>
         <div className="flex flex-col items-end gap-2">
-          <Button asChild variant="outline" size="sm">
-            <Link
-              href={
-                `/${locale}/fan-to-pro/admin/cohorts/${cohort.slug}/materials` as Route
-              }
-            >
-              <FileText className="h-3.5 w-3.5 mr-1.5" />
-              강의 자료
-            </Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button asChild variant="outline" size="sm">
+              <Link href={`/${locale}/fan-to-pro/admin/attendance` as Route}>
+                <ClipboardCheck className="h-3.5 w-3.5 mr-1.5" />
+                출결
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link
+                href={
+                  `/${locale}/fan-to-pro/admin/cohorts/${cohort.slug}/materials` as Route
+                }
+              >
+                <FileText className="h-3.5 w-3.5 mr-1.5" />
+                강의 자료
+              </Link>
+            </Button>
+          </div>
           <div className="text-right text-xs text-[var(--muted-foreground)]">
             slug: <code className="font-mono">{cohort.slug}</code>
           </div>
