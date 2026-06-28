@@ -229,6 +229,7 @@ function AttendanceDisplay({
   notes,
   isEn,
   sessionStatus,
+  isFutureByTime,
 }: {
   status: StudentSessionDetail["my_attendance"]["status"];
   lateMinutes: number | null;
