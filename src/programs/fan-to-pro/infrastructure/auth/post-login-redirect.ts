@@ -78,7 +78,10 @@ export async function resolvePostLoginRedirect(
       : cohortObj.programs;
     const programSlug = programObj?.slug ?? "fan-to-pro";
 
-    return `/${locale}/${programSlug}/${cohortObj.slug}/${target.role}/dashboard`;
+    // 학생 dashboard 페이지 미구현 — profile 로. instructor surface 도 1기 미구현 — student profile fallback.
+    // dashboard 페이지 신설 후 변경 예정.
+    const firstPage = target.role === "student" ? "profile" : "profile";
+    return `/${locale}/${programSlug}/${cohortObj.slug}/${target.role}/${firstPage}`;
   }
 
   // 어디에도 속하지 X.
