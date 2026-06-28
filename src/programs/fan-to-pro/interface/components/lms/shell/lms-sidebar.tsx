@@ -17,6 +17,7 @@ import {
   Briefcase,
   User,
   ClipboardCheck,
+  BookOpen,
 } from "lucide-react";
 import { cn } from "@/src/programs/fan-to-pro/interface/components/lms/lib/utils";
 import type { LmsRole } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
@@ -63,16 +64,13 @@ function instructorItems(locale: string, cohortSlug: string): NavItem[] {
 
 function studentItems(locale: string, cohortSlug: string): NavItem[] {
   const base = `/${locale}/fan-to-pro/${cohortSlug}/student`;
+  // 실 구현된 페이지만 노출. sessions / assignments / announcements / consulting /
+  // certificates 는 DB + 페이지 미구현 — 필요할 때 추가 (노아 룰 2026-06-28).
   return [
     { href: `${base}/dashboard`, label: "대시보드", icon: LayoutDashboard },
-    { href: `${base}/sessions`, label: "수업", icon: Layers },
-    { href: `${base}/assignments`, label: "과제", icon: FileText },
-    { href: `${base}/materials`, label: "자료", icon: FileText },
-    { href: `${base}/announcements`, label: "공지", icon: Megaphone },
-    { href: `${base}/consulting`, label: "컨설팅", icon: MessageSquare },
+    { href: `${base}/materials`, label: "수업 자료", icon: BookOpen },
     { href: `${base}/career`, label: "커리어 문서", icon: Briefcase },
     { href: `${base}/profile`, label: "내 프로필", icon: User },
-    { href: `${base}/certificates`, label: "수료증", icon: GraduationCap },
   ];
 }
 
