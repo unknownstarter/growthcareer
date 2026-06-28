@@ -99,7 +99,7 @@ export function LmsSidebar({ role }: { role: LmsRole }) {
 
   return (
     <aside className="hidden md:flex w-60 shrink-0 flex-col h-screen border-r border-[var(--border)] bg-[var(--background)]">
-      <div className="px-6 py-5 border-b border-[var(--border)]">
+      <div className="h-16 shrink-0 flex flex-col justify-center px-6 border-b border-[var(--border)]">
         <Link
           href={homeHref as Route}
           className="block text-base font-bold tracking-tight text-[var(--foreground)]"
