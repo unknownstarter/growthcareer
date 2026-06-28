@@ -4,7 +4,7 @@
  * LoadingOverlay 위에 list-style skeleton (KPI 카드 4 + 표 골격) 박음.
  * 페이지 별 detail loading (학생/강사/지원자 detail) 은 폴더에 별 loading.tsx 추가.
  */
-import { LoadingOverlay } from "@/src/programs/fan-to-pro/interface/components/lms/admin/loading-overlay";
+import { LoadingOverlay } from "@/src/programs/fan-to-pro/interface/components/lms/ui/loading-overlay";
 
 export default function AdminLoading() {
   return (

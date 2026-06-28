@@ -9,7 +9,7 @@ import {
   CardContent,
   CardHeader,
 } from "@/src/programs/fan-to-pro/interface/components/lms/ui/card";
-import { LoadingOverlay } from "@/src/programs/fan-to-pro/interface/components/lms/admin/loading-overlay";
+import { LoadingOverlay } from "@/src/programs/fan-to-pro/interface/components/lms/ui/loading-overlay";
 
 export function DetailLoading({ title }: { title: string }) {
   return (
