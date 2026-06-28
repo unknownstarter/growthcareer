@@ -78,10 +78,9 @@ export async function resolvePostLoginRedirect(
       : cohortObj.programs;
     const programSlug = programObj?.slug ?? "fan-to-pro";
 
-    // 학생 dashboard 페이지 미구현 — profile 로. instructor surface 도 1기 미구현 — student profile fallback.
-    // dashboard 페이지 신설 후 변경 예정.
-    const firstPage = target.role === "student" ? "profile" : "profile";
-    return `/${locale}/${programSlug}/${cohortObj.slug}/${target.role}/${firstPage}`;
+    // 학생 dashboard 신설 (B0058) — 로그인 직후 빠른 3 link (프로필/자료/커리어)
+    // 강사 surface 는 1기 미구현 — 일단 student dashboard 로 fallback (운영 영향 0).
+    return `/${locale}/${programSlug}/${cohortObj.slug}/student/dashboard`;
   }
 
   // 어디에도 속하지 X.
