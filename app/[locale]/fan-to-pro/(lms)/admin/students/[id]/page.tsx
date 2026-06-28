@@ -2,10 +2,7 @@ import type { Metadata } from "next";
 import type { Route } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  FileText as FileIcon,
-  Briefcase,
-} from "lucide-react";
+import { Briefcase } from "lucide-react";
 import { BackButton } from "@/src/programs/fan-to-pro/interface/components/lms/admin/back-button";
 import { StudentRealNameEdit } from "@/src/programs/fan-to-pro/interface/components/lms/admin/student-real-name-edit";
 import { assertProgramAdmin } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
@@ -14,6 +11,8 @@ import { fetchStudentProfile } from "@/src/programs/fan-to-pro/infrastructure/su
 import { fetchStudentCareerTarget } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/student-career-target-repository";
 import { fetchStudentResumeItems } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/student-resume-item-repository";
 import { fetchStudentNotes } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/student-note-repository";
+import { fetchCareerDocuments } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/career-document-repository";
+import { getStudentPhotoSignedUrlAction } from "@/src/programs/fan-to-pro/application/student-profile/get-photo-signed-url";
 import { StudentProfileView } from "@/src/programs/fan-to-pro/interface/components/lms/admin/student-profile-view";
 import { StudentNotesPanel } from "@/src/programs/fan-to-pro/interface/components/lms/admin/student-notes-panel";
 import {
@@ -54,12 +53,22 @@ export default async function AdminStudentDetailPage({
   const student = await fetchStudentById(id);
   if (!student) notFound();
 
-  const [profile, target, resumeItems, notes] = await Promise.all([
-    fetchStudentProfile(id).catch(() => null),
-    fetchStudentCareerTarget(id).catch(() => null),
-    fetchStudentResumeItems(id).catch(() => []),
-    fetchStudentNotes(id).catch(() => []),
-  ]);
+  const [profile, target, resumeItems, notes, careerDocuments, photoResult] =
+    await Promise.all([
+      fetchStudentProfile(id).catch(() => null),
+      fetchStudentCareerTarget(id).catch(() => null),
+      fetchStudentResumeItems(id).catch(() => []),
+      fetchStudentNotes(id).catch(() => []),
+      fetchCareerDocuments(id).catch(() => []),
+      // B0057: photo signed URL — 5분 TTL. 페이지 로드마다 새로 발급.
+      getStudentPhotoSignedUrlAction({ student_id: id }).catch(() => ({
+        status: "error" as const,
+        error: "fetchFailed",
+      })),
+    ]);
+
+  const photoUrl =
+    photoResult.status === "ok" ? photoResult.url : null;
 
   return (
     <PageContainer>
@@ -105,20 +114,12 @@ export default async function AdminStudentDetailPage({
             profile={profile}
             target={target}
             resumeItems={resumeItems}
+            photoUrl={photoUrl}
+            careerDocuments={careerDocuments}
           />
         </div>
         <div className="lg:col-span-1 space-y-6">
           <StudentNotesPanel studentId={id} initialNotes={notes} />
-          <div className="rounded-[var(--radius)] border border-dashed border-[var(--border)] bg-[var(--card)] p-5">
-            <div className="flex items-center gap-2 text-sm font-semibold text-[var(--foreground)]">
-              <FileIcon className="h-4 w-4 text-[var(--muted-foreground)]" />
-              관련 자료
-            </div>
-            <p className="mt-2 text-xs text-[var(--muted-foreground)] leading-relaxed">
-              학생의 이력서 / 자기소개서 / 포트폴리오 파일은 [커리어 문서]
-              페이지에서 별도로 관리합니다.
-            </p>
-          </div>
         </div>
       </div>
     </PageContainer>

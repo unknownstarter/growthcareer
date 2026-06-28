@@ -73,7 +73,11 @@ export async function uploadCareerFileAction(
   // ----- 3. 파일 검증 (서버 측 재검증) -----
   const fileSize = file.size;
   const fileMime = file.type;
-  const fileError = validateFileInput({ size: fileSize, mime: fileMime });
+  const fileError = validateFileInput({
+    size: fileSize,
+    mime: fileMime,
+    type: doc_type,
+  });
   if (fileError) return { status: "error", error: fileError };
 
   // ----- 4. 기존 파일 정리 + 업로드 -----

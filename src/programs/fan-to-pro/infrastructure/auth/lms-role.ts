@@ -283,13 +283,16 @@ export async function assertCanAccessStudentCareer(
     .eq("program_id", programId)
     .eq("role", "admin")
     .maybeSingle();
+  if (pm) return user;
 
-  if (!pm) {
-    throw new Error(
-      `[lms-role] forbidden: user ${user.id} cannot access student ${studentId} career.`,
-    );
-  }
-  return user;
+  // cohort 의 instructor 도 career 문서 read 가능 (노아 요구 2026-06-28).
+  const cohortId = (student as { cohort_id: string }).cohort_id;
+  const cohortRole = await getCohortMembershipRole(user.id, cohortId);
+  if (cohortRole === "instructor") return user;
+
+  throw new Error(
+    `[lms-role] forbidden: user ${user.id} cannot access student ${studentId} career.`,
+  );
 }
 
 // -------------------------------------------------------------------------

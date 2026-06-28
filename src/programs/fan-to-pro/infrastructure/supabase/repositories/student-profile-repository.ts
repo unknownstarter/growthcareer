@@ -71,6 +71,10 @@ export async function upsertStudentProfile(
       input.months_in_korea !== undefined
         ? input.months_in_korea
         : (existing?.months_in_korea ?? null),
+    // B0057: 사진 컬럼은 upsertProfileAction 으로 변경 X — 별도 server action
+    // (uploadStudentPhotoAction / deleteStudentPhotoAction). 여기선 existing 값 보존만.
+    photo_path: existing?.photo_path ?? null,
+    photo_uploaded_at: existing?.photo_uploaded_at ?? null,
   };
 
   const { data, error } = await supabase
@@ -81,3 +85,7 @@ export async function upsertStudentProfile(
   if (error) throw new Error(error.message);
   return StudentProfileSchema.parse(data);
 }
+
+// ---------- B0057: photo --------------------------------------------------
+// upload-photo.ts server action 이 직접 supabase.from('student_profile').update()
+// 패턴을 씀 — repository 추가 helper 불필요. signed URL 발급 / delete 도 같은 패턴.

@@ -50,6 +50,10 @@ export const StudentProfileSchema = z.object({
     .min(MIN_MONTHS_IN_KOREA)
     .max(MAX_MONTHS_IN_KOREA)
     .nullable(),
+  // B0057: 학생 사진 (원티드 패턴). Supabase Storage 'student-photos' bucket path.
+  // signed URL 은 별도 server action 으로 5분 TTL 발급. UI 직접 노출 X.
+  photo_path: z.string().nullable(),
+  photo_uploaded_at: z.string().nullable(),
   created_at: z.string(),
   updated_at: z.string().nullable(),
 });

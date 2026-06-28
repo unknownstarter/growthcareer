@@ -21,6 +21,7 @@ import { Button } from "@/src/programs/fan-to-pro/interface/components/lms/ui/bu
 import { Input } from "@/src/programs/fan-to-pro/interface/components/lms/ui/input";
 import { Label } from "@/src/programs/fan-to-pro/interface/components/lms/ui/label";
 import { upsertStudentProfileAction } from "@/src/programs/fan-to-pro/application/student-profile/upsert-profile";
+import { StudentPhotoUpload } from "@/src/programs/fan-to-pro/interface/components/lms/student/student-photo-upload";
 import {
   MAX_BIRTH_YEAR,
   MAX_MONTHS_IN_KOREA,
@@ -51,6 +52,10 @@ type Props = {
   /** 신청서 원본 이름 (students.display_name = applicants.name) — 영문 이름 자동 채움. */
   originalName: string;
   locale: string;
+  /** B0057 사진 signed URL (5분 TTL). 페이지 server component 가 미리 발급. */
+  initialPhotoUrl?: string | null;
+  /** B0057 사진 컴포넌트 mode — admin 페이지에선 운영자 안내 라벨 노출. */
+  photoMode?: "self" | "admin";
 };
 
 export function StudentProfileForm({
@@ -58,6 +63,8 @@ export function StudentProfileForm({
   initialProfile,
   originalName,
   locale,
+  initialPhotoUrl = null,
+  photoMode = "self",
 }: Props) {
   const router = useRouter();
   const [pending, startTransition] = React.useTransition();
@@ -140,6 +147,34 @@ export function StudentProfileForm({
             {error}
           </div>
         ) : null}
+        {/* B0057 사진 영역 — 폼 mutation 과 독립. 사진 영역 자체 server action 사용. */}
+        <div className="mb-6 flex flex-col items-center gap-4 rounded-[var(--radius-sm)] border border-dashed border-[var(--border)] bg-[var(--background)] p-6 sm:flex-row sm:items-center sm:justify-start sm:gap-8">
+          <StudentPhotoUpload
+            studentId={studentId}
+            initialPhotoUrl={initialPhotoUrl}
+            displayName={
+              initialProfile?.name_ko ?? initialProfile?.name_en ?? originalName
+            }
+            locale={locale}
+            mode={photoMode}
+          />
+          <div className="flex-1 space-y-1 text-center sm:text-left">
+            <h3 className="text-sm font-bold text-[var(--foreground)]">
+              {isEn ? "Profile photo" : "프로필 사진"}
+            </h3>
+            <p className="text-xs text-[var(--muted-foreground)] leading-relaxed">
+              {isEn
+                ? "Optional. Used in operator dashboard, attendance, and instructor introductions. Not shown publicly."
+                : "선택 사항. 운영자 대시보드 / 출석 체크 / 강사 소개 시 사용해요. 외부에는 공개되지 않습니다."}
+            </p>
+            <p className="text-[11px] text-[var(--muted-foreground)] leading-relaxed">
+              {isEn
+                ? "Upload only square-style headshots. Other photos auto-fit but corners may look awkward."
+                : "정사각형 프로필 사진을 업로드하면 가장 깔끔해요. 다른 비율도 자동으로 맞춰지지만 모서리가 잘릴 수 있습니다."}
+            </p>
+          </div>
+        </div>
+
         <form action={onSubmit} className="space-y-5">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">

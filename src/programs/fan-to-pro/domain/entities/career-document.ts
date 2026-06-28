@@ -35,7 +35,9 @@ export const ALLOWED_MIME_TYPES = [
   "application/pdf",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // docx
   "application/vnd.openxmlformats-officedocument.presentationml.presentation", // pptx
+  "application/vnd.ms-powerpoint", // ppt (legacy)
   "application/zip",
+  "application/x-zip-compressed", // Windows 변형
   "image/jpeg",
   "image/png",
   "image/webp",
@@ -47,13 +49,39 @@ export const MIME_TO_EXT: Record<string, string> = {
   "application/pdf": "pdf",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
   "application/vnd.openxmlformats-officedocument.presentationml.presentation": "pptx",
+  "application/vnd.ms-powerpoint": "ppt",
   "application/zip": "zip",
+  "application/x-zip-compressed": "zip",
   "image/jpeg": "jpg",
   "image/png": "png",
   "image/webp": "webp",
 };
 
-export const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MiB
+/**
+ * Type-별 size cap (B0057).
+ *   - resume / cover_letter: 5MB (워크넷 · 잡코리아 표준)
+ *   - portfolio:           50MB (원티드 표준, 큰 PDF/PPTX/ZIP 대응)
+ *
+ * Bucket-level cap 은 50MB (가장 큰 type 기준). application 레이어가
+ * type 별로 좁혀 적용 — 서버 측 재검증 필수.
+ */
+export const MAX_FILE_SIZE_BYTES_RESUME = 5 * 1024 * 1024;
+export const MAX_FILE_SIZE_BYTES_COVER_LETTER = 5 * 1024 * 1024;
+export const MAX_FILE_SIZE_BYTES_PORTFOLIO = 50 * 1024 * 1024;
+
+/** @deprecated B0057 이전 호환용. type 별 cap 우선 — maxFileSizeForDocType() 사용 권장. */
+export const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_BYTES_RESUME;
+
+export function maxFileSizeForDocType(type: CareerDocType): number {
+  switch (type) {
+    case "resume":
+      return MAX_FILE_SIZE_BYTES_RESUME;
+    case "cover_letter":
+      return MAX_FILE_SIZE_BYTES_COVER_LETTER;
+    case "portfolio":
+      return MAX_FILE_SIZE_BYTES_PORTFOLIO;
+  }
+}
 
 export const CareerDocumentSchema = z
   .object({
@@ -86,14 +114,21 @@ export type CareerDocument = z.infer<typeof CareerDocumentSchema>;
 /**
  * 파일 입력 검증 — server-side 재검증 (브라우저 검증만 신뢰 X, CLAUDE.md §7.4).
  *
+ * B0057: doc_type 받아 type 별 cap 적용. type 미지정이면 가장 보수적인
+ * resume cap (5MB) 사용 — 호환성.
+ *
  * @returns null 이면 통과. string 이면 error code.
  */
 export function validateFileInput(input: {
   size: number;
   mime: string;
+  type?: CareerDocType;
 }): string | null {
   if (input.size <= 0) return "fileEmpty";
-  if (input.size > MAX_FILE_SIZE_BYTES) return "fileTooLarge";
+  const cap = input.type
+    ? maxFileSizeForDocType(input.type)
+    : MAX_FILE_SIZE_BYTES_RESUME;
+  if (input.size > cap) return "fileTooLarge";
   if (!(ALLOWED_MIME_TYPES as readonly string[]).includes(input.mime)) {
     return "mimeNotAllowed";
   }

@@ -17,9 +17,11 @@ import {
 import {
   StudentResumeItemsEditor,
 } from "@/src/programs/fan-to-pro/interface/components/lms/student/student-resume-items-editor";
+import { StudentCareerDocsPanel } from "@/src/programs/fan-to-pro/interface/components/lms/student/student-career-docs-panel";
 import type { StudentProfile } from "@/src/programs/fan-to-pro/domain/entities/student-profile";
 import type { StudentCareerTarget } from "@/src/programs/fan-to-pro/domain/entities/student-career-target";
 import type { StudentResumeItem } from "@/src/programs/fan-to-pro/domain/entities/student-resume-item";
+import type { CareerDocument } from "@/src/programs/fan-to-pro/domain/entities/career-document";
 
 type Props = {
   studentId: string;
@@ -28,6 +30,10 @@ type Props = {
   profile: StudentProfile | null;
   target: StudentCareerTarget | null;
   resumeItems: StudentResumeItem[];
+  /** B0057 사진 signed URL — admin 페이지에서 미리 발급. */
+  photoUrl?: string | null;
+  /** B0057 career documents — admin 페이지에서 미리 fetch. */
+  careerDocuments?: CareerDocument[];
 };
 
 export function StudentProfileView({
@@ -36,6 +42,8 @@ export function StudentProfileView({
   profile,
   target,
   resumeItems,
+  photoUrl = null,
+  careerDocuments = [],
 }: Props) {
   // admin 은 항상 KO locale (admin surface 라이트 토스 톤, 한국어 운영).
   const locale = "ko";
@@ -46,6 +54,8 @@ export function StudentProfileView({
         initialProfile={profile}
         originalName={originalName}
         locale={locale}
+        initialPhotoUrl={photoUrl}
+        photoMode="admin"
       />
       <StudentCareerTargetForm
         studentId={studentId}
@@ -55,6 +65,13 @@ export function StudentProfileView({
       <StudentResumeItemsEditor
         studentId={studentId}
         initialItems={resumeItems}
+        locale={locale}
+      />
+      <StudentCareerDocsPanel
+        studentId={studentId}
+        studentName={profile?.name_ko ?? profile?.name_en ?? originalName}
+        initialDocuments={careerDocuments}
+        mode="admin"
         locale={locale}
       />
     </div>

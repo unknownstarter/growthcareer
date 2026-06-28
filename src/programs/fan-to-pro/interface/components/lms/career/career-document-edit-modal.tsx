@@ -23,7 +23,7 @@ import { Label } from "@/src/programs/fan-to-pro/interface/components/lms/ui/lab
 import {
   CAREER_DOC_LABELS,
   ALLOWED_MIME_TYPES,
-  MAX_FILE_SIZE_BYTES,
+  maxFileSizeForDocType,
   validateFileInput,
   type CareerDocType,
   type CareerDocument,
@@ -87,6 +87,7 @@ export function CareerDocumentEditModal({
   const label = CAREER_DOC_LABELS[docType];
   const titlePrefix = existing ? "수정" : "등록";
   const subjectName = mode === "admin" ? `${studentName} 학생의 ` : "";
+  const capMb = (maxFileSizeForDocType(docType) / 1024 / 1024).toFixed(0);
 
   function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0] ?? null;
@@ -95,10 +96,16 @@ export function CareerDocumentEditModal({
       setFileError(null);
       return;
     }
-    const err = validateFileInput({ size: f.size, mime: f.type });
+    // B0057: doc_type 별 cap 적용.
+    const err = validateFileInput({
+      size: f.size,
+      mime: f.type,
+      type: docType ?? undefined,
+    });
     if (err === "fileTooLarge") {
+      const capMb = docType ? maxFileSizeForDocType(docType) / 1024 / 1024 : 5;
       setFileError(
-        `파일이 너무 큽니다. ${(MAX_FILE_SIZE_BYTES / 1024 / 1024).toFixed(0)} MB 이하만 가능합니다.`,
+        `파일이 너무 큽니다. ${capMb.toFixed(0)} MB 이하만 가능합니다.`,
       );
     } else if (err === "mimeNotAllowed") {
       setFileError(
@@ -207,7 +214,7 @@ export function CareerDocumentEditModal({
                 onClick={() => setMethod("file_upload")}
                 icon={<Upload className="h-4 w-4" />}
                 label="파일 업로드"
-                sub="PDF, DOCX, PPTX 등 10MB 이하"
+                sub={`PDF, DOCX, PPTX 등 ${capMb}MB 이하`}
               />
             </div>
           </div>
