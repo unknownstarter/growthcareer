@@ -101,8 +101,10 @@ function PnlSection({
   expenses: CohortExpense[];
 }) {
   const counted = expenses.filter((e) => isCountedAsExpense(e.status));
+  const planned = expenses.filter((e) => e.status === "planned");
   const costExclusive = counted.reduce((s, e) => s + e.amount_krw, 0);
   const vatInput = counted.reduce((s, e) => s + e.vat_krw, 0);
+  const plannedTotal = planned.reduce((s, e) => s + e.amount_krw + e.vat_krw, 0);
 
   // 부가세 납부 = 매출세액 - 매입세액 (음수면 환급, 정책상 0 floor 로 표시).
   const vatPayable = revenue.vat_output_krw - vatInput;
@@ -121,14 +123,23 @@ function PnlSection({
       <CardHeader>
         <CardTitle className="text-base">손익 요약 ({cohort.name})</CardTitle>
         <CardDescription>
-          매출 = 입금 완료 수강료 합. 비용 = 확정 / 지급 완료 entry 합.
-          부가세 (10%) 와 종합소득세 (6%) 추정치 포함.
+          매출 = 입금 완료 수강료 합. 비용 = <strong>status 가 확정 또는 지급 완료</strong> 인 entry 만 합산
+          (예정 entry 는 손익에서 제외). 부가세 (10%) 와 종합소득세 (6%) 추정치 포함.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <Kpi label="매출 (VAT 별도)" value={revenue.revenue_exclusive_krw} hint={`입금 ${revenue.paid_count}명`} tone="positive" />
-          <Kpi label="비용 (VAT 별도)" value={costExclusive} hint={`${counted.length}건 인정`} tone="negative" />
+          <Kpi
+            label="비용 (VAT 별도)"
+            value={costExclusive}
+            hint={
+              planned.length > 0
+                ? `확정 ${counted.length}건 / 예정 ${planned.length}건 (₩${plannedTotal.toLocaleString("ko-KR")}) 별도`
+                : `${counted.length}건 인정`
+            }
+            tone="negative"
+          />
           <Kpi label="부가세 납부 (예상)" value={Math.max(0, vatPayable)} hint={`매출세액 ${revenue.vat_output_krw.toLocaleString()} - 매입세액 ${vatInput.toLocaleString()}`} tone="neutral" />
           <Kpi label="순익 (세후 추정)" value={profitAfterTax} hint={`세전 ${profitBeforeTax.toLocaleString()} - 소득세 ${estimatedIncomeTax.toLocaleString()}`} tone="positive" />
         </div>
@@ -138,6 +149,11 @@ function PnlSection({
           <p><strong>매출세액 (1/11):</strong> {revenue.vat_output_krw.toLocaleString("ko-KR")}원 / <strong>매입세액 (vat 합):</strong> {vatInput.toLocaleString("ko-KR")}원</p>
           <p><strong>부가세 납부 = 매출세액 - 매입세액:</strong> {vatPayable.toLocaleString("ko-KR")}원 {vatPayable < 0 ? "(환급)" : ""}</p>
           <p><strong>순익 (세전) = 매출 (VAT 별도) - 비용 (VAT 별도):</strong> {profitBeforeTax.toLocaleString("ko-KR")}원</p>
+          {planned.length > 0 ? (
+            <p className="pt-1 mt-1 border-t border-[var(--border)] text-[#b54708]">
+              ⚠ 비용 entry 의 <strong>예정 {planned.length}건 (₩{plannedTotal.toLocaleString("ko-KR")})</strong> 은 손익에서 제외됨. 실제 발생 / 지급 시 status 를 <strong>확정</strong> 또는 <strong>지급 완료</strong> 로 변경하면 자동 반영.
+            </p>
+          ) : null}
           <p className="pt-1 border-t border-[var(--border)] mt-1">
             ※ 종합소득세는 누진세 (6%~45%) - 본 추정은 14M 이하 6% 단순화. 실제는 다른 사업소득 / 공제 포함 계산. 세무사 위탁 또는 홈택스 모의 계산 권장.
           </p>
