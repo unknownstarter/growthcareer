@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Briefcase } from "lucide-react";
 import { BackButton } from "@/src/programs/fan-to-pro/interface/components/lms/admin/back-button";
 import { StudentRealNameEdit } from "@/src/programs/fan-to-pro/interface/components/lms/admin/student-real-name-edit";
+import { ResumeImportButton } from "@/src/programs/fan-to-pro/interface/components/lms/admin/resume-import-button";
 import { assertProgramAdmin } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
 import { fetchStudentById } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/student-repository";
 import { fetchStudentProfile } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/student-profile-repository";
@@ -92,6 +93,7 @@ export default async function AdminStudentDetailPage({
               studentId={id}
               currentName={student.display_name}
             />
+            <ResumeImportButton studentId={id} />
             <Button asChild variant="outline" className="h-12">
               <Link
                 href={
