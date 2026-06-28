@@ -26,9 +26,9 @@ const BASE =
 // 라우트 + 기대 코드 (200 또는 302). 404/500 = fail.
 const ROUTES = [
   // 마케팅
-  { path: "/ko", expect: [200] },
+  { path: "/ko", expect: [200, 307] }, // next-intl locale redirect 가능
   { path: "/ko/fan-to-pro", expect: [200] },
-  { path: "/en/fan-to-pro", expect: [200] },
+  { path: "/en/fan-to-pro", expect: [200, 307] },
   { path: "/ko/privacy", expect: [200] },
   { path: "/ko/terms", expect: [200] },
 
