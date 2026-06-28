@@ -88,6 +88,7 @@ export function StudentCareerTargetForm({
     setFeedback(null);
     setError(null);
     const roleRaw = String(formData.get("target_role_category") ?? "").trim();
+    const roleTextRaw = String(formData.get("target_role_text") ?? "").trim();
     const startRaw = String(formData.get("desired_start_date") ?? "").trim();
     const pitchVal = pitch.trim();
 
@@ -96,6 +97,7 @@ export function StudentCareerTargetForm({
         student_id: studentId,
         target_role_category:
           roleRaw.length > 0 ? (roleRaw as TargetRoleCategory) : null,
+        target_role_text: roleTextRaw.length > 0 ? roleTextRaw : null,
         target_companies: companies,
         desired_start_date: startRaw.length > 0 ? startRaw : null,
         self_pitch: pitchVal.length > 0 ? pitchVal : null,
@@ -157,6 +159,23 @@ export function StudentCareerTargetForm({
                   </option>
                 ))}
               </select>
+              <Input
+                id="target_role_text"
+                name="target_role_text"
+                maxLength={200}
+                defaultValue={initialTarget?.target_role_text ?? ""}
+                placeholder={
+                  isEn
+                    ? "Original text (if enum not matched, free-form preserved)"
+                    : "원본 표기 (예: \"공연 PD + A&R 병행\")"
+                }
+                className="h-10 text-xs"
+              />
+              <p className="text-[11px] text-[var(--muted-foreground)]">
+                {isEn
+                  ? "Auto-filled from docx import when enum does not match. Free-form text preserved."
+                  : "docx import 시 enum 매칭 실패하면 원본 표기가 그대로 저장돼요. 직접 추가/수정 가능."}
+              </p>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="desired_start_date" className="text-xs">
