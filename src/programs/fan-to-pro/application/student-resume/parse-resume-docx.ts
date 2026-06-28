@@ -851,15 +851,34 @@ function buildItemFromGroup(
       }
     }
 
-    // title 미설정이면 첫 의미 있는 줄.
-    if (!item.title) {
-      item.title = clipText(line, 200) ?? "";
-      continue;
-    }
-    // organization 미설정이면 둘째 줄.
-    if (!item.organization && i <= 2) {
-      item.organization = clipText(line, 200);
-      continue;
+    // education / certification / award / language 는 organization (학교/발급기관/주최/시험기관)
+    // 이 first-class 정보. 첫 의미 있는 줄을 organization 으로 우선 매핑.
+    // entity 주석 (student-resume-item.ts): education school=organization, 학위/전공=title.
+    // experience / project / activity / skill 은 title (직무/역할/도구) 이 first-class.
+    const orgFirst =
+      type === "education" ||
+      type === "certification" ||
+      type === "award" ||
+      type === "language";
+
+    if (orgFirst) {
+      if (!item.organization) {
+        item.organization = clipText(line, 200);
+        continue;
+      }
+      if (!item.title) {
+        item.title = clipText(line, 200) ?? "";
+        continue;
+      }
+    } else {
+      if (!item.title) {
+        item.title = clipText(line, 200) ?? "";
+        continue;
+      }
+      if (!item.organization && i <= 2) {
+        item.organization = clipText(line, 200);
+        continue;
+      }
     }
     // 나머지 → description 누적.
     item.description = item.description

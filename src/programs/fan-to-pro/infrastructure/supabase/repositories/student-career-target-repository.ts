@@ -43,6 +43,10 @@ export async function upsertStudentCareerTarget(
       input.target_role_category !== undefined
         ? input.target_role_category
         : (existing?.target_role_category ?? null),
+    target_role_text:
+      input.target_role_text !== undefined
+        ? input.target_role_text
+        : (existing?.target_role_text ?? null),
     target_companies:
       input.target_companies !== undefined
         ? input.target_companies

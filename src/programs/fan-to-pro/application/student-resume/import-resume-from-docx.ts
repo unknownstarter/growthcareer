@@ -205,6 +205,7 @@ async function applyParsedResume(
   const targetBase = stripNulls({
     student_id: studentId,
     target_role_category: parsed.career_target.target_role_category,
+    target_role_text: parsed.career_target.target_role_text,
     desired_start_date: parsed.career_target.desired_start_date,
     self_pitch: parsed.career_target.self_pitch,
   }) as Record<string, unknown>;

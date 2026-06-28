@@ -37,6 +37,8 @@ export const TARGET_ROLE_LABELS: Record<TargetRoleCategory, string> = {
 export const StudentCareerTargetSchema = z.object({
   student_id: z.string().uuid(),
   target_role_category: TargetRoleCategorySchema.nullable(),
+  /** B0064 — enum 매칭 실패 시 학생 입력 원본 보존 (예: "공연 PD + A&R 병행"). */
+  target_role_text: z.string().max(200).nullable(),
   target_companies: z.array(z.string().trim().min(1).max(100)),
   desired_start_date: z.string().nullable(),
   self_pitch: z.string().max(300).nullable(),
@@ -49,6 +51,8 @@ export type StudentCareerTarget = z.infer<typeof StudentCareerTargetSchema>;
 export const StudentCareerTargetUpsertInputSchema = z.object({
   student_id: z.string().uuid(),
   target_role_category: TargetRoleCategorySchema.nullable().optional(),
+  /** B0064 — enum 매칭 실패 시 원본 텍스트 (운영자 정정 X). */
+  target_role_text: z.string().trim().max(200).nullable().optional(),
   // ISO date (YYYY-MM-DD) 또는 null. zod refine 으로 형식 검증.
   target_companies: z
     .array(z.string().trim().min(1).max(100))
