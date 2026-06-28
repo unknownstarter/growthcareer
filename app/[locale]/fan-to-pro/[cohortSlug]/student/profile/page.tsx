@@ -13,6 +13,8 @@ import { fetchCareerDocuments } from "@/src/programs/fan-to-pro/infrastructure/s
 import { getStudentPhotoSignedUrlAction } from "@/src/programs/fan-to-pro/application/student-profile/get-photo-signed-url";
 import { StudentProfileForm } from "@/src/programs/fan-to-pro/interface/components/lms/student/student-profile-form";
 import { StudentRealNameEdit } from "@/src/programs/fan-to-pro/interface/components/lms/admin/student-real-name-edit";
+import Link from "next/link";
+import { FileText } from "lucide-react";
 import { StudentCareerTargetForm } from "@/src/programs/fan-to-pro/interface/components/lms/student/student-career-target-form";
 import { StudentResumeItemsEditor } from "@/src/programs/fan-to-pro/interface/components/lms/student/student-resume-items-editor";
 import { StudentCareerDocsPanel } from "@/src/programs/fan-to-pro/interface/components/lms/student/student-career-docs-panel";
@@ -49,7 +51,7 @@ export default async function StudentProfilePage({
 }: {
   params: Promise<{ locale: string; cohortSlug: string }>;
 }) {
-  const { locale } = await params;
+  const { locale, cohortSlug } = await params;
   const user = await getLmsUser();
   if (!user) redirect(`/${locale}/auth/login` as Route);
 
@@ -126,10 +128,21 @@ export default async function StudentProfilePage({
             : "프로필을 채우면 운영진이 취업 매칭 / 문서 첨삭 시 활용해요."
         }
         action={
-          <StudentRealNameEdit
-            studentId={student.id}
-            currentName={student.display_name}
-          />
+          <div className="flex items-center gap-2">
+            <Link
+              href={
+                `/${locale}/fan-to-pro/${cohortSlug}/student/profile/print` as Route
+              }
+              className="inline-flex items-center gap-1.5 rounded-md border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm font-semibold text-[var(--foreground)] hover:bg-[var(--secondary)] transition-colors"
+            >
+              <FileText className="h-4 w-4" />
+              {isEn ? "Print / PDF" : "이력서 인쇄 / PDF"}
+            </Link>
+            <StudentRealNameEdit
+              studentId={student.id}
+              currentName={student.display_name}
+            />
+          </div>
         }
       />
 
