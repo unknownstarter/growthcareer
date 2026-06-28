@@ -60,9 +60,16 @@ export function StudentSessionDetailView({ detail, cohortSlug, locale }: Props) 
   const backHref = `/${locale}/fan-to-pro/${cohortSlug}/student/sessions` as Route;
   const { session, instructor, my_attendance, materials } = detail;
 
+  // status enum 외에 실시간 시각 비교도 같이 — 운영자가 status 수동 변경 안 해도 자동 분기.
+  const nowMs = Date.now();
+  const startsMs = new Date(session.starts_at).getTime();
+  const endsMs = new Date(session.ends_at).getTime();
   const isCancelled = session.status === "cancelled";
-  const isInProgress = session.status === "in_progress";
-  const isEnded = session.status === "ended";
+  const timeStarted = nowMs >= startsMs;
+  const timeEnded = nowMs >= endsMs;
+  const isFuture = !isCancelled && !timeStarted;
+  const isInProgress = !isCancelled && timeStarted && !timeEnded;
+  const isEnded = !isCancelled && timeEnded;
 
   return (
     <div className="space-y-6">
@@ -164,6 +171,7 @@ export function StudentSessionDetailView({ detail, cohortSlug, locale }: Props) 
             notes={my_attendance.notes}
             isEn={isEn}
             sessionStatus={session.status}
+            isFutureByTime={isFuture}
           />
         </CardContent>
       </Card>
@@ -228,11 +236,17 @@ function AttendanceDisplay({
   notes: string | null;
   isEn: boolean;
   sessionStatus: StudentSessionDetail["session"]["status"];
+  /** 부모에서 시각 기반 (now < starts_at) 계산한 결과. status enum 보다 우선. */
+  isFutureByTime?: boolean;
 }) {
   const meta = ATTENDANCE_META[status];
 
   if (status === "unmarked") {
-    const isFuture = sessionStatus === "scheduled";
+    // 시각 우선 + status enum 보조 (운영자가 in_progress/ended 박은 케이스).
+    const isFuture =
+      typeof isFutureByTime === "boolean"
+        ? isFutureByTime
+        : sessionStatus === "scheduled";
     return (
       <div className="rounded-[var(--radius)] bg-[var(--secondary)] p-4 flex items-start gap-3">
         <AlertCircle
