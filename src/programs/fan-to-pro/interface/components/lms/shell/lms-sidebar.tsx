@@ -64,13 +64,16 @@ function instructorItems(locale: string, cohortSlug: string): NavItem[] {
 
 function studentItems(locale: string, cohortSlug: string): NavItem[] {
   const base = `/${locale}/fan-to-pro/${cohortSlug}/student`;
-  // 실 구현된 페이지만 노출. sessions / assignments / announcements / consulting /
-  // certificates 는 DB + 페이지 미구현 — 필요할 때 추가 (노아 룰 2026-06-28).
+  // assignments / consulting 은 운영 미정 — 제외. 나머지는 placeholder 페이지로
+  // 노아 룰: sessions / announcements / certificates 는 "준비 중" 안내라도 보임.
   return [
     { href: `${base}/dashboard`, label: "대시보드", icon: LayoutDashboard },
+    { href: `${base}/sessions`, label: "수업", icon: Layers },
     { href: `${base}/materials`, label: "수업 자료", icon: BookOpen },
+    { href: `${base}/announcements`, label: "공지", icon: Megaphone },
     { href: `${base}/career`, label: "커리어 문서", icon: Briefcase },
     { href: `${base}/profile`, label: "내 프로필", icon: User },
+    { href: `${base}/certificates`, label: "수료증", icon: GraduationCap },
   ];
 }
 
