@@ -78,6 +78,12 @@
     color: var(--color-fg);
   }
 
+  /* LMS (라이트 토스 톤) 안에서는 selection 색깔 = Toss 블루 (자주/핑크 부적합) */
+  [data-theme="light"] ::selection {
+    background-color: #d4e7ff;
+    color: #1a1d23;
+  }
+
   *:focus-visible {
     outline: 2px solid var(--color-brand-purple);
     outline-offset: 4px;

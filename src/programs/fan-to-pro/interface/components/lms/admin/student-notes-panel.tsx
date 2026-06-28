@@ -54,6 +54,12 @@ export function StudentNotesPanel({ studentId, initialNotes }: Props) {
   const [body, setBody] = React.useState("");
   const [pinNew, setPinNew] = React.useState(false);
   const [editing, setEditing] = React.useState<Record<string, boolean>>({});
+  // local state — server refresh 만으로는 client mount 안 됨. mutation 후 즉시 갱신.
+  const [notes, setNotes] = React.useState<StudentNote[]>(initialNotes);
+  // server refetch 시 props 가 새로 들어오면 동기화 (다른 운영자가 다른 탭에서 추가한 경우 등).
+  React.useEffect(() => {
+    setNotes(initialNotes);
+  }, [initialNotes]);
 
   function toggleEdit(id: string, on: boolean) {
     setEditing((s) => ({ ...s, [id]: on }));
@@ -101,6 +107,9 @@ export function StudentNotesPanel({ studentId, initialNotes }: Props) {
         setError(`수정 실패. ${result.error}`);
         return;
       }
+      setNotes((prev) =>
+        prev.map((n) => (n.id === note.id ? { ...n, body: trimmed } : n)),
+      );
       toggleEdit(note.id, false);
       setFeedback("수정 완료.");
       router.refresh();
@@ -117,6 +126,7 @@ export function StudentNotesPanel({ studentId, initialNotes }: Props) {
         setError(`삭제 실패. ${result.error}`);
         return;
       }
+      setNotes((prev) => prev.filter((n) => n.id !== note.id));
       setFeedback("삭제 완료.");
       router.refresh();
     });
@@ -125,15 +135,19 @@ export function StudentNotesPanel({ studentId, initialNotes }: Props) {
   function onTogglePin(note: StudentNote) {
     setError(null);
     setFeedback(null);
+    const nextPinned = !note.is_pinned;
     startTransition(async () => {
       const result = await toggleStudentNotePinAction({
         id: note.id,
-        is_pinned: !note.is_pinned,
+        is_pinned: nextPinned,
       });
       if (result.status === "error") {
         setError(`핀 변경 실패. ${result.error}`);
         return;
       }
+      setNotes((prev) =>
+        prev.map((n) => (n.id === note.id ? { ...n, is_pinned: nextPinned } : n)),
+      );
       router.refresh();
     });
   }
@@ -200,13 +214,13 @@ export function StudentNotesPanel({ studentId, initialNotes }: Props) {
         </div>
 
         {/* timeline */}
-        {initialNotes.length === 0 ? (
+        {notes.length === 0 ? (
           <p className="py-8 text-center text-sm text-[var(--muted-foreground)]">
             아직 코멘트가 없습니다.
           </p>
         ) : (
           <div className="space-y-3">
-            {initialNotes.map((note) => {
+            {notes.map((note) => {
               const isEditing = editing[note.id];
               return (
                 <NoteCard
