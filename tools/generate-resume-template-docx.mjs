@@ -195,6 +195,7 @@ const doc = new Document({
         ...field("이메일"),
         ...field("주소"),
         ...field("한국 거주 기간 (개월)"),
+        ...field("홈페이지 / SNS / 포트폴리오 (URL)"),
 
         sectionHeader("학력", "Education"),
         ...entries(3),
@@ -212,6 +213,12 @@ const doc = new Document({
         ...entries(3),
 
         sectionHeader("프로젝트", "Projects"),
+        ...entries(3),
+
+        sectionHeader("기타활동", "Activities"),
+        ...entries(3),
+
+        sectionHeader("활용능력", "Skills"),
         ...entries(3),
 
         sectionHeader("희망 진로", "Career Target"),

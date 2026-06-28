@@ -75,6 +75,11 @@ export async function upsertStudentProfile(
     // (uploadStudentPhotoAction / deleteStudentPhotoAction). 여기선 existing 값 보존만.
     photo_path: existing?.photo_path ?? null,
     photo_uploaded_at: existing?.photo_uploaded_at ?? null,
+    // B0063: 홈페이지 / SNS / 포트폴리오 link. undefined 면 existing 보존.
+    website_url:
+      input.website_url !== undefined
+        ? input.website_url
+        : (existing?.website_url ?? null),
   };
 
   const { data, error } = await supabase

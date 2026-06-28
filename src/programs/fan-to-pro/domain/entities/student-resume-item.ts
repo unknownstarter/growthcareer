@@ -1,16 +1,18 @@
 /**
- * Student Resume Item entity (B0044 LMS Launch Phase 1).
+ * Student Resume Item entity (B0044 LMS Launch Phase 1, B0063 잡코리아 정합).
  *
  * ADR 0011 §3 — Echo C 결정. polymorphic 다중 row per student.
- * type 으로 6 종 분류 — education / experience / certification / award / language / project.
+ * type 으로 8 종 분류 — B0063 에서 activity / skill 2 종 추가.
  *
  * 각 type 별 의미:
- *   - education      : 학력 (school = organization, major = title)
- *   - experience     : 경력 (회사명 = organization, 직무 = title)
- *   - certification  : 자격증 (자격증명 = title, 발급기관 = organization)
- *   - award          : 수상 (수상명 = title, 주최 = organization)
- *   - language       : 어학 (예: TOEIC = title, 850 = description, 자격증명 = title)
- *   - project        : 프로젝트 (프로젝트명 = title, 클라이언트/팀 = organization)
+ *   - education      : 학력      (school = organization, 전공/학위 = title)
+ *   - experience     : 경력      (회사명 = organization, 직무 = title)
+ *   - certification  : 자격증    (자격증명 = title, 발급기관 = organization)
+ *   - award          : 수상      (수상명 = title, 주최 = organization)
+ *   - language       : 어학      (시험명 = title, 점수/등급 = organization)
+ *   - project        : 프로젝트  (프로젝트명 = title, 클라이언트/팀 = organization)
+ *   - activity       : 기타활동  (활동명 = title, 단체/주최 = organization) — 동아리/봉사/대외활동
+ *   - skill          : 활용능력  (도구/기술 = title, 숙련도 = organization) — 워드/파포/디자인툴/음향장비
  */
 import { z } from "zod";
 
@@ -21,6 +23,8 @@ export const RESUME_ITEM_TYPES = [
   "award",
   "language",
   "project",
+  "activity",
+  "skill",
 ] as const;
 export type ResumeItemType = (typeof RESUME_ITEM_TYPES)[number];
 export const ResumeItemTypeSchema = z.enum(RESUME_ITEM_TYPES);
@@ -32,6 +36,8 @@ export const RESUME_ITEM_LABELS: Record<ResumeItemType, string> = {
   award: "수상",
   language: "어학",
   project: "프로젝트",
+  activity: "기타활동",
+  skill: "활용능력",
 };
 
 /**

@@ -42,6 +42,8 @@ const RESUME_ITEM_LABELS_EN: Record<ResumeItemType, string> = {
   award: "Award",
   language: "Language",
   project: "Project",
+  activity: "Activities",
+  skill: "Skills",
 };
 
 type Props = {
@@ -198,8 +200,8 @@ export function StudentResumeItemsEditor({
         </CardTitle>
         <CardDescription>
           {isEn
-            ? "Add education, experience, certifications, awards, languages, and projects."
-            : "학력, 경력, 자격증, 수상, 어학, 프로젝트를 추가합니다."}
+            ? "Add education, experience, certifications, awards, languages, projects, activities, and skills."
+            : "학력, 경력, 자격증, 수상, 어학, 프로젝트, 기타활동, 활용능력을 추가합니다."}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -514,6 +516,10 @@ function labelForTitle(type: ResumeItemType, isEn: boolean): string {
       return isEn ? "Language / Test" : "어학 / 시험";
     case "project":
       return isEn ? "Project name" : "프로젝트 명";
+    case "activity":
+      return isEn ? "Activity name" : "활동명";
+    case "skill":
+      return isEn ? "Tool / Skill" : "도구 / 기술";
   }
 }
 
@@ -531,6 +537,10 @@ function labelForOrganization(type: ResumeItemType, isEn: boolean): string {
       return isEn ? "Score / Level" : "점수 / 등급";
     case "project":
       return isEn ? "Client / Team" : "클라이언트 / 팀";
+    case "activity":
+      return isEn ? "Organization / Host" : "단체 / 주최";
+    case "skill":
+      return isEn ? "Proficiency (optional)" : "숙련도 (선택)";
   }
 }
 
@@ -548,6 +558,10 @@ function placeholderForTitle(type: ResumeItemType, isEn: boolean): string {
       return "TOEIC";
     case "project":
       return isEn ? "Brand campaign" : "브랜드 캠페인";
+    case "activity":
+      return isEn ? "Volunteer / Club / External activity" : "동아리 / 봉사 / 대외활동";
+    case "skill":
+      return isEn ? "Figma / Premiere / PA console" : "피그마 / 프리미어 / PA 콘솔";
   }
 }
 
@@ -568,5 +582,9 @@ function placeholderForOrganization(
       return "900";
     case "project":
       return isEn ? "School club" : "교내 동아리";
+    case "activity":
+      return isEn ? "K-pop Fan Club" : "K-pop 팬클럽";
+    case "skill":
+      return isEn ? "Advanced / Intermediate / Beginner" : "상 / 중 / 하";
   }
 }

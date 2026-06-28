@@ -11,7 +11,9 @@
  *   5. 수상 (award)
  *   6. 어학 (language)
  *   7. 프로젝트 (project)
- *   8. 희망 진로 + 자기 PR (career_target)
+ *   8. 기타활동 (activity) — B0063
+ *   9. 활용능력 (skill) — B0063
+ *   10. 희망 진로 + 자기 PR (career_target)
  *
  * 디자인:
  *   - Pretendard / OS 한글 폰트 fallback
@@ -175,9 +177,12 @@ function renderCareerTarget(data: ResumeBuildData): string {
       ? escapeHtml(t.self_pitch)
       : PLACEHOLDER;
 
+  // 1번 인적사항 + RESUME_ITEM_TYPES.length 섹션 → 그 다음 번호.
+  const sectionNo = RESUME_ITEM_TYPES.length + 2;
+
   return `
     <section class="resume-section">
-      <h2 class="resume-section-title">8. 희망 진로</h2>
+      <h2 class="resume-section-title">${sectionNo}. 희망 진로</h2>
       <table class="resume-target-table">
         <tbody>
           <tr><th>희망 직무</th><td>${role ? escapeHtml(role) : PLACEHOLDER}</td></tr>
@@ -211,6 +216,12 @@ function renderHeader(data: ResumeBuildData): string {
 
   const monthsKo = monthsInKoreaLabel(p?.months_in_korea);
 
+  // B0063: 홈페이지 / SNS / 포트폴리오 link. http(s) only (entity 검증).
+  // 표시는 hostname 만 — 긴 URL 잘림 방지. 클릭 시 풀 URL.
+  const website = p?.website_url
+    ? `<a class="resume-website-link" href="${escapeHtml(p.website_url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(shortenUrl(p.website_url))}</a>`
+    : PLACEHOLDER;
+
   return `
     <header class="resume-header">
       ${photo}
@@ -231,11 +242,25 @@ function renderHeader(data: ResumeBuildData): string {
               <th>연락처</th><td>${nz(p?.phone)}</td>
               <th>한국 거주</th><td>${monthsKo}</td>
             </tr>
+            <tr>
+              <th>홈페이지</th><td colspan="3">${website}</td>
+            </tr>
           </tbody>
         </table>
       </div>
     </header>
   `;
+}
+
+/** http(s) URL → "도메인/path 일부" 형태로 짧게. 인쇄용. */
+function shortenUrl(url: string): string {
+  try {
+    const u = new URL(url);
+    const path = u.pathname === "/" ? "" : u.pathname;
+    return `${u.hostname}${path}`;
+  } catch {
+    return url;
+  }
 }
 
 /** 전체 HTML — print-ready. <html> 부터 </html> 까지. */
@@ -363,6 +388,12 @@ html, body {
   padding: 1.5mm 2mm;
   border: 1px solid #e5e5e5;
   color: #111;
+}
+
+.resume-website-link {
+  color: #2563eb;
+  text-decoration: underline;
+  word-break: break-all;
 }
 
 /* Sections */

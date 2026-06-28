@@ -85,6 +85,7 @@ export function StudentProfileForm({
     const monthsRaw = String(formData.get("months_in_korea") ?? "").trim();
     const gender = String(formData.get("gender") ?? "").trim();
     const visa = String(formData.get("visa_type") ?? "").trim();
+    const website = String(formData.get("website_url") ?? "").trim();
 
     const birthDate = birthDateRaw.length > 0 ? birthDateRaw : null;
     // birth_date 가 있으면 derive, 없으면 birth_year input 사용
@@ -110,6 +111,7 @@ export function StudentProfileForm({
             : null,
         visa_type: visa.length > 0 ? visa : null,
         months_in_korea: monthsInKorea,
+        website_url: website.length > 0 ? website : null,
       });
       if (result.status === "error") {
         setError(
@@ -313,6 +315,27 @@ export function StudentProfileForm({
                 }
               />
             </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="website_url" className="text-xs">
+              {isEn
+                ? "Website / SNS / Portfolio (optional)"
+                : "홈페이지 / SNS / 포트폴리오 (선택)"}
+            </Label>
+            <Input
+              id="website_url"
+              name="website_url"
+              type="url"
+              maxLength={2048}
+              defaultValue={initialProfile?.website_url ?? ""}
+              placeholder="https://"
+            />
+            <p className="text-[11px] text-[var(--muted-foreground)]">
+              {isEn
+                ? "Link 1 piece. Behance / Notion / personal site / Instagram all OK."
+                : "링크 1개. Behance / Notion / 개인 사이트 / Instagram 다 OK."}
+            </p>
           </div>
 
           <div className="flex justify-end">

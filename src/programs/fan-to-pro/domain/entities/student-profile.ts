@@ -28,6 +28,20 @@ const BirthDateSchema = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/, "birth_date must be YYYY-MM-DD");
 
+/**
+ * B0063: website_url scheme allowlist — credential_url (student-resume-item) 과 동일 패턴.
+ * `javascript:` / `data:` / `vbscript:` 등 비-http(s) scheme 차단.
+ * 학생 폼 저장 → 운영자/강사 admin 페이지 클릭 시 stored XSS 방지.
+ */
+const httpsUrl = (max = 2048) =>
+  z
+    .string()
+    .url()
+    .max(max)
+    .refine((v) => /^https?:\/\//i.test(v), {
+      message: "website_url must use http or https scheme",
+    });
+
 export const StudentProfileSchema = z.object({
   student_id: z.string().uuid(),
   name_ko: z.string().trim().min(1).max(100).nullable(),
@@ -54,6 +68,8 @@ export const StudentProfileSchema = z.object({
   // signed URL 은 별도 server action 으로 5분 TTL 발급. UI 직접 노출 X.
   photo_path: z.string().nullable(),
   photo_uploaded_at: z.string().nullable(),
+  // B0063: 홈페이지 / SNS / 포트폴리오 link 1개. http/https only.
+  website_url: httpsUrl().nullable(),
   created_at: z.string(),
   updated_at: z.string().nullable(),
 });
@@ -86,6 +102,8 @@ export const StudentProfileUpsertInputSchema = z.object({
     .max(MAX_MONTHS_IN_KOREA)
     .nullable()
     .optional(),
+  // B0063: 홈페이지 / SNS / 포트폴리오 link.
+  website_url: httpsUrl().nullable().optional(),
 });
 
 export type StudentProfileUpsertInput = z.infer<
