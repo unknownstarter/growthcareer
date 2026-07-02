@@ -70,18 +70,19 @@ export const getLmsUser = cache(async (): Promise<LmsUser | null> => {
   const { data: profile, error } = await supabase
     .from("user_profiles")
     .select(
-      "id, role, display_name, email, company_id, student_id, instructor_id, is_super_admin, must_change_password",
+      "id, display_name, email, company_id, student_id, instructor_id, is_super_admin, must_change_password",
     )
     .eq("id", user.id)
     .single();
 
   if (error || !profile) return null;
 
-  // 기존 role 컬럼이 null 인 경우 — cohort_memberships 또는 is_super_admin 으로 추론.
-  let inferredRole: LmsRole = profile.role ?? "student";
+  // Mira B0065 M-2 (2026-07-03): user_profiles.role 컬럼 삭제 후 순수 추론.
+  // 권한 결정 = is_super_admin OR program_memberships OR cohort_memberships.
+  let inferredRole: LmsRole = "student";
   if (profile.is_super_admin) {
     inferredRole = "super_admin";
-  } else if (!profile.role) {
+  } else {
     // cohort membership 첫 행으로 추론 (instructor 우선).
     const { data: cm } = await supabase
       .from("cohort_memberships")
@@ -89,9 +90,8 @@ export const getLmsUser = cache(async (): Promise<LmsUser | null> => {
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
     if (cm && cm.length > 0) {
-      inferredRole = cm.find((r) => r.role === "instructor")
-        ? "instructor"
-        : (cm[0].role as LmsRole);
+      const inst = cm.find((r) => r.role === "instructor");
+      inferredRole = inst ? "instructor" : (cm[0].role as LmsRole);
     }
   }
 

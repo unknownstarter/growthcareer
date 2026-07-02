@@ -85,24 +85,27 @@ export async function inviteUser(input: unknown): Promise<InviteUserResult> {
   const existingProfile = await fetchProfileByEmail(data.email);
   try {
     if (existingProfile) {
+      // Mira B0065 M-2 (2026-07-03): user_profiles.role 컬럼 삭제.
+      // role 은 program_memberships / cohort_memberships 에 별도 박음.
+      // is_super_admin 은 profile 에서 직접 관리.
       await updateProfile(existingProfile.id, {
-        role: data.role,
         display_name: data.display_name,
         phone: data.phone ?? null,
         company_id: data.company_id ?? null,
         student_id: data.student_id ?? null,
         instructor_id: data.instructor_id ?? null,
+        is_super_admin: data.role === "super_admin",
       });
     } else {
       await insertProfile({
         id: userId,
-        role: data.role,
         display_name: data.display_name,
         email: data.email,
         phone: data.phone ?? null,
         company_id: data.company_id ?? null,
         student_id: data.student_id ?? null,
         instructor_id: data.instructor_id ?? null,
+        is_super_admin: data.role === "super_admin",
       });
     }
   } catch (err) {

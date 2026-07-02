@@ -22,6 +22,7 @@
  *   - header 없음 + LMS auth 도 없음 → throw (현 동작과 동일)
  */
 import { headers } from "next/headers";
+import { getLmsUser, isProgramAdmin } from "./lms-role";
 
 export type AdminRole = "admin" | "viewer";
 
@@ -31,15 +32,15 @@ export const ADMIN_ROLE_HEADER = "x-admin-role";
  * LMS user 가 super_admin 또는 fan-to-pro program admin 이면 true.
  * 미인증 / 자격 없음 시 false.
  *
- * dynamic import — admin-role 과 lms-role 의 모듈 cycle 회피.
+ * Mira B0065 M-1 (2026-07-03): dynamic import → static 승격.
+ * lms-role.ts 가 admin-role.ts 를 import 하지 않으므로 cycle 없음.
  */
 async function isLmsAdminUser(): Promise<boolean> {
   try {
-    const lms = await import("./lms-role");
-    const user = await lms.getLmsUser();
+    const user = await getLmsUser();
     if (!user) return false;
     if (user.isSuperAdmin) return true;
-    return await lms.isProgramAdmin(user.id, "fan-to-pro");
+    return await isProgramAdmin(user.id, "fan-to-pro");
   } catch {
     return false;
   }
