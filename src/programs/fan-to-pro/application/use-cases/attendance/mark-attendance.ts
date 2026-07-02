@@ -13,6 +13,7 @@ import {
   type UpsertAttendanceInput,
 } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/attendance-repository";
 import { fetchSessionById } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/session-repository";
+import { fetchStudentById } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/student-repository";
 import {
   AttendanceStatusSchema,
   normalizeAttendanceStatus,
@@ -51,6 +52,21 @@ export async function markAttendance(
     // session 존재 검증.
     const session = await fetchSessionById(parsed.data.session_id);
     if (!session) return { status: "error", error: "sessionNotFound" };
+
+    // Mira B0065 HIGH-1 fix — cross-cohort IDOR 차단.
+    // session.cohort_id 와 각 entry 의 student.cohort_id 일치 확인.
+    // 1기 단독 운영에는 위험 낮지만 2기 병행 시 데이터 오염 방지.
+    const studentIds = parsed.data.entries.map((e) => e.student_id);
+    const students = await Promise.all(
+      studentIds.map((id) => fetchStudentById(id).catch(() => null)),
+    );
+    for (let i = 0; i < students.length; i++) {
+      const s = students[i];
+      if (!s) return { status: "error", error: "studentNotFound" };
+      if (s.cohort_id !== session.cohort_id) {
+        return { status: "error", error: "cohortMismatch" };
+      }
+    }
 
     // 도메인 룰 적용 — late_minutes ≥ 30 자동 absent.
     let normalizedCount = 0;
