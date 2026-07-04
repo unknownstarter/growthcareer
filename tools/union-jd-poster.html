@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>Union Pictures / K-pop 공연 파트타임 리쿠르팅</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<style>
+  :root {
+    --navy: #0a2540;
+    --navy-deep: #071a2e;
+    --navy-mid: #14365c;
+    --gold: #c9a76c;
+    --gold-soft: #e2c68c;
+    --ink: #1a1d23;
+    --ink-muted: #4a5361;
+    --ink-subtle: #7a8494;
+    --line: #e6eaf0;
+    --line-soft: #f0f2f6;
+    --paper: #ffffff;
+    --paper-soft: #f7f9fc;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: #eef0f3;
+    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  /* 가로 A4: 297mm x 210mm. 96dpi 기준 1123 x 794 px */
+  .page {
+    width: 1123px;
+    height: 794px;
+    background: var(--paper);
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* 좌측 이미지 패널 */
+  .left {
+    position: relative;
+    background-image: url("https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=1200&q=80");
+    background-size: cover;
+    background-position: center;
+    color: #fff;
+    padding: 44px 36px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .left::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(7, 26, 46, 0.72) 0%, rgba(7, 26, 46, 0.88) 55%, rgba(7, 26, 46, 0.95) 100%);
+    z-index: 0;
+  }
+  .left > * { position: relative; z-index: 1; }
+
+  .brand-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .brand-dot {
+    width: 8px; height: 8px; border-radius: 999px;
+    background: var(--gold);
+  }
+
+  .headline-block { margin-top: 40px; }
+  .eyebrow {
+    display: inline-block;
+    padding: 6px 14px;
+    background: var(--gold);
+    color: var(--navy-deep);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    border-radius: 3px;
+    margin-bottom: 22px;
+  }
+  .headline {
+    font-size: 34px;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
+  }
+  .headline .accent { color: var(--gold-soft); }
+  .subhead {
+    font-size: 14px;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 500;
+  }
+
+  .company-card {
+    margin-top: 32px;
+    padding: 18px 20px;
+    background: rgba(255, 255, 255, 0.08);
+    border-left: 3px solid var(--gold);
+    border-radius: 4px;
+  }
+  .company-card h4 {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: var(--gold);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .company-card p {
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+  }
+
+  .foot {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.65);
+    font-weight: 500;
+  }
+  .foot .link { color: var(--gold-soft); font-weight: 600; }
+
+  /* 우측 본문 */
+  .right {
+    padding: 40px 44px 36px;
+    display: flex;
+    flex-direction: column;
+    background: var(--paper);
+    overflow: hidden;
+  }
+
+  .right-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 18px;
+    border-bottom: 2px solid var(--navy);
+    margin-bottom: 22px;
+  }
+  .r-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+  }
+  .r-badge {
+    padding: 6px 12px;
+    background: var(--navy);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    border-radius: 3px;
+    white-space: nowrap;
+    margin-top: 4px;
+  }
+
+  /* 하이라이트 3종 */
+  .highlights {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+  .hl {
+    padding: 14px 14px;
+    background: linear-gradient(135deg, #f4f7fb 0%, #eaf0f7 100%);
+    border-radius: 6px;
+    border: 1px solid #dfe5ee;
+  }
+  .hl-label {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--ink-subtle);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .hl-value {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    letter-spacing: -0.015em;
+    line-height: 1.1;
+  }
+  .hl-value .unit {
+    font-size: 12px;
+    color: var(--ink-muted);
+    font-weight: 600;
+    margin-left: 3px;
+  }
+  .hl-sub {
+    font-size: 11px;
+    color: var(--ink-muted);
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  /* 본문 섹션 그리드 */
+  .sections {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px 32px;
+    flex: 1;
+  }
+  .sec {
+    display: flex;
+    flex-direction: column;
+  }
+  .sec-title {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--navy);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sec-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px; height: 18px;
+    background: var(--gold);
+    color: var(--navy-deep);
+    font-size: 10px;
+    font-weight: 800;
+    border-radius: 3px;
+  }
+  .sec ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .sec li {
+    font-size: 12px;
+    line-height: 1.65;
+    color: var(--ink);
+    padding: 5px 0 5px 14px;
+    position: relative;
+    font-weight: 500;
+  }
+  .sec li::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 12px;
+    width: 5px; height: 5px;
+    background: var(--gold);
+    border-radius: 999px;
+  }
+  .sec li strong {
+    color: var(--navy);
+    font-weight: 700;
+  }
+  .sec p {
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--ink-muted);
+    font-weight: 500;
+  }
+
+  /* 지원방법 CTA 카드 */
+  .apply-card {
+    grid-column: span 2;
+    margin-top: 4px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+    border-radius: 6px;
+    color: #fff;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 20px;
+  }
+  .apply-left h4 {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .apply-left .email {
+    font-size: 20px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.015em;
+    margin-bottom: 4px;
+  }
+  .apply-left .subject {
+    font-size: 11.5px;
+    color: rgba(255, 255, 255, 0.75);
+    font-weight: 500;
+  }
+  .apply-left .subject code {
+    background: rgba(255, 255, 255, 0.12);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: inherit;
+    color: var(--gold-soft);
+    font-weight: 600;
+  }
+  .apply-right {
+    text-align: right;
+  }
+  .apply-right .note {
+    font-size: 10.5px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
+  }
+  .apply-right .note strong {
+    color: var(--gold-soft);
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <!-- 좌측: 이미지 + 헤드라인 -->
+  <aside class="left">
+    <div class="brand-row">
+      <span class="brand-dot"></span>
+      <span>Union Pictures</span>
+    </div>
+
+    <div class="headline-block">
+      <span class="eyebrow">RECRUITING 2026.07</span>
+      <h1 class="headline">
+        글로벌 K-pop<br/>
+        공연 / 특전회<br/>
+        <span class="accent">파트타임 리쿠르팅</span>
+      </h1>
+      <p class="subhead">
+        미국, 유럽, 아시아로 이어지는 글로벌 투어.<br/>
+        한국지사와 함께 무대를 만들 파트타이머를 찾습니다.
+      </p>
+    </div>
+
+    <div class="company-card">
+      <h4>ABOUT UNION PICTURES</h4>
+      <p>
+        유니온픽처스는 미국 본사의 기획사입니다. 미국 투자팀에서는 다수의 스타트업 투자와 M&amp;A, 한국지사 (삼성역 아셈타워) 에서는 미국, 유럽, 아시아 지역 글로벌 투어를 진행 중입니다.
+      </p>
+    </div>
+
+    <div class="foot">
+      <span>Location / 서울 강남구 삼성역 아셈타워, 한국지사</span>
+      <span>Web / <span class="link">unionpic.net</span></span>
+      <span>Union Pictures / 공연, F&amp;B, 스토어, 플랫폼 (DEEPI) 계열사 운영</span>
+    </div>
+  </aside>
+
+  <!-- 우측: 본문 -->
+  <main class="right">
+    <div class="right-top">
+      <div class="r-title">파트타임 리쿠르팅 상세<br/>공연 스테프 / 영상통화 / 특전회</div>
+      <div class="r-badge">2026.07.04 오픈</div>
+    </div>
+
+    <!-- 하이라이트 3종 -->
+    <div class="highlights">
+      <div class="hl">
+        <div class="hl-label">시급</div>
+        <div class="hl-value">12,000<span class="unit">원 / 시간</span></div>
+        <div class="hl-sub">교통비 별도 제공</div>
+      </div>
+      <div class="hl">
+        <div class="hl-label">모집인원</div>
+        <div class="hl-value">최대 3<span class="unit">명</span></div>
+        <div class="hl-sub">모집 완료 시 종료</div>
+      </div>
+      <div class="hl">
+        <div class="hl-label">고용형태</div>
+        <div class="hl-value">파트타임<span class="unit">6개월 계약</span></div>
+        <div class="hl-sub">건별 참여 여부 자유 선택</div>
+      </div>
+    </div>
+
+    <!-- 본문 4섹션 + CTA -->
+    <div class="sections">
+      <div class="sec">
+        <div class="sec-title"><span class="sec-num">1</span>모집 개요</div>
+        <ul>
+          <li><strong>근무시간</strong> / 공연과 특전회 모두 주로 주말. 특전회 및 영상통화는 평균 4~6시간, 공연은 종일</li>
+          <li><strong>모집기간</strong> / 2026년 7월 4일부터 (모집 완료 시 종료)</li>
+          <li><strong>참여 방식</strong> / 공연 또는 영상통화 1주일 전 참여 가능 여부 문의. 가능한 건만 자유 참여</li>
+        </ul>
+      </div>
+
+      <div class="sec">
+        <div class="sec-title"><span class="sec-num">2</span>담당 업무</div>
+        <ul>
+          <li><strong>공연</strong> / 행사 티켓팅, 질서관리 등 관객 안내 역할 또는 장내 감독, PD 지원 및 무대 보조</li>
+          <li><strong>특전회 / 영상통화</strong> / 당사 사무실에서 스마트폰으로 글로벌 팬과 영상통화 진행</li>
+          <li><strong>사전 교육</strong> / 경험이 없는 담당자는 별도 교육 제공</li>
+        </ul>
+      </div>
+
+      <div class="sec">
+        <div class="sec-title"><span class="sec-num">3</span>우대사항</div>
+        <ul>
+          <li>공연 및 이벤트 스테프 경험 보유자</li>
+          <li>한국어 외 외국어 (영어, 일본어, 중국어 등) 가능자</li>
+          <li>주말 근무 가능하며 장시간 스탠딩 응대에 무리 없는 분</li>
+        </ul>
+      </div>
+
+      <div class="sec">
+        <div class="sec-title"><span class="sec-num">4</span>지원 절차</div>
+        <ul>
+          <li>이메일로 이력서 및 자기소개서 접수</li>
+          <li>한국지사에서 간단한 인터뷰 진행 예정</li>
+          <li>합격자 별도 안내, 면접 교통비 지원</li>
+        </ul>
+      </div>
+
+      <!-- CTA 카드 -->
+      <div class="apply-card">
+        <div class="apply-left">
+          <h4>지원 이메일</h4>
+          <div class="email">system@unionpic.net</div>
+          <div class="subject">
+            Fan to Pro 학생 지원 시 메일 제목 / <code>[스테프 지원서 / 팬투프로 추천]</code>
+          </div>
+        </div>
+        <div class="apply-right">
+          <div class="note">
+            참고 / <strong>unionpic.net</strong><br/>
+            기사 / fashionbiz.co.kr/article/219849
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>
