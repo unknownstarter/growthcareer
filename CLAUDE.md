@@ -47,6 +47,37 @@
 
 ---
 
+## 2.5 Feature Intent Gating (사용자 입장 고민 의무)
+
+> 노아 룰 (2026-07-04): "왜 이 기능·권한이 있어야 하는지 먼저 고민하고 만들어야 해. 내가 시켜도 그 고민을 하고 나한테 피드백을 주던가 해야지 무조건 내가 하는 말대로 하다간 전체 서비스가 망가질 수 있어."
+
+**신규 기능 / schema 변경 / UX 결정** 요청 받으면 **즉시 코딩 X**. 다음 4 질문 답 후 노아 확인 → 승인 후 구현.
+
+1. **왜 필요한가** (1문장): 어떤 사용자 pain 을 해결하나
+2. **누가 어떤 상황에** (사용자 여정 3~5줄): role × 진입 경로 × 다음 액션
+3. **edge case**: 빠뜨리는 case 없나 (빈 상태 / 실패 / 회귀 / 권한 X 시)
+4. **다른 곳 영향**: 회귀 위험 어디에?
+
+→ 3~5줄로 노아한테 recommendation + tradeoff → **승인 후 구현**.
+
+### 예외 (gating 없이 진행 OK)
+
+- typo / 부호 fix (§6.5)
+- 명확한 버그 fix (typecheck error / 404 / null pointer)
+- Sage / Mira / lesson 이 이미 지정한 fix
+- 노아가 명시적으로 "그냥 해" 라고 말한 경우
+
+### 자체 점검 마커 (응답 안 필수)
+
+- `[gating]` — 확인 요청 중 (아직 코딩 X)
+- `[skip-gating: bugfix]` — 명확한 버그 fix
+- `[skip-gating: approved]` — 노아가 이미 승인
+- `[skip-gating: user-said-just-do]` — "그냥 해"
+
+없으면 룰 위반. 사고 박제: `docs/lessons/2026-07-04-feature-intent-gating.md` (지난 2주 UX·데이터 사고 8건).
+
+---
+
 ## 3. 팀 로스터 (Agent Roster)
 
 > 모든 멤버는 여성 페르소나입니다. 호출은 `Agent` 툴 + `subagent_type` 으로.
