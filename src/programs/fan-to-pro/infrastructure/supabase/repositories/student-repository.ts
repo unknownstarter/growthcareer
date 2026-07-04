@@ -16,7 +16,12 @@ function requireClient() {
   return supabase;
 }
 
-/** cohort 의 모든 student — display_name ASC. */
+/**
+ * cohort 의 active student — display_name ASC.
+ *
+ * 노아 룰 (2026-07-04): withdrawn / completed 는 출결 매트릭스, 명단, KPI 등
+ * 운영 뷰에서 자동 제외. status='active' 만 반환.
+ */
 export async function fetchStudentsByCohort(
   cohortId: string,
 ): Promise<Student[]> {
@@ -25,6 +30,7 @@ export async function fetchStudentsByCohort(
     .from(TABLE)
     .select("*")
     .eq("cohort_id", cohortId)
+    .eq("status", "active")
     .order("display_name", { ascending: true });
   if (error) throw new Error(error.message);
   return (data ?? []).map((row) => StudentSchema.parse(row));
