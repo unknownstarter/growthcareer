@@ -198,7 +198,7 @@ export function StudentPhotoUpload({
               draggable={false}
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[var(--secondary)] to-[var(--muted)] text-3xl font-bold text-[var(--muted-foreground)]">
+            <div className="flex h-full w-full items-center justify-center bg-[var(--secondary)] text-3xl font-bold text-[var(--muted-foreground)]">
               {initial}
             </div>
           )}

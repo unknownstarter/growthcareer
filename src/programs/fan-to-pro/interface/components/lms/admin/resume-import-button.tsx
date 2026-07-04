@@ -130,7 +130,7 @@ export function ResumeImportButton({ studentId }: { studentId: string }) {
       }
       toast.success(
         parts.length > 0
-          ? `${parts.join(" · ")} 저장 완료`
+          ? `${parts.join(" / ")} 저장 완료`
           : "변경 사항이 없어 저장하지 않았어요.",
       );
       setOpen(false);
@@ -246,7 +246,7 @@ export function ResumeImportButton({ studentId }: { studentId: string }) {
                     className="mt-0.5"
                   />
                   <span>
-                    <strong>추가</strong> — 기존 이력서 항목은 그대로 두고 새로 파싱된 항목만 뒤에 추가합니다.
+                    <strong>추가</strong>. 기존 이력서 항목은 그대로 두고 새로 파싱된 항목만 뒤에 추가합니다.
                   </span>
                 </label>
                 <label className="flex items-start gap-2 text-xs cursor-pointer">
@@ -260,7 +260,7 @@ export function ResumeImportButton({ studentId }: { studentId: string }) {
                     className="mt-0.5"
                   />
                   <span>
-                    <strong>덮어쓰기</strong> — 기존 이력서 항목 전체 삭제 후 새로 파싱된 항목으로 교체합니다. (인적사항 / 희망 진로는 항상 merge — null 필드는 보존)
+                    <strong>덮어쓰기</strong>. 기존 이력서 항목 전체 삭제 후 새로 파싱된 항목으로 교체합니다. (인적사항 / 희망 진로는 항상 merge, null 필드는 보존)
                   </span>
                 </label>
               </fieldset>

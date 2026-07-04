@@ -9,7 +9,34 @@
 
 ---
 
-## 📅 Last updated: 2026-06-23
+## 📅 Last updated: 2026-07-04
+
+## 🎯 최신 세션 요약 — LMS 전체 진단 완료 (B0066)
+
+3 에이전트 병렬 진단 완료. Echo (리서치) + Sophia (아키텍처, ADR 0013) + Luna (UX).
+
+- **통합 리포트**: [`docs/reports/2026-07-04-lms-diagnosis-summary.md`](./docs/reports/2026-07-04-lms-diagnosis-summary.md)
+- **ADR 0013**: [`docs/decisions/0013-multi-track-and-recruitment-architecture.md`](./docs/decisions/0013-multi-track-and-recruitment-architecture.md)
+- **Luna UX 리포트**: [`docs/reports/2026-07-04-lms-ux-diagnosis.md`](./docs/reports/2026-07-04-lms-ux-diagnosis.md)
+
+**Feature Intent Gating 룰 신설** (§2.5): 새 기능/schema/UX 요청 시 즉시 코딩 X, 4 질문 답 후 승인. lesson 박제: `docs/lessons/2026-07-04-feature-intent-gating.md`.
+
+**노아 결정 필요 5건** (각 백로그 시작 전):
+1. 신규 테이블 5 (수강 확장) OK? — B0068 전
+2. 신규 테이블 3 (채용) OK? — B0072 전
+3. instructor surface 페이지 5개 OK? — B0070 전
+4. `domain/program.ts` (marketing) 리네임 vs 유지? — B0068 전
+5. 채용 매칭 = rule-based vs Nova AI? — B0075 전 (11월 이후)
+
+**이번 세션 즉시 처리**:
+- Luna JD v2 재작업 (그라데이션 X, Toss 라이트)
+- P0 UX fix 5건 (부호 4 + gradient 1)
+- BACKLOG B0068~B0080 추가
+- 3 진단 리포트 박제
+
+---
+
+## 📅 Prev: 2026-06-23
 
 ## 🎯 현재 상태 — 1기 모집 마감일 (D-day) / 첫 강의 D-6
 

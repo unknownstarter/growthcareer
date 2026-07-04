@@ -309,6 +309,90 @@ D-9. 1주차 강의 자료 Google Drive 모바일 다운로드 사고 → 자체
 
 ---
 
+## LMS 확장 트랙 (B0068 ~ B0075) — 2기+ 멀티 트랙 / 채용 연계
+
+2026-07-04 진단 결과 (Echo + Sophia + Luna). 리서치 + ADR + UX 리포트:
+- [`docs/decisions/0013-multi-track-and-recruitment-architecture.md`](../decisions/0013-multi-track-and-recruitment-architecture.md) (Sophia)
+- [`docs/reports/2026-07-04-lms-ux-diagnosis.md`](../reports/2026-07-04-lms-ux-diagnosis.md) (Luna)
+- [`docs/reports/2026-07-04-lms-diagnosis-summary.md`](../reports/2026-07-04-lms-diagnosis-summary.md) (통합)
+
+**노아 결정 필요 5건 (각 B0XXX 시작 전 승인)**:
+1. 신규 테이블 5 (courses / bundles / bundle_courses / enrollments / enrollment_courses) OK? (B0068 전)
+2. 신규 테이블 3 (companies_partners / job_postings / student_applications) OK? (B0072 전)
+3. instructor surface 페이지 5개 OK? (B0070 전)
+4. `domain/program.ts` (marketing) 리네임 vs 유지? (B0068 전)
+5. 채용 매칭 = rule-based vs Nova AI? (B0075 전, 11월 이후)
+
+**단기 (2기 시작 전, 8~9월)**:
+
+- **B0068** · courses 스키마 도입 (단과반) · status: **raw** · 2026-07-04 captured
+  - 신규 테이블: courses (id, program_id, slug, title_ko, title_en, hours, price)
+  - cohorts.course_id 컬럼 추가 (nullable, additive) — 기존 cohort 는 null 유지
+  - Strangler Fig 마이그레이션 (기존 cohort 스키마 무손실)
+  - 노아 승인 필요 (스키마 변경 결정 1)
+
+- **B0069** · enrollments 승격 — bundle 지원 · status: **raw** · 2026-07-04 captured
+  - 신규 테이블: bundles / bundle_courses / enrollments / enrollment_courses
+  - applicants.enrollment_id / bundle_id 컬럼 추가 (nullable)
+  - 결제 SKU 계층 (개별 course vs bundle) fan-out 로직
+  - applicants shape 절대 보존 (ADR 0010)
+
+- **B0070** · instructor surface 5 페이지 · status: **raw** · 2026-07-04 captured
+  - dashboard / students / sessions / sessions[id] / consultations
+  - 강사 로그인 → 본인 cohort 학생만 read + 코멘트 write
+  - 권한 가드는 이미 준비됨 (assertCanReadStudentProfile / assertCanWriteStudentNote)
+  - 종강 (7/19) 전 최소 dashboard + students + sessions 3 페이지 착수 권장
+
+- **B0071** · admin course/bundle CRUD · status: **raw** · 2026-07-04 captured
+  - super_admin + program admin 이 트랙 스케일 시 병목 해소
+  - 어드민 신규 탭 or 기존 3-tab 확장 (§7.4 신중)
+
+**중장기 (3기+, 10월~)**:
+
+- **B0072** · 채용 파이프라인 스키마 · status: **raw** · 2026-07-04 captured
+  - 신규 테이블 3: companies_partners / job_postings / student_applications
+  - status 6단계: prep → resume_ready → applied → interview → offer → hired
+  - append-only history 로 취업률 recompute 가능
+
+- **B0073** · admin recruitment 3 페이지 · status: **raw** · 2026-07-04 captured
+  - /admin/companies / /admin/postings / /admin/applications
+  - Partner 회사 등록 + JD 관리 + 학생 지원 트래킹
+
+- **B0074** · student recruitment surface · status: **raw** · 2026-07-04 captured
+  - student/jobs (JD list + 지원) + student/applications (본인 지원 트래킹)
+  - 이력서 / 자소서 재사용 (career_documents 기존)
+
+- **B0075** · matching-service · status: **raw** · 2026-07-04 captured · Nova 후보
+  - 학생 target_role + 회사 JD 매칭. 초기 rule-based (도메인 서비스), 추후 Nova AI
+  - 노아 승인 필요 (결정 5)
+
+**외국인 특화 (Echo 리서치 반영)**:
+
+- **B0076** · 외국인 프로필 필드 확장 · status: **raw** · 2026-07-04 captured
+  - student_profile 에 language_ability / visa_sponsor_needed / preferred_language 컬럼 추가 (nullable)
+  - 비자 발급 성공률 KPI 계산의 전제
+
+- **B0077** · KCCI E-7-1 인증 검토 · status: **raw** · 2026-07-04 captured
+  - 대한상공회의소 특화 교육 프로그램 이수 시 1년 경력 요건 면제
+  - 우리 프로그램이 KCCI 인증 받으면 학생에게 직접 비자 가치
+  - 법무법인 자문 필요 (반나절 30만원선)
+
+- **B0078** · 평생직업교육학원 등록 검토 · status: **raw** · 2026-07-04 captured
+  - 반복 기수 운영이면 등록 대상 (학원법)
+  - 무등록 300만원 벌금 리스크
+  - 노아 결정 후 진행
+
+**UX P0 fix (즉시)**:
+
+- **B0079** · student/announcements + login i18n 배선 · status: **raw** · 2026-07-04 captured
+  - 완전 한국어 하드코딩 상태, 외국인 학생 접근 시 언어 장벽
+  - messages/en 리소스 확장 + next-intl 배선
+
+- **B0080** · Luna 재발 방지 훅 (grep self-check) · status: **raw** · 2026-07-04 captured
+  - Luna 이번 세션에서 반성 후에도 초안 룰 위반 (em dash 35, interpunct 6)
+  - settings.json PostToolUse hook 으로 Write/Edit 후 자동 grep 검증
+  - 위반 시 즉시 fail + Luna 재작성
+
 ---
 
 ## Raw  (T1 dump · 미분류)

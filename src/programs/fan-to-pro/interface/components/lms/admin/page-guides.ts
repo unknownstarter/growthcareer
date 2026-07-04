@@ -4,7 +4,7 @@
  * 각 페이지의 PageGuideBot 에 주입할 정적 콘텐츠 모음. props 모두 string literal —
  * XSS surface 0. 노아 / 운영자가 페이지 별 workflow 를 짧게 안내받는다.
  *
- * 카피 부호 룰 (CLAUDE.md §6.5): em dash · interpunct · 곡선 따옴표 · 단일 ellipsis
+ * 카피 부호 룰 (CLAUDE.md §6.5): em dash, interpunct, 곡선 따옴표, 단일 ellipsis
  * 사용 금지. 검색 grep 으로도 검증 (npm script 없으면 수동).
  */
 import type { PageGuide } from "./page-guide-bot";

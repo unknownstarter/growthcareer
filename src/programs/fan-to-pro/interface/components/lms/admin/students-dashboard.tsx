@@ -107,7 +107,7 @@ export function StudentsDashboard({ cohort_id, cohort_name, students }: Props) {
             <div className="space-y-1">
               <CardTitle>학생 ({students.length}명)</CardTitle>
               <CardDescription>
-                {cohort_name} · invite 미발송 {notInvited.length}명
+                {cohort_name} / invite 미발송 {notInvited.length}명
               </CardDescription>
             </div>
             <Button
