@@ -84,6 +84,7 @@ export function StudentProfileForm({
     const birthDateRaw = String(formData.get("birth_date") ?? "").trim();
     const monthsRaw = String(formData.get("months_in_korea") ?? "").trim();
     const gender = String(formData.get("gender") ?? "").trim();
+    const nationality = String(formData.get("nationality") ?? "").trim();
     const visa = String(formData.get("visa_type") ?? "").trim();
     const website = String(formData.get("website_url") ?? "").trim();
 
@@ -109,6 +110,7 @@ export function StudentProfileForm({
           gender.length > 0
             ? (gender as (typeof STUDENT_GENDERS)[number])
             : null,
+        nationality: nationality.length > 0 ? nationality : null,
         visa_type: visa.length > 0 ? visa : null,
         months_in_korea: monthsInKorea,
         website_url: website.length > 0 ? website : null,
@@ -315,6 +317,23 @@ export function StudentProfileForm({
                 }
               />
             </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="nationality" className="text-xs">
+              {isEn ? "Nationality" : "국적"}
+            </Label>
+            <Input
+              id="nationality"
+              name="nationality"
+              maxLength={100}
+              defaultValue={initialProfile?.nationality ?? ""}
+              placeholder={
+                isEn
+                  ? "e.g. Korea, Vietnam, Portugal, France"
+                  : "예: Korea, Vietnam, Portugal, France"
+              }
+            />
           </div>
 
           <div className="space-y-1.5">

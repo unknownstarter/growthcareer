@@ -63,6 +63,10 @@ export async function upsertStudentProfile(
         : (existing?.birth_date ?? null),
     gender:
       input.gender !== undefined ? input.gender : (existing?.gender ?? null),
+    nationality:
+      input.nationality !== undefined
+        ? input.nationality
+        : (existing?.nationality ?? null),
     visa_type:
       input.visa_type !== undefined
         ? input.visa_type

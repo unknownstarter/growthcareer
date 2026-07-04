@@ -56,6 +56,8 @@ export const StudentProfileSchema = z.object({
   // B0052: 생년월일 정확. birth_year 보다 우선 — UI 표시 시 birth_date 가 있으면 birth_date.
   birth_date: BirthDateSchema.nullable(),
   gender: StudentGenderSchema.nullable(),
+  /** 국적. applicants.nationality 는 신청 원본, 본 컬럼은 학생 수정 가능 사본. */
+  nationality: z.string().trim().min(1).max(100).nullable(),
   visa_type: z.string().trim().min(1).max(30).nullable(),
   // B0052: 한국 거주 개월수. 한국 국적은 NULL.
   months_in_korea: z
@@ -94,6 +96,7 @@ export const StudentProfileUpsertInputSchema = z.object({
     .optional(),
   birth_date: BirthDateSchema.nullable().optional(),
   gender: StudentGenderSchema.nullable().optional(),
+  nationality: z.string().trim().min(1).max(100).nullable().optional(),
   visa_type: z.string().trim().min(1).max(30).nullable().optional(),
   months_in_korea: z
     .number()
