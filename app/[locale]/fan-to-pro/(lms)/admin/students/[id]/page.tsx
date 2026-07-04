@@ -86,7 +86,20 @@ export default async function AdminStudentDetailPage({
             ? `${student.display_name} (${profile.name_ko})`
             : student.display_name
         }
-        description={`학생 상태 ${student.status}. 한국 이름, 진로, 이력서, 운영 코멘트를 관리합니다.`}
+        description={[
+          `학생 상태 ${student.status}`,
+          profile?.nationality ? `국적 ${profile.nationality}` : null,
+          profile?.visa_type ? `비자 ${profile.visa_type}` : null,
+          profile?.gender
+            ? `성별 ${profile.gender === "male" ? "남" : profile.gender === "female" ? "여" : profile.gender === "other" ? "기타" : "비공개"}`
+            : null,
+          profile?.birth_date ?? (profile?.birth_year ? `${profile.birth_year}년생` : null),
+          profile?.months_in_korea != null
+            ? `한국 거주 ${profile.months_in_korea}개월`
+            : null,
+        ]
+          .filter(Boolean)
+          .join(" / ")}
         action={
           <div className="flex items-center gap-2">
             <StudentRealNameEdit
