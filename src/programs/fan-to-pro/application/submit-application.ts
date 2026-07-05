@@ -120,6 +120,37 @@ export async function submitApplication(
     }
   }
 
+  // B0069 Slice 1 — 1기 재지원 인식.
+  // 신규 신청 이메일과 완전 일치하는 이전 applicant row 를 찾는다. 있으면
+  // previous_applicant_id 로 링크. 회원가입 X 상태에서 서버가 자동 인식하는
+  // 유일한 트리거는 이메일.
+  //
+  // 매칭 규칙:
+  //   - lower(email) 매칭 (대소문자 무시)
+  //   - next_cohort_interest 는 제외 (그 자체가 대기 상태 — 재지원의 대상 X)
+  //   - 자기 자신은 아직 INSERT 전이라 자연스럽게 제외됨
+  //   - 여러 건 매칭 시 가장 최근 created_at row 만 사용
+  //
+  // 조회 실패 = silent (신청 자체는 계속 진행). 이력 인식 실패로 신청 blocking 은 과함.
+  let previousApplicantId: string | null = null;
+  try {
+    const { data: prev } = await supabase
+      .from(TABLE)
+      .select("id")
+      .ilike("email", parsed.data.email)
+      .not("status", "eq", "next_cohort_interest")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (prev?.id) {
+      previousApplicantId = String(prev.id);
+    }
+  } catch (e) {
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("[applicants] previous lookup failed", e);
+    }
+  }
+
   // B0007 반자동 모델: INSERT 시 status='pending' (마감 전) / 'next_cohort_interest' (마감 후).
   // 신규 payment_* / notified_at / reminder_count / last_reminder_at 컬럼은
   // INSERT 시점 NULL (reminder_count 는 DB default 0). 자동 발송 없음.
@@ -128,6 +159,8 @@ export async function submitApplication(
   //   - course_id: 단과 신청 시 채워짐
   //   - bundle_id: 올인원 신청 시 채워짐
   //   - enrollment_id: 결제 승격 후 결정 (여기서는 NULL)
+  // B0069 Slice 1 추가:
+  //   - previous_applicant_id: 이전 신청 링크 (있으면). 어드민 "이력" 컬럼 소스.
   const { data, error } = await supabase
     .from(TABLE)
     .insert({
@@ -150,6 +183,7 @@ export async function submitApplication(
       cohort_id: cohortId,
       course_id: courseId,
       bundle_id: bundleId,
+      previous_applicant_id: previousApplicantId,
     })
     .select("id")
     .single();

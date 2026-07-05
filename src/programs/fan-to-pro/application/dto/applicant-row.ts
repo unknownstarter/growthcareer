@@ -50,6 +50,13 @@ export type ApplicantRow = {
   courseTitleKo: string | null;
   bundleTitleKo: string | null;
 
+  // B0069 1기 재지원 이력.
+  //   previousApplicantId: 이전 신청 row 링크 (submit-application 이 이메일 매칭 시 채움).
+  //   previousStatus: 이전 신청의 최종 status (JOIN 결과). "1기 수료생" / "1기 신청" 뱃지 소스.
+  //     null = 재지원 X (신규 지원자).
+  previousApplicantId: string | null;
+  previousStatus: ApplicantStatus | null;
+
   // 발송 추적
   notifiedAt: string | null;
   reminderCount: number;

@@ -98,6 +98,10 @@ export async function fetchApplicants(options?: {
         "bundle_id",
         "course:courses(id,title_ko,slug)",
         "bundle:bundles(id,title_ko,slug)",
+        // B0069 1기 재지원 링크. previous_applicant_id → previous:applicants row.
+        // PostgREST FK 명시 필요 (self join) — !previous_applicant_id 로 FK 지정.
+        "previous_applicant_id",
+        "previous:applicants!previous_applicant_id(id,status)",
         "cash_receipts(count)",
         "messages_log(count)",
       ].join(","),
@@ -188,6 +192,10 @@ export async function fetchApplicants(options?: {
       bundleId: raw.bundle_id ? String(raw.bundle_id) : null,
       courseTitleKo: extractNestedTitleKo(raw.course),
       bundleTitleKo: extractNestedTitleKo(raw.bundle),
+      previousApplicantId: raw.previous_applicant_id
+        ? String(raw.previous_applicant_id)
+        : null,
+      previousStatus: extractNestedStatus(raw.previous),
       notifiedAt: raw.notified_at ? String(raw.notified_at) : null,
       reminderCount:
         typeof raw.reminder_count === "number" ? raw.reminder_count : 0,
@@ -276,6 +284,26 @@ function extractNestedTitleKo(value: unknown): string | null {
 }
 
 /**
+ * B0069 nested previous applicant join 에서 status 추출.
+ * ApplicantStatus enum 밖의 값은 null 로 fallback (오염된 legacy row 방어).
+ */
+function extractNestedStatus(value: unknown): ApplicantStatus | null {
+  if (!value) return null;
+  const obj = Array.isArray(value)
+    ? (value[0] as Record<string, unknown> | undefined)
+    : (value as Record<string, unknown>);
+  if (!obj) return null;
+  const s = obj.status;
+  if (
+    typeof s === "string" &&
+    (APPLICANT_STATUSES as readonly string[]).includes(s)
+  ) {
+    return s as ApplicantStatus;
+  }
+  return null;
+}
+
+/**
  * 단일 applicant 조회 (B0051 LMS detail 페이지용).
  *
  * fetchApplicants 의 SELECT 와 같은 컬럼 + messages_log/milestones 보강을 적용해
@@ -326,6 +354,10 @@ export async function fetchApplicantById(
         "bundle_id",
         "course:courses(id,title_ko,slug)",
         "bundle:bundles(id,title_ko,slug)",
+        // B0069 1기 재지원 링크. previous_applicant_id → previous:applicants row.
+        // PostgREST FK 명시 필요 (self join) — !previous_applicant_id 로 FK 지정.
+        "previous_applicant_id",
+        "previous:applicants!previous_applicant_id(id,status)",
         "cash_receipts(count)",
         "messages_log(count)",
       ].join(","),
@@ -390,6 +422,10 @@ export async function fetchApplicantById(
     bundleId: raw.bundle_id ? String(raw.bundle_id) : null,
     courseTitleKo: extractNestedTitleKo(raw.course),
     bundleTitleKo: extractNestedTitleKo(raw.bundle),
+    previousApplicantId: raw.previous_applicant_id
+      ? String(raw.previous_applicant_id)
+      : null,
+    previousStatus: extractNestedStatus(raw.previous),
     notifiedAt: raw.notified_at ? String(raw.notified_at) : null,
     reminderCount:
       typeof raw.reminder_count === "number" ? raw.reminder_count : 0,

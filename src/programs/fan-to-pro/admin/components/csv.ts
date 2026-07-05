@@ -14,6 +14,8 @@ const COLUMNS: ReadonlyArray<CsvColumn> = [
   { key: "name", label: "이름" },
   // B0068 과정 — 단과 (course) / 올인원 (bundle) 표시. 1기 legacy 는 "-".
   { label: "과정", get: csvCourseLabel },
+  // B0069 이력 — 1기 재지원자 인식. "1기 수료생" / "1기 신청" / "신규".
+  { label: "이력", get: csvHistoryLabel },
   { key: "email", label: "이메일" },
   { key: "phone", label: "연락처" },
   { key: "birthdate", label: "생년월일" },
@@ -41,6 +43,18 @@ function csvCourseLabel(row: ApplicantRow): string {
   if (row.bundleTitleKo) return `올인원 / ${row.bundleTitleKo}`;
   if (row.courseTitleKo) return `단과 / ${row.courseTitleKo}`;
   return "";
+}
+
+function csvHistoryLabel(row: ApplicantRow): string {
+  if (!row.previousApplicantId) return "신규";
+  if (
+    row.previousStatus === "paid" ||
+    row.previousStatus === "enrolled" ||
+    row.previousStatus === "refunded"
+  ) {
+    return "1기 수료생";
+  }
+  return "1기 신청";
 }
 
 function escape(value: unknown): string {

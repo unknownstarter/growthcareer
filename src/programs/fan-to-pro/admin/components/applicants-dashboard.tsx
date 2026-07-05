@@ -815,6 +815,7 @@ function DashboardInner({
                 <th className="px-3 py-2 font-black">신청일</th>
                 <th className="px-3 py-2 font-black">이름</th>
                 <th className="px-3 py-2 font-black">과정</th>
+                <th className="px-3 py-2 font-black">이력</th>
                 <th className="px-3 py-2 font-black">연락처</th>
                 <th className="px-3 py-2 font-black">이메일</th>
                 <th className="px-3 py-2 font-black">국적</th>
@@ -830,7 +831,7 @@ function DashboardInner({
               {filtered.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={readOnly ? 11 : 13}
+                    colSpan={readOnly ? 12 : 14}
                     className="px-3 py-12 text-center text-xs text-fg/80"
                   >
                     표시할 신청자가 없어요.
@@ -883,6 +884,9 @@ function DashboardInner({
                     </td>
                     <td className="px-3 py-2 align-top text-fg whitespace-nowrap">
                       {formatCourseLabel(row)}
+                    </td>
+                    <td className="px-3 py-2 align-top whitespace-nowrap">
+                      <HistoryBadge row={row} />
                     </td>
                     <td className="px-3 py-2 align-top text-fg whitespace-nowrap">
                       {formatPhoneForDisplay(row.phone, row.nationality)}
@@ -1007,6 +1011,7 @@ function DashboardInner({
                             {tint.label}
                           </span>
                         ) : null}
+                        {row.previousApplicantId ? <HistoryBadge row={row} /> : null}
                       </div>
                       <div className="mt-0.5 break-all text-fg/90">{row.email}</div>
                       <div className="text-fg/90">
@@ -1426,6 +1431,37 @@ function LastFetchedChip({
   );
 }
 
+/**
+ * B0069 "이력" badge — 재지원자 인식 표시.
+ */
+function HistoryBadge({ row }: { row: ApplicantRow }) {
+  const tone = historyBadgeTone(row);
+  if (tone === null) {
+    return <span className="text-fg/60">신규</span>;
+  }
+  const classes =
+    tone === "completed"
+      ? "border-emerald-500/60 bg-emerald-500/15 text-emerald-200"
+      : "border-amber-500/60 bg-amber-500/15 text-amber-200";
+  const label = tone === "completed" ? "1기 수료생" : "1기 신청";
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center border px-1.5 py-0.5 text-[10px] font-black uppercase whitespace-nowrap",
+        classes,
+      )}
+      style={{ letterSpacing: "0.15em" }}
+      title={
+        tone === "completed"
+          ? "1기에서 결제까지 완료한 이력이 있어요"
+          : "1기에 신청은 했지만 결제 전 상태였어요"
+      }
+    >
+      {label}
+    </span>
+  );
+}
+
 function StatPill({
   label,
   value,
@@ -1487,6 +1523,28 @@ function formatCourseLabel(row: ApplicantRow): string {
   if (row.bundleTitleKo) return `올인원 / ${row.bundleTitleKo}`;
   if (row.courseTitleKo) return `단과 / ${row.courseTitleKo}`;
   return "-";
+}
+
+/**
+ * B0069 신청자 row 의 "이력" 컬럼 badge.
+ *   previousApplicantId 있음 + previousStatus in (paid/enrolled/refunded) → "1기 수료생" (green)
+ *   previousApplicantId 있음 + 그 외 status → "1기 신청" (yellow)
+ *   previousApplicantId 없음 → null (컬럼에 "신규" 텍스트만)
+ *
+ * 노아 스펙 매핑:
+ *   - "1기 수료생" = 실제 결제 완료 (paid) 또는 강좌 확정 (enrolled) 또는 환불 (refunded, 결제까진 갔음)
+ *   - "1기 신청" = 결제 전 status (pending / notified / overdue / cancelled)
+ */
+function historyBadgeTone(row: ApplicantRow): "completed" | "applied" | null {
+  if (!row.previousApplicantId) return null;
+  if (
+    row.previousStatus === "paid" ||
+    row.previousStatus === "enrolled" ||
+    row.previousStatus === "refunded"
+  ) {
+    return "completed";
+  }
+  return "applied";
 }
 
 function formatDate(iso: string): string {
