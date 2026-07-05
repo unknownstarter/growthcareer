@@ -279,7 +279,14 @@ GRANT EXECUTE ON FUNCTION apply_to_job_atomic TO authenticated;
 
 - `user_profiles` 확장 X (v5 의 `company_partner_id` / `last_activity_at` / 3-way lineage CHECK 다 폐기).
 - `students` / `applicants` / `attendance` / `students.display_name` **절대 보존**.
-- `students.resume_url` 이 이미 존재하는지 확인 → 있으면 원클릭 지원 email attachment 에 그대로 사용. 없으면 Iris 마이그레이션 draft 단계에서 검증 후 별도 확장 여부 결정.
+- **이력서/자기소개서는 `student_career_documents` 테이블에서 조회** (Sage HIGH S-8 정정). `students.resume_url` 컬럼은 존재하지 않는다. `student_career_documents` 스키마:
+  - `student_id uuid NOT NULL REFERENCES students(id)`
+  - `doc_type text NOT NULL CHECK (doc_type IN ('resume','cover_letter', ...))`
+  - `storage_method text NOT NULL CHECK (storage_method IN ('external_url','file_upload'))`
+  - `external_url text` (`storage_method='external_url'` 일 때만 채움)
+  - `file_path text` (`storage_method='file_upload'` 일 때만 채움, Supabase Storage bucket 경로)
+  - CHECK constraint XOR: 한 row 에 `external_url` 또는 `file_path` 중 정확히 하나만 non-null.
+- 원클릭 지원 시 fetch: `SELECT doc_type, storage_method, external_url, file_path FROM student_career_documents WHERE student_id = ? AND doc_type IN ('resume','cover_letter')`. 없으면 email attachment 없이 본문만 발송 (§8.3 실패 시나리오 재사용).
 
 ### 4.3 RLS 정책
 
@@ -481,11 +488,24 @@ export async function applyToJobAction(input: ApplyToJobInput): Promise<ApplyToJ
 1. `assertCohortRole('student')`. 기존 lms auth 재사용. 없으면 `not_authenticated`.
 2. `user_profiles.student_id` fetch. NULL 이면 `not_student`.
 3. `students WHERE id = student_id AND status = 'active'`. row 없으면 `not_active`.
-4. `job_postings WHERE id = jobPostingId AND status = 'open' AND (closes_at IS NULL OR closes_at > now())`. row 없으면 `job_not_open`.
-5. 트랜잭션 시작:
-   - `student_applications` INSERT `{ student_id, job_posting_id, student_message, status: 'applied' }`. UNIQUE 위반 시 `already_applied` return.
-   - `recruitment_email_log` INSERT `{ application_id, recipient_email: job.contact_email, subject, body_snapshot, attachments: [{ url: students.resume_url }] if exists, delivery_status: 'pending' }`.
-6. 트랜잭션 commit → return `{ ok: true, applicationId }`.
+4. `job_postings WHERE id = jobPostingId AND status = 'open' AND (closes_at IS NULL OR closes_at > now())`. row 없으면 `job_not_open`. `contact_email` 도 함께 fetch.
+5. **첨부 문서 조회** (S-8 정정): `SELECT doc_type, storage_method, external_url, file_path FROM student_career_documents WHERE student_id = ? AND doc_type IN ('resume','cover_letter')`. 결과를 `attachments` jsonb 배열로 매핑:
+   ```json
+   [
+     { "doc_type": "resume", "storage_method": "external_url", "external_url": "https://..." },
+     { "doc_type": "cover_letter", "storage_method": "file_upload", "file_path": "student-docs/uuid/cover.pdf" }
+   ]
+   ```
+   문서가 하나도 없으면 빈 배열 `[]` 전달 (본문만 발송).
+6. **RPC 호출** (S-9 정정): `supabase.rpc('apply_to_job_atomic', { p_student_id, p_job_posting_id, p_student_message, p_email_recipient, p_email_subject, p_email_body_template_key, p_email_attachments })`. RPC 안에서 `student_applications` INSERT + `recruitment_email_log` INSERT 가 하나의 서버 사이드 트랜잭션. RPC 성공 시 `applicationId` return.
+7. RPC 에러 매핑:
+   - `notEligible` → `not_active` (defense in depth 로 함수 안 재검증 실패)
+   - `postingClosed` → `job_not_open`
+   - `alreadyApplied` → `already_applied`
+   - 기타 → `internal`
+8. 성공 시 return `{ ok: true, applicationId }`.
+
+**주의**: server action 은 template body 를 렌더하지 않는다. `p_email_body_template_key` = 식별자 (예: `'recruitment.application.v1'`) 만 넘기고, outbox worker (§8.1) 가 sent 시점에 실 body 렌더 + `body_snapshot` 채움. RPC 인자로 PII (학생 이름, 이메일, 이력서 URL) 를 body 문자열로 넣지 않음 = RPC 로그 최소화.
 
 ### 6.3 학생 지원 취소
 
@@ -521,12 +541,31 @@ closeJobPostingAction(id): Result;     // status='closed'
 
 1. 학생 로그인 (기존 supabase auth) → `/[locale]/jobs/[slug]` 진입.
 2. Detail page 하단 [지원하기] 버튼 클릭.
-3. Confirm modal 오픈:
-   - 제목: "이 공고에 지원할까요?"
-   - 본문: "지원 시 이름/이메일/이력서/자기소개서가 {company_name}({contact_email}) 로 전달됩니다. 발송 후에는 취소할 수 없어요."
-   - 선택 필드: 자기소개 메시지 (max 1000자, 선택).
-   - 체크박스: "위 내용에 동의합니다." (필수, 개인정보 3자 제공 동의).
-   - 버튼: [취소] / [지원하기].
+3. Confirm modal 오픈 (**K-PIPA 제17조 개인정보 제3자 제공 동의**, Sage HIGH S-1 정정):
+
+   제목: "이 공고에 지원할까요?"
+
+   본문 (4개 필수 고지 항목):
+   > 지원하시면 아래 정보가 회사에 전달됩니다. 이 동의는 지원 진행에 필요한 것으로, 동의를 거부하실 수 있으나 그 경우 이 공고에 지원할 수 없습니다.
+   >
+   > **1. 제공받는 자**: {company_name} (담당자 이메일 {contact_email})
+   > **2. 제공 목적**: 이 공고에 대한 채용 검토 및 결과 회신
+   > **3. 제공 항목**: 이름, 이메일, 국적, 기수 정보, 이력서, 자기소개서, 지원 메시지 (작성 시)
+   > **4. 보유 및 이용 기간**: 회사의 채용 절차 종료 시까지. 이후 회사 자체 정책에 따라 파기 또는 인재풀 보관 (회사에 직접 확인)
+   >
+   > 발송 후에는 플랫폼에서 취소할 수 없습니다. 취소가 필요하시면 회사 이메일로 직접 요청하세요.
+
+   선택 필드: 자기소개 메시지 (max 1000자, 선택).
+
+   체크박스 (필수, 둘 다 체크해야 [지원하기] 활성):
+   - [ ] 위 개인정보 제3자 제공 내용을 확인했으며 동의합니다. (K-PIPA 제17조)
+   - [ ] 발송 후 플랫폼에서 취소할 수 없음을 이해합니다.
+
+   버튼: [취소] / [지원하기 = 두 체크 시 활성].
+
+   **접근성**: 4항목은 스크린리더 순차 낭독 가능하도록 `<dl>` 시맨틱 마크업 (`<dt>` = 항목명, `<dd>` = 내용). 체크박스는 개별 `<label>` 로 연결. modal 은 `role="dialog"` + `aria-labelledby` + focus trap.
+
+   **거부권 명시**: "동의를 거부하실 수 있으나 그 경우 이 공고에 지원할 수 없습니다" 문구는 K-PIPA 제17조 제2항의 거부권 고지 의무 대응. 개인정보처리방침 update (§12 step 10) 에서도 동일 문구 반영.
 4. Submit → `applyToJobAction` 호출.
 5. 응답 처리:
    - `ok: true` → "지원 완료. 결과는 회사에서 이메일로 연락드립니다." toast. 버튼 상태 `[지원 완료]` 로 잠금.
@@ -556,14 +595,19 @@ closeJobPostingAction(id): Result;     // status='closed'
   - 발신자: no-reply@growthcareer.xyz
   - 학생 정보 (이름, 이메일, 국적, cohort).
   - 학생 message (있을 시).
-  - Attachment: `students.resume_url` fetch → base64 인코딩 첨부.
+  - Attachment 처리 (S-8 정정): worker 가 `recruitment_email_log.attachments` jsonb 를 순회.
+    - `storage_method='external_url'` → 본문에 링크 표기 (`이력서: <a href="...">외부 링크</a>`). 다운로드/base64 인코딩 X.
+    - `storage_method='file_upload'` → Supabase Storage 에서 `file_path` 로 fetch → base64 인코딩 후 이메일 첨부.
+    - 두 케이스 혼합 가능 (예: 이력서 external + 자기소개서 upload).
+  - 문서 fetch 실패 시 email 은 본문만 발송 + `recruitment_email_log.error_message` 에 fetch 실패 doc 기록.
 - template 변경 시 `body_snapshot` 에는 발송 시점 원문 그대로 저장.
 
 ### 8.3 실패 시나리오
 
 - Resend 5xx → retry.
 - 잘못된 recipient_email (bounces) → `failed` + super_admin 알림 (Wave 2, MVP 는 로그만).
-- Attachment fetch 실패 → email 은 attachment 없이 발송 (본문에 이력서 URL 표시).
+- Attachment fetch 실패 (`file_upload` 케이스 Storage 오류) → email 은 실패한 attachment 를 제외하고 발송. 본문에 "이력서 첨부에 실패했습니다. 회사가 요청 시 학생이 직접 회신 예정" 안내 + `recruitment_email_log.error_message` 에 doc_type 기록.
+- 학생 문서 전무 (`student_career_documents` row 0건) → email 본문에 학생 message 만 포함하여 발송. 회사가 이력서 요청 시 회사가 학생에게 직접 회신.
 
 ---
 
@@ -594,17 +638,19 @@ v5 spec 의 Sage CRITICAL/HIGH 대부분은 회사 회원 표면 자체가 소�
 | MED: audit_log metadata 어휘 whitelist | audit_log 삭제 |
 | LOW: 로고 파일명 timestamp+nanoid | logo_path 는 URL 저장만 |
 
-### 10.2 남은 검토 대상 (예상 CRIT 0 + HIGH 1~2)
+### 10.2 남은 검토 대상 (Simplified v2 후 예상 CRIT 0 + HIGH 0~2)
 
-| ID | 예상 severity | 이슈 |
-|---|---|---|
-| S-1 | HIGH | 원클릭 지원 시 이력서 base64 를 이메일 첨부로 3자 제공 = K-PIPA 동의 문구 명시성 |
-| S-2 | HIGH | 학생 지원 spam (한 학생이 다수 공고 지원, 봇 자동화 방어). UNIQUE constraint 로 posting 당 1건 상한 있지만 계정 다중 생성 시 취약. Vercel Firewall + rate limit middleware 필요 여부 |
-| S-3 | MED | `recruitment_email_log.body_snapshot` 에 학생 PII (이름/이메일/이력서 URL) 평문 저장 → retention 정책 부재 |
-| S-4 | MED | `job_postings.contact_email` 노출 = 회사 담당자 개인정보. 공개 페이지에 mailto 로 노출 = 회사 사전 동의 필요 |
-| S-5 | MED | slug 예측 가능성 (nanoid 8자). draft 상태 slug 우연 열람 방어. RLS 로 status='open' 필터 되므로 방어 OK, 문서화만 필요 |
-| S-6 | LOW | admin server action 첫 줄 `assertSuperAdmin()` 강제 (§7.4) 누락 검증 script |
-| S-7 | LOW | ISR revalidate=300 = closed 후에도 5분간 공개 페이지 stale. `revalidateTag` 로 즉시 무효화 |
+| ID | 예상 severity | 이슈 | v2 상태 |
+|---|---|---|---|
+| S-1 | HIGH → PASS 후보 | 원클릭 지원 시 이력서를 이메일 첨부로 3자 제공 = K-PIPA 동의 문구 | v2 §7 modal 문구에 K-PIPA 제17조 4항목 (제공받는 자 / 목적 / 항목 / 보유기간) + 거부권 명시 반영. 재검토 대상 |
+| S-2 | HIGH | 학생 지원 spam (한 학생이 다수 공고 지원, 봇 자동화 방어). UNIQUE constraint 로 posting 당 1건 상한 있지만 계정 다중 생성 시 취약. Vercel Firewall + rate limit middleware 필요 여부 | 미해결. Wave 2 검토 |
+| S-3 | MED | `recruitment_email_log.body_snapshot` 에 학생 PII (이름/이메일/이력서 URL) 평문 저장 → retention 정책 부재 | 미해결. Wave 2 |
+| S-4 | MED | `job_postings.contact_email` 노출 = 회사 담당자 개인정보. 공개 페이지에 mailto 로 노출 = 회사 사전 동의 필요 | 회사 온보딩 시 동의 절차 문서화 필요 |
+| S-5 | MED | slug 예측 가능성 (nanoid 8자). draft 상태 slug 우연 열람 방어. RLS 로 status='open' 필터 되므로 방어 OK, 문서화만 필요 | 문서화 완료 (§4.1) |
+| S-6 | LOW | admin server action 첫 줄 `assertSuperAdmin()` 강제 (§7.4) 누락 검증 script | 미해결. Wave 2 |
+| S-7 | LOW | ISR revalidate=300 = closed 후에도 5분간 공개 페이지 stale. `revalidateTag` 로 즉시 무효화 | 미해결. Wave 2 |
+| S-8 | HIGH → PASS 후보 | `students.resume_url` 참조 = 컬럼 부존재 | v2 §4.2 / §6.2 / §8.2 모두 `student_career_documents` (doc_type + storage_method + external_url XOR file_path) 참조로 정정. 재검토 대상 |
+| S-9 | HIGH → PASS 후보 | Supabase JS 트랜잭션 없음 = half-commit risk | v2 §4.1 에 `apply_to_job_atomic` SECURITY DEFINER RPC 신설. §6.2 step 6 이 RPC 호출로 재작성. 재검토 대상 |
 
 ### 10.3 Sage 재검토 대비 timeline
 
@@ -728,4 +774,4 @@ v5 spec 의 다음 섹션들이 Simplified 에서 삭제됨:
 - Storage bucket RLS SQL (student-resumes / companies-logos, path traversal 방어)
 - 로고 파일명 timestamp+nanoid 규칙
 
-**요약**: v5 = 1857 line, Simplified 예상 = ~700 line (실 결과 이 파일). 삭제 비율 ~62%.
+**요약**: v5 = 1857 line, Simplified v2 = 777 line. 삭제 비율 ~58% (v2 는 v1 대비 +127 line, S-1 modal 상세화 + S-8 스키마 정정 + S-9 RPC 정의로 인한 증가).
