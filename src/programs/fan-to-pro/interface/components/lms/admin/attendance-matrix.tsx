@@ -610,10 +610,10 @@ export function AttendanceMatrix({ sessions, students }: Props) {
                               {row.nameKo}
                             </span>
                           ) : null}
-                          {row.applicant?.nationality ? (
+                          {(row.profile?.nationality ?? row.applicant?.nationality) ? (
                             <span className="text-[10px] font-normal text-[var(--muted-foreground)] no-underline">
-                              {row.applicant.nationality}
-                              {row.applicant.visa
+                              {row.profile?.nationality ?? row.applicant?.nationality}
+                              {row.applicant?.visa
                                 ? ` / ${row.applicant.visa}`
                                 : ""}
                             </span>

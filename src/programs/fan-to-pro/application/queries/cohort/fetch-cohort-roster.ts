@@ -41,11 +41,22 @@ export type StudentApplicantInfo = {
   payment_confirmed_at: string | null;
 };
 
+/**
+ * student_profile 에서 UI 에 필요한 필드 (학생 편집 가능 사본).
+ * applicants 원본과 다르면 profile 우선 (CLAUDE.md §8 룰).
+ */
+export type StudentProfileInfo = {
+  name_ko: string | null;
+  nationality: string | null;
+};
+
 export type CohortRosterStudentRow = {
   student: Student;
   applicant: StudentApplicantInfo | null;
   /** student_profile.name_ko — 강사님 한국어 인식용 (B0052). */
   nameKo: string | null;
+  /** student_profile 편집 사본 (nationality 등). applicant 대비 우선. */
+  profile: StudentProfileInfo | null;
   attendanceRate: number;
   /** 출석 회차 수 / 전체 회차 (text "5/8" 등). */
   presentCount: number;
@@ -89,9 +100,9 @@ export async function fetchCohortRoster(
     // applicant join — students 가 0명이면 skip.
     const applicantIds = students.map((s) => s.applicant_id);
     const studentIds = students.map((s) => s.id);
-    const [applicantMap, namekoMap] = await Promise.all([
+    const [applicantMap, profileMap] = await Promise.all([
       fetchApplicantInfoMap(applicantIds),
-      fetchNameKoMap(studentIds),
+      fetchStudentProfileMap(studentIds),
     ]);
 
     const totalSessions = sessions.length;
@@ -112,10 +123,12 @@ export async function fetchCohortRoster(
         const att = myAttendances.find((a) => a.session_id === session.id);
         attendanceMap[session.id] = att ? att.status : "unmarked";
       }
+      const profile = profileMap.get(student.id) ?? null;
       return {
         student,
         applicant: applicantMap.get(student.applicant_id) ?? null,
-        nameKo: namekoMap.get(student.id) ?? null,
+        nameKo: profile?.name_ko ?? null,
+        profile,
         attendanceRate,
         presentCount,
         totalSessions,
@@ -144,25 +157,28 @@ export async function fetchCohortRoster(
  * roster 자체는 student 만으로도 표시 가능해야 함.
  */
 /**
- * student_profile.name_ko join — 강사님 한국어 인식용 (B0052).
- * 비어있거나 join 실패 시 빈 Map.
+ * student_profile join — name_ko (B0052) + nationality (2026-07-05 bug fix).
+ * 학생 편집 사본이 applicants 원본보다 우선. 비어있거나 join 실패 시 빈 Map.
  */
-async function fetchNameKoMap(
+async function fetchStudentProfileMap(
   studentIds: string[],
-): Promise<Map<string, string | null>> {
-  const map = new Map<string, string | null>();
+): Promise<Map<string, StudentProfileInfo>> {
+  const map = new Map<string, StudentProfileInfo>();
   if (studentIds.length === 0) return map;
   const supabase = getSupabaseServer();
   if (!supabase) return map;
   const { data, error } = await supabase
     .from("student_profile")
-    .select("student_id, name_ko")
+    .select("student_id, name_ko, nationality")
     .in("student_id", studentIds);
   if (error || !data) return map;
   for (const row of data as Array<Record<string, unknown>>) {
     const sid = String(row.student_id ?? "");
     if (!sid) continue;
-    map.set(sid, row.name_ko ? String(row.name_ko) : null);
+    map.set(sid, {
+      name_ko: row.name_ko ? String(row.name_ko) : null,
+      nationality: row.nationality ? String(row.nationality) : null,
+    });
   }
   return map;
 }
