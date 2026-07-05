@@ -1,0 +1,7 @@
+# Growth Career / Fan to Pro 수료생 스토리 MDX 저장소.
+#
+# 이 폴더는 Iris `story-loader.ts` 가 build/dev time 에 스캔한다.
+# 파일 명: `<locale>-<slug>.mdx` (예: `ko-jane-lee.mdx`, `en-jane-lee.mdx`).
+# 빈 상태 = 0 파일 = `getAllStories` 가 `[]` 반환. 컴포넌트 shell 에서 EmptyState 처리.
+#
+# frontmatter shape 은 `src/programs/growth-career/domain/content/story-frontmatter.ts`.

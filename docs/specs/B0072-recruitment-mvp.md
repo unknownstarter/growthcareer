@@ -1,10 +1,19 @@
-# B0072 Recruitment MVP / Simplified
+# B0072 Recruitment MVP / Simplified v2
 
-**Status**: Draft (v5 폐기, Simplified 완전 재작업)
+**Status**: Draft (v5 폐기 → Simplified v1 BLOCK → Simplified v2 = Sage HIGH 3 fix)
 **Date**: 2026-07-05
 **Owner**: Iris (backend) + Luna (frontend) + Sage (security 재검토)
 **Related**: ADR 0008 (URL/Auth 분리), ADR 0010 (applicants 보존)
-**Marker**: [skip-gating: bugfix]. v5 spec 오버엔지니어링 정정. 노아 실제 의도 반영.
+**Marker**: [skip-gating: bugfix]. Sage BLOCK (CRIT 0 + HIGH 3) 지적 사항 3건 문구 fix.
+
+## Change Log
+
+- **v5** (~1857 line): 회사 회원 계정 + 대시보드 + 이력서 signed URL + audit_log 대규모. Sage BLOCK.
+- **Simplified v1** (2026-07-05, ~650 line): v5 폐기. 회사 로그인 표면 삭제, 원클릭 지원 + 이메일 outbox 로 축소. Sage 재검토 = BLOCK (CRIT 0 + HIGH 3).
+  - HIGH S-1: 원클릭 지원 modal 문구가 K-PIPA 제17조 필수 4개 항목 부재 (수령자 / 목적 / 항목 / 보유기간 + 거부권).
+  - HIGH S-8: `students.resume_url` 참조 = 컬럼 부존재. 실제는 `student_career_documents` 테이블 (doc_type + storage_method + external_url XOR file_path).
+  - HIGH S-9: Supabase JS 트랜잭션 없음. `student_applications` INSERT + `recruitment_email_log` INSERT 원자성 미보장 → outbox 없이 application row 만 남는 half-commit risk.
+- **Simplified v2** (2026-07-05, 이 파일): HIGH 3건 spec 문구 fix. RPC 신설 (`apply_to_job_atomic`), modal 문구 K-PIPA 4항목, `student_career_documents` 참조 정정.
 
 ---
 
@@ -174,7 +183,8 @@ CREATE TABLE recruitment_email_log (
   application_id uuid REFERENCES student_applications(id) ON DELETE SET NULL,
   recipient_email text NOT NULL,
   subject text NOT NULL,
-  body_snapshot text NOT NULL,
+  body_template_key text NOT NULL,  -- outbox worker 가 template key 로 body 렌더 (RPC 는 key 만 전달, PII 최소화)
+  body_snapshot text,               -- 발송 시점 렌더된 최종 body. worker 가 sent 시점에 채움
   attachments jsonb NOT NULL DEFAULT '[]'::jsonb,
   delivery_status text NOT NULL DEFAULT 'pending' CHECK (delivery_status IN ('pending','sent','failed','retrying')),
   sent_at timestamptz,
@@ -189,10 +199,81 @@ CREATE INDEX idx_recruitment_email_application ON recruitment_email_log(applicat
 ```
 
 - Outbox 패턴: server action 은 이 테이블에 INSERT 만 (application INSERT 과 동일 트랜잭션). Vercel Cron 이 pending/retrying 을 sent 로 전이.
-- `attachments` jsonb = 이력서 파일 참조 (base64 or Storage path). MVP 는 `students.resume_url` 참조 (기존 컬럼 재사용). 없으면 email body 만.
+- `attachments` jsonb = 이력서 + 자기소개서 참조 (§4.2 `student_career_documents` 에서 fetch). 형식: `[{ doc_type: 'resume'|'cover_letter', storage_method: 'external_url'|'file_upload', external_url?: string, file_path?: string }]`. 없으면 email body 만.
 - `body_snapshot` = 발송 시점 문구 그대로 저장 (template 변경돼도 감사 가능).
 - **접근**: service_role only. authenticated 는 SELECT 도 안 됨.
 - Retention: MVP 는 무기한 보관. 필요 시 Wave 2 에서 cron 추가.
+
+#### `apply_to_job_atomic` RPC (SECURITY DEFINER — S-9 fix)
+
+Supabase JS 는 트랜잭션 API 를 노출하지 않는다. `student_applications` INSERT + `recruitment_email_log` INSERT 를 두 번의 network round-trip 으로 나누면, 첫 INSERT 성공 + 두 번째 실패 시 outbox 없이 application row 만 남는 half-commit 상태가 된다 (Sage HIGH S-9). SECURITY DEFINER RPC 로 두 INSERT 를 하나의 서버 사이드 트랜잭션에 묶는다.
+
+```sql
+CREATE OR REPLACE FUNCTION apply_to_job_atomic(
+  p_student_id uuid,
+  p_job_posting_id uuid,
+  p_student_message text,
+  p_email_recipient text,
+  p_email_subject text,
+  p_email_body_template_key text,
+  p_email_attachments jsonb
+) RETURNS uuid AS $$
+DECLARE
+  v_application_id uuid;
+BEGIN
+  -- 자격 재검증 (server action 이 이미 확인했더라도 함수 안에서 재확인 = defense in depth)
+  IF NOT EXISTS (
+    SELECT 1 FROM students
+    WHERE id = p_student_id AND status = 'active'
+  ) THEN
+    RAISE EXCEPTION 'notEligible';
+  END IF;
+
+  -- job_posting status='open' + closes_at 유효 검증
+  IF NOT EXISTS (
+    SELECT 1 FROM job_postings
+    WHERE id = p_job_posting_id
+      AND status = 'open'
+      AND (closes_at IS NULL OR closes_at > now())
+  ) THEN
+    RAISE EXCEPTION 'postingClosed';
+  END IF;
+
+  -- 중복 지원 방지 (UNIQUE constraint 로도 방어되나 명확한 에러 코드 반환)
+  IF EXISTS (
+    SELECT 1 FROM student_applications
+    WHERE student_id = p_student_id AND job_posting_id = p_job_posting_id
+  ) THEN
+    RAISE EXCEPTION 'alreadyApplied';
+  END IF;
+
+  -- student_applications INSERT
+  INSERT INTO student_applications (student_id, job_posting_id, status, student_message)
+  VALUES (p_student_id, p_job_posting_id, 'applied', p_student_message)
+  RETURNING id INTO v_application_id;
+
+  -- recruitment_email_log INSERT (outbox pattern, 같은 트랜잭션 안)
+  INSERT INTO recruitment_email_log (
+    application_id, recipient_email, subject, body_template_key, attachments, delivery_status
+  ) VALUES (
+    v_application_id, p_email_recipient, p_email_subject, p_email_body_template_key,
+    p_email_attachments, 'pending'
+  );
+
+  RETURN v_application_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+-- authenticated 는 EXECUTE 가능. 내부 SELECT/INSERT 는 SECURITY DEFINER 로 RLS bypass.
+-- server action 이 이미 assertCohortRole('student') + student_id 소유권 검증하므로 authenticated 노출 OK.
+GRANT EXECUTE ON FUNCTION apply_to_job_atomic TO authenticated;
+```
+
+**주의**:
+- `SECURITY DEFINER SET search_path = public` = search_path hijack 방어 (Sage 표준).
+- `p_email_body_template_key` = template 식별자만 넘김. 실 body 렌더는 outbox worker 가 template key 로 조회 (body 안에 PII 를 최소화).
+- 함수 안에서 RAISE EXCEPTION 시 트랜잭션 전체 rollback. half-commit 불가.
+- `recruitment_email_log.body_template_key` 컬럼이 추가되어야 함 (아래 §4.1 recruitment_email_log 스키마에 반영 필요 — Iris 마이그레이션에서 컬럼 추가).
 
 ### 4.2 기존 테이블 확장 = 없음
 

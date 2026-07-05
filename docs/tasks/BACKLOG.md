@@ -393,6 +393,16 @@ D-9. 1주차 강의 자료 Google Drive 모바일 다운로드 사고 → 자체
   - settings.json PostToolUse hook 으로 Write/Edit 후 자동 grep 검증
   - 위반 시 즉시 fail + Luna 재작성
 
+**2기 재무 프로젝션**:
+
+- **B0082** · 2기 매출 프로젝션 v1.2 (실 재계산) · status: **ADR-drafted** · 2026-07-05 · owner: Aria
+  - ADR: [`docs/decisions/0014-cohort2-revenue-projection.md`](../decisions/0014-cohort2-revenue-projection.md)
+  - v1.1 오류 4건 정정 (회차 5주, 시간대 분리 세션, 사업자 세금계산서, 페스티벌 티켓 재분류)
+  - 시나리오 A~D 재계산 (원 단위): A -15,119,360 / B -4,789,600 / C +5,823,360 / D +18,168,640
+  - BEP mix 기준 = 34명 (Baseline B 6명 부족)
+  - 노아 결정 4건 대기 (2기 규모, launch 시점, 강사료 재협상, 올인원 할인율)
+  - 매출 단위 룰 (원 단위 필수) CLAUDE.md §6.6 신규 후보
+
 ---
 
 ## Raw  (T1 dump · 미분류)
