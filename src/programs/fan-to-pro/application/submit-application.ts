@@ -4,7 +4,7 @@ import {
   ApplicationSchema,
   type ApplicationActionState,
 } from "@/src/programs/fan-to-pro/domain/application";
-import { isEnrollmentClosed } from "@/src/programs/fan-to-pro/domain/program";
+import { isEnrollmentClosed } from "@/src/programs/fan-to-pro/domain/marketing/program-config";
 import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
 import {
   fetchSignupOpenCohort,

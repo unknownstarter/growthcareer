@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { PRICING, formatKRW } from "@/src/programs/fan-to-pro/domain/pricing";
-import { isEnrollmentClosed } from "@/src/programs/fan-to-pro/domain/program";
+import { isEnrollmentClosed } from "@/src/programs/fan-to-pro/domain/marketing/program-config";
 import { SectionTracker } from "../components/section-tracker";
 import { Button } from "../ui/button";
 import { Container } from "../ui/container";

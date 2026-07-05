@@ -1,6 +1,10 @@
 /**
- * Program — 프로그램 구성, 멘토, 보장 항목.
- * 일부 필드는 사용자 입력 대기 (null / TBD).
+ * Program marketing config — 프로그램 구성, 멘토, 보장 항목, 일정, 정원.
+ *
+ * B0068 리네임: `domain/program.ts` → `domain/marketing/program-config.ts`.
+ * DB row 를 표현하는 program 엔티티가 아니라 랜딩·pricing·apply-form 이 참조하는
+ * 하드코딩 마케팅 config (1기 시점 값). 2기+ multi-track 도입 시 `courses` / `bundles`
+ * DB 로 이동. 일부 필드는 사용자 입력 대기 (null / TBD).
  */
 export const GUARANTEES = [
   {

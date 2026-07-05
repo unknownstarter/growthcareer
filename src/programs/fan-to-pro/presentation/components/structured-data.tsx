@@ -19,7 +19,7 @@ import {
   ENROLLMENT_CAP,
   OPERATOR,
   SCHEDULE,
-} from "@/src/programs/fan-to-pro/domain/program";
+} from "@/src/programs/fan-to-pro/domain/marketing/program-config";
 
 const SITE_URL = "https://growthcareer.xyz";
 const LOGO_URL = `${SITE_URL}/icon.png`;

@@ -14,7 +14,7 @@ import {
   OPERATOR,
   REFUND_POLICY,
   isEnrollmentClosed,
-} from "@/src/programs/fan-to-pro/domain/program";
+} from "@/src/programs/fan-to-pro/domain/marketing/program-config";
 import { ApplyConfirmModal } from "../components/apply-confirm-modal";
 import { Chip } from "../ui/chip";
 import { Container } from "../ui/container";

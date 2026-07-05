@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { INSTRUCTORS } from "@/src/programs/fan-to-pro/domain/program";
+import { INSTRUCTORS } from "@/src/programs/fan-to-pro/domain/marketing/program-config";
 import { Avatar } from "../ui/avatar";
 import { Chip } from "../ui/chip";
 import { Container } from "../ui/container";

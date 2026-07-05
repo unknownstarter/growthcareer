@@ -37,7 +37,7 @@ import {
   type IndividualSendLogResult,
   type MilestoneToggleResult,
 } from "@/src/programs/fan-to-pro/domain/application";
-import { ENROLLMENT_CAP } from "@/src/programs/fan-to-pro/domain/program";
+import { ENROLLMENT_CAP } from "@/src/programs/fan-to-pro/domain/marketing/program-config";
 import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
 import { assertAdmin } from "@/src/programs/fan-to-pro/admin/role";
 import {

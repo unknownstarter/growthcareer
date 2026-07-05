@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { ENROLLMENT_CAP } from "@/src/programs/fan-to-pro/domain/program";
+import { ENROLLMENT_CAP } from "@/src/programs/fan-to-pro/domain/marketing/program-config";
 import { Chip } from "../ui/chip";
 import { Container } from "../ui/container";
 import { Eyebrow } from "../ui/eyebrow";

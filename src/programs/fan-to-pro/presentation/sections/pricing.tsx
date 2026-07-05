@@ -4,7 +4,7 @@ import {
   discountRate,
   formatKRW,
 } from "@/src/programs/fan-to-pro/domain/pricing";
-import { isEnrollmentClosed } from "@/src/programs/fan-to-pro/domain/program";
+import { isEnrollmentClosed } from "@/src/programs/fan-to-pro/domain/marketing/program-config";
 import { SectionTracker } from "../components/section-tracker";
 import { Button } from "../ui/button";
 import { Container } from "../ui/container";
