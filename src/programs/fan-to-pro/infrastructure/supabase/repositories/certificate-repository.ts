@@ -42,6 +42,25 @@ export async function fetchCertificatesByCohort(
   return (data ?? []).map((row) => CertificateSchema.parse(row));
 }
 
+/**
+ * 발급번호 (unique) 로 단일 certificate — verify 페이지 (B0081).
+ * 없으면 null. PII 컬럼 반환 X (student_id 만) — 호출자 (verify server component)
+ * 가 별도로 cohort/program 명 join.
+ */
+export async function fetchCertificateBySerialNo(
+  serialNo: string,
+): Promise<Certificate | null> {
+  const supabase = requireClient();
+  const { data, error } = await supabase
+    .from(TABLE)
+    .select("*")
+    .eq("serial_no", serialNo)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data) return null;
+  return CertificateSchema.parse(data);
+}
+
 export async function insertCertificate(input: {
   student_id: string;
   cohort_id: string;

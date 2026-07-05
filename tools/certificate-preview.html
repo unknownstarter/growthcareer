@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>Certificate of Completion / 수료증</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+
+/*
+ * B0081 Certificate template (Luna).
+ *
+ * A4 세로 (210mm x 297mm), 프로페셔널 문서 톤.
+ * Toss 라이트 톤 baseline + 흰 배경 + Toss 블루 (#3182f6) accent 1회.
+ *
+ * 카피 룰 (CLAUDE.md §6.5):
+ *   em dash / en dash / interpunct / 곡선 따옴표 / 단일 ellipsis 사용 금지.
+ *   범위 표시는 "~" 또는 "부터 ... 까지" 로.
+ *   나열은 마침표 또는 슬래시 "/" 로.
+ *
+ * 디자인 원칙:
+ *   1. 그라디언트 절대 금지 (solid 색만).
+ *   2. 흰 배경 + 검정 텍스트 + Toss 블루 accent 1회 (발급번호 + 발급 인장).
+ *   3. 여백 넉넉 (top/bottom 25mm, side 20mm).
+ *   4. 이미지 최소 (로고 1회 + QR 1회).
+ *   5. 정보 위계 = 제목 > 이름 > 프로그램 > 확인 문구 > 발급 정보.
+ *   6. 인쇄 시 배경색 유지 (border, seal) via -webkit-print-color-adjust.
+ */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #111;
+  background: #fff;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
+/* 페이지 컨테이너 = A4. 4mm 안쪽으로 정교한 이중 테두리. */
+.cert-page {
+  width: 210mm;
+  height: 297mm;
+  padding: 22mm 22mm 40mm;
+  position: relative;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.cert-page::before {
+  content: "";
+  position: absolute;
+  inset: 6mm;
+  border: 1px solid #d1d5db;
+  pointer-events: none;
+}
+
+/* ======== Header ======== */
+.cert-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 8mm;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 12mm;
+}
+
+.cert-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 2mm;
+}
+
+.cert-brand-mark {
+  display: flex;
+  align-items: center;
+  gap: 3mm;
+}
+
+.cert-brand-dot {
+  width: 6mm;
+  height: 6mm;
+  background: #3182f6;
+  border-radius: 1.5mm;
+  flex-shrink: 0;
+}
+
+.cert-brand-name {
+  font-size: 13pt;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  color: #111;
+}
+
+.cert-brand-sub {
+  font-size: 9pt;
+  color: #6b7280;
+  letter-spacing: 0.3px;
+  margin-left: 9mm;
+}
+
+/* 발급번호 = Toss 블루 accent 사용 1회. */
+.cert-serial {
+  text-align: right;
+  font-family: 'SF Mono', 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 10pt;
+  color: #3182f6;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+.cert-serial-label {
+  display: block;
+  font-family: 'Pretendard', sans-serif;
+  font-size: 8pt;
+  color: #9ca3af;
+  letter-spacing: 1px;
+  margin-bottom: 1mm;
+  text-transform: uppercase;
+}
+
+/* ======== Title ======== */
+.cert-title {
+  text-align: center;
+  margin-bottom: 12mm;
+}
+
+.cert-title-en {
+  font-family: 'Times New Roman', 'Georgia', serif;
+  font-size: 24pt;
+  font-weight: 400;
+  letter-spacing: 3px;
+  color: #111;
+  margin-bottom: 2mm;
+}
+
+.cert-title-ko {
+  font-size: 14pt;
+  font-weight: 600;
+  color: #374151;
+  letter-spacing: 6px;
+}
+
+/* ======== Body ======== */
+.cert-body {
+  padding: 0 8mm;
+}
+
+.cert-recipient-label {
+  font-size: 9pt;
+  color: #6b7280;
+  text-align: center;
+  letter-spacing: 2px;
+  margin-bottom: 3mm;
+}
+
+.cert-recipient-name {
+  text-align: center;
+  font-size: 28pt;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 2mm;
+  letter-spacing: -0.5px;
+}
+
+.cert-recipient-name-en {
+  text-align: center;
+  font-family: 'Times New Roman', 'Georgia', serif;
+  font-size: 13pt;
+  color: #4b5563;
+  font-style: italic;
+  margin-bottom: 10mm;
+}
+
+/* 프로그램 정보 박스 */
+.cert-program {
+  background: #f9fafb;
+  border-radius: 3mm;
+  padding: 6mm 7mm;
+  margin-bottom: 10mm;
+}
+
+.cert-program-row {
+  display: flex;
+  gap: 6mm;
+  padding: 2mm 0;
+  font-size: 10pt;
+  line-height: 1.6;
+}
+
+.cert-program-row + .cert-program-row {
+  border-top: 1px solid #f3f4f6;
+}
+
+.cert-program-key {
+  flex: 0 0 30mm;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.cert-program-value {
+  flex: 1;
+  color: #111;
+  font-weight: 500;
+}
+
+/* 확인 문구 */
+.cert-attest {
+  text-align: center;
+  margin-bottom: 10mm;
+}
+
+.cert-attest-ko {
+  font-size: 11pt;
+  line-height: 1.9;
+  color: #1f2937;
+  margin-bottom: 5mm;
+  padding: 0 4mm;
+}
+
+.cert-attest-en {
+  font-family: 'Times New Roman', 'Georgia', serif;
+  font-size: 10.5pt;
+  line-height: 1.8;
+  color: #4b5563;
+  font-style: italic;
+  padding: 0 6mm;
+}
+
+/* ======== Footer ======== */
+.cert-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-top: 6mm;
+  margin-top: 4mm;
+  border-top: 1px solid #f3f4f6;
+}
+
+.cert-issuer {
+  flex: 1;
+}
+
+.cert-issue-date {
+  font-size: 10pt;
+  color: #111;
+  font-weight: 500;
+  margin-bottom: 5mm;
+  letter-spacing: 0.3px;
+}
+
+.cert-issuer-name {
+  font-size: 12pt;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 1mm;
+}
+
+.cert-issuer-meta {
+  font-size: 9pt;
+  color: #6b7280;
+  line-height: 1.7;
+}
+
+/* 서명 + 인장 영역 */
+.cert-sign {
+  display: flex;
+  align-items: flex-end;
+  gap: 8mm;
+}
+
+.cert-signature {
+  text-align: center;
+  min-width: 40mm;
+}
+
+.cert-signature-line {
+  height: 20mm;
+  border-bottom: 1px solid #6b7280;
+  margin-bottom: 2mm;
+  position: relative;
+}
+
+.cert-signature-img {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Brush Script MT', 'Snell Roundhand', cursive;
+  font-size: 18pt;
+  color: #1f2937;
+  padding-bottom: 1mm;
+}
+
+.cert-signature-name {
+  font-size: 9pt;
+  color: #374151;
+  font-weight: 500;
+}
+
+.cert-signature-title {
+  font-size: 8pt;
+  color: #6b7280;
+  margin-top: 0.5mm;
+}
+
+/* Toss 블루 인장 원. accent 2회차 (발급번호 + 인장). */
+.cert-seal {
+  width: 26mm;
+  height: 26mm;
+  border-radius: 50%;
+  border: 2px solid #3182f6;
+  color: #3182f6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 8pt;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  line-height: 1.3;
+  text-align: center;
+  flex-shrink: 0;
+  transform: rotate(-6deg);
+}
+
+.cert-seal-top {
+  font-size: 7pt;
+  margin-bottom: 0.5mm;
+}
+
+.cert-seal-mid {
+  font-size: 10pt;
+  font-weight: 800;
+}
+
+.cert-seal-bot {
+  font-size: 7pt;
+  margin-top: 0.5mm;
+}
+
+/* ======== Verify ======== */
+.cert-verify {
+  position: absolute;
+  bottom: 14mm;
+  left: 22mm;
+  right: 22mm;
+  padding-top: 5mm;
+  border-top: 1px solid #f3f4f6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 8pt;
+  color: #9ca3af;
+  gap: 6mm;
+}
+
+.cert-verify-text {
+  line-height: 1.5;
+}
+
+.cert-verify-url {
+  font-family: 'SF Mono', 'JetBrains Mono', 'Courier New', monospace;
+  color: #6b7280;
+}
+
+.cert-qr {
+  width: 18mm;
+  height: 18mm;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 7pt;
+  color: #9ca3af;
+}
+
+.cert-qr img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ======== Screen preview only ======== */
+@media screen {
+  body {
+    background: #f0f2f5;
+    padding: 20mm 0;
+    display: flex;
+    justify-content: center;
+  }
+  .cert-page {
+    background: #fff;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+  }
+}
+
+@media print {
+  body { background: #fff; padding: 0; }
+  .cert-page { box-shadow: none; }
+}
+</style>
+</head>
+<body>
+<div class="cert-page">
+
+  <!-- Header -->
+  <header class="cert-header">
+    <div class="cert-brand">
+      <div class="cert-brand-mark">
+        <div class="cert-brand-dot"></div>
+        <span class="cert-brand-name">Growth Career</span>
+      </div>
+      <span class="cert-brand-sub">Fan to Pro / K-Pop Live Production</span>
+    </div>
+    <div>
+      <span class="cert-serial-label">Serial No.</span>
+      <span class="cert-serial">GC-FTP-1기-001</span>
+    </div>
+  </header>
+
+  <!-- Title -->
+  <div class="cert-title">
+    <div class="cert-title-en">CERTIFICATE OF COMPLETION</div>
+    <div class="cert-title-ko">수 료 증</div>
+  </div>
+
+  <!-- Body -->
+  <main class="cert-body">
+    <div class="cert-recipient-label">This certifies that / 아래 사람은</div>
+    <div class="cert-recipient-name">홍 길 동</div>
+    <div class="cert-recipient-name-en">Hong Gildong</div>
+
+    <div class="cert-program">
+      <div class="cert-program-row">
+        <div class="cert-program-key">Program / 과정</div>
+        <div class="cert-program-value">Fan to Pro 4주 K-pop 공연 실무 교육 과정<br>Fan to Pro 4-week K-Pop Live Production Program</div>
+      </div>
+      <div class="cert-program-row">
+        <div class="cert-program-key">Duration / 기간</div>
+        <div class="cert-program-value">2026년 6월 27일 부터 2026년 7월 19일 까지 (4주, 총 8회차)<br>June 27, 2026 to July 19, 2026 (4 weeks, 8 sessions)</div>
+      </div>
+      <div class="cert-program-row">
+        <div class="cert-program-key">Cohort / 기수</div>
+        <div class="cert-program-value">1기 / Cohort 1</div>
+      </div>
+    </div>
+
+    <div class="cert-attest">
+      <p class="cert-attest-ko">
+        위 사람은 Growth Career 의 Fan to Pro 4주 K-pop 공연 실무 교육 과정을<br>
+        성실히 이수하였음을 증명합니다.
+      </p>
+      <p class="cert-attest-en">
+        This is to certify that the above named person has successfully completed<br>
+        the Fan to Pro 4-week K-Pop Live Production program of Growth Career.
+      </p>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="cert-footer">
+    <div class="cert-issuer">
+      <div class="cert-issue-date">
+        발급일 Issued on: 2026년 7월 25일 / July 25, 2026
+      </div>
+      <div class="cert-issuer-name">Dropdown (드롭다운)</div>
+      <div class="cert-issuer-meta">
+        사업자등록번호 154-28-02110<br>
+        Business Registration No. 154-28-02110<br>
+        growthcareer.xyz
+      </div>
+    </div>
+    <div class="cert-sign">
+      <div class="cert-signature">
+        <div class="cert-signature-line">
+          <span class="cert-signature-img">Noah</span>
+        </div>
+        <div class="cert-signature-name">대표 / CEO</div>
+        <div class="cert-signature-title">Dropdown</div>
+      </div>
+      <div class="cert-seal">
+        <span class="cert-seal-top">DROPDOWN</span>
+        <span class="cert-seal-mid">SEAL</span>
+        <span class="cert-seal-bot">2026</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Verify -->
+  <div class="cert-verify">
+    <div class="cert-verify-text">
+      본 수료증은 아래 URL 에서 진위를 확인할 수 있습니다.<br>
+      Verify this certificate at:
+      <span class="cert-verify-url">growthcareer.xyz/verify/GC-FTP-1기-001</span>
+    </div>
+    <div class="cert-qr">QR</div>
+  </div>
+
+</div>
+</body>
+</html>

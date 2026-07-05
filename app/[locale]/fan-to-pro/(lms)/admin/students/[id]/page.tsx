@@ -13,9 +13,14 @@ import { fetchStudentCareerTarget } from "@/src/programs/fan-to-pro/infrastructu
 import { fetchStudentResumeItems } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/student-resume-item-repository";
 import { fetchStudentNotes } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/student-note-repository";
 import { fetchCareerDocuments } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/career-document-repository";
+import { fetchCohortById } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-repository";
+import { fetchCertificatesByStudent } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/certificate-repository";
+import { computeAttendanceRate } from "@/src/programs/fan-to-pro/application/certificate/build-certificate-data";
 import { getStudentPhotoSignedUrlAction } from "@/src/programs/fan-to-pro/application/student-profile/get-photo-signed-url";
 import { StudentProfileView } from "@/src/programs/fan-to-pro/interface/components/lms/admin/student-profile-view";
 import { StudentNotesPanel } from "@/src/programs/fan-to-pro/interface/components/lms/admin/student-notes-panel";
+import { CertificateStatusBadge } from "@/src/programs/fan-to-pro/interface/components/lms/admin/certificate-status-badge";
+import { CertificatePreviewButton } from "@/src/programs/fan-to-pro/interface/components/lms/admin/certificate-preview-button";
 import {
   PageContainer,
   PageHeader,
@@ -32,7 +37,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 /**
- * /[locale]/fan-to-pro/admin/students/[id] — 학생 overview (B0044 Phase 2 Page 4).
+ * /[locale]/fan-to-pro/admin/students/[id]. 학생 overview (B0044 Phase 2 Page 4).
  *
  * 한 페이지에서:
  *   - 기본 정보 (student row)
@@ -54,22 +59,39 @@ export default async function AdminStudentDetailPage({
   const student = await fetchStudentById(id);
   if (!student) notFound();
 
-  const [profile, target, resumeItems, notes, careerDocuments, photoResult] =
-    await Promise.all([
-      fetchStudentProfile(id).catch(() => null),
-      fetchStudentCareerTarget(id).catch(() => null),
-      fetchStudentResumeItems(id).catch(() => []),
-      fetchStudentNotes(id).catch(() => []),
-      fetchCareerDocuments(id).catch(() => []),
-      // B0057: photo signed URL — 5분 TTL. 페이지 로드마다 새로 발급.
-      getStudentPhotoSignedUrlAction({ student_id: id }).catch(() => ({
-        status: "error" as const,
-        error: "fetchFailed",
-      })),
-    ]);
+  const [
+    profile,
+    target,
+    resumeItems,
+    notes,
+    careerDocuments,
+    photoResult,
+    cohort,
+    certificates,
+    attendanceRate,
+  ] = await Promise.all([
+    fetchStudentProfile(id).catch(() => null),
+    fetchStudentCareerTarget(id).catch(() => null),
+    fetchStudentResumeItems(id).catch(() => []),
+    fetchStudentNotes(id).catch(() => []),
+    fetchCareerDocuments(id).catch(() => []),
+    // B0057: photo signed URL. 5분 TTL. 페이지 로드마다 새로 발급.
+    getStudentPhotoSignedUrlAction({ student_id: id }).catch(() => ({
+      status: "error" as const,
+      error: "fetchFailed",
+    })),
+    // B0081: 수료증 status badge 용. cohort / 발급 이력 / 출석률.
+    fetchCohortById(student.cohort_id).catch(() => null),
+    fetchCertificatesByStudent(id).catch(() => []),
+    computeAttendanceRate(id, student.cohort_id).catch(() => null),
+  ]);
 
   const photoUrl =
     photoResult.status === "ok" ? photoResult.url : null;
+
+  const completionCert = certificates.find(
+    (c) => c.cohort_id === student.cohort_id && c.kind === "completion",
+  );
 
   return (
     <PageContainer>
@@ -120,6 +142,22 @@ export default async function AdminStudentDetailPage({
           </div>
         }
       />
+
+      {/* B0081: 수료증 status + preview */}
+      <div className="mb-6 flex items-center justify-between rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] px-4 py-3">
+        <div className="flex items-center gap-3">
+          <span className="text-sm font-medium text-[var(--foreground)]">
+            수료증
+          </span>
+          <CertificateStatusBadge
+            issuedSerialNo={completionCert?.serial_no ?? null}
+            cohortStatus={cohort?.status ?? "open"}
+            studentStatus={student.status}
+            attendanceRate={attendanceRate}
+          />
+        </div>
+        <CertificatePreviewButton studentId={id} />
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-6">
