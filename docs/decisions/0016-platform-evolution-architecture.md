@@ -1,17 +1,37 @@
 # ADR 0016 - Platform Evolution Architecture (PD)
 
 **Status**: Proposed (노아 결정 10건 대기)
-**Date**: 2026-07-05
-**Deciders**: 노아 + Sophia (PD). Aria (PO) ADR 0015 승계, Luna (UX) B0083 spec 병렬
-**Tags**: platform, umbrella-brand, showcase, cohort-archive, alumni, outcomes, waitlist, data-model, routing, isr
-**Related**: ADR 0015 (Platform Evolution PO), ADR 0006 (LMS Design System), ADR 0008 (URL/Auth 분리), ADR 0013 (Multi-track + Recruitment), Echo `docs/research/B0083-platform-evolution-benchmark.md`
+**Date**: 2026-07-05 (v1) / 2026-07-06 (v2 patch)
+**Revision**: v2
+**Deciders**: 노아 + Sophia (PD). Aria (PO) ADR 0015 승계, Luna (UX) B0083 spec 병렬, Iris (Backend) B0068 courses/bundles 스키마 반영
+**Tags**: platform, umbrella-brand, showcase, cohort-archive, alumni, outcomes, waitlist, data-model, routing, isr, courses, bundles
+**Related**: ADR 0015 (Platform Evolution PO), ADR 0006 (LMS Design System), ADR 0008 (URL/Auth 분리), ADR 0013 (Multi-track + Recruitment), Echo `docs/research/B0083-platform-evolution-benchmark.md`, B0068 (courses / bundles 스키마 완료)
 **Marker**: [skip-gating: approved] (노아 명시 승인, 2026-07-04)
+
+---
+
+## Change Log
+
+### v2 (2026-07-06) — Iris B0068 반영 patch
+
+- Route 12 → **Route 14** 확장. `/courses/*` `/bundles/*` 2 route additive 추가
+- Route 계층 명확화 섹션 신설 (트랙 vs 코스 vs 번들 3 레이어 구분)
+- `(marketing)` layout 트리에 `courses/` `bundles/` 폴더 추가
+- llms.txt 카탈로그 섹션 확장 (Courses / Bundles 소섹션)
+- Rejected Alternatives R11 신설: `/courses/*` `/bundles/*` 를 `/tracks/*` 하위로 합치는 안 거부
+- Iris 발견 = B0068 스키마 (`courses` / `bundles`) 는 완료됐으나 전시 route 는 v1 에 없었음. additive 로 접붙임 (기존 `/tracks/*` 유지 = §7.4 라이브 안전성)
+
+### v1 (2026-07-05) — 초안
+
+- Aria PO ADR 0015 승계 + Echo B0083 리서치 반영
+- Route 12 신설, data model 2 신규 테이블 + 3 컬럼 additive, MDX 콘텐츠 계층
+- 노아 결정 10건 대기 상태
 
 ---
 
 ## 결정 요약 (1 문장)
 
-Aria ADR 0015 의 5 정보구조 요구를 (1) `(marketing)` route group 통합 shell 위 12 신규 라우트, (2) additive 3 컬럼 + 2 신규 테이블 (`outcome_reports` / `partners`), (3) 초기 MDX + 20+ 임계 후 CMS 검토 콘텐츠 계층, (4) `next-intl` 이중 라우팅 유지하되 KO 우선 + EN 최소 (methodology / stories / outcomes), (5) 라이브 `/fan-to-pro/*` 마케팅 unchanged 로 확정한다.
+Aria ADR 0015 의 5 정보구조 요구를 (1) `(marketing)` route group 통합 shell 위 **14 신규 라우트 (v2: courses / bundles 2 route 추가)**, (2) additive 3 컬럼 + 2 신규 테이블 (`outcome_reports` / `partners`), (3) 초기 MDX + 20+ 임계 후 CMS 검토 콘텐츠 계층, (4) `next-intl` 이중 라우팅 유지하되 KO 우선 + EN 최소 (methodology / stories / outcomes), (5) 라이브 `/fan-to-pro/*` 마케팅 unchanged 로 확정한다.
 
 ---
 

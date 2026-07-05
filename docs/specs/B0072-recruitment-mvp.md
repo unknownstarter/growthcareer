@@ -1,10 +1,10 @@
-# B0072 Recruitment MVP / Simplified v2
+# B0072 Recruitment MVP / Simplified v3
 
-**Status**: Draft (v5 폐기 → Simplified v1 BLOCK → Simplified v2 = Sage HIGH 3 fix)
-**Date**: 2026-07-05
+**Status**: Draft (v5 폐기 → Simplified v1 BLOCK → v2 CONDITIONAL PASS → v3 = Sage HIGH 1 신규 (S-9b) + minor 3 fix)
+**Date**: 2026-07-06
 **Owner**: Iris (backend) + Luna (frontend) + Sage (security 재검토)
 **Related**: ADR 0008 (URL/Auth 분리), ADR 0010 (applicants 보존)
-**Marker**: [skip-gating: bugfix]. Sage BLOCK (CRIT 0 + HIGH 3) 지적 사항 3건 문구 fix.
+**Marker**: [skip-gating: bugfix]. Sage v2 재검토 CONDITIONAL PASS (CRIT 0 + HIGH 1 신규) 지적 문구 fix.
 
 ## Change Log
 
@@ -13,7 +13,12 @@
   - HIGH S-1: 원클릭 지원 modal 문구가 K-PIPA 제17조 필수 4개 항목 부재 (수령자 / 목적 / 항목 / 보유기간 + 거부권).
   - HIGH S-8: `students.resume_url` 참조 = 컬럼 부존재. 실제는 `student_career_documents` 테이블 (doc_type + storage_method + external_url XOR file_path).
   - HIGH S-9: Supabase JS 트랜잭션 없음. `student_applications` INSERT + `recruitment_email_log` INSERT 원자성 미보장 → outbox 없이 application row 만 남는 half-commit risk.
-- **Simplified v2** (2026-07-05, 이 파일): HIGH 3건 spec 문구 fix. RPC 신설 (`apply_to_job_atomic`), modal 문구 K-PIPA 4항목, `student_career_documents` 참조 정정.
+- **Simplified v2** (2026-07-05, 777 line): HIGH 3건 spec 문구 fix. RPC 신설 (`apply_to_job_atomic`), modal 문구 K-PIPA 4항목, `student_career_documents` 참조 정정. Sage 재검토 = CONDITIONAL PASS (CRIT 0 + HIGH 1 신규 S-9b + minor 3).
+  - HIGH S-9b: RPC `apply_to_job_atomic` 의 `p_student_id` 인자로 타인 대신 지원 가능. `GRANT EXECUTE TO authenticated` 상태에서 악의적 유저가 devtools 로 다른 활성 학생 id 를 전달하면 성공 = impersonation risk.
+  - MED S-1b: K-PIPA 보유기간 문구가 회사 정책에 의존. 회사 온보딩 시 default 보유 기간 필드 필수 프로세스 문서화 필요.
+  - MED S-3: `recruitment_email_log.body_snapshot` retention 계획 미정. Wave 2 파기 cron 도입 명시 필요.
+  - LOW S-8b: `student_career_documents` doc_type 3개 중 portfolio 제외 근거 문서화 필요.
+- **Simplified v3** (2026-07-06, 이 파일): S-9b HIGH fix (RPC 재작성 = `p_student_id` 인자 삭제, auth.uid() 로 내부 조회) + minor 3 문구 반영.
 
 ---
 
@@ -202,15 +207,17 @@ CREATE INDEX idx_recruitment_email_application ON recruitment_email_log(applicat
 - `attachments` jsonb = 이력서 + 자기소개서 참조 (§4.2 `student_career_documents` 에서 fetch). 형식: `[{ doc_type: 'resume'|'cover_letter', storage_method: 'external_url'|'file_upload', external_url?: string, file_path?: string }]`. 없으면 email body 만.
 - `body_snapshot` = 발송 시점 문구 그대로 저장 (template 변경돼도 감사 가능).
 - **접근**: service_role only. authenticated 는 SELECT 도 안 됨.
-- Retention: MVP 는 무기한 보관. 필요 시 Wave 2 에서 cron 추가.
+- **Retention TODO (S-3 fix)**: MVP 는 무기한 보관. **Wave 2 에서 파기 cron (`channel_email_log_retention`) 도입 필수** — K-PIPA 제21조 파기 원칙 상 회사 채용 절차 종료 후 outbox 발송 기록도 파기 대상. default: `sent` 후 3년 자동 삭제 (`delivery_status='sent' AND sent_at < now() - interval '3 years'` row batch DELETE). `pending`/`retrying` 은 시각 무관 보관, `failed` 는 90일 후 삭제.
 
-#### `apply_to_job_atomic` RPC (SECURITY DEFINER — S-9 fix)
+#### `apply_to_job_atomic` RPC (SECURITY DEFINER — S-9 + S-9b fix)
 
 Supabase JS 는 트랜잭션 API 를 노출하지 않는다. `student_applications` INSERT + `recruitment_email_log` INSERT 를 두 번의 network round-trip 으로 나누면, 첫 INSERT 성공 + 두 번째 실패 시 outbox 없이 application row 만 남는 half-commit 상태가 된다 (Sage HIGH S-9). SECURITY DEFINER RPC 로 두 INSERT 를 하나의 서버 사이드 트랜잭션에 묶는다.
 
+**S-9b 추가 방어**: v2 시안은 `p_student_id` 를 인자로 받아 함수 안에서 `students.status='active'` 만 검증했다. `GRANT EXECUTE TO authenticated` 상태에서 악의적 유저가 브라우저 devtools 로 `supabase.rpc('apply_to_job_atomic', { p_student_id: '<다른 활성 학생 id>', ... })` 를 직접 호출하면 타인 명의로 지원이 성사되고, outbox 로 이력서 첨부 이메일까지 발송된다 = impersonation. v3 는 `p_student_id` 인자를 **제거**하고 함수 안에서 `auth.uid()` → `user_profiles.student_id` 로 본인 student_id 를 조회한다. 클라이언트가 student_id 를 넘길 수 없으므로 impersonation 원천 차단.
+
 ```sql
 CREATE OR REPLACE FUNCTION apply_to_job_atomic(
-  p_student_id uuid,
+  -- p_student_id 인자 삭제 (S-9b fix). auth.uid() 로 내부 조회.
   p_job_posting_id uuid,
   p_student_message text,
   p_email_recipient text,
@@ -219,12 +226,21 @@ CREATE OR REPLACE FUNCTION apply_to_job_atomic(
   p_email_attachments jsonb
 ) RETURNS uuid AS $$
 DECLARE
+  v_student_id uuid;
   v_application_id uuid;
 BEGIN
+  -- auth.uid() 기반 본인 student_id 조회 (S-9b fix: 클라이언트가 student_id 를 넘길 수 없음)
+  SELECT student_id INTO v_student_id
+  FROM user_profiles WHERE id = auth.uid();
+
+  IF v_student_id IS NULL THEN
+    RAISE EXCEPTION 'notStudent';
+  END IF;
+
   -- 자격 재검증 (server action 이 이미 확인했더라도 함수 안에서 재확인 = defense in depth)
   IF NOT EXISTS (
     SELECT 1 FROM students
-    WHERE id = p_student_id AND status = 'active'
+    WHERE id = v_student_id AND status = 'active'
   ) THEN
     RAISE EXCEPTION 'notEligible';
   END IF;
@@ -242,14 +258,14 @@ BEGIN
   -- 중복 지원 방지 (UNIQUE constraint 로도 방어되나 명확한 에러 코드 반환)
   IF EXISTS (
     SELECT 1 FROM student_applications
-    WHERE student_id = p_student_id AND job_posting_id = p_job_posting_id
+    WHERE student_id = v_student_id AND job_posting_id = p_job_posting_id
   ) THEN
     RAISE EXCEPTION 'alreadyApplied';
   END IF;
 
   -- student_applications INSERT
   INSERT INTO student_applications (student_id, job_posting_id, status, student_message)
-  VALUES (p_student_id, p_job_posting_id, 'applied', p_student_message)
+  VALUES (v_student_id, p_job_posting_id, 'applied', p_student_message)
   RETURNING id INTO v_application_id;
 
   -- recruitment_email_log INSERT (outbox pattern, 같은 트랜잭션 안)
@@ -265,15 +281,17 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- authenticated 는 EXECUTE 가능. 내부 SELECT/INSERT 는 SECURITY DEFINER 로 RLS bypass.
--- server action 이 이미 assertCohortRole('student') + student_id 소유권 검증하므로 authenticated 노출 OK.
+-- v3: student_id 는 auth.uid() 로 서버가 결정 = 클라이언트가 위조 불가.
 GRANT EXECUTE ON FUNCTION apply_to_job_atomic TO authenticated;
 ```
 
 **주의**:
 - `SECURITY DEFINER SET search_path = public` = search_path hijack 방어 (Sage 표준).
+- **S-9b 방어**: `p_student_id` 인자 제거. 함수 안 `auth.uid()` → `user_profiles.student_id` 조회로 본인만 지원 가능. 클라이언트 위조 불가.
 - `p_email_body_template_key` = template 식별자만 넘김. 실 body 렌더는 outbox worker 가 template key 로 조회 (body 안에 PII 를 최소화).
 - 함수 안에서 RAISE EXCEPTION 시 트랜잭션 전체 rollback. half-commit 불가.
 - `recruitment_email_log.body_template_key` 컬럼이 추가되어야 함 (아래 §4.1 recruitment_email_log 스키마에 반영 필요 — Iris 마이그레이션에서 컬럼 추가).
+- **retention TODO (S-3 fix)**: `recruitment_email_log.body_snapshot` 은 발송 시점 학생 PII (이름/이메일/이력서 URL) 를 담는 최종 렌더 결과다. MVP 는 무기한 보관하나 K-PIPA 제21조 파기 원칙 상 회사 채용 절차 종료 후 outbox 발송 기록도 파기 대상. **Wave 2 에서 파기 cron (`channel_email_log_retention`) 도입 필수**. default: `sent` 후 3년 자동 삭제. cron 은 `delivery_status='sent' AND sent_at < now() - interval '3 years'` row 를 batch DELETE.
 
 ### 4.2 기존 테이블 확장 = 없음
 
@@ -497,8 +515,12 @@ export async function applyToJobAction(input: ApplyToJobInput): Promise<ApplyToJ
    ]
    ```
    문서가 하나도 없으면 빈 배열 `[]` 전달 (본문만 발송).
-6. **RPC 호출** (S-9 정정): `supabase.rpc('apply_to_job_atomic', { p_student_id, p_job_posting_id, p_student_message, p_email_recipient, p_email_subject, p_email_body_template_key, p_email_attachments })`. RPC 안에서 `student_applications` INSERT + `recruitment_email_log` INSERT 가 하나의 서버 사이드 트랜잭션. RPC 성공 시 `applicationId` return.
+
+   **포트폴리오 제외 근거 (S-8b fix)**: `doc_type='portfolio'` 는 원클릭 지원 시 첨부 X. 이유: 채용 파이프라인 = 이력서 + 자기소개서만 자동 전달 (회사가 채용 검토 1차에 요구하는 표준 문서). 포트폴리오는 회사 요청 시 학생이 별도로 공유하는 후속 단계 문서 = 파일 크기 큰 케이스 많고 형태 다양 (URL/PDF/영상 링크). Wave 2 에서 회사 회신 시 "포트폴리오 요청" 버튼 신설 후 학생 승인 흐름으로 전달 예정.
+
+6. **RPC 호출** (S-9 + S-9b 정정): `supabase.rpc('apply_to_job_atomic', { p_job_posting_id, p_student_message, p_email_recipient, p_email_subject, p_email_body_template_key, p_email_attachments })`. **`p_student_id` 인자 없음** (v3 S-9b fix) — RPC 함수가 `auth.uid()` 로 본인 student_id 를 내부 조회. 클라이언트가 타인 student_id 를 위조 전달할 수 없음. RPC 안에서 `student_applications` INSERT + `recruitment_email_log` INSERT 가 하나의 서버 사이드 트랜잭션. RPC 성공 시 `applicationId` return.
 7. RPC 에러 매핑:
+   - `notStudent` → `not_student` (S-9b: user_profiles.student_id 없음)
    - `notEligible` → `not_active` (defense in depth 로 함수 안 재검증 실패)
    - `postingClosed` → `job_not_open`
    - `alreadyApplied` → `already_applied`
@@ -551,7 +573,7 @@ closeJobPostingAction(id): Result;     // status='closed'
    > **1. 제공받는 자**: {company_name} (담당자 이메일 {contact_email})
    > **2. 제공 목적**: 이 공고에 대한 채용 검토 및 결과 회신
    > **3. 제공 항목**: 이름, 이메일, 국적, 기수 정보, 이력서, 자기소개서, 지원 메시지 (작성 시)
-   > **4. 보유 및 이용 기간**: 회사의 채용 절차 종료 시까지. 이후 회사 자체 정책에 따라 파기 또는 인재풀 보관 (회사에 직접 확인)
+   > **4. 보유 및 이용 기간**: {company_retention_period}. 회사가 온보딩 시 명시한 기간 (일반: 채용 절차 종료 후 3~5년). 이후 파기 또는 인재풀 보관 여부는 회사 자체 정책 (회사에 직접 확인).
    >
    > 발송 후에는 플랫폼에서 취소할 수 없습니다. 취소가 필요하시면 회사 이메일로 직접 요청하세요.
 
@@ -638,19 +660,22 @@ v5 spec 의 Sage CRITICAL/HIGH 대부분은 회사 회원 표면 자체가 소�
 | MED: audit_log metadata 어휘 whitelist | audit_log 삭제 |
 | LOW: 로고 파일명 timestamp+nanoid | logo_path 는 URL 저장만 |
 
-### 10.2 남은 검토 대상 (Simplified v2 후 예상 CRIT 0 + HIGH 0~2)
+### 10.2 남은 검토 대상 (Simplified v3 후 예상 CRIT 0 + HIGH 0)
 
-| ID | 예상 severity | 이슈 | v2 상태 |
+| ID | 예상 severity | 이슈 | v3 상태 |
 |---|---|---|---|
 | S-1 | HIGH → PASS 후보 | 원클릭 지원 시 이력서를 이메일 첨부로 3자 제공 = K-PIPA 동의 문구 | v2 §7 modal 문구에 K-PIPA 제17조 4항목 (제공받는 자 / 목적 / 항목 / 보유기간) + 거부권 명시 반영. 재검토 대상 |
+| S-1b | MED → PASS 후보 | K-PIPA 보유기간 문구가 회사 정책 의존 | v3 §7 modal 문구 `{company_retention_period}` placeholder + §12 step 11 에 회사 온보딩 default 보유 기간 필드 필수 프로세스 명시. 재검토 대상 |
 | S-2 | HIGH | 학생 지원 spam (한 학생이 다수 공고 지원, 봇 자동화 방어). UNIQUE constraint 로 posting 당 1건 상한 있지만 계정 다중 생성 시 취약. Vercel Firewall + rate limit middleware 필요 여부 | 미해결. Wave 2 검토 |
-| S-3 | MED | `recruitment_email_log.body_snapshot` 에 학생 PII (이름/이메일/이력서 URL) 평문 저장 → retention 정책 부재 | 미해결. Wave 2 |
+| S-3 | MED → PASS 후보 | `recruitment_email_log.body_snapshot` 에 학생 PII (이름/이메일/이력서 URL) 평문 저장 → retention 정책 부재 | v3 §4.1 recruitment_email_log Retention TODO 명시 (Wave 2 파기 cron `channel_email_log_retention` 필수, sent 후 3년 default). 재검토 대상 |
 | S-4 | MED | `job_postings.contact_email` 노출 = 회사 담당자 개인정보. 공개 페이지에 mailto 로 노출 = 회사 사전 동의 필요 | 회사 온보딩 시 동의 절차 문서화 필요 |
 | S-5 | MED | slug 예측 가능성 (nanoid 8자). draft 상태 slug 우연 열람 방어. RLS 로 status='open' 필터 되므로 방어 OK, 문서화만 필요 | 문서화 완료 (§4.1) |
 | S-6 | LOW | admin server action 첫 줄 `assertSuperAdmin()` 강제 (§7.4) 누락 검증 script | 미해결. Wave 2 |
 | S-7 | LOW | ISR revalidate=300 = closed 후에도 5분간 공개 페이지 stale. `revalidateTag` 로 즉시 무효화 | 미해결. Wave 2 |
 | S-8 | HIGH → PASS 후보 | `students.resume_url` 참조 = 컬럼 부존재 | v2 §4.2 / §6.2 / §8.2 모두 `student_career_documents` (doc_type + storage_method + external_url XOR file_path) 참조로 정정. 재검토 대상 |
+| S-8b | LOW → PASS 후보 | `student_career_documents` doc_type 중 portfolio 제외 근거 문서화 필요 | v3 §6.2 step 5 하단에 portfolio 제외 근거 명시 (채용 파이프라인 1차 = 이력서 + 자기소개서. portfolio 는 Wave 2 회사 요청 승인 흐름으로 분리). 재검토 대상 |
 | S-9 | HIGH → PASS 후보 | Supabase JS 트랜잭션 없음 = half-commit risk | v2 §4.1 에 `apply_to_job_atomic` SECURITY DEFINER RPC 신설. §6.2 step 6 이 RPC 호출로 재작성. 재검토 대상 |
+| S-9b | HIGH → PASS 후보 | RPC `p_student_id` 인자로 타인 대신 지원 impersonation risk | v3 §4.1 RPC 재작성 = `p_student_id` 인자 삭제, 함수 안 `auth.uid()` → `user_profiles.student_id` 조회. §6.2 step 6 client 호출도 인자에서 삭제. 재검토 대상 |
 
 ### 10.3 Sage 재검토 대비 timeline
 
@@ -676,6 +701,7 @@ v5 spec 의 Sage CRITICAL/HIGH 대부분은 회사 회원 표면 자체가 소�
 | 10 | 노아 admin 이 draft JD 등록 | `/admin/jobs/` 에서 draft 표시. 공개 페이지 노출 X |
 | 11 | 노아 admin 이 publish 클릭 | published_at 채워지고 status='open'. 공개 페이지에 즉시 노출 (revalidateTag) |
 | 12 | Vercel Cron 1분 후 pending email 이 sent 로 전이 + 회사 이메일 수신 확인 | delivery_status='sent' + sent_at 채워짐 |
+| 13 | (S-9b 방어) 학생 A 로그인 상태에서 devtools 로 `supabase.rpc('apply_to_job_atomic', {...})` 인자에 학생 B 의 student_id 를 넘길 시도 | RPC 시그니처 자체가 `p_student_id` 인자 없음 = 호출 자체 실패. auth.uid() 로 서버가 결정하므로 학생 A 명의 지원만 성사 |
 
 ---
 
@@ -691,8 +717,9 @@ v5 spec 의 Sage CRITICAL/HIGH 대부분은 회사 회원 표면 자체가 소�
 8. **Mira QA** (§11 12건 통과).
 9. **Sage 최종 통과** (§7.4 5종 체크).
 10. **개인정보처리방침 update** = 원클릭 지원 시 회사 이메일 3자 제공 동의 조항 1개 추가.
-11. **Vera prod deploy** = git push (main branch trigger).
-12. **노아 수동 검증** = 유니온픽처스 JD 실제 등록 + 본인 학생 계정으로 지원 flow 왕복.
+11. **회사 온보딩 form 필드 확정 (S-1b fix)** = 회사가 JD 를 등록하기 위해 노아에게 제출하는 온보딩 form 에 **default 보유 기간 필드 필수 항목** 추가. 일반값 = "채용 절차 종료 후 3~5년". 이 값은 `job_postings.company_retention_period` 컬럼 (Wave 2 신설 예정) 또는 admin 등록 시 텍스트 입력으로 캡처하여 modal 문구 `{company_retention_period}` placeholder 에 치환. MVP 는 admin 등록 form 에 free-text 필드로 우선 도입.
+12. **Vera prod deploy** = git push (main branch trigger).
+13. **노아 수동 검증** = 유니온픽처스 JD 실제 등록 + 본인 학생 계정으로 지원 flow 왕복.
 
 ---
 
@@ -774,4 +801,4 @@ v5 spec 의 다음 섹션들이 Simplified 에서 삭제됨:
 - Storage bucket RLS SQL (student-resumes / companies-logos, path traversal 방어)
 - 로고 파일명 timestamp+nanoid 규칙
 
-**요약**: v5 = 1857 line, Simplified v2 = 777 line. 삭제 비율 ~58% (v2 는 v1 대비 +127 line, S-1 modal 상세화 + S-8 스키마 정정 + S-9 RPC 정의로 인한 증가).
+**요약**: v5 = 1857 line, Simplified v2 = 777 line, Simplified v3 = 804 line. 삭제 비율 ~57% (v3 는 v2 대비 +27 line, S-9b RPC 재작성 + minor 3 문구 반영으로 인한 증가).
