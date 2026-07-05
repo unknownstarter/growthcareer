@@ -12,6 +12,7 @@ import {
 } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-repository";
 
 const TABLE = "applicants";
+const FAN_TO_PRO_PROGRAM_SLUG = "fan-to-pro";
 
 // Server-side error key — UI resolves this via `applyForm.errors.<key>`.
 // Kept here (not in the schema file) because it is action-specific.
@@ -75,9 +76,58 @@ export async function submitApplication(
     }
   }
 
+  // B0068 Slice 2c — course_slug / bundle_slug → id 조회.
+  // 둘 다 optional. 하나만 채워지는 게 정상 (UI 가 강제).
+  // 조회 실패 시 = 유효하지 않은 slug → NULL 로 넣고 계속 진행 (신청 자체는 성공).
+  // 이유: 신청자가 URL 로 잘못된 slug 를 넣어도 신청은 받되, 운영자가 나중에
+  // 매핑 (수동 assignment). validation 실패 시 신청 자체 blocking 은 과함.
+  let courseId: string | null = null;
+  let bundleId: string | null = null;
+
+  if (parsed.data.course_slug || parsed.data.bundle_slug) {
+    // program_id 필요. slug 는 program 안에서만 UNIQUE 이므로 program 먼저 조회.
+    const { data: program, error: programErr } = await supabase
+      .from("programs")
+      .select("id")
+      .eq("slug", FAN_TO_PRO_PROGRAM_SLUG)
+      .maybeSingle();
+
+    if (programErr) {
+      console.error("[applicants] program fetch error", programErr);
+    }
+
+    if (program?.id) {
+      if (parsed.data.course_slug) {
+        const { data: course } = await supabase
+          .from("courses")
+          .select("id")
+          .eq("program_id", program.id)
+          .eq("slug", parsed.data.course_slug)
+          .eq("status", "open")
+          .maybeSingle();
+        courseId = course?.id ?? null;
+      }
+      if (parsed.data.bundle_slug) {
+        const { data: bundle } = await supabase
+          .from("bundles")
+          .select("id")
+          .eq("program_id", program.id)
+          .eq("slug", parsed.data.bundle_slug)
+          .eq("status", "open")
+          .maybeSingle();
+        bundleId = bundle?.id ?? null;
+      }
+    }
+  }
+
   // B0007 반자동 모델: INSERT 시 status='pending' (마감 전) / 'next_cohort_interest' (마감 후).
   // 신규 payment_* / notified_at / reminder_count / last_reminder_at 컬럼은
   // INSERT 시점 NULL (reminder_count 는 DB default 0). 자동 발송 없음.
+  //
+  // B0068 Slice 2c 추가:
+  //   - course_id: 단과 신청 시 채워짐
+  //   - bundle_id: 올인원 신청 시 채워짐
+  //   - enrollment_id: 결제 승격 후 결정 (여기서는 NULL)
   const { data, error } = await supabase
     .from(TABLE)
     .insert({
@@ -98,6 +148,8 @@ export async function submitApplication(
         : "fan-to-pro-landing",
       status: enrollmentClosed ? "next_cohort_interest" : "pending",
       cohort_id: cohortId,
+      course_id: courseId,
+      bundle_id: bundleId,
     })
     .select("id")
     .single();

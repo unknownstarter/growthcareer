@@ -91,6 +91,13 @@ export async function fetchApplicants(options?: {
         "refunded_at",
         "refund_txn_id",
         "redacted_at",
+        // B0068 과정 표시 — course (단과) / bundle (올인원).
+        // Slice 2c-A: applicants.course_id 컬럼 신설 예정. 마이그레이션 apply 전에는
+        // course:courses(...) join 이 null 로 나옴 (course_id 자체가 NULL).
+        "course_id",
+        "bundle_id",
+        "course:courses(id,title_ko,slug)",
+        "bundle:bundles(id,title_ko,slug)",
         "cash_receipts(count)",
         "messages_log(count)",
       ].join(","),
@@ -177,6 +184,10 @@ export async function fetchApplicants(options?: {
       status,
       notes: raw.notes ? String(raw.notes) : null,
       cohortId: raw.cohort_id ? String(raw.cohort_id) : null,
+      courseId: raw.course_id ? String(raw.course_id) : null,
+      bundleId: raw.bundle_id ? String(raw.bundle_id) : null,
+      courseTitleKo: extractNestedTitleKo(raw.course),
+      bundleTitleKo: extractNestedTitleKo(raw.bundle),
       notifiedAt: raw.notified_at ? String(raw.notified_at) : null,
       reminderCount:
         typeof raw.reminder_count === "number" ? raw.reminder_count : 0,
@@ -250,6 +261,21 @@ function extractAggregateCount(value: unknown): number {
 }
 
 /**
+ * B0068 nested FK object 에서 title_ko 추출.
+ * PostgREST 는 FK single-row join 을 object 또는 array (0/1 요소) 로 반환하므로 둘 다 대응.
+ * 값 없으면 null.
+ */
+function extractNestedTitleKo(value: unknown): string | null {
+  if (!value) return null;
+  const obj = Array.isArray(value)
+    ? (value[0] as Record<string, unknown> | undefined)
+    : (value as Record<string, unknown>);
+  if (!obj) return null;
+  const t = obj.title_ko;
+  return typeof t === "string" && t.length > 0 ? t : null;
+}
+
+/**
  * 단일 applicant 조회 (B0051 LMS detail 페이지용).
  *
  * fetchApplicants 의 SELECT 와 같은 컬럼 + messages_log/milestones 보강을 적용해
@@ -293,6 +319,13 @@ export async function fetchApplicantById(
         "refunded_at",
         "refund_txn_id",
         "redacted_at",
+        // B0068 과정 표시 — course (단과) / bundle (올인원).
+        // Slice 2c-A: applicants.course_id 컬럼 신설 예정. 마이그레이션 apply 전에는
+        // course:courses(...) join 이 null 로 나옴 (course_id 자체가 NULL).
+        "course_id",
+        "bundle_id",
+        "course:courses(id,title_ko,slug)",
+        "bundle:bundles(id,title_ko,slug)",
         "cash_receipts(count)",
         "messages_log(count)",
       ].join(","),
@@ -353,6 +386,10 @@ export async function fetchApplicantById(
     status,
     notes: raw.notes ? String(raw.notes) : null,
     cohortId: raw.cohort_id ? String(raw.cohort_id) : null,
+    courseId: raw.course_id ? String(raw.course_id) : null,
+    bundleId: raw.bundle_id ? String(raw.bundle_id) : null,
+    courseTitleKo: extractNestedTitleKo(raw.course),
+    bundleTitleKo: extractNestedTitleKo(raw.bundle),
     notifiedAt: raw.notified_at ? String(raw.notified_at) : null,
     reminderCount:
       typeof raw.reminder_count === "number" ? raw.reminder_count : 0,

@@ -5,7 +5,18 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Footer } from "@/src/programs/fan-to-pro/presentation/components/footer";
 import { StickyCTA } from "@/src/programs/fan-to-pro/presentation/components/sticky-cta";
 import { StructuredData } from "@/src/programs/fan-to-pro/presentation/components/structured-data";
-import { ApplyForm } from "@/src/programs/fan-to-pro/presentation/sections/apply-form";
+import {
+  ApplyForm,
+  type ApplyFormSelection,
+} from "@/src/programs/fan-to-pro/presentation/sections/apply-form";
+import {
+  getCurrentPricingPhase,
+  resolveBundlePriceKrw,
+  resolveCoursePriceKrw,
+} from "@/src/programs/fan-to-pro/domain/pricing";
+import { fetchCourseBySlug } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/course-repository";
+import { fetchBundleBySlug } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/bundle-repository";
+import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
 import { Bonus } from "@/src/programs/fan-to-pro/presentation/sections/bonus";
 import { FAQ } from "@/src/programs/fan-to-pro/presentation/sections/faq";
 import { Guarantees } from "@/src/programs/fan-to-pro/presentation/sections/guarantees";
@@ -72,14 +83,95 @@ export async function generateMetadata({
   };
 }
 
+// B0068 Slice 2c — 2기 신청 flow. courses/bundles 페이지에서 slug 를 query param
+// 으로 전달. 상위에서 DB 조회 후 ApplyForm 에 selection props 로 주입.
+// slug 검증 실패 (DB 없음, status !== 'open') 는 silent skip → selection=null →
+// 1기 기본 UI 로 fallback (사용자 신청 자체는 계속 가능).
+type SearchParams = {
+  course?: string | string[];
+  bundle?: string | string[];
+};
+
+const SLUG_RE = /^[a-z0-9-]{1,120}$/i;
+
+function pickSlug(value: string | string[] | undefined): string | null {
+  if (!value) return null;
+  const raw = Array.isArray(value) ? value[0] : value;
+  if (!raw) return null;
+  const trimmed = raw.trim();
+  if (!SLUG_RE.test(trimmed)) return null;
+  return trimmed;
+}
+
+async function resolveSelection(
+  courseSlug: string | null,
+  bundleSlug: string | null,
+): Promise<ApplyFormSelection | null> {
+  if (!courseSlug && !bundleSlug) return null;
+  const supabase = getSupabaseServer();
+  if (!supabase) return null;
+
+  const { data: program } = await supabase
+    .from("programs")
+    .select("id")
+    .eq("slug", "fan-to-pro")
+    .maybeSingle();
+  if (!program?.id) return null;
+
+  const phase = getCurrentPricingPhase(null); // TODO: recruitmentStartsAt 확정 후 주입
+
+  // bundle 이 우선 (더 상위 상품). 둘 다 전달되면 bundle 우선.
+  if (bundleSlug) {
+    try {
+      const bundle = await fetchBundleBySlug(program.id, bundleSlug);
+      if (bundle && bundle.status === "open") {
+        return {
+          kind: "bundle",
+          slug: bundle.slug,
+          titleKo: bundle.title_ko,
+          priceKrw: resolveBundlePriceKrw(bundle.price_krw),
+        };
+      }
+    } catch {
+      // silent fallback
+    }
+  }
+
+  if (courseSlug) {
+    try {
+      const course = await fetchCourseBySlug(program.id, courseSlug);
+      if (course && course.status === "open") {
+        return {
+          kind: "course",
+          slug: course.slug,
+          titleKo: course.title_ko,
+          priceKrw: resolveCoursePriceKrw(course.price_krw, phase),
+        };
+      }
+    } catch {
+      // silent fallback
+    }
+  }
+
+  return null;
+}
+
 export default async function FanToProPage({
   params,
+  searchParams,
 }: {
   params: Promise<Params>;
+  searchParams: Promise<SearchParams>;
 }) {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
+
+  const sp = await searchParams;
+  const courseSlug = pickSlug(sp.course);
+  const bundleSlug = pickSlug(sp.bundle);
+  const selection = await resolveSelection(courseSlug, bundleSlug);
+  const pricingPhase = getCurrentPricingPhase(null);
 
   return (
     <main className="relative">
@@ -98,7 +190,7 @@ export default async function FanToProPage({
       <Recruitment />
       <Pricing />
       <FAQ />
-      <ApplyForm />
+      <ApplyForm selection={selection} pricingPhase={pricingPhase} />
       <Footer />
 
       <StickyCTA />

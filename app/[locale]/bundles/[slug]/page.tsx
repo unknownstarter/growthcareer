@@ -78,7 +78,9 @@ export default async function BundleDetail({
   const bundle = bundles.find((b) => b.slug === slug);
   if (!bundle) notFound();
 
-  const applyHref = `${prefix}/fan-to-pro#apply?bundle=${bundle.slug}`;
+  // URL 표준: query 는 fragment 앞에 옴 (?bundle=...#apply).
+  // #apply?bundle=... 는 fragment 전체로 취급돼 서버 searchParams 로 안 들어옴.
+  const applyHref = `${prefix}/fan-to-pro?bundle=${bundle.slug}#apply`;
   const hasOriginal =
     bundle.originalPriceKrw !== null &&
     bundle.priceKrw !== null &&

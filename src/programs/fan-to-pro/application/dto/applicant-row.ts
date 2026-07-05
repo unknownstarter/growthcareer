@@ -40,6 +40,16 @@ export type ApplicantRow = {
   // B0032 cohort 귀속 — 어느 기수에 신청했는지. null = legacy (마이그레이션 전 row).
   cohortId: string | null;
 
+  // B0068 신청 시점 과정 선택 — 단과 (course) 또는 올인원 (bundle).
+  //   courseId 만 = 단과 신청 (Slice 2c-A applicants.course_id 컬럼).
+  //   bundleId 만 = 올인원 신청 (applicants.bundle_id).
+  //   둘 다 null = 1기 legacy (course/bundle 개념 도입 전).
+  // 어드민 리스트 "과정" 컬럼 + CSV export 에서 사용.
+  courseId: string | null;
+  bundleId: string | null;
+  courseTitleKo: string | null;
+  bundleTitleKo: string | null;
+
   // 발송 추적
   notifiedAt: string | null;
   reminderCount: number;

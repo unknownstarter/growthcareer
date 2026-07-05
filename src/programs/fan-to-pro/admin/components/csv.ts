@@ -1,11 +1,19 @@
 import type { ApplicantRow } from "../types";
 
-const COLUMNS: ReadonlyArray<{
-  key: keyof ApplicantRow;
-  label: string;
-}> = [
+/**
+ * CSV 컬럼 정의.
+ * - `key: keyof ApplicantRow` — 단순 컬럼 (row[key] 를 직접 stringify)
+ * - `get: (row) => unknown`   — 계산 / 결합 컬럼 (예: B0068 "과정")
+ */
+type CsvColumn =
+  | { label: string; key: keyof ApplicantRow }
+  | { label: string; get: (row: ApplicantRow) => unknown };
+
+const COLUMNS: ReadonlyArray<CsvColumn> = [
   { key: "createdAt", label: "신청일" },
   { key: "name", label: "이름" },
+  // B0068 과정 — 단과 (course) / 올인원 (bundle) 표시. 1기 legacy 는 "-".
+  { label: "과정", get: csvCourseLabel },
   { key: "email", label: "이메일" },
   { key: "phone", label: "연락처" },
   { key: "birthdate", label: "생년월일" },
@@ -29,6 +37,12 @@ const COLUMNS: ReadonlyArray<{
   { key: "notes", label: "메모" },
 ];
 
+function csvCourseLabel(row: ApplicantRow): string {
+  if (row.bundleTitleKo) return `올인원 / ${row.bundleTitleKo}`;
+  if (row.courseTitleKo) return `단과 / ${row.courseTitleKo}`;
+  return "";
+}
+
 function escape(value: unknown): string {
   if (value === null || value === undefined) return "";
   const str = String(value);
@@ -38,12 +52,14 @@ function escape(value: unknown): string {
   return str;
 }
 
+function cellValue(col: CsvColumn, row: ApplicantRow): unknown {
+  return "get" in col ? col.get(row) : row[col.key];
+}
+
 export function rowsToCsv(rows: ApplicantRow[]): string {
   const header = COLUMNS.map((c) => escape(c.label)).join(",");
   const body = rows
-    .map((row) =>
-      COLUMNS.map((c) => escape(row[c.key] as unknown)).join(","),
-    )
+    .map((row) => COLUMNS.map((c) => escape(cellValue(c, row))).join(","))
     .join("\r\n");
   // BOM 추가 - Excel 한글 깨짐 방지.
   return `﻿${header}\r\n${body}\r\n`;

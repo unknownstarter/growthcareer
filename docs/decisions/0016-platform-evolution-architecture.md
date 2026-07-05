@@ -85,11 +85,11 @@ Echo B0083 리서치 7 인사이트 중 아키텍처 결정에 직접 영향 주
 
 ---
 
-## Route 12 신설
+## Route 14 신설 (v2 patch: 12 → 14)
 
 ### 신규 route table
 
-`app/[locale]/(marketing)/*` route group 안에 아래 12 페이지 신설. 기존 `/fan-to-pro/*` marketing 트랙 랜딩은 sibling 폴더 그대로 유지 (변경 금지).
+`app/[locale]/(marketing)/*` route group 안에 아래 14 페이지 신설. 기존 `/fan-to-pro/*` marketing 트랙 랜딩은 sibling 폴더 그대로 유지 (변경 금지).
 
 | # | Route | Rendering | 이유 |
 |---|---|---|---|
@@ -100,11 +100,44 @@ Echo B0083 리서치 7 인사이트 중 아키텍처 결정에 직접 영향 주
 | 5 | `/stories/[slug]/` | ISR 3600s | MDX 콘텐츠. 정적 파라미터 = `content/stories/*.mdx` |
 | 6 | `/outcomes/` | SSG snapshot | 분기별 재생성 (수동 revalidate tag). 실시간 X (Lambda 교훈) |
 | 7 | `/outcomes/methodology/` | SSG | 정책 문서. 변경 시 수동 revalidate |
-| 8 | `/tracks/` | ISR 3600s | 트랙 카탈로그. 초기 = Fan to Pro 카드 1개 |
-| 9 | `/faculty/` | ISR 3600s | 강사진. DB `instructors` 재사용 |
-| 10 | `/partners/` | ISR 3600s | 로고 wall. `partners` 테이블 |
-| 11 | `/blog/` + `/blog/[slug]/` | ISR 3600s | 콘텐츠 인덱스 + MDX 상세. B0019 SEO 자산 연결 |
-| 12 | `/waitlist/` | `force-dynamic` | 마감일 반영 필수. §7 SSG 사고 재발 방지 (B0039) |
+| 8 | `/tracks/` | ISR 3600s | 트랙 카탈로그 (상위 브랜드 카드). 초기 = Fan to Pro / 셰르파 심화 / 올인원 3장 |
+| 9 | `/courses/` | ISR 3600s | **v2 추가**. 코스 카탈로그 grid. `courses` 테이블 (B0068 완료). `revalidateTag('courses')` 로 즉시 반영 |
+| 10 | `/courses/[slug]/` | ISR 3600s | **v2 추가**. 코스 상세 페이지. 판매 단위. `generateStaticParams` = 공개 코스만 |
+| 11 | `/bundles/` | ISR 3600s | **v2 추가**. 번들 카탈로그 grid. `bundles` 테이블 (B0068 완료). 코스 조합 할인 |
+| 12 | `/bundles/[slug]/` | ISR 3600s | **v2 추가**. 번들 상세 페이지. 포함 코스 + 할인률 노출 |
+| 13 | `/faculty/` | ISR 3600s | 강사진. DB `instructors` 재사용 |
+| 14 | `/partners/` | ISR 3600s | 로고 wall. `partners` 테이블 |
+| 15 | `/blog/` + `/blog/[slug]/` | ISR 3600s | 콘텐츠 인덱스 + MDX 상세. B0019 SEO 자산 연결 |
+| 16 | `/waitlist/` | `force-dynamic` | 마감일 반영 필수. §7 SSG 사고 재발 방지 (B0039) |
+
+> Note: # 는 페이지 카운트가 아니라 라우트 항목 카운트. `/blog/` 는 index + `[slug]` 를 1 항목으로 압축 (기존 v1 관례 유지). 실 route 수 = 14 (`/cohorts` `/stories` `/outcomes` `/courses` `/bundles` 각 index + slug 별도 카운트하면 20 근처). "14" 는 정보구조 상 논리적 페이지 카테고리 수.
+
+### Route 계층 명확화 (v2 추가)
+
+트랙 / 코스 / 번들 3 레이어를 URL 로 구분해 검색과 세일즈 퍼널 양쪽을 만족시킨다.
+
+| Layer | Route | 의미 | 카탈로그 크기 예상 |
+|---|---|---|---|
+| **트랙** | `/tracks/*` | 상위 브랜드 카드. Fan to Pro / 셰르파 심화 / 올인원 등 대분류 | 3~5 개 (증가 느림) |
+| **코스** | `/courses/*` | 판매 단위. 개별 강의 (예: "K-pop A&R 실무 8주"). B0068 `courses` 테이블 = source of truth | 10~50 개 (증가 빠름) |
+| **번들** | `/bundles/*` | 코스 조합 할인 패키지 (예: "K-pop A&R + 마케팅 통합" 15% 할인). B0068 `bundles` 테이블 | 3~10 개 |
+
+**왜 분리하는가**:
+
+- 트랙 = 브랜딩 / 진입 페이지 / 서사 (`Fan to Pro 는 무엇인가`)
+- 코스 = 판매 / 결제 / 카트 unit. Kajabi / Podia 등 지식창업 SaaS 표준 = `/courses/[slug]` 가 컨버전 landing
+- 번들 = 코스 조합 세일즈. 상세 페이지에 포함 코스 카드 + 개별 vs 번들 가격 비교 노출
+
+**계층 간 링크**:
+
+- `/tracks/[trackSlug]` 페이지 = "이 트랙에 포함된 코스" 섹션에서 `/courses/[courseSlug]` 카드 노출
+- `/courses/[courseSlug]` 페이지 = "이 코스가 포함된 번들" 배지로 `/bundles/[bundleSlug]` 유도 (upsell)
+- `/bundles/[bundleSlug]` 페이지 = 포함 코스 리스트 카드에서 개별 `/courses/[courseSlug]` 로 back-link
+
+**렌더링 = 전부 ISR 3600s**:
+
+- 카탈로그 변경 빈도 = 하루 여러 번 X. 신규 코스 launch / 가격 변경 시 admin server action 에서 `revalidateTag('courses')` `revalidateTag('bundles')` 명시 호출
+- 결제 흐름 (카트 / 체크아웃) 은 이 ADR 범위 X. 별도 backlog (B0092+ 예상)
 
 ### Rendering strategy 결정 근거
 
@@ -129,6 +162,12 @@ app/[locale]/
       page.tsx
       methodology/page.tsx
     tracks/page.tsx
+    courses/             # v2 추가 (B0068 courses 테이블)
+      page.tsx
+      [slug]/page.tsx
+    bundles/             # v2 추가 (B0068 bundles 테이블)
+      page.tsx
+      [slug]/page.tsx
     faculty/page.tsx
     partners/page.tsx
     blog/
@@ -465,7 +504,7 @@ B0019 에서 이미 5종 (Organization / EducationalOrganization / Course / FAQP
 
 ### llms.txt 확장
 
-B0019 llms.txt 이미 존재. 신규 route 12 추가:
+B0019 llms.txt 이미 존재. 신규 route 14 추가 (v2 patch: courses / bundles 소섹션 추가):
 
 ```
 # Growth Career (llms.txt)
@@ -473,6 +512,12 @@ B0019 llms.txt 이미 존재. 신규 route 12 추가:
 ## Umbrella
 - / (우산 랜딩)
 - /tracks/ (트랙 카탈로그)
+
+## Catalog (v2 추가)
+- /courses/ (코스 카탈로그. 판매 단위)
+- /courses/{slug}/ (코스 상세)
+- /bundles/ (번들 카탈로그. 코스 조합 할인)
+- /bundles/{slug}/ (번들 상세)
 
 ## Showcase
 - /cohorts/ (기수 archive)
@@ -794,6 +839,16 @@ export interface CohortShowcaseRepository {
 - 거부 이유: SEO 불리 + 사람이 URL 공유 어려움. Aria 권고 = human-readable
 - 채택 = `showcase_slug` 컬럼 additive (LMS 는 nanoid 그대로)
 
+### R11. `/courses/*` `/bundles/*` 를 `/tracks/*` 하위로 합치기 (v2)
+
+- 대안 A = `/tracks/[trackSlug]/courses/[courseSlug]` 3 depth nested. 트랙 소속 명확
+- 대안 B = `/tracks/*` 만 유지하고 코스 / 번들 자체 route X. `/tracks/[slug]` 상세에서 코스 리스트만 인라인
+- 거부 이유:
+  - A = URL depth 3 = SEO 불리 + 공유 시 길다. 코스가 여러 트랙에 걸치는 경우 (예: "K-pop 마케팅" 이 Fan to Pro + 셰르파 심화 둘 다 포함) 정규 경로 모호
+  - B = 코스 상세 페이지 X = 결제 landing X. Kajabi / Podia / 인프런 표준 = 코스별 컨버전 페이지 필수
+- 채택 = additive 3 route 병존. `/tracks/*` (브랜드 카드 계층) + `/courses/*` (판매 단위 계층) + `/bundles/*` (조합 계층). 코스는 트랙 metadata 로 연결 (`courses.track_slug` 이미 B0068 스키마에 존재)
+- **Iris 발견**: B0068 스키마 완료됐으나 v1 에 route 미반영. v2 patch 로 정합 회복. 라이브 페이지 (`/fan-to-pro/*`) 는 §7.4 유지
+
 ---
 
 ## 노아 결정 필요 (10건)
@@ -888,7 +943,12 @@ Sophia PD spec 확정 후 아래 B0084~B0091 status raw → specced 승격.
 - **산출**: `/blog/page.tsx` (grid) + `/blog/[slug]/page.tsx` (MDX) + `content/blog/*.mdx` 초기 3~5개 (E-7-1 / K-CORE / F-시리즈)
 - **일정**: SEO 축 강화 = 언제든 병행 가능
 
----
+### B0092. Courses / Bundles 전시 페이지 (`/courses/*`, `/bundles/*`) — v2 추가
+
+- **의존**: B0068 스키마 완료 (courses / bundles 테이블). Iris backend 데이터 seed 확보
+- **산출**: `/courses/page.tsx` (grid ISR) + `/courses/[slug]/page.tsx` (상세 ISR) + `/bundles/page.tsx` + `/bundles/[slug]/page.tsx` + `course-showcase-repository.ts` (public read wrapper) + `bundle-showcase-repository.ts`
+- **범위 제외**: 결제 / 카트 / 체크아웃 흐름. 별도 backlog (B0093+)
+- **일정**: B0068 seed 후. 우산 랜딩 (`B0090`) 착수 전 병렬 진행 가능 (`/` 페이지 hero 에서 코스 배지 노출 시 의존)
 
 ## Luna UX 컨셉 spec 과 정합 확인 (도착 후)
 

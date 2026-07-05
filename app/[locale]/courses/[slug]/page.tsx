@@ -82,7 +82,9 @@ export default async function CourseDetail({
   if (!course) notFound();
 
   const instructor = instructorsBySlug[course.slug];
-  const applyHref = `${prefix}/fan-to-pro#apply?course=${course.slug}`;
+  // URL 표준: query 는 fragment 앞에 옴 (?course=...#apply).
+  // #apply?course=... 는 fragment 전체로 취급돼 서버 searchParams 로 안 들어옴.
+  const applyHref = `${prefix}/fan-to-pro?course=${course.slug}#apply`;
 
   return (
     <main className="bg-bg text-fg min-h-screen">

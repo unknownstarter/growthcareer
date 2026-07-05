@@ -120,7 +120,26 @@ export const Step2Schema = z.object({
   consent_marketing: optionalCheckboxBool.optional().default(false),
 });
 
-export const ApplicationSchema = Step1Schema.extend(Step2Schema.shape);
+// B0068 Slice 2c — 2기 신청 flow. course/bundle 선택을 optional 로 받는다.
+// 1기 신청은 둘 다 undefined → 기존 동작 유지 (회귀 X).
+// slug 는 URL segment 로직 재사용 — 정규식 alphanumeric + hyphen only.
+const SlugSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(120)
+  .regex(/^[a-z0-9-]+$/i, "invalidSlug")
+  .optional()
+  .or(z.literal("").transform(() => undefined));
+
+export const CourseBundleSelectionSchema = z.object({
+  course_slug: SlugSchema,
+  bundle_slug: SlugSchema,
+});
+
+export const ApplicationSchema = Step1Schema.extend(Step2Schema.shape).extend(
+  CourseBundleSelectionSchema.shape,
+);
 
 export type Step1 = z.infer<typeof Step1Schema>;
 export type Step2 = z.infer<typeof Step2Schema>;

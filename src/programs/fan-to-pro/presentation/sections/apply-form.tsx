@@ -8,7 +8,12 @@ import {
   VISA_OPTIONS,
   type ApplicationActionState,
 } from "@/src/programs/fan-to-pro/domain/application";
-import { PRICING, formatKRW } from "@/src/programs/fan-to-pro/domain/pricing";
+import {
+  PRICING,
+  PRICING_PHASES,
+  formatKRW,
+  type PricingPhase,
+} from "@/src/programs/fan-to-pro/domain/pricing";
 import {
   ENROLLMENT_CAP,
   OPERATOR,
@@ -22,6 +27,29 @@ import { Eyebrow } from "../ui/eyebrow";
 import { Section } from "../ui/section";
 
 const INITIAL: ApplicationActionState = { status: "idle" };
+
+// B0068 Slice 2c — 2기 신청 flow props.
+// courses/bundles 페이지에서 [신청하기] 클릭 시 fan-to-pro?course=slug 로 이동.
+// 상위 (fan-to-pro/page.tsx) 가 searchParams 로 slug 받아 DB 조회 후 주입.
+// null 이면 기존 1기 방식 (선택 UI 없음, hidden field 없음, 회귀 X).
+export type ApplyFormSelection =
+  | {
+      kind: "course";
+      slug: string;
+      titleKo: string;
+      priceKrw: number;
+    }
+  | {
+      kind: "bundle";
+      slug: string;
+      titleKo: string;
+      priceKrw: number;
+    };
+
+export type ApplyFormProps = {
+  selection?: ApplyFormSelection | null;
+  pricingPhase?: PricingPhase;
+};
 
 type Step1Data = {
   name: string;
@@ -74,7 +102,10 @@ function resolveErrorKey(
   }
 }
 
-export function ApplyForm() {
+export function ApplyForm({
+  selection = null,
+  pricingPhase = "regular",
+}: ApplyFormProps = {}) {
   const t = useTranslations("applyForm");
   const tErrors = useTranslations("applyForm.errors");
   const tCommon = useTranslations("common");
@@ -390,6 +421,54 @@ export function ApplyForm() {
           </p>
         </div>
 
+        {/* B0068 Slice 2c — 선택된 course/bundle 배너 (2기 신청 flow).
+            selection 이 null 이면 미출력 → 1기 UI 완전 동일 (§7.4 회귀 X). */}
+        {selection ? (
+          <div className="mx-auto mb-8 flex max-w-3xl flex-col gap-3 border-2 border-brand-purple bg-brand-purple/5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+            <div className="flex flex-col gap-1">
+              <span
+                className="text-fg-subtle text-[10px] font-black uppercase sm:text-xs"
+                style={{ letterSpacing: "0.3em" }}
+              >
+                {selection.kind === "bundle" ? "선택된 올인원" : "선택된 코스"}
+              </span>
+              <p
+                className="font-black text-fg text-lg sm:text-xl"
+                style={{ letterSpacing: "-0.02em" }}
+              >
+                {selection.titleKo}
+              </p>
+              {pricingPhase === "earlybird" && selection.kind === "course" ? (
+                <span
+                  className="mt-1 inline-flex w-fit items-center bg-brand-pink px-2 py-0.5 font-black text-fg text-[10px] uppercase"
+                  style={{ letterSpacing: "0.2em" }}
+                >
+                  얼리버드 1주일 한정
+                </span>
+              ) : null}
+            </div>
+            <div className="flex flex-col items-end gap-0.5 sm:text-right">
+              <span
+                className="text-fg-subtle text-[10px] font-black uppercase sm:text-xs"
+                style={{ letterSpacing: "0.3em" }}
+              >
+                수강료
+              </span>
+              <p
+                className="font-black text-brand-pink text-2xl sm:text-3xl whitespace-nowrap"
+                style={{ letterSpacing: "-0.03em" }}
+              >
+                {formatKRW(selection.priceKrw, locale)}
+              </p>
+              {pricingPhase === "earlybird" && selection.kind === "course" ? (
+                <p className="text-fg-subtle text-xs">
+                  정가 {formatKRW(PRICING_PHASES.regularKrw, locale)}
+                </p>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
+
         {/* Summary Grid */}
         <div className="mx-auto mb-px grid max-w-3xl grid-cols-1 gap-px border border-fg/20 bg-fg/20 sm:grid-cols-2 lg:grid-cols-4">
           <SummaryCell
@@ -557,6 +636,13 @@ export function ApplyForm() {
                 name="nationality"
                 value={step1.nationality}
               />
+              {/* B0068 Slice 2c — course/bundle 선택. selection 이 null 이면 미출력. */}
+              {selection?.kind === "course" ? (
+                <input type="hidden" name="course_slug" value={selection.slug} />
+              ) : null}
+              {selection?.kind === "bundle" ? (
+                <input type="hidden" name="bundle_slug" value={selection.slug} />
+              ) : null}
 
               <Field
                 label={t("fields.birthdate.label")}

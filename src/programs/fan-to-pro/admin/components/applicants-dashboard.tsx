@@ -814,6 +814,7 @@ function DashboardInner({
                 )}
                 <th className="px-3 py-2 font-black">신청일</th>
                 <th className="px-3 py-2 font-black">이름</th>
+                <th className="px-3 py-2 font-black">과정</th>
                 <th className="px-3 py-2 font-black">연락처</th>
                 <th className="px-3 py-2 font-black">이메일</th>
                 <th className="px-3 py-2 font-black">국적</th>
@@ -829,7 +830,7 @@ function DashboardInner({
               {filtered.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={readOnly ? 10 : 12}
+                    colSpan={readOnly ? 11 : 13}
                     className="px-3 py-12 text-center text-xs text-fg/80"
                   >
                     표시할 신청자가 없어요.
@@ -879,6 +880,9 @@ function DashboardInner({
                           {tint.label}
                         </span>
                       ) : null}
+                    </td>
+                    <td className="px-3 py-2 align-top text-fg whitespace-nowrap">
+                      {formatCourseLabel(row)}
                     </td>
                     <td className="px-3 py-2 align-top text-fg whitespace-nowrap">
                       {formatPhoneForDisplay(row.phone, row.nationality)}
@@ -1470,6 +1474,19 @@ function StatPill({
       <span className="text-fg">{value}</span>
     </span>
   );
+}
+
+/**
+ * B0068 신청자 row 의 "과정" 컬럼 표시.
+ *   bundleTitleKo 있음 → "올인원 · <title>"  (올인원 신청)
+ *   courseTitleKo 있음 → "단과 · <title>"    (단과 신청, Slice 2c-A)
+ *   둘 다 null → "-"                          (1기 legacy 신청자)
+ * bundle 우선 (한 row 에 둘 다 있는 케이스는 없지만 방어).
+ */
+function formatCourseLabel(row: ApplicantRow): string {
+  if (row.bundleTitleKo) return `올인원 / ${row.bundleTitleKo}`;
+  if (row.courseTitleKo) return `단과 / ${row.courseTitleKo}`;
+  return "-";
 }
 
 function formatDate(iso: string): string {
