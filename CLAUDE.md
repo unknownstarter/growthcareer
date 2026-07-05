@@ -78,6 +78,48 @@
 
 ---
 
+## 2.6 Agile Dispatch (짧은 slice + 자주 확인)
+
+> 노아 룰 (2026-07-05): "에이전트들이 병렬로 하는건 좋은데 한 텀이 너무 길어. 애자일 정신으로 딱딱딱 끊어가면서 해야지! 물론 컨텍스트는 놓치지 않고!"
+
+**Agent dispatch = 30분 안 slice 로 분할**. 60~180분 짜리 큰 dispatch = 노아 대기 시간 길어 애자일 실패. 짧게 끊고 자주 확인.
+
+### 룰
+
+1. **첫 slice = 방향/구조 draft** (15~30분): 스코프 확정, 산출물 outline, 예상 이슈. 상세 구현 X.
+2. **노아 확인 후 이어감**: draft 승인 → SendMessage 로 기존 Agent 재사용 (새 dispatch X, 컨텍스트 유지)
+3. **최대 3~4 slice** 로 완료. 각 slice = 30분 안.
+4. **큰 spec 은 phase 분할**: Phase 1 (스키마 결정) 승인 → Phase 2 (RLS) 승인 → Phase 3 (구현 계획)
+
+### dispatch 프롬프트 명시
+
+```
+[Slice 1/N, 30분 안]
+목표: 방향/구조 draft
+산출물: outline + 예상 이슈 + 노아 확인 필요 항목
+승인 후 SendMessage 로 Slice 2 이어감.
+```
+
+### 예외 (긴 dispatch OK)
+
+- **명확한 실행 태스크** (예: 부호 fix, typecheck, dry-run) — 노아 확인 불필요
+- **Sage 검토** — 판정 결과가 곧 산출물 (분할 의미 X)
+- **노아가 명시적으로 "전체 한 번에" 지시**
+
+### Why
+
+- 60~180분 dispatch = 노아 대기 시간 김 + 방향 어긋나면 시간 낭비 대규모
+- Sophia B0072 v1 → v2 → v3 → v4 → v5 → simplified = 각 재작업이 큰 dispatch 라 매번 60~90분. 만약 첫 slice 에서 방향 draft 를 노아 확인만 했으면 v2~v5 = 회피 가능
+
+### How to apply
+
+- 새 Agent dispatch 시 프롬프트 첫 줄에 `[Slice 1/N, N분 안]` 마커
+- 산출물 = draft outline 우선. 구현/코드 = 노아 확인 후 다음 slice
+- 완료 시 SendMessage 로 이어감 (새 Agent 신설 X, 컨텍스트 유지)
+- 애자일 정신: **작동하는 minimal → 확인 → 확장**
+
+---
+
 ## 3. 팀 로스터 (Agent Roster)
 
 > 모든 멤버는 여성 페르소나입니다. 호출은 `Agent` 툴 + `subagent_type` 으로.
