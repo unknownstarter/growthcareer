@@ -245,6 +245,60 @@ UI 변경은 항상 `pnpm preview` 로 **자체 캡처 → Read → 사용자에
 
 ---
 
+## 6.7 인터렉션 디자인 시스템 (부드러운 UX 필수)
+
+> 노아 룰 (2026-07-10): "기본적인 인터렉티브 디자인 시스템은 모두 적용해야 해. 로딩부터 각 섹션이 등장하는 효과, 부드러운 인터렉션을 항상 고려하면서 만들어야 해."
+
+**신규 페이지·컴포넌트 생성 시 5 요소 필수 반영**. "일단 동작만 되게" 라는 이유로 인터렉션 생략 금지.
+
+### 필수 5 요소
+
+1. **로딩 상태**: 신규 라우트 = `loading.tsx` skeleton 필수. Suspense boundary 안 즉시 응답. blank 화면 금지.
+2. **섹션 등장 효과**: 페이지 마운트 시 위→아래 순차 fade-in (stagger). `motion-safe:animate-in fade-in-0 duration-500` 등 Tailwind utility.
+3. **hover / focus transition**: 링크·버튼·카드 = `transition-colors duration-150` 이상. 즉각 반응 시각 피드백.
+4. **상태 변경 반응**: 폼 submit / 데이터 갱신 = optimistic UI or 스피너. 사용자가 "된 건가?" 헷갈리지 않게.
+5. **접근성 유지**: `motion-safe:` prefix 로 `prefers-reduced-motion` 존중. 애니메이션 강제 금지.
+
+### 기본 클래스 팔레트 (Tailwind 4 기준)
+
+```
+// 페이지 fade-in
+motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-500
+
+// 리스트 stagger (n번째 아이템에 delay)
+motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-bottom-2 motion-safe:duration-300
+style={{ animationDelay: `${index * 40}ms` }}
+
+// 카드 hover
+hover:bg-[var(--secondary)] transition-colors duration-150
+hover:shadow-md transition-shadow duration-200
+
+// 버튼
+transition-all duration-150 hover:opacity-90 active:scale-95
+```
+
+### 예외 (인터렉션 생략 OK)
+
+- 순수 스텁 페이지 (개발 중, 곧 재작성 예정)
+- 인쇄 전용 페이지 (수료증 등, 정적 문서)
+- 노아가 명시적으로 "인터렉션 생략" 지시
+
+### 왜
+
+- 매끄러운 UX = 서비스 완성도 인식의 60% 이상 (경험적 룰)
+- 로딩 blank / 인터렉션 없는 클릭 = "안 되나?" 착각 유발 → 재클릭 → 서버 부하 증가
+- 노아가 매일 쓰는 어드민도 UX 품질 요구. "내부용" 이라는 이유로 UX 후순위 X
+
+### 검증 체크 (신규 페이지 완성 시 self-check)
+
+- [ ] `loading.tsx` 신설 (또는 Suspense boundary)
+- [ ] 페이지 fade-in 클래스 적용
+- [ ] 리스트 stagger 적용 (아이템 3개 이상 시)
+- [ ] hover / focus transition 적용
+- [ ] `motion-safe:` prefix (accessibility)
+
+---
+
 ## 7. 환경 가정 (Vercel Defaults)
 
 - Next.js App Router, AI SDK v6

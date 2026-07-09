@@ -18,6 +18,7 @@ import {
   User,
   ClipboardCheck,
   BookOpen,
+  ListTodo,
 } from "lucide-react";
 import { cn } from "@/src/programs/fan-to-pro/interface/components/lms/lib/utils";
 import type { LmsRole } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
