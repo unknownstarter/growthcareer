@@ -342,6 +342,18 @@ html, body {
   font-size: 20pt;
   color: #1f2937;
   padding-bottom: 1mm;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+}
+.cert-signature-company {
+  font-family: 'Times New Roman', 'Georgia', serif;
+  font-style: italic;
+  font-size: 10pt;
+  color: #6b5c3f;
+  margin-top: 1mm;
+  letter-spacing: 0.5px;
 }
 .cert-signature-name { font-size: 9pt; color: #374151; font-weight: 500; }
 .cert-signature-title { font-size: 8pt; color: #6b5c3f; margin-top: 0.5mm; }
@@ -489,7 +501,7 @@ html, body {
       <div class="cert-signature">
         <div class="cert-signature-line">
           <img class="cert-signature-img" src="${signaturePath}" alt="Signature" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'" />
-          <span class="cert-signature-fallback" style="display:none">Noah</span>
+          <span class="cert-signature-fallback" style="display:none">Noah<span class="cert-signature-company">Dropdown</span></span>
         </div>
         <div class="cert-signature-name">대표 / CEO</div>
         <div class="cert-signature-title">${issuer}</div>

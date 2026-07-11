@@ -1,10 +1,14 @@
 "use client";
 
 /**
- * Career Documents Panel — 3 카드 (resume / cover_letter / portfolio).
+ * Career Documents Panel — 2 카드 (resume / portfolio).
  *
  * admin surface + student surface 양쪽에서 재사용. props 로 학생 식별자 + 초기
  * 데이터 + 표시 모드 ('admin' | 'self') 받음.
+ *
+ * 노아 결정 (2026-07-11): cover_letter 카드는 UI 에서 제거. 이력서에 자기소개
+ * 내용 포함되므로 별도 항목 X. 도메인 CAREER_DOC_TYPES 는 유지 (backend / B0072
+ * 이메일 발송 로직 등 다른 곳 참조 그대로).
  *
  * 작업:
  *   - 빈 카드: [등록] 버튼 → modal.
@@ -108,7 +112,7 @@ export function CareerDocumentsPanel({
       ) : null}
 
       <div className="grid gap-4 md:grid-cols-3">
-        {CAREER_DOC_TYPES.map((docType) => {
+        {CAREER_DOC_TYPES.filter((t) => t !== "cover_letter").map((docType) => {
           const doc = byType.get(docType);
           return (
             <CareerCard
