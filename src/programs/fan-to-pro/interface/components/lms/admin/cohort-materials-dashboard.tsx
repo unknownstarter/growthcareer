@@ -346,6 +346,7 @@ function UploadDialogContent({
   onSuccess: () => void;
 }) {
   const [method, setMethod] = React.useState<StorageMethod>("file_upload");
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
   const upload = useSignedUpload();
 
   /**
@@ -496,6 +497,9 @@ function UploadDialogContent({
           onClick={() => {
             setMethod("file_upload");
             setErrorMsg(null);
+            // 노아 UX fix (2026-07-11): 탭 클릭 시 파일 선택 dialog 자동 트리거.
+            // React state 반영 후 다음 tick 에서 click (Input 렌더 대기).
+            setTimeout(() => fileInputRef.current?.click(), 0);
           }}
           disabled={pending}
         >
@@ -539,6 +543,7 @@ function UploadDialogContent({
               type="file"
               required
               disabled={pending}
+              ref={fileInputRef}
             />
             <p className="text-[11px] text-[var(--muted-foreground)]">
               브라우저에서 Supabase Storage 로 직접 업로드합니다. 대용량 파일 지원.
