@@ -37,8 +37,19 @@ update storage.buckets
    set file_size_limit = 524288000  -- 500 MB
  where id = 'lecture-materials';
 
--- 2. career-documents 는 이미 50MB — no-op ---------------------------------
+-- 2. lecture_materials.file_size_bytes check constraint 상향 ---------------
+-- 기존: between 0 and 104857600 (100MB). 500MB 파일 INSERT 실패 방지.
+
+alter table public.lecture_materials
+  drop constraint if exists lecture_materials_file_size_bytes_check;
+
+alter table public.lecture_materials
+  add constraint lecture_materials_file_size_bytes_check
+  check (file_size_bytes is null or file_size_bytes between 0 and 524288000);
+
+-- 3. career-documents 는 이미 50MB — no-op ---------------------------------
 -- (20260628000000_student_photo_and_caps.sql 에서 이미 52428800 = 50MB 로 상향됨.)
+-- career_documents.file_size_bytes 는 upper bound 없이 >= 0 만 강제 — 안전.
 
 -- 3. 확인 쿼리 (수동 실행용, 마이그레이션엔 no-op) --------------------------
 -- select id, file_size_limit from storage.buckets where id in ('lecture-materials','career-documents');

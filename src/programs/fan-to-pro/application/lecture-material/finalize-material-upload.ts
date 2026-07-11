@@ -126,7 +126,10 @@ export async function finalizeMaterialUploadAction(
 
   // ----- 5. DB INSERT -----
   try {
+    // Sage HIGH-1 fix (2026-07-11): storage path 안 material_id 를 DB.id 로 강제.
+    // 이렇게 하면 file_path 안 uuid === lecture_materials.id 정합성 유지.
     await insertLectureMaterial({
+      id: data.material_id,
       cohort_id: data.cohort_id,
       session_id: data.session_id ?? null,
       week_number: data.week_number ?? null,

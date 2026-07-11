@@ -30,7 +30,9 @@ import {
   type StorageMethod,
 } from "@/src/programs/fan-to-pro/domain/entities/career-document";
 import { saveCareerExternalUrlAction } from "@/src/programs/fan-to-pro/application/career/save-external-url";
-import { uploadCareerFileAction } from "@/src/programs/fan-to-pro/application/career/upload-file";
+import { createCareerUploadUrlAction } from "@/src/programs/fan-to-pro/application/career/create-signed-upload-url";
+import { finalizeCareerUploadAction } from "@/src/programs/fan-to-pro/application/career/finalize-document-upload";
+import { useSignedUpload } from "@/src/programs/fan-to-pro/interface/hooks/use-signed-upload";
 
 type Props = {
   open: boolean;
@@ -63,6 +65,7 @@ export function CareerDocumentEditModal({
   const [submitting, setSubmitting] = React.useState(false);
   const [submitError, setSubmitError] = React.useState<string | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const upload = useSignedUpload();
 
   // open 또는 docType 변경 시 form 리셋.
   React.useEffect(() => {
@@ -79,7 +82,9 @@ export function CareerDocumentEditModal({
     setFile(null);
     setFileError(null);
     setSubmitError(null);
+    upload.reset();
     if (fileInputRef.current) fileInputRef.current.value = "";
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, existing, docType]);
 
   if (!docType) return null;
@@ -153,10 +158,8 @@ export function CareerDocumentEditModal({
       return;
     }
 
-    // file_upload mode.
+    // file_upload mode — signed URL 흐름 (B0067 slice 1).
     if (!file) {
-      // 기존이 file_upload 였고 file 새로 안 골랐으면 notes 만 업데이트하는 시나리오.
-      // 본 Wave 에선 단순화 — 파일 변경 안 할거면 외부 링크로 전환하거나 그대로 두라.
       if (existing?.storage_method === "file_upload") {
         setSubmitError(
           "파일을 다시 선택해주세요. notes 만 변경하는 기능은 추후 추가 예정입니다.",
@@ -168,17 +171,47 @@ export function CareerDocumentEditModal({
     }
     if (fileError) return;
 
-    const formData = new FormData();
-    formData.set("student_id", studentId);
-    formData.set("doc_type", docType);
-    formData.set("file", file);
-    if (notes.trim()) formData.set("notes", notes.trim());
+    const mime = file.type || "application/octet-stream";
 
     setSubmitting(true);
-    const result = await uploadCareerFileAction(formData);
+
+    // step 1) signed URL 발급
+    const signed = await createCareerUploadUrlAction({
+      student_id: studentId,
+      doc_type: docType,
+      file_name: file.name,
+      mime_type: mime,
+      file_size_bytes: file.size,
+    });
+    if (signed.status === "error") {
+      setSubmitting(false);
+      setSubmitError(translateCareerUploadError(signed.error));
+      return;
+    }
+
+    // step 2) client direct upload with progress
+    try {
+      await upload.start(signed.signed_url, file, mime);
+    } catch (err) {
+      setSubmitting(false);
+      const msg = err instanceof Error ? err.message : "uploadFailed";
+      setSubmitError(translateCareerUploadError(msg));
+      return;
+    }
+
+    // step 3) finalize
+    const finalized = await finalizeCareerUploadAction({
+      student_id: studentId,
+      doc_type: docType,
+      path: signed.path,
+      file_name: file.name,
+      mime_type: mime,
+      file_size_bytes: file.size,
+      notes: notes.trim() || null,
+    });
     setSubmitting(false);
-    if (result.status === "error") {
-      setSubmitError(`업로드 실패. ${result.error}`);
+    if (finalized.status === "error") {
+      setSubmitError(translateCareerUploadError(finalized.error));
       return;
     }
     onSaved();
@@ -247,7 +280,7 @@ export function CareerDocumentEditModal({
                 <p className="text-xs text-[var(--destructive)]">{fileError}</p>
               ) : (
                 <p className="text-xs text-[var(--muted-foreground)]">
-                  최대 10MB. PDF, DOCX, PPTX, ZIP, JPG, PNG, WEBP.
+                  최대 {capMb}MB. PDF, DOCX, PPTX, ZIP, JPG, PNG, WEBP. 브라우저에서 직접 업로드됩니다.
                 </p>
               )}
               {existing?.storage_method === "file_upload" && !file ? (
@@ -274,6 +307,15 @@ export function CareerDocumentEditModal({
             </p>
           </div>
 
+          {/* Progress bar — 파일 업로드 진행 중일 때. */}
+          {method === "file_upload" && upload.status === "uploading" ? (
+            <UploadProgressBar progress={upload.progress} />
+          ) : method === "file_upload" &&
+            upload.status === "done" &&
+            submitting ? (
+            <UploadProgressBar progress={100} finalizing />
+          ) : null}
+
           {submitError ? (
             <div className="rounded-[var(--radius-sm)] bg-[var(--destructive)]/10 px-3 py-2 text-sm text-[var(--destructive)]">
               {submitError}
@@ -290,13 +332,69 @@ export function CareerDocumentEditModal({
               취소
             </Button>
             <Button type="submit" disabled={submitting || !!fileError}>
-              {submitting ? "저장 중..." : "저장"}
+              {submitting
+                ? method === "file_upload" && upload.status === "uploading"
+                  ? `업로드 중 ${upload.progress}%`
+                  : "저장 중..."
+                : "저장"}
             </Button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
   );
+}
+
+function UploadProgressBar({
+  progress,
+  finalizing,
+}: {
+  progress: number;
+  finalizing?: boolean;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between text-xs text-[var(--muted-foreground)]">
+        <span>{finalizing ? "저장 중..." : "업로드 중..."}</span>
+        <span className="tabular-nums">{progress}%</span>
+      </div>
+      <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--secondary)]">
+        <div
+          className="h-full bg-[var(--primary)] transition-all duration-200 ease-out"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function translateCareerUploadError(code: string): string {
+  switch (code) {
+    case "invalidInput":
+      return "입력값을 확인해주세요.";
+    case "forbidden":
+      return "권한이 없습니다.";
+    case "mimeNotAllowed":
+      return "허용되지 않은 파일 형식입니다.";
+    case "fileTooLarge":
+      return "파일 크기가 허용 범위를 초과합니다.";
+    case "signedUrlFailed":
+      return "업로드 준비 실패. 잠시 후 다시 시도해주세요.";
+    case "supabaseUnavailable":
+      return "저장소가 일시 사용 불가입니다.";
+    case "pathStudentMismatch":
+      return "잘못된 업로드 경로입니다.";
+    case "objectMissing":
+      return "업로드된 파일을 찾을 수 없습니다. 다시 시도해주세요.";
+    case "sizeMismatch":
+      return "파일 크기 검증 실패. 다시 시도해주세요.";
+    case "networkError":
+      return "네트워크 오류. 연결 확인 후 다시 시도해주세요.";
+    case "aborted":
+      return "업로드가 취소되었습니다.";
+    default:
+      return `저장 실패. ${code}`;
+  }
 }
 
 function MethodChoice({

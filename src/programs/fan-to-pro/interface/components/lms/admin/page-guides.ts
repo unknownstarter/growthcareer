@@ -107,7 +107,7 @@ export const PAGE_GUIDES: Record<AdminPageId, PageGuide> = {
       {
         title: "자료 업로드",
         description:
-          "파일 (100MB 이하) 또는 외부 링크 (Notion / Figma / YouTube) 등록.",
+          "파일 (500MB 이하) 또는 외부 링크 (Notion / Figma / YouTube) 등록.",
       },
       {
         title: "회차 + 제목 설정",

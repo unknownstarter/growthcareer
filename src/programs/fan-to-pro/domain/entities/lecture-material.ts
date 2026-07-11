@@ -36,12 +36,25 @@ export const LectureMaterialStorageMethodSchema = z.enum(
 );
 
 /**
- * 100 MB hard cap — bucket file_size_limit 와 동기.
- * Sage CRIT-4 fix (2026-06-26): 1GB → 100MB. Vercel Server Action bodySizeLimit
- * 정합 + 1기 운영 PPT/영상 50~100MB 수준 충분.
- * Wave 2 에 signed upload URL (client direct) 패턴 도입 시 재상향 검토.
+ * 500 MB hard cap — bucket file_size_limit 와 동기.
+ *
+ * 변경 이력:
+ *   - 2026-06-26 Sage CRIT-4: 1GB → 100MB (Vercel Server Action bodySizeLimit 정합).
+ *   - 2026-07-11 B0067 slice 1: 100MB → 500MB. client direct upload (signed upload
+ *     URL) 도입으로 Vercel Function 우회. 강의 mp4 / 대용량 PPTX 대응.
+ *
+ * Server Action 경로 (upload-material.ts, 레거시) 는 여전히 Vercel bodySizeLimit
+ * 에 걸림 — 100MB 이하만 안전. 100MB 초과 = signed upload URL 필수.
+ * 관련 마이그레이션: supabase/migrations/20260711000000_bucket_size_upgrade.sql
  */
-export const MAX_LECTURE_FILE_SIZE_BYTES = 100 * 1024 * 1024;
+export const MAX_LECTURE_FILE_SIZE_BYTES = 500 * 1024 * 1024;
+
+/**
+ * @deprecated Vercel Server Action bodySizeLimit 상한. 이 이상은 signed upload
+ *   URL (createLectureUploadUrlAction) 사용 필수. 레거시 uploadLectureMaterialAction
+ *   경로에서만 참고.
+ */
+export const MAX_LECTURE_FILE_SIZE_VIA_SERVER_ACTION = 100 * 1024 * 1024;
 
 /** 회차 미연결 자료 fallback 범위 (1주차 ~ 20주차). */
 export const MIN_WEEK_NUMBER = 1;

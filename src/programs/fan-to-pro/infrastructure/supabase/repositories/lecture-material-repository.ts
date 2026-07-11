@@ -69,6 +69,7 @@ export async function fetchLectureMaterialById(
 }
 
 export type InsertLectureMaterialInput = {
+  id?: string;
   cohort_id: string;
   session_id?: string | null;
   week_number?: number | null;
@@ -89,24 +90,28 @@ export async function insertLectureMaterial(
   input: InsertLectureMaterialInput,
 ): Promise<LectureMaterial> {
   const supabase = requireClient();
+  // Sage HIGH-1 fix (2026-07-11): input.id 있으면 명시적 사용 (signed upload flow 에서
+  // storage path 안 uuid 와 DB.id 정합성 유지). 없으면 DB default gen_random_uuid().
+  const insertPayload: Record<string, unknown> = {
+    cohort_id: input.cohort_id,
+    session_id: input.session_id ?? null,
+    week_number: input.week_number ?? null,
+    title: input.title,
+    description: input.description ?? null,
+    storage_method: input.storage_method,
+    file_path: input.file_path ?? null,
+    file_name: input.file_name ?? null,
+    file_size_bytes: input.file_size_bytes ?? null,
+    mime_type: input.mime_type ?? null,
+    external_url: input.external_url ?? null,
+    visibility: input.visibility ?? "published",
+    visible_from: input.visible_from ?? null,
+    uploaded_by: input.uploaded_by ?? null,
+  };
+  if (input.id) insertPayload.id = input.id;
   const { data, error } = await supabase
     .from(TABLE)
-    .insert({
-      cohort_id: input.cohort_id,
-      session_id: input.session_id ?? null,
-      week_number: input.week_number ?? null,
-      title: input.title,
-      description: input.description ?? null,
-      storage_method: input.storage_method,
-      file_path: input.file_path ?? null,
-      file_name: input.file_name ?? null,
-      file_size_bytes: input.file_size_bytes ?? null,
-      mime_type: input.mime_type ?? null,
-      external_url: input.external_url ?? null,
-      visibility: input.visibility ?? "published",
-      visible_from: input.visible_from ?? null,
-      uploaded_by: input.uploaded_by ?? null,
-    })
+    .insert(insertPayload)
     .select("*")
     .single();
   if (error) throw new Error(error.message);

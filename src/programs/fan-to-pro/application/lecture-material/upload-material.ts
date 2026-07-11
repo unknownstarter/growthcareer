@@ -24,6 +24,7 @@ import {
   LectureMaterialVisibilitySchema,
   MIN_WEEK_NUMBER,
   MAX_WEEK_NUMBER,
+  MAX_LECTURE_FILE_SIZE_VIA_SERVER_ACTION,
 } from "@/src/programs/fan-to-pro/domain/entities/lecture-material";
 import {
   insertLectureMaterial,
@@ -123,11 +124,16 @@ export async function uploadLectureMaterialAction(
   }
 
   // ----- 3. 파일 검증 -----
+  // 레거시 경로 (Server Action) 는 Vercel bodySizeLimit 로 100MB 상한 강제.
+  // 대용량 (>100MB) 는 createLectureUploadUrlAction (signed URL) 사용.
   const fileError = validateLectureFileInput({
     size: file.size,
     mime: file.type,
   });
   if (fileError) return { status: "error", error: fileError };
+  if (file.size > MAX_LECTURE_FILE_SIZE_VIA_SERVER_ACTION) {
+    return { status: "error", error: "fileTooLargeForServerAction" };
+  }
 
   // ----- 4. 두 단계 insert → upload → update -----
   // 4-1) DB 에 placeholder file_path 로 insert (id 확보).

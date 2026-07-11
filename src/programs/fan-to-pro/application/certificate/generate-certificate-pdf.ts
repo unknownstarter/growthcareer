@@ -95,7 +95,7 @@ export async function generateStudentCertificatePdfAction(
     const data = await buildCertificateData(ctx, { dryRun: false });
     const html = renderCertificateHtml(data);
 
-    const baseName = data.recipient_name_en || data.recipient_name_ko;
+    const baseName = data.recipient_name_en || data.recipient_name_ko || "student";
     const safeName = baseName
       .replace(/[^a-zA-Z0-9가-힣_-]/g, "_")
       .slice(0, 40);
@@ -154,7 +154,7 @@ export async function previewCertificateForAdminAction(
     const data = await buildCertificateData(ctx, { dryRun: true });
     const html = renderCertificateHtml(data);
 
-    const baseName = data.recipient_name_en || data.recipient_name_ko;
+    const baseName = data.recipient_name_en || data.recipient_name_ko || "student";
     const safeName = baseName
       .replace(/[^a-zA-Z0-9가-힣_-]/g, "_")
       .slice(0, 40);

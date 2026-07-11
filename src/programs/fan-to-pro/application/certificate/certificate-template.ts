@@ -29,9 +29,10 @@ export type CertificateData = {
   duration_ko: string;
   duration_en: string;
   cohort_label: string;
-  recipient_name_ko: string;
-  /** 없으면 hide (한글 이름만 표시). */
-  recipient_name_en: string | null;
+  /** 서브 (작게 회색). 외국인 학생 = null (한글 이름 없음). */
+  recipient_name_ko: string | null;
+  /** 크게 (28pt 세리프). 노아 fix 2026-07-11: 원본 이름 (영문). */
+  recipient_name_en: string;
   attest_ko: string;
   attest_en: string;
   issued_date_ko: string;
@@ -77,10 +78,9 @@ export function escapeHtml(s: string): string {
 export function renderCertificateHtml(data: CertificateData): string {
   const attestKo = escapeHtml(data.attest_ko || PLACEHOLDER_ATTEST_KO);
   const attestEn = escapeHtml(data.attest_en || PLACEHOLDER_ATTEST_EN);
-  const nameKo = escapeHtml(data.recipient_name_ko);
-  const nameEn = data.recipient_name_en
-    ? escapeHtml(data.recipient_name_en)
-    : null;
+  // 노아 fix (2026-07-11): 원본 이름 (영문) 크게, 한글 이름 (있을 때만) 서브 작게 회색.
+  const nameEn = escapeHtml(data.recipient_name_en);
+  const nameKo = data.recipient_name_ko ? escapeHtml(data.recipient_name_ko) : null;
   const serial = escapeHtml(data.serial_no);
   const verifyUrl = escapeHtml(data.verify_url);
   const programKo = escapeHtml(data.program_name_ko);
@@ -454,8 +454,8 @@ html, body {
   </div>
 
   <main class="cert-body">
-    <div class="cert-recipient-name">${nameEn ?? nameKo}</div>
-    ${nameEn ? `<div class="cert-recipient-name-sub">${nameKo}</div>` : `<div style="margin-bottom: 8mm;"></div>`}
+    <div class="cert-recipient-name">${nameEn}</div>
+    ${nameKo ? `<div class="cert-recipient-name-sub">${nameKo}</div>` : `<div style="margin-bottom: 8mm;"></div>`}
 
     <div class="cert-program">
       <div class="cert-program-row">

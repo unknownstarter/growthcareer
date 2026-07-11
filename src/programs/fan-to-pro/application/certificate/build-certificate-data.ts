@@ -157,10 +157,14 @@ export async function buildCertificateData(
 ): Promise<CertificateData> {
   const { student, cohort } = ctx;
 
-  // 학생 실 이름 (name_ko 우선, fallback display_name)
+  // 학생 실 이름
+  // 노아 fix (2026-07-11): 외국인 학생 = display_name 원본이 영문 (신청 시 입력).
+  //   name_en = 원본 (backfill 스크립트로 자동 채움)
+  //   name_ko = 한국 이름 있을 때만 (외국인은 null)
+  //   수료증 = name_en 크게 표시 (없으면 display_name fallback), name_ko 서브 (있을 때만)
   const profile = await fetchStudentProfile(student.id).catch(() => null);
-  const nameKo = profile?.name_ko || student.display_name;
-  const nameEn = profile?.name_en || null;
+  const nameEn = profile?.name_en || student.display_name;
+  const nameKo = profile?.name_ko || null;
 
   // 발급번호
   const serialNo = options.dryRun

@@ -50,10 +50,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/src/programs/fan-to-pro/interface/components/lms/ui/dialog";
-import { uploadLectureMaterialAction } from "@/src/programs/fan-to-pro/application/lecture-material/upload-material";
+import { createLectureUploadUrlAction } from "@/src/programs/fan-to-pro/application/lecture-material/create-signed-upload-url";
+import { finalizeMaterialUploadAction } from "@/src/programs/fan-to-pro/application/lecture-material/finalize-material-upload";
 import { saveMaterialExternalUrlAction } from "@/src/programs/fan-to-pro/application/lecture-material/save-material-external-url";
 import { deleteLectureMaterialAction } from "@/src/programs/fan-to-pro/application/lecture-material/delete-material";
 import { getMaterialDownloadUrlAction } from "@/src/programs/fan-to-pro/application/lecture-material/get-material-download-url";
+import { useSignedUpload } from "@/src/programs/fan-to-pro/interface/hooks/use-signed-upload";
 import {
   MAX_LECTURE_FILE_SIZE_BYTES,
   MAX_WEEK_NUMBER,
@@ -344,10 +346,21 @@ function UploadDialogContent({
   onSuccess: () => void;
 }) {
   const [method, setMethod] = React.useState<StorageMethod>("file_upload");
+  const upload = useSignedUpload();
 
+  /**
+   * Signed URL 흐름 (B0067 slice 1):
+   *   1) create-signed-upload-url → { path, signed_url, material_id }
+   *   2) xhr PUT signed_url (progress bar)
+   *   3) finalize-material-upload → DB INSERT
+   *
+   * pending state = useTransition (finalize) OR upload.status === 'uploading'.
+   */
   function onSubmitFile(formData: FormData) {
     setErrorMsg(null);
-    // file 검증 (client side hint — server 가 재검증).
+    upload.reset();
+
+    // file client-side 검증 (hint — 서버 재검증).
     const file = formData.get("file");
     if (!(file instanceof File) || file.size === 0) {
       setErrorMsg("파일을 선택해주세요.");
@@ -360,15 +373,64 @@ function UploadDialogContent({
       return;
     }
 
-    // FormData 에 cohort_id 박기.
-    formData.set("cohort_id", cohortId);
+    const title = String(formData.get("title") ?? "").trim();
+    const description = String(formData.get("description") ?? "").trim() || null;
+    const weekRaw = formData.get("week_number");
+    const week =
+      typeof weekRaw === "string" && weekRaw.length > 0 ? Number(weekRaw) : null;
+    const visibilityRaw =
+      String(formData.get("visibility") ?? "published").trim() || "published";
+
+    if (!title) {
+      setErrorMsg("제목은 필수입니다.");
+      return;
+    }
 
     startTransition(async () => {
-      const result = await uploadLectureMaterialAction(formData);
-      if (result.status === "error") {
-        setErrorMsg(translateError(result.error));
+      // step 1) signed URL 발급
+      const signed = await createLectureUploadUrlAction({
+        cohort_id: cohortId,
+        week_number: week,
+        file_name: file.name,
+        mime_type: file.type || "application/octet-stream",
+        file_size_bytes: file.size,
+      });
+      if (signed.status === "error") {
+        setErrorMsg(translateError(signed.error));
         return;
       }
+
+      // step 2) client direct upload with progress
+      try {
+        await upload.start(
+          signed.signed_url,
+          file,
+          file.type || "application/octet-stream",
+        );
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : "uploadFailed";
+        setErrorMsg(translateError(msg));
+        return;
+      }
+
+      // step 3) finalize (DB INSERT)
+      const finalized = await finalizeMaterialUploadAction({
+        material_id: signed.material_id,
+        cohort_id: cohortId,
+        week_number: week,
+        title,
+        description,
+        visibility: visibilityRaw as LectureMaterialVisibility,
+        path: signed.path,
+        file_name: file.name,
+        mime_type: file.type || "application/octet-stream",
+        file_size_bytes: file.size,
+      });
+      if (finalized.status === "error") {
+        setErrorMsg(translateError(finalized.error));
+        return;
+      }
+
       onSuccess();
     });
   }
@@ -469,7 +531,7 @@ function UploadDialogContent({
           <CommonFields />
           <div className="space-y-1.5">
             <Label htmlFor="file" className="text-xs">
-              파일 (최대 100MB) *
+              파일 (최대 500MB) *
             </Label>
             <Input
               id="file"
@@ -478,10 +540,27 @@ function UploadDialogContent({
               required
               disabled={pending}
             />
+            <p className="text-[11px] text-[var(--muted-foreground)]">
+              브라우저에서 Supabase Storage 로 직접 업로드합니다. 대용량 파일 지원.
+            </p>
           </div>
+
+          {/* Progress bar — upload 진행 중일 때만 노출. */}
+          {upload.status === "uploading" ? (
+            <UploadProgressBar progress={upload.progress} />
+          ) : upload.status === "done" && pending ? (
+            <UploadProgressBar progress={100} finalizing />
+          ) : null}
+
           <DialogFooter>
             <Button type="submit" disabled={pending} className="h-12 px-6">
-              {pending ? "업로드 중..." : "업로드"}
+              {pending
+                ? upload.status === "uploading"
+                  ? `업로드 중 ${upload.progress}%`
+                  : upload.status === "done"
+                    ? "저장 중..."
+                    : "준비 중..."
+                : "업로드"}
             </Button>
           </DialogFooter>
         </form>
@@ -596,14 +675,59 @@ function translateError(code: string): string {
     case "fileEmpty":
       return "빈 파일은 업로드할 수 없습니다.";
     case "fileTooLarge":
-      return "파일 크기는 100MB 이하여야 합니다.";
+      return "파일 크기는 500MB 이하여야 합니다.";
+    case "fileTooLargeForServerAction":
+      return "이 파일은 크기가 커서 새 업로드 경로로 다시 시도해주세요. (100MB 초과)";
     case "mimeMissing":
       return "파일 형식을 인식할 수 없습니다.";
     case "invalidInput":
+    case "invalidFileName":
       return "입력값을 확인해주세요.";
     case "forbidden":
       return "권한이 없습니다.";
+    case "signedUrlFailed":
+      return "업로드 준비 실패. 잠시 후 다시 시도해주세요.";
+    case "supabaseUnavailable":
+      return "저장소가 일시 사용 불가입니다. 잠시 후 다시 시도해주세요.";
+    case "pathCohortMismatch":
+      return "잘못된 업로드 경로입니다.";
+    case "objectMissing":
+      return "업로드된 파일을 찾을 수 없습니다. 다시 시도해주세요.";
+    case "sizeMismatch":
+      return "파일 크기 검증 실패. 다시 시도해주세요.";
+    case "networkError":
+      return "네트워크 오류. 연결 확인 후 다시 시도해주세요.";
+    case "aborted":
+      return "업로드가 취소되었습니다.";
     default:
       return `오류. ${code}`;
   }
+}
+
+/**
+ * Upload progress bar (인터렉션 §6.7).
+ *   - 진행 중: 파란 채움 + % 텍스트
+ *   - finalizing: 100% 유지 + "저장 중..." 표시 (Storage upload 는 끝, DB INSERT 대기)
+ */
+function UploadProgressBar({
+  progress,
+  finalizing,
+}: {
+  progress: number;
+  finalizing?: boolean;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between text-xs text-[var(--muted-foreground)]">
+        <span>{finalizing ? "저장 중..." : "업로드 중..."}</span>
+        <span className="tabular-nums">{progress}%</span>
+      </div>
+      <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--secondary)]">
+        <div
+          className="h-full bg-[var(--primary)] transition-all duration-200 ease-out"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+    </div>
+  );
 }
