@@ -25,7 +25,9 @@ export function LmsShell({
           displayName={user.displayName}
           email={user.email}
         />
-        <main className="flex-1 overflow-y-auto">{children}</main>
+        <main className="flex-1 overflow-y-auto motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-300">
+          {children}
+        </main>
       </div>
     </div>
   );
