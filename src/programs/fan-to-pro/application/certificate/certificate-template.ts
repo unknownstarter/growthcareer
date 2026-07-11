@@ -1,12 +1,14 @@
 /**
  * Certificate HTML template (B0081) — tools/certificate-preview.html 을 함수화.
  *
- * A4 세로 (210mm x 297mm), 프로페셔널 문서 톤.
- * Toss 라이트 baseline + 흰 배경 + Toss 블루 (#3182f6) accent 3회 (brand dot,
- * serial no, 인장).
+ * A4 세로 (210mm x 297mm), Ivy 학위증 톤 + Toss / K-pop 블루 accent (안 1, 2026-07-11).
+ * 크림 아이보리 배경 + 영문 세리프 헤딩 + 한글 Pretendard 유지 + 인장 확대 35mm.
  *
  * 카피 룰 (CLAUDE.md §6.5):
  *   em dash / interpunct / 곡선 따옴표 / 단일 ellipsis 사용 금지.
+ *
+ * 인터랙션 룰 (§6.7):
+ *   수료증은 인쇄 전용 문서 = 애니메이션·hover state 예외.
  *
  * 보안:
  *   - escapeHtml() 모든 사용자 입력 (이름, cohort_name 등) 에 적용.
@@ -14,9 +16,10 @@
  *
  * 디자인 원칙:
  *   1. 그라디언트 절대 금지 (solid 색만)
- *   2. 여백 넉넉 (top/side 22mm, bottom 40mm — verify 영역 확보)
+ *   2. 여백 넉넉 (top/side 25mm, side 20mm — 인쇄 safe area)
  *   3. Pretendard CDN + OS 한글 폰트 fallback
- *   4. -webkit-print-color-adjust: exact — 인쇄 시 배경색 (border, seal) 유지
+ *   4. -webkit-print-color-adjust: exact — 인쇄 시 배경색 (border, seal, cream) 유지
+ *   5. 5줄 커리큘럼 = 1기 4주 8회 실 강의 (2기 5주 스펙 언급 금지)
  */
 
 export type CertificateData = {
@@ -44,6 +47,18 @@ const PLACEHOLDER_ATTEST_KO =
   "위 사람은 Growth Career 의 Fan to Pro 4주 K-pop 공연 실무 교육 과정을 성실히 이수하였음을 증명합니다.";
 const PLACEHOLDER_ATTEST_EN =
   "This is to certify that the above named person has successfully completed the Fan to Pro 4-week K-Pop Live Production program of Growth Career.";
+
+/**
+ * 1기 확정 커리큘럼 5줄 (2026-06-27 ~ 07-19, 4주 8회 16시간).
+ * 수료증 하단 실무 증빙 섹션에 삽입. 2기 5주 스펙과 혼동 금지.
+ */
+const CURRICULUM_1ST_COHORT = [
+  "뮤직 비즈니스와 K-pop 산업 구조 이해",
+  "A&R 및 기획사 실무 케이스 스터디 (현직 전문가 라이브 세션)",
+  "무대 음향 시스템 셋팅 원리 및 미니 콘서트 실습 조율",
+  "Visual Director와 무대 연출 실무 관점 학습",
+  "K-pop 콘텐츠 기획 및 공연 연출 실무",
+] as const;
 
 /** HTML escape — &, <, >, ", '. */
 export function escapeHtml(s: string): string {
@@ -79,6 +94,11 @@ export function renderCertificateHtml(data: CertificateData): string {
   const bizNo = escapeHtml(data.issuer_biz_no);
   const signaturePath = escapeHtml(data.signature_image_path);
 
+  const curriculumItems = CURRICULUM_1ST_COHORT.map(
+    (line, idx) =>
+      `<li class="cert-curriculum-item"><span class="cert-curriculum-num">${idx + 1}.</span><span class="cert-curriculum-text">${escapeHtml(line)}</span></li>`,
+  ).join("");
+
   return `<!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -94,7 +114,7 @@ export function renderCertificateHtml(data: CertificateData): string {
 html, body {
   font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, BlinkMacSystemFont, sans-serif;
   color: #111;
-  background: #fff;
+  background: #FAF6EF;
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
@@ -104,9 +124,10 @@ html, body {
 .cert-page {
   width: 210mm;
   height: 297mm;
-  padding: 22mm 22mm 40mm;
+  padding: 25mm 20mm 40mm;
   position: relative;
-  border: 1px solid #e5e7eb;
+  background: #FAF6EF;
+  border: 1px solid #d9cfbc;
   overflow: hidden;
 }
 
@@ -114,7 +135,7 @@ html, body {
   content: "";
   position: absolute;
   inset: 6mm;
-  border: 1px solid #d1d5db;
+  border: 1px solid #c9bea3;
   pointer-events: none;
 }
 
@@ -122,16 +143,22 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding-bottom: 8mm;
-  border-bottom: 1px solid #e5e7eb;
-  margin-bottom: 12mm;
+  padding-bottom: 7mm;
+  border-bottom: 1px solid #d9cfbc;
+  margin-bottom: 10mm;
 }
 
 .cert-brand { display: flex; flex-direction: column; gap: 2mm; }
 .cert-brand-mark { display: flex; align-items: center; gap: 3mm; }
 .cert-brand-dot { width: 6mm; height: 6mm; background: #3182f6; border-radius: 1.5mm; flex-shrink: 0; }
-.cert-brand-name { font-size: 13pt; font-weight: 700; letter-spacing: -0.2px; color: #111; }
-.cert-brand-sub { font-size: 9pt; color: #6b7280; letter-spacing: 0.3px; margin-left: 9mm; }
+.cert-brand-name {
+  font-family: 'Times New Roman', 'Georgia', serif;
+  font-size: 14pt;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #111;
+}
+.cert-brand-sub { font-size: 9pt; color: #6b5c3f; letter-spacing: 0.3px; margin-left: 9mm; }
 
 .cert-serial {
   text-align: right;
@@ -145,18 +172,18 @@ html, body {
   display: block;
   font-family: 'Pretendard', sans-serif;
   font-size: 8pt;
-  color: #9ca3af;
+  color: #8a7a5d;
   letter-spacing: 1px;
   margin-bottom: 1mm;
   text-transform: uppercase;
 }
 
-.cert-title { text-align: center; margin-bottom: 12mm; }
+.cert-title { text-align: center; margin-bottom: 10mm; }
 .cert-title-en {
   font-family: 'Times New Roman', 'Georgia', serif;
-  font-size: 24pt;
+  font-size: 26pt;
   font-weight: 400;
-  letter-spacing: 3px;
+  letter-spacing: 4px;
   color: #111;
   margin-bottom: 2mm;
 }
@@ -167,36 +194,32 @@ html, body {
   letter-spacing: 6px;
 }
 
-.cert-body { padding: 0 8mm; }
-.cert-recipient-label {
-  font-size: 9pt;
-  color: #6b7280;
-  text-align: center;
-  letter-spacing: 2px;
-  margin-bottom: 3mm;
-}
+.cert-body { padding: 0 6mm; }
 .cert-recipient-name {
   text-align: center;
+  font-family: 'Times New Roman', 'Georgia', serif;
   font-size: 28pt;
   font-weight: 700;
   color: #111;
-  margin-bottom: 2mm;
-  letter-spacing: -0.5px;
+  margin-bottom: 3mm;
+  letter-spacing: 0.5px;
 }
-.cert-recipient-name-en {
+.cert-recipient-name-sub {
   text-align: center;
-  font-family: 'Times New Roman', 'Georgia', serif;
-  font-size: 13pt;
-  color: #4b5563;
-  font-style: italic;
-  margin-bottom: 10mm;
+  font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+  font-size: 12pt;
+  font-weight: 400;
+  color: #6b7280;
+  margin-bottom: 8mm;
+  letter-spacing: -0.3px;
 }
 
 .cert-program {
-  background: #f9fafb;
+  background: #f4ecdb;
   border-radius: 3mm;
-  padding: 6mm 7mm;
-  margin-bottom: 10mm;
+  padding: 5mm 7mm;
+  margin-bottom: 8mm;
+  border: 1px solid #e7dcc4;
 }
 .cert-program-row {
   display: flex;
@@ -205,16 +228,16 @@ html, body {
   font-size: 10pt;
   line-height: 1.6;
 }
-.cert-program-row + .cert-program-row { border-top: 1px solid #f3f4f6; }
-.cert-program-key { flex: 0 0 30mm; color: #6b7280; font-weight: 500; }
+.cert-program-row + .cert-program-row { border-top: 1px solid #e7dcc4; }
+.cert-program-key { flex: 0 0 30mm; color: #6b5c3f; font-weight: 500; }
 .cert-program-value { flex: 1; color: #111; font-weight: 500; }
 
-.cert-attest { text-align: center; margin-bottom: 10mm; }
+.cert-attest { text-align: center; margin-bottom: 7mm; }
 .cert-attest-ko {
   font-size: 11pt;
   line-height: 1.9;
   color: #1f2937;
-  margin-bottom: 5mm;
+  margin-bottom: 4mm;
   padding: 0 4mm;
 }
 .cert-attest-en {
@@ -226,13 +249,54 @@ html, body {
   padding: 0 6mm;
 }
 
+/* 커리큘럼 5줄 섹션 — 실무 이수 증빙 (1기 4주 8회) */
+.cert-curriculum {
+  margin-bottom: 8mm;
+  padding: 5mm 7mm;
+  border-top: 1px solid #d9cfbc;
+  border-bottom: 1px solid #d9cfbc;
+}
+.cert-curriculum-heading {
+  font-family: 'Times New Roman', 'Georgia', serif;
+  font-size: 10pt;
+  font-weight: 600;
+  color: #3182f6;
+  text-align: center;
+  letter-spacing: 3px;
+  margin-bottom: 4mm;
+  text-transform: uppercase;
+}
+.cert-curriculum-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.cert-curriculum-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 3mm;
+  font-size: 9.5pt;
+  line-height: 1.7;
+  color: #1f2937;
+  padding: 0.8mm 0;
+}
+.cert-curriculum-num {
+  font-family: 'Times New Roman', 'Georgia', serif;
+  font-size: 10pt;
+  font-weight: 600;
+  color: #3182f6;
+  flex-shrink: 0;
+  min-width: 5mm;
+}
+.cert-curriculum-text { flex: 1; }
+
 .cert-footer {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  padding-top: 6mm;
-  margin-top: 4mm;
-  border-top: 1px solid #f3f4f6;
+  padding-top: 5mm;
+  margin-top: 2mm;
+  border-top: 1px solid #d9cfbc;
 }
 .cert-issuer { flex: 1; }
 .cert-issue-date {
@@ -242,14 +306,21 @@ html, body {
   margin-bottom: 5mm;
   letter-spacing: 0.3px;
 }
-.cert-issuer-name { font-size: 12pt; font-weight: 700; color: #111; margin-bottom: 1mm; }
-.cert-issuer-meta { font-size: 9pt; color: #6b7280; line-height: 1.7; }
+.cert-issuer-name {
+  font-family: 'Times New Roman', 'Georgia', serif;
+  font-size: 13pt;
+  font-weight: 600;
+  color: #111;
+  margin-bottom: 1mm;
+  letter-spacing: 0.3px;
+}
+.cert-issuer-meta { font-size: 9pt; color: #6b5c3f; line-height: 1.7; }
 
-.cert-sign { display: flex; align-items: flex-end; gap: 8mm; }
-.cert-signature { text-align: center; min-width: 40mm; }
+.cert-sign { display: flex; align-items: flex-end; gap: 10mm; }
+.cert-signature { text-align: center; min-width: 42mm; }
 .cert-signature-line {
   height: 20mm;
-  border-bottom: 1px solid #6b7280;
+  border-bottom: 1.2px solid #6b5c3f;
   margin-bottom: 2mm;
   position: relative;
 }
@@ -268,72 +339,82 @@ html, body {
   left: 50%;
   transform: translateX(-50%);
   font-family: 'Brush Script MT', 'Snell Roundhand', cursive;
-  font-size: 18pt;
+  font-size: 20pt;
   color: #1f2937;
   padding-bottom: 1mm;
 }
 .cert-signature-name { font-size: 9pt; color: #374151; font-weight: 500; }
-.cert-signature-title { font-size: 8pt; color: #6b7280; margin-top: 0.5mm; }
+.cert-signature-title { font-size: 8pt; color: #6b5c3f; margin-top: 0.5mm; }
 
 .cert-seal {
-  width: 26mm;
-  height: 26mm;
+  width: 35mm;
+  height: 35mm;
   border-radius: 50%;
-  border: 2px solid #3182f6;
+  border: 2.5px solid #3182f6;
   color: #3182f6;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 8pt;
+  font-family: 'Times New Roman', 'Georgia', serif;
   font-weight: 700;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
   line-height: 1.3;
   text-align: center;
   flex-shrink: 0;
   transform: rotate(-6deg);
+  background: #FAF6EF;
+  position: relative;
 }
-.cert-seal-top { font-size: 7pt; margin-bottom: 0.5mm; }
-.cert-seal-mid { font-size: 10pt; font-weight: 800; }
-.cert-seal-bot { font-size: 7pt; margin-top: 0.5mm; }
+.cert-seal::before {
+  content: "";
+  position: absolute;
+  inset: 2mm;
+  border-radius: 50%;
+  border: 1px solid #3182f6;
+  pointer-events: none;
+}
+.cert-seal-top { font-size: 7.5pt; margin-bottom: 1mm; letter-spacing: 1.2px; }
+.cert-seal-mid { font-size: 11pt; font-weight: 800; letter-spacing: 1px; }
+.cert-seal-bot { font-size: 7.5pt; margin-top: 1mm; letter-spacing: 0.8px; }
 
 .cert-verify {
   position: absolute;
   bottom: 14mm;
-  left: 22mm;
-  right: 22mm;
-  padding-top: 5mm;
-  border-top: 1px solid #f3f4f6;
+  left: 20mm;
+  right: 20mm;
+  padding-top: 4mm;
+  border-top: 1px solid #d9cfbc;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 8pt;
-  color: #9ca3af;
+  color: #8a7a5d;
   gap: 6mm;
 }
 .cert-verify-text { line-height: 1.5; }
 .cert-verify-url {
   font-family: 'SF Mono', 'JetBrains Mono', 'Courier New', monospace;
-  color: #6b7280;
+  color: #6b5c3f;
 }
 .cert-qr {
   width: 18mm;
   height: 18mm;
   background: #fff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #d9cfbc;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 7pt;
-  color: #9ca3af;
+  color: #8a7a5d;
 }
 
 @media screen {
-  body { background: #f0f2f5; padding: 20mm 0; display: flex; justify-content: center; }
-  .cert-page { background: #fff; box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12); }
+  body { background: #eee6d3; padding: 20mm 0; display: flex; justify-content: center; }
+  .cert-page { box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12); }
 }
 @media print {
-  body { background: #fff; padding: 0; }
+  body { background: #FAF6EF; padding: 0; }
   .cert-page { box-shadow: none; }
 }
 </style>
@@ -361,9 +442,8 @@ html, body {
   </div>
 
   <main class="cert-body">
-    <div class="cert-recipient-label">This certifies that / 아래 사람은</div>
-    <div class="cert-recipient-name">${nameKo}</div>
-    ${nameEn ? `<div class="cert-recipient-name-en">${nameEn}</div>` : `<div style="margin-bottom: 10mm;"></div>`}
+    <div class="cert-recipient-name">${nameEn ?? nameKo}</div>
+    ${nameEn ? `<div class="cert-recipient-name-sub">${nameKo}</div>` : `<div style="margin-bottom: 8mm;"></div>`}
 
     <div class="cert-program">
       <div class="cert-program-row">
@@ -384,6 +464,13 @@ html, body {
       <p class="cert-attest-ko">${attestKo}</p>
       <p class="cert-attest-en">${attestEn}</p>
     </div>
+
+    <section class="cert-curriculum">
+      <div class="cert-curriculum-heading">Curriculum Completed / 이수 커리큘럼</div>
+      <ol class="cert-curriculum-list">
+        ${curriculumItems}
+      </ol>
+    </section>
   </main>
 
   <footer class="cert-footer">
@@ -408,8 +495,8 @@ html, body {
         <div class="cert-signature-title">${issuer}</div>
       </div>
       <div class="cert-seal">
-        <span class="cert-seal-top">DROPDOWN</span>
-        <span class="cert-seal-mid">SEAL</span>
+        <span class="cert-seal-top">GROWTH CAREER</span>
+        <span class="cert-seal-mid">성실 이수</span>
         <span class="cert-seal-bot">2026</span>
       </div>
     </div>
