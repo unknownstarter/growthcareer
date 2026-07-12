@@ -420,6 +420,52 @@ CLAUDE.md / 메모리는 자동 로드되므로 별도 액션 X.
 
 ---
 
+## 7.6 PDF 가이드북 표준 파이프라인
+
+> 사고 박제: `docs/lessons/2026-07-12-pdf-guidebook-pitfalls.md`. 지난 stage-ops-guide (B0054) 만들 때 부호 · 폰트 · 페이지 넘김 · 이미지 4가지에서 반복 재렌더 발생.
+
+가이드북/워크북/원페이저 등 **HTML → Playwright → A4 PDF** 파이프라인 산출물은 다음 5 룰 필수.
+
+### 5 룰
+
+1. **부호 스캔 자동화**: PDF export 스크립트 상단에서 `node tools/check-pdf-copy.mjs <html-path>` 호출. 실패 시 export 중단. 카피 직접 손볼 때도 완료 직후 수동 실행.
+2. **Playwright 폰트 대기**: `await page.evaluate(() => document.fonts.ready)` + `waitForTimeout(2500)`. `networkidle` 만으로 부족 (Pretendard CDN latency).
+3. **페이지 넘김 wrapper**: sub-topic 단위 wrapper 마다 `page-break-inside: avoid` + `break-inside: avoid` 필수. 안에 표·도식 wrapper 도 같은 룰. 짤림 방지.
+4. **이미지 인라인**: 로고·아이콘·도식 = SVG 인라인 또는 `data:image/png;base64,` URI. 외부 URL 금지 (Playwright 렌더 시 로드 실패).
+5. **출력 위치**: `docs/screenshots/<subdir>/*.pdf` 로 서브디렉터리 저장 (`pnpm preview` wipe 회피, 2026-06-04 lesson 이미 박제).
+
+### PDF export 스크립트 표준 skeleton
+
+```js
+import { chromium } from "playwright";
+import { spawnSync } from "node:child_process";
+
+// 1. 부호 스캔 (실패 시 중단)
+const scan = spawnSync("node", ["tools/check-pdf-copy.mjs", HTML_PATH], {
+  stdio: "inherit",
+});
+if (scan.status !== 0) process.exit(scan.status ?? 1);
+
+// 2. 렌더
+const browser = await chromium.launch();
+const page = await browser.newPage();
+await page.goto(`file://${HTML_PATH}`, { waitUntil: "networkidle" });
+await page.evaluate(() => document.fonts.ready);
+await page.waitForTimeout(2500);
+await page.pdf({ path: OUT, format: "A4", printBackground: true, preferCSSPageSize: true });
+await browser.close();
+```
+
+### 자체 점검 체크 (PDF 완료 시)
+
+- [ ] `check-pdf-copy.mjs` PASS
+- [ ] `document.fonts.ready` + 2.5s 대기 포함
+- [ ] sub-block wrapper 마다 `page-break-inside: avoid`
+- [ ] 이미지 = 인라인 (SVG or data URI)
+- [ ] 출력 = `docs/screenshots/` 서브디렉터리
+
+---
+
 ## 8. 외부 리소스 — 명명 불일치 주의
 
 브랜드/우산명을 여러 번 바꾼 흔적이 외부 리소스에 일부 남아 있음. **이름은 그대로 두지만 매핑은 명확히 인지해야 함.**

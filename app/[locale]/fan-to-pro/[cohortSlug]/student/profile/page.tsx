@@ -9,7 +9,6 @@ import { fetchStudentById } from "@/src/programs/fan-to-pro/infrastructure/supab
 import { fetchStudentProfile } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/student-profile-repository";
 import { fetchStudentCareerTarget } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/student-career-target-repository";
 import { fetchStudentResumeItems } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/student-resume-item-repository";
-import { fetchCareerDocuments } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/career-document-repository";
 import { getStudentPhotoSignedUrlAction } from "@/src/programs/fan-to-pro/application/student-profile/get-photo-signed-url";
 import { StudentProfileForm } from "@/src/programs/fan-to-pro/interface/components/lms/student/student-profile-form";
 import { StudentRealNameEdit } from "@/src/programs/fan-to-pro/interface/components/lms/admin/student-real-name-edit";
@@ -17,7 +16,6 @@ import Link from "next/link";
 import { FileText } from "lucide-react";
 import { StudentCareerTargetForm } from "@/src/programs/fan-to-pro/interface/components/lms/student/student-career-target-form";
 import { StudentResumeItemsEditor } from "@/src/programs/fan-to-pro/interface/components/lms/student/student-resume-items-editor";
-import { StudentCareerDocsPanel } from "@/src/programs/fan-to-pro/interface/components/lms/student/student-career-docs-panel";
 import {
   PageContainer,
   PageHeader,
@@ -97,24 +95,22 @@ export default async function StudentProfilePage({
     );
   }
 
-  const [profile, target, items, careerDocuments, photoResult] =
-    await Promise.all([
-      fetchStudentProfile(student.id).catch(() => null),
-      fetchStudentCareerTarget(student.id).catch(() => null),
-      fetchStudentResumeItems(student.id).catch(() => []),
-      fetchCareerDocuments(student.id).catch(() => []),
-      // B0057: photo signed URL — 5분 TTL.
-      getStudentPhotoSignedUrlAction({ student_id: student.id }).catch(() => ({
-        status: "error" as const,
-        error: "fetchFailed",
-      })),
-    ]);
+  const [profile, target, items, photoResult] = await Promise.all([
+    fetchStudentProfile(student.id).catch(() => null),
+    fetchStudentCareerTarget(student.id).catch(() => null),
+    fetchStudentResumeItems(student.id).catch(() => []),
+    // B0057: photo signed URL — 5분 TTL.
+    getStudentPhotoSignedUrlAction({ student_id: student.id }).catch(() => ({
+      status: "error" as const,
+      error: "fetchFailed",
+    })),
+  ]);
 
   const photoUrl = photoResult.status === "ok" ? photoResult.url : null;
 
   // 모든 영역 비어있는지 체크 → 첫 진입 환영 안내.
-  const isFirstVisit =
-    !profile && !target && items.length === 0 && careerDocuments.length === 0;
+  // 커리어 문서 (이력서/포트폴리오) 는 별도 페이지 `/student/career` 에서 관리.
+  const isFirstVisit = !profile && !target && items.length === 0;
 
   const isEn = locale === "en";
 
@@ -176,15 +172,6 @@ export default async function StudentProfilePage({
         <StudentResumeItemsEditor
           studentId={student.id}
           initialItems={items}
-          locale={locale}
-        />
-        <StudentCareerDocsPanel
-          studentId={student.id}
-          studentName={
-            profile?.name_ko ?? profile?.name_en ?? student.display_name
-          }
-          initialDocuments={careerDocuments}
-          mode="self"
           locale={locale}
         />
       </div>

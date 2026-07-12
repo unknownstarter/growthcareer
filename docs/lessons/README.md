@@ -19,6 +19,7 @@
 | 2026-06-09 | [vercel CLI 과다 호출로 일일 quota 도달](./2026-06-09-vercel-cli-overuse.md) | CLAUDE.md §7 git push default 룰 / memory `feedback_vercel_cli_overuse` | ✅ |
 | 2026-06-22 | [SSG 정적 빌드 캐시로 마감 자동 전환 누락](./2026-06-22-ssg-cache-blocks-deadline-transition.md) | `dynamic = "force-dynamic"` hotfix + CLAUDE.md §7 시간 기반 페이지 룰 박제 | ✅ |
 | 2026-07-04 | [Feature Intent Gating 부재로 UX·데이터 사고 8건](./2026-07-04-feature-intent-gating.md) | CLAUDE.md §2.5 gating 룰 신설 + 자체 점검 마커 의무 + 메모리 `feedback_feature_intent_gating` | ✅ |
+| 2026-07-12 | [PDF 가이드북 파이프라인 시행착오 (사전 박제)](./2026-07-12-pdf-guidebook-pitfalls.md) | CLAUDE.md §7.6 PDF 표준 파이프라인 + `tools/check-pdf-copy.mjs` 부호 스캔 + Playwright 폰트 대기 룰 | 🚧 |
 
 ## 다음 사고 발생 시
 

@@ -46,21 +46,17 @@ function adminItems(locale: string): NavItem[] {
     { href: `${base}/students`, label: "학생", icon: Users },
     { href: `${base}/instructors`, label: "강사", icon: GraduationCap },
     { href: `${base}/companies`, label: "회사", icon: Building2 },
-    { href: `${base}/finance`, label: "정산", icon: Wallet },
+    { href: `${base}/finance`, label: "재무", icon: Wallet },
     { href: `${base}/materials`, label: "자료", icon: FileText },
     { href: `${base}/announcements`, label: "공지", icon: Megaphone },
     { href: `${base}/consultations`, label: "컨설팅", icon: MessageSquare },
   ];
 }
 
-function instructorItems(locale: string, cohortSlug: string): NavItem[] {
-  const base = `/${locale}/fan-to-pro/${cohortSlug}/instructor`;
-  return [
-    { href: `${base}/dashboard`, label: "대시보드", icon: LayoutDashboard },
-    { href: `${base}/students`, label: "학생", icon: Users },
-    { href: `${base}/sessions`, label: "세션", icon: Layers },
-    { href: `${base}/consultations`, label: "컨설팅", icon: MessageSquare },
-  ];
+function instructorItems(_locale: string, _cohortSlug: string): NavItem[] {
+  // instructor surface (B0070) 는 아직 페이지 파일이 없음. 404 방지를 위해 링크 감춤.
+  // 대신 사이드바에 "준비 중" 안내 카드 표시 (아래 LmsSidebar 안 empty state).
+  return [];
 }
 
 function studentItems(locale: string, cohortSlug: string): NavItem[] {
@@ -113,26 +109,37 @@ export function LmsSidebar({ role }: { role: LmsRole }) {
       </div>
 
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        {items.map((item) => {
-          const active =
-            pathname === item.href || pathname.startsWith(`${item.href}/`);
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.href}
-              href={item.href as Route}
-              className={cn(
-                "flex items-center gap-3 rounded-[var(--radius-sm)] px-3 py-2.5 text-sm font-medium transition-colors",
-                active
-                  ? "bg-[var(--primary)]/10 text-[var(--primary)]"
-                  : "text-[var(--muted-foreground)] hover:bg-[var(--secondary)] hover:text-[var(--foreground)]",
-              )}
-            >
-              <Icon className="h-4 w-4" />
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
+        {items.length === 0 ? (
+          <div className="mx-1 mt-2 rounded-[var(--radius-sm)] border border-dashed border-[var(--border)] px-4 py-6 text-center">
+            <p className="text-sm font-semibold text-[var(--foreground)]">
+              페이지 준비 중
+            </p>
+            <p className="mt-1 text-xs text-[var(--muted-foreground)] leading-relaxed">
+              강사 화면은 준비 중입니다. 담당자에게 문의하세요.
+            </p>
+          </div>
+        ) : (
+          items.map((item) => {
+            const active =
+              pathname === item.href || pathname.startsWith(`${item.href}/`);
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.href}
+                href={item.href as Route}
+                className={cn(
+                  "flex items-center gap-3 rounded-[var(--radius-sm)] px-3 py-2.5 text-sm font-medium transition-colors duration-150",
+                  active
+                    ? "bg-[var(--primary)]/10 text-[var(--primary)]"
+                    : "text-[var(--muted-foreground)] hover:bg-[var(--secondary)] hover:text-[var(--foreground)]",
+                )}
+              >
+                <Icon className="h-4 w-4" />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })
+        )}
       </nav>
     </aside>
   );

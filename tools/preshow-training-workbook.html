@@ -1,0 +1,1360 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>Fan to Pro 1기 / 공연 현장 실무 워크북</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-soft: #f7f9fc;
+    --bg-soft-2: #eef3fa;
+    --border: #e6eaf0;
+    --border-soft: #eef1f5;
+    --border-dashed: #cfd5df;
+    --fg: #1a1d23;
+    --fg-muted: #4f5763;
+    --fg-subtle: #8b94a3;
+    --brand: #3182f6;
+    --brand-strong: #1b64da;
+    --brand-soft: #e9f2ff;
+    --accent: #ff5b6e;
+    --green: #067647;
+    --green-soft: #dcfae6;
+    --yellow: #b54708;
+    --yellow-soft: #fef0c7;
+    --serif: "Ivy Journal", "Iowan Old Style", "Apple Garamond", "Times New Roman", serif;
+    --radius: 10px;
+    --radius-lg: 16px;
+    --shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 14px rgba(15, 23, 42, 0.04);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg-soft);
+    color: var(--fg);
+    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "ss03" on, "ss04" on, "cv01" on;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  body { padding: 32px 16px; }
+
+  .page {
+    width: 794px;
+    max-width: 100%;
+    margin: 0 auto 24px;
+    background: var(--bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 24px 28px 28px;
+    color: var(--fg);
+  }
+  @page { size: A4; margin: 10mm 12mm; }
+  @media print {
+    body { padding: 0; background: #fff; }
+    /* Use display:contents so .page wrappers don't create layout containers
+       and content flows freely across A4 pages. */
+    .page {
+      display: contents;
+    }
+    /* Force page break only on major section starts. */
+    .page.break-before > :first-child {
+      page-break-before: always;
+      break-before: page;
+    }
+    /* Keep title with lede, lede with first block below. */
+    .section-eyebrow, .section-title {
+      page-break-after: avoid;
+      break-after: avoid;
+    }
+    /* Never break between chapter start components. */
+    .section-eyebrow + .section-title,
+    .section-title + .section-lede {
+      page-break-before: avoid;
+      break-before: avoid;
+    }
+  }
+
+  /* ---------- Cover ---------- */
+  .cover-block {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .cover-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 14px;
+    background: var(--brand-soft);
+    color: var(--brand-strong);
+    border-radius: 999px;
+    font-size: 12px; font-weight: 800; letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .cover-eyebrow .dot { width: 6px; height: 6px; border-radius: 999px; background: var(--brand); }
+  .cover-title {
+    margin: 32px 0 14px;
+    font-family: var(--serif);
+    font-size: 52px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--brand-strong);
+  }
+  .cover-title .thin {
+    color: var(--fg);
+    font-family: "Pretendard Variable", Pretendard, sans-serif;
+    font-weight: 300;
+    display: block;
+    font-size: 24px;
+    margin-top: 10px;
+    letter-spacing: -0.01em;
+  }
+  .cover-sub {
+    margin: 0 0 24px;
+    font-size: 17px; color: var(--fg-muted);
+    line-height: 1.7; font-weight: 500;
+    max-width: 560px;
+  }
+  .cover-meta {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    margin-bottom: 18px;
+  }
+  .cover-meta-item {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .cover-meta-item .k {
+    font-size: 11px; letter-spacing: 0.1em;
+    color: var(--fg-subtle); font-weight: 700;
+    text-transform: uppercase;
+  }
+  .cover-meta-item .v {
+    font-size: 15px; color: var(--fg); font-weight: 700;
+    margin-top: 4px;
+  }
+
+  .cover-intro {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    font-size: 15px; line-height: 1.7;
+    color: var(--fg-muted);
+    margin-bottom: 16px;
+  }
+  .cover-intro strong { color: var(--fg); font-weight: 700; }
+
+  /* ---------- Guide + TOC ---------- */
+  .guide {
+    background: var(--brand-soft);
+    border: 1px solid var(--brand);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 18px;
+  }
+  .guide h3 {
+    margin: 0 0 8px;
+    font-size: 16px; font-weight: 800;
+    color: var(--brand-strong);
+    letter-spacing: -0.01em;
+  }
+  .guide ol {
+    margin: 0; padding-left: 22px;
+    font-size: 15px; line-height: 1.75;
+    color: var(--fg);
+    font-weight: 500;
+  }
+  .guide ol li strong { color: var(--brand-strong); }
+
+  .toc {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .toc-row {
+    display: grid;
+    grid-template-columns: 48px 1fr 60px;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border-soft);
+    font-size: 15px;
+    align-items: center;
+  }
+  .toc-row:last-child { border-bottom: none; }
+  .toc-n {
+    font-weight: 800; color: var(--brand);
+    font-size: 13px; letter-spacing: 0.05em;
+  }
+  .toc-title { color: var(--fg); font-weight: 600; }
+  .toc-page {
+    text-align: right; color: var(--fg-subtle);
+    font-size: 13px; font-weight: 700;
+  }
+
+  /* ---------- Section header ---------- */
+  .section-eyebrow {
+    font-size: 10.5px;
+    color: var(--brand);
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 1px;
+  }
+  .section-title {
+    margin: 0 0 1px;
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: var(--brand-strong);
+  }
+  .section-lede {
+    font-size: 12px;
+    color: var(--fg-muted);
+    line-height: 1.45;
+    margin: 0 0 4px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ---------- Sub-block ---------- */
+  .sub-block {
+    margin-bottom: 5px;
+    padding: 7px 10px 9px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .sub-header {
+    display: flex; align-items: baseline; gap: 10px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border-soft);
+    margin-bottom: 5px;
+  }
+  .sub-num {
+    display: inline-flex;
+    min-width: 42px;
+    padding: 3px 10px;
+    background: var(--brand);
+    color: #fff;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    justify-content: center;
+  }
+  .sub-title {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--fg);
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+    flex: 1;
+  }
+
+  .sub-scenario, .sub-exercise, .sub-checklist {
+    margin-top: 4px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .sub-scenario b, .sub-exercise b, .sub-checklist b {
+    color: var(--brand-strong);
+    font-weight: 800;
+    margin-right: 8px;
+    letter-spacing: -0.01em;
+  }
+  .sub-scenario {
+    background: var(--bg-soft);
+    border: 1px solid var(--border-soft);
+    color: var(--fg-muted);
+  }
+  .sub-scenario b { color: var(--fg); }
+
+  .sub-exercise {
+    background: #fff;
+    border: 1px solid var(--border);
+  }
+  .sub-exercise .q {
+    font-size: 14px;
+    color: var(--fg);
+    font-weight: 600;
+    margin: 2px 0 4px;
+  }
+
+  /* student answer blank */
+  .sub-answer {
+    display: block;
+    min-height: 22px;
+    margin: 3px 0;
+    padding: 3px 8px;
+    border: 1px dashed var(--border-dashed);
+    border-radius: 5px;
+    color: var(--fg-subtle);
+    font-size: 11.5px;
+    font-weight: 500;
+    background: #fff;
+  }
+
+  /* answer key */
+  .answer {
+    display: block;
+    margin-top: 3px;
+    padding: 5px 9px;
+    background: var(--green-soft);
+    border-radius: 5px;
+    font-size: 13px;
+    color: var(--fg);
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  .answer::before {
+    content: "정답";
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: var(--green);
+    text-transform: uppercase;
+    font-weight: 800;
+    margin-right: 8px;
+  }
+
+  .sub-checklist {
+    background: var(--yellow-soft);
+    border-left: 3px solid var(--yellow);
+  }
+  .sub-checklist ul {
+    margin: 3px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .sub-checklist ul li {
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 2px;
+    color: var(--fg);
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .sub-checklist ul li:last-child { margin-bottom: 0; }
+  .sub-checklist ul li::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 3px;
+    width: 11px; height: 11px;
+    border: 1.5px solid var(--yellow);
+    border-radius: 3px;
+    background: #fff;
+  }
+
+  /* ---------- Diagram ---------- */
+  .diagram {
+    margin: 8px 0 0;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-soft);
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .diagram-label {
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand);
+    font-weight: 800;
+    margin-bottom: 3px;
+  }
+  .diagram-title {
+    font-size: 14px;
+    color: var(--fg);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .diagram svg { display: block; width: 100%; height: auto; }
+  .diagram-caption {
+    margin-top: 6px;
+    font-size: 12.5px;
+    color: var(--fg-muted);
+    line-height: 1.5;
+  }
+
+  /* Radio grid */
+  .radio-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .radio-cell {
+    background: #fff;
+    border: 1px solid var(--brand-soft);
+    border-left: 3px solid var(--brand);
+    border-radius: 6px;
+    padding: 8px 10px;
+  }
+  .radio-cell .term {
+    font-size: 14px; font-weight: 800; color: var(--brand-strong);
+    margin-bottom: 2px;
+  }
+  .radio-cell .mean {
+    font-size: 12px; color: var(--fg-muted); line-height: 1.4;
+    margin-bottom: 3px;
+  }
+  .radio-cell .ex {
+    font-size: 12px; color: var(--fg); font-weight: 500; line-height: 1.4;
+    font-style: italic;
+  }
+
+  /* CS 5-step table */
+  .cs-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 6px;
+    font-size: 13.5px;
+  }
+  .cs-table th, .cs-table td {
+    padding: 7px 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-soft);
+    vertical-align: top;
+  }
+  .cs-table thead th {
+    background: var(--brand-soft);
+    color: var(--brand-strong);
+    font-weight: 800;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-bottom: 1.5px solid var(--brand);
+  }
+  .cs-table tbody td:first-child {
+    font-weight: 800;
+    color: var(--brand);
+    width: 100px;
+  }
+  .cs-table tbody td:nth-child(2) {
+    color: var(--fg-muted);
+    width: 150px;
+  }
+  .cs-table tbody td:nth-child(3) {
+    color: var(--fg);
+    font-style: italic;
+  }
+
+  /* ---------- Self-diagnosis ---------- */
+  .diag-intro {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 15px;
+    color: var(--fg-muted);
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+  .diag-group {
+    margin-bottom: 12px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .diag-group h4 {
+    margin: 0 0 6px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--brand);
+  }
+  .diag-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 18px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .diag-list li {
+    position: relative;
+    padding-left: 20px;
+    font-size: 14px;
+    color: var(--fg);
+    line-height: 1.5;
+    font-weight: 500;
+  }
+  .diag-list li::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 4px;
+    width: 12px; height: 12px;
+    border: 1.5px solid var(--brand);
+    border-radius: 3px;
+    background: #fff;
+  }
+
+  .sign-box {
+    margin-top: 16px;
+    padding: 14px 18px;
+    border: 1.5px solid var(--fg);
+    border-radius: 8px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 20px;
+  }
+  .sign-row .k {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--fg-subtle);
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .sign-row .line {
+    height: 20px;
+    border-bottom: 1px solid var(--fg);
+  }
+  .sign-brand {
+    grid-column: 1 / -1;
+    margin-top: 6px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--fg-subtle);
+    line-height: 1.6;
+  }
+  .sign-brand strong { color: var(--brand-strong); font-weight: 800; }
+
+  .credits {
+    margin-top: 14px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--fg-subtle);
+    line-height: 1.55;
+  }
+  .credits .brand { color: var(--brand-strong); font-weight: 800; }
+</style>
+</head>
+<body>
+
+<!-- =================================================== -->
+<!-- p1 / COVER                                          -->
+<!-- =================================================== -->
+<div class="page">
+  <span class="cover-eyebrow"><span class="dot"></span>Pre-Show Training</span>
+  <h1 class="cover-title">
+    공연 현장 실무 워크북
+    <span class="thin">Fan to Pro 1기 사전 교육</span>
+  </h1>
+  <p class="cover-sub">
+    K-pop 공연 현장에 처음 나가기 전, 스스로 읽고 스스로 점검하는 워크북입니다.
+    각 챕터를 읽고, 시나리오를 상상하고, 답을 직접 적어보세요.
+  </p>
+
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <div class="k">과정</div>
+      <div class="v">Fan to Pro 1기 (2026-06-27 시작)</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="k">사용 방식</div>
+      <div class="v">자율 학습 + 현장 휴대</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="k">발행</div>
+      <div class="v">Dropdown / 유니온픽처스</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="k">분량</div>
+      <div class="v">6 챕터 + 자가 진단 24문항</div>
+    </div>
+  </div>
+
+  <div class="cover-intro">
+    <strong>이 워크북은 여러분의 것입니다.</strong>
+    표시하고, 접고, 답을 적고, 현장에서 넘겨보세요.
+    자가 진단 24문항에 모두 "네" 라고 답할 수 있으면 준비 완료.
+    자세한 현장 룰은 공연 별 사전 브리핑에서 안내됩니다.
+  </div>
+
+  <div class="credits">
+    Fan to Pro 1기 사전 교육 워크북 / 발행 2026-06-27 / <span class="brand">Growth Career</span> / Dropdown
+  </div>
+</div>
+
+<!-- =================================================== -->
+<!-- p2 / 사용법 + 목차                                    -->
+<!-- =================================================== -->
+<div class="page">
+  <div class="section-eyebrow">How to use</div>
+  <h2 class="section-title">워크북 사용법</h2>
+  <p class="section-lede">
+    강의 자료가 아니라 실습 도구입니다. 순서대로 따라 하면 현장에서 몸이 반응합니다.
+  </p>
+
+  <div class="guide">
+    <h3>학습 3단계 (챕터마다 반복)</h3>
+    <ol>
+      <li><strong>시나리오 읽기</strong> / 본인이 그 자리에 있다고 상상합니다.</li>
+      <li><strong>답 적기</strong> / 정답을 보기 전에 본인 생각을 먼저 적습니다.</li>
+      <li><strong>현장 체크 훑기</strong> / 실전 투입 직전에 다시 꺼내 봅니다.</li>
+    </ol>
+  </div>
+
+  <div style="margin-top: 16px;">
+    <h3 style="font-size: 15px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--brand); margin: 0 0 10px;">목차</h3>
+    <div class="toc">
+      <div class="toc-row"><span class="toc-n">01</span><span class="toc-title">SAFETY / 공연장 안전과 비상 대응</span><span class="toc-page">p.3</span></div>
+      <div class="toc-row"><span class="toc-n">02</span><span class="toc-title">ARTIST / 아티스트 응대와 백스테이지</span><span class="toc-page">p.4</span></div>
+      <div class="toc-row"><span class="toc-n">03</span><span class="toc-title">AUDIENCE / 관객 입퇴장과 현장 운영</span><span class="toc-page">p.5</span></div>
+      <div class="toc-row"><span class="toc-n">04</span><span class="toc-title">REHEARSAL / 리허설과 공연 진행</span><span class="toc-page">p.7</span></div>
+      <div class="toc-row"><span class="toc-n">05</span><span class="toc-title">COMMS / 현장 커뮤니케이션</span><span class="toc-page">p.8</span></div>
+      <div class="toc-row"><span class="toc-n">06</span><span class="toc-title">EMERGENCY / 돌발 상황과 CS 대응</span><span class="toc-page">p.9</span></div>
+      <div class="toc-row"><span class="toc-n">Self</span><span class="toc-title">자가 진단 24문항 + 서명</span><span class="toc-page">p.11</span></div>
+    </div>
+  </div>
+
+  <div class="credits">
+    자율 학습 워크북 / Fan to Pro 1기 / <span class="brand">Growth Career</span>
+  </div>
+</div>
+
+<!-- =================================================== -->
+<!-- p3 / 01 SAFETY                                      -->
+<!-- =================================================== -->
+<div class="page">
+  <div class="section-eyebrow">01 / Safety</div>
+  <h2 class="section-title">공연장 안전과 비상 대응</h2>
+  <p class="section-lede">
+    안전은 관객이 다치지 않는 것을 지키는 일입니다. 도착 첫 30분이 가장 중요합니다.
+  </p>
+
+  <div class="sub-block">
+    <div class="sub-header">
+      <span class="sub-num">01.1</span>
+      <h3 class="sub-title">도착 시 안전 체크</h3>
+    </div>
+    <div class="sub-scenario">
+      <b>시나리오</b>콜타임 09:00, 08:30 도착. 매니저는 아직 없습니다. 무엇부터 확인할까요?
+    </div>
+    <div class="sub-exercise">
+      <b>실습</b>
+      <p class="q">Q. 도착 즉시 확인할 것 4가지를 적어보세요.</p>
+      <span class="sub-answer"></span>
+      <span class="answer">비상구 위치 / 소화기 위치 / AED 위치 / 무전기 채널과 콜사인. 담당 매니저 이름과 연락처도 저장.</span>
+    </div>
+    <div class="sub-checklist">
+      <b>현장 체크</b>
+      <ul>
+        <li>비상 대피 경로 2개 이상 확인</li>
+        <li>담당 구역 소화기 위치 확인</li>
+        <li>무전기 채널과 콜사인 저장</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub-block">
+    <div class="sub-header">
+      <span class="sub-num">01.2</span>
+      <h3 class="sub-title">관객 사고와 응급 대응</h3>
+    </div>
+    <div class="sub-scenario">
+      <b>시나리오</b>스탠딩 앞줄에서 관객 한 명이 쓰러집니다. 주변 관객이 밀리고 있습니다.
+    </div>
+    <div class="sub-exercise">
+      <b>실습</b>
+      <p class="q">Q. 첫 5초 안에 할 두 가지 행동은?</p>
+      <span class="sub-answer"></span>
+      <span class="answer">(1) 주변 관객을 뒤로 물러나게 해 공간 확보 (2) 무전으로 위치와 상태 보고 + AED 요청. 반응 확인은 그 다음.</span>
+    </div>
+    <div class="sub-checklist">
+      <b>현장 체크</b>
+      <ul>
+        <li>담당 구역 가장 가까운 AED 위치 숙지</li>
+        <li>무전 응급 채널 코드 암기</li>
+        <li>보고할 때 위치 / 상태 / 인원 순서로</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub-block">
+    <div class="sub-header">
+      <span class="sub-num">01.3</span>
+      <h3 class="sub-title">화재 / 정전 대응</h3>
+    </div>
+    <div class="sub-scenario">
+      <b>시나리오</b>공연 중 무대 뒤에서 매캐한 냄새. 관객은 눈치 못 챘습니다.
+    </div>
+    <div class="sub-exercise">
+      <b>실습</b>
+      <p class="q">Q. 정전 시 관객에게 절대 하면 안 되는 말은?</p>
+      <span class="sub-answer"></span>
+      <span class="answer">"뛰세요", "빨리 나가세요". 뛰는 행동을 부추기면 압사 위험. 유도등 방향 안내와 침착 요청만 합니다.</span>
+    </div>
+    <div class="sub-checklist">
+      <b>현장 체크</b>
+      <ul>
+        <li>비상 대피 경로 2개 (주 + 대체) 숙지</li>
+        <li>소화기 사용법 확인</li>
+        <li>지정 집결지 위치 확인</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- =================================================== -->
+<!-- p4 / 02 ARTIST                                      -->
+<!-- =================================================== -->
+<div class="page">
+  <div class="section-eyebrow">02 / Artist</div>
+  <h2 class="section-title">아티스트 응대와 백스테이지</h2>
+  <p class="section-lede">
+    백스테이지는 일터입니다. 팬심은 집에 두고 옵니다.
+  </p>
+
+  <div class="sub-block">
+    <div class="sub-header">
+      <span class="sub-num">02.1</span>
+      <h3 class="sub-title">대기실 세팅</h3>
+    </div>
+    <div class="sub-scenario">
+      <b>시나리오</b>본인은 대기실 담당. 아티스트 도착 55분 전, 온도 조절이 안 되는 것을 발견합니다.
+    </div>
+    <div class="sub-exercise">
+      <b>실습</b>
+      <p class="q">Q. 대기실에 기본으로 있어야 하는 것 5가지는?</p>
+      <span class="sub-answer"></span>
+      <span class="answer">의상 걸이 / 조명 있는 거울 / 음료 (또는 냉장고) / 화장대 / 콘센트. 문제 발생 시 임의로 방치하지 말고 매니저에게 바로 알립니다.</span>
+    </div>
+    <div class="sub-checklist">
+      <b>현장 체크</b>
+      <ul>
+        <li>도착 전 온도 미리 조정</li>
+        <li>음료 세팅은 도착 30분 전 완료</li>
+        <li>담당자 외 출입 최소화</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub-block">
+    <div class="sub-header">
+      <span class="sub-num">02.2</span>
+      <h3 class="sub-title">출입 통제</h3>
+    </div>
+    <div class="sub-scenario">
+      <b>시나리오</b>패스 없이 온 사람이 "저는 아티스트 아버지입니다" 라고 말합니다. 매니저 확인에는 3분 걸립니다.
+    </div>
+    <div class="sub-exercise">
+      <b>실습</b>
+      <p class="q">Q. 정중히 거절하는 한 문장을 적어보세요.</p>
+      <span class="sub-answer"></span>
+      <span class="answer">예: "죄송하지만 출입증 없이는 도와드릴 수 없습니다. 매니저 연락 확인 후 다시 안내드리겠습니다." 규정 명시 + 대안 제시 + 존중 어투.</span>
+    </div>
+    <div class="sub-checklist">
+      <b>현장 체크</b>
+      <ul>
+        <li>출입자 명단 사전 확인</li>
+        <li>아티스트 동선은 관객 동선과 겹치지 않게</li>
+        <li>임시 출입증 발급 절차 확인</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub-block">
+    <div class="sub-header">
+      <span class="sub-num">02.3</span>
+      <h3 class="sub-title">백스테이지 에티켓</h3>
+    </div>
+    <div class="sub-scenario">
+      <b>시나리오</b>아티스트와 눈이 마주쳤고, 상대가 살짝 미소 짓습니다. 본인의 반응은?
+    </div>
+    <div class="sub-exercise">
+      <b>실습</b>
+      <p class="q">Q. 백스테이지 4가지 금지 행동은?</p>
+      <span class="sub-answer"></span>
+      <span class="answer">(1) 사진 / 영상 촬영 (2) 사인 / 셀카 요청 (3) 개인 대화 시도 (4) SNS 언급. 가벼운 목례만 허용.</span>
+    </div>
+    <div class="sub-checklist">
+      <b>현장 체크</b>
+      <ul>
+        <li>휴대폰 무음 + 카메라 잠금</li>
+        <li>아티스트 관련 SNS 언급 금지</li>
+        <li>마주칠 때 가벼운 인사만</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- =================================================== -->
+<!-- p5 / 03 AUDIENCE                                    -->
+<!-- =================================================== -->
+<div class="page">
+  <div class="section-eyebrow">03 / Audience</div>
+  <h2 class="section-title">관객 입퇴장과 현장 운영</h2>
+  <p class="section-lede">
+    입장 게이트는 공연의 첫인상입니다. 30초의 친절이 컴플레인 하나를 막습니다.
+  </p>
+
+  <div class="sub-block">
+    <div class="sub-header">
+      <span class="sub-num">03.1</span>
+      <h3 class="sub-title">티켓 확인과 입장</h3>
+    </div>
+    <div class="sub-scenario">
+      <b>시나리오</b>본인 게이트에 100명이 줄 서 있습니다. 스캐너가 갑자기 멈춥니다.
+    </div>
+    <div class="sub-exercise">
+      <b>실습</b>
+      <p class="q">Q. 스캐너 장애 시 첫 행동 세 가지는?</p>
+      <span class="sub-answer"></span>
+      <span class="answer">(1) 관객에게 안내 ("잠시 확인 중, 곧 재개") (2) 무전으로 파트 리더에 보고 (3) 예비 스캐너 요청. 임의 통과는 금지.</span>
+    </div>
+    <div class="sub-checklist">
+      <b>현장 체크</b>
+      <ul>
+        <li>검표기 배터리와 스캐너 사전 테스트</li>
+        <li>매표소 / CS 데스크 위치 확인</li>
+        <li>지연 관객용 임시 좌석 확보</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub-block">
+    <div class="sub-header">
+      <span class="sub-num">03.2</span>
+      <h3 class="sub-title">좌석 안내</h3>
+    </div>
+    <div class="sub-scenario">
+      <b>시나리오</b>공연 시작 15분 뒤 지각 관객 도착. 좌석은 무대 앞 3열입니다.
+    </div>
+    <div class="sub-exercise">
+      <b>실습</b>
+      <p class="q">Q. 지각 관객을 바로 앞자리로 안내해도 될까요?</p>
+      <span class="sub-answer"></span>
+      <span class="answer">공연 중에는 원칙적으로 안 됨. 장면 전환이나 휴식 때 유도합니다. 그 전까지 로비 대기 또는 뒷줄 빈자리에 임시 착석.</span>
+    </div>
+    <div class="sub-checklist">
+      <b>현장 체크</b>
+      <ul>
+        <li>담당 구역 좌석 배치도 숙지</li>
+        <li>휠체어 관객 명단 확인</li>
+        <li>좌석 오류 시 매표소 직통 연락처 저장</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- =================================================== -->
+<!-- p6 / 03 AUDIENCE (2/2) + Diagram                    -->
+<!-- =================================================== -->
+<div class="page">
+  <div class="sub-block">
+    <div class="sub-header">
+      <span class="sub-num">03.3</span>
+      <h3 class="sub-title">특전회 (Hi-Touch / Photo)</h3>
+    </div>
+    <div class="sub-scenario">
+      <b>시나리오</b>Hi-Touch 중 한 관객이 아티스트 팔을 잡으려 합니다. 본인은 옆 라인 담당.
+    </div>
+    <div class="sub-exercise">
+      <b>실습</b>
+      <p class="q">Q. 위반 관객에게 안내할 한 문장을 적어보세요.</p>
+      <span class="sub-answer"></span>
+      <span class="answer">예: "고객님, 안전을 위해 신체 접촉은 삼가주세요. 다음 순서 안내드리겠습니다." 이유 + 존중 어투 + 다음 안내.</span>
+    </div>
+    <div class="sub-checklist">
+      <b>현장 체크</b>
+      <ul>
+        <li>참여권 + 신분증 대조</li>
+        <li>손목 스탬프 도구 준비</li>
+        <li>보안 인력 무전 채널 확인</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="diagram">
+    <div class="diagram-label">Diagram / CS Script</div>
+    <div class="diagram-title">컴플레인 응대 5단계</div>
+    <table class="cs-table">
+      <thead>
+        <tr>
+          <th>단계</th>
+          <th>목적</th>
+          <th>말할 문장</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1. 경청</td>
+          <td>끝까지 듣기</td>
+          <td>"네, 말씀해주세요."</td>
+        </tr>
+        <tr>
+          <td>2. 공감</td>
+          <td>감정 인정</td>
+          <td>"많이 불편하셨겠어요."</td>
+        </tr>
+        <tr>
+          <td>3. 사실 확인</td>
+          <td>변명 없이 정보만</td>
+          <td>"티켓 번호 확인 부탁드립니다."</td>
+        </tr>
+        <tr>
+          <td>4. 해결 or 연결</td>
+          <td>본인 권한 or 담당자</td>
+          <td>"CS 데스크로 안내드릴게요."</td>
+        </tr>
+        <tr>
+          <td>5. 확인</td>
+          <td>결과 재확인</td>
+          <td>"이 방법으로 괜찮으실까요?"</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="diagram-caption">
+      "그건 저희 잘못 아닌데요" 는 컴플레인 악화 1순위. 감정이 격해진 관객은 조용한 공간으로 안내 + 물 제공. 폭언 시 혼자 대응하지 말고 보안을 부릅니다.
+    </div>
+  </div>
+</div>
+
+<!-- =================================================== -->
+<!-- p7 / 04 REHEARSAL                                   -->
+<!-- =================================================== -->
+<div class="page">
+  <div class="section-eyebrow">04 / Rehearsal</div>
+  <h2 class="section-title">리허설과 공연 진행</h2>
+  <p class="section-lede">
+    콜타임은 도착 시간이 아니라 준비 완료 시간입니다.
+  </p>
+
+  <div class="diagram">
+    <div class="diagram-label">Diagram / Call Time</div>
+    <div class="diagram-title">공연 당일 흐름</div>
+    <svg viewBox="0 0 700 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="공연 당일 콜타임 타임라인">
+      <line x1="30" y1="40" x2="670" y2="40" stroke="#cfd5df" stroke-width="1"/>
+      <g font-family="Pretendard" font-size="11" fill="#1a1d23" font-weight="700" text-anchor="middle">
+        <circle cx="60" cy="40" r="5" fill="#3182f6"/>
+        <text x="60" y="24">T-6h</text>
+        <text x="60" y="56" font-size="10" fill="#4f5763" font-weight="500">로드인</text>
+
+        <circle cx="170" cy="40" r="5" fill="#3182f6"/>
+        <text x="170" y="24">T-4h</text>
+        <text x="170" y="56" font-size="10" fill="#4f5763" font-weight="500">셋업</text>
+
+        <circle cx="280" cy="40" r="5" fill="#3182f6"/>
+        <text x="280" y="24">T-2h</text>
+        <text x="280" y="56" font-size="10" fill="#4f5763" font-weight="500">사운드체크</text>
+
+        <circle cx="390" cy="40" r="5" fill="#3182f6"/>
+        <text x="390" y="24">T-1h</text>
+        <text x="390" y="56" font-size="10" fill="#4f5763" font-weight="500">드레스 리허설</text>
+
+        <circle cx="500" cy="40" r="5" fill="#3182f6"/>
+        <text x="500" y="24">T-30m</text>
+        <text x="500" y="56" font-size="10" fill="#4f5763" font-weight="500">하우스 오픈</text>
+
+        <circle cx="600" cy="40" r="6" fill="#ff5b6e"/>
+        <text x="600" y="24" fill="#b42318">T-0</text>
+        <text x="600" y="56" font-size="10" fill="#b42318" font-weight="700">개막</text>
+      </g>
+      <rect x="30" y="80" width="640" height="24" rx="4" fill="#f7f9fc" stroke="#e6eaf0"/>
+      <text x="40" y="96" font-family="Pretendard" font-size="10.5" font-weight="800" fill="#3182f6">본인 역할</text>
+      <text x="140" y="96" font-family="Pretendard" font-size="10.5" fill="#4f5763">장비 확인 / 대기실 준비 / 게이트 준비 / 하우스 오픈 대비 / 공연 중 큐 대기</text>
+    </svg>
+    <div class="diagram-caption">
+      콜타임은 도착이 아니라 "준비 완료" 시각. 지연 5분도 리허설을 압축시킵니다. 여유 있게 도착하세요.
+    </div>
+  </div>
+
+  <div class="sub-block">
+    <div class="sub-header">
+      <span class="sub-num">04.1</span>
+      <h3 class="sub-title">콜타임과 도착</h3>
+    </div>
+    <div class="sub-scenario">
+      <b>시나리오</b>본인 콜타임 09:00. 지하철 이동 40분. 몇 시에 출발해야 할까요?
+    </div>
+    <div class="sub-exercise">
+      <b>실습</b>
+      <p class="q">Q. 못 맞출 것 같으면 어떻게 하나요?</p>
+      <span class="sub-answer"></span>
+      <span class="answer">즉시 매니저 / 파트 리더에 전화 + 예상 도착 시각 명시. "다 왔어요" 같은 모호한 표현은 금지.</span>
+    </div>
+    <div class="sub-checklist">
+      <b>현장 체크</b>
+      <ul>
+        <li>콜타임 10분 전 도착</li>
+        <li>지연 시 즉시 전화</li>
+        <li>본인 담당 큐 / 자리 사전 확인</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- =================================================== -->
+<!-- p8 / 04 REHEARSAL (2/2) + 05 COMMS (1/2)            -->
+<!-- =================================================== -->
+<div class="page">
+  <div class="sub-block">
+    <div class="sub-header">
+      <span class="sub-num">04.2</span>
+      <h3 class="sub-title">큐 (Cue) 확인</h3>
+    </div>
+    <div class="sub-scenario">
+      <b>시나리오</b>드레스 리허설이 시작됐는데 본인 큐를 정확히 모릅니다. 매니저는 바쁩니다.
+    </div>
+    <div class="sub-exercise">
+      <b>실습</b>
+      <p class="q">Q. 큐를 모르는 상태로 리허설을 마쳐도 될까요?</p>
+      <span class="sub-answer"></span>
+      <span class="answer">절대 안 됨. 매니저 대신 파트 리더 / SM 에게 무전으로 재확인 요청. "모르겠어요" 를 감추면 본 공연에서 사고.</span>
+    </div>
+    <div class="sub-checklist">
+      <b>현장 체크</b>
+      <ul>
+        <li>큐시트 최신본 소지</li>
+        <li>이슈 기록용 노트와 펜 지참</li>
+        <li>리허설 후 이슈 목록 공유</li>
+      </ul>
+    </div>
+  </div>
+
+  </div>
+
+<!-- =================================================== -->
+<!-- 05 COMMS start                                       -->
+<!-- =================================================== -->
+<div class="page">
+  <div class="section-eyebrow">05 / Comms</div>
+  <h2 class="section-title">현장 커뮤니케이션</h2>
+  <p class="section-lede">
+    무전은 짧고 분명하게. 한 번에 한 사람만 말합니다.
+  </p>
+
+  <div class="sub-block">
+    <div class="sub-header">
+      <span class="sub-num">05.1</span>
+      <h3 class="sub-title">무전기 사용</h3>
+    </div>
+    <div class="sub-scenario">
+      <b>시나리오</b>무전기를 처음 켰습니다. 상급자에게 위치와 상황을 보고하려 합니다.
+    </div>
+    <div class="sub-exercise">
+      <b>실습</b>
+      <p class="q">Q. 첫 무전 문장을 적어보세요 (상대 → 자기 → 용건 순).</p>
+      <span class="sub-answer"></span>
+      <span class="answer">예: "SM, 안내팀 3번 (본인 이름). 게이트 3 배치 완료. 이상 없음. Over." 상대 콜사인 → 자기 콜사인 → 용건 → Over.</span>
+    </div>
+    <div class="sub-checklist">
+      <b>현장 체크</b>
+      <ul>
+        <li>PTT 1초 룰 (시작 전 / 끝난 후)</li>
+        <li>이어폰 착용 (스피커 X)</li>
+        <li>기본 용어 (Copy / Standby / Go / Over) 숙지</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- =================================================== -->
+<!-- p9 / 05 COMMS (2/2) + Radio grid                    -->
+<!-- =================================================== -->
+<div class="page">
+  <div class="sub-block">
+    <div class="sub-header">
+      <span class="sub-num">05.2</span>
+      <h3 class="sub-title">보고 (S / B / A / R)</h3>
+    </div>
+    <div class="sub-scenario">
+      <b>시나리오</b>게이트 3 에서 관객 실신. 대기 줄은 30분째. 상급자에게 무전 보고합니다.
+    </div>
+    <div class="sub-exercise">
+      <b>실습</b>
+      <p class="q">Q. 4단계 문장을 한 줄씩 적어보세요.</p>
+      <span class="sub-answer"></span>
+      <span class="answer">S (상황): 게이트 3, 관객 1명 실신. B (배경): 대기 30분, 스캐너 지연. A (판단): 저혈당 의심. R (요청): AED + 의료 인력 요청.</span>
+    </div>
+    <div class="sub-checklist">
+      <b>현장 체크</b>
+      <ul>
+        <li>보고 라인 (파트 리더 / SM / PM) 확인</li>
+        <li>사실과 판단 구분해서 말하기</li>
+        <li>감정어 (당황 / 무섭다) 배제</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="diagram">
+    <div class="diagram-label">Diagram / Radio Terms</div>
+    <div class="diagram-title">무전 기본 용어 8개</div>
+    <div class="radio-grid">
+      <div class="radio-cell">
+        <div class="term">Standby</div>
+        <div class="mean">대기 / 준비</div>
+        <div class="ex">"Standby Cue 12"</div>
+      </div>
+      <div class="radio-cell">
+        <div class="term">Go</div>
+        <div class="mean">실행</div>
+        <div class="ex">"Cue 12 Go"</div>
+      </div>
+      <div class="radio-cell">
+        <div class="term">Copy</div>
+        <div class="mean">수신 완료</div>
+        <div class="ex">"Copy that"</div>
+      </div>
+      <div class="radio-cell">
+        <div class="term">Roger</div>
+        <div class="mean">이해했음</div>
+        <div class="ex">"Roger, 이동 중"</div>
+      </div>
+      <div class="radio-cell">
+        <div class="term">Go ahead</div>
+        <div class="mean">말씀하세요</div>
+        <div class="ex">"SM, Go ahead"</div>
+      </div>
+      <div class="radio-cell">
+        <div class="term">Negative</div>
+        <div class="mean">아니오</div>
+        <div class="ex">"Negative, 미도착"</div>
+      </div>
+      <div class="radio-cell">
+        <div class="term">Over</div>
+        <div class="mean">응답 대기</div>
+        <div class="ex">"위치 확인. Over"</div>
+      </div>
+      <div class="radio-cell">
+        <div class="term">Out</div>
+        <div class="mean">대화 종료</div>
+        <div class="ex">"수신 완료. Out"</div>
+      </div>
+    </div>
+    <div class="diagram-caption">
+      호출 순서는 항상 "상대 콜사인 → 자기 콜사인 → 용건". 콜사인이 없는 무전은 재확인을 요청합니다.
+    </div>
+  </div>
+</div>
+
+<!-- =================================================== -->
+<!-- p10 / 06 EMERGENCY                                  -->
+<!-- =================================================== -->
+<div class="page">
+  <div class="section-eyebrow">06 / Emergency</div>
+  <h2 class="section-title">돌발 상황과 CS 대응</h2>
+  <p class="section-lede">
+    보고 → 판단 → 행동 순서를 바꾸지 마세요. 나쁜 소식일수록 빨리 알립니다.
+  </p>
+
+  <div class="sub-block">
+    <div class="sub-header">
+      <span class="sub-num">06.1</span>
+      <h3 class="sub-title">공연 지연</h3>
+    </div>
+    <div class="sub-scenario">
+      <b>시나리오</b>음향 시스템이 멈춤. 복구까지 15분 예상. 관객이 웅성거리기 시작합니다.
+    </div>
+    <div class="sub-exercise">
+      <b>실습</b>
+      <p class="q">Q. "잠시만 기다려주세요" 는 왜 나쁜 안내인가요?</p>
+      <span class="sub-answer"></span>
+      <span class="answer">"잠시" 가 얼마인지 몰라서. 예: "음향 이슈로 약 15분 소요 예상. 5분 뒤 다시 안내드립니다." 예상 시간 + 다음 안내 시점을 함께 알립니다.</span>
+    </div>
+    <div class="sub-checklist">
+      <b>현장 체크</b>
+      <ul>
+        <li>이슈 인지 후 5분 이내 첫 안내</li>
+        <li>이후 15분 간격 반복 안내</li>
+        <li>상황 변화 시 즉시 업데이트</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub-block">
+    <div class="sub-header">
+      <span class="sub-num">06.2</span>
+      <h3 class="sub-title">관객 컴플레인</h3>
+    </div>
+    <div class="sub-scenario">
+      <b>시나리오</b>관객이 "티켓 값에 비해 좌석이 너무 뒤다" 며 항의. 본인은 좌석 배정 권한이 없습니다.
+    </div>
+    <div class="sub-exercise">
+      <b>실습</b>
+      <p class="q">Q. 첫 문장을 적어보세요 (공감 + 다음 안내).</p>
+      <span class="sub-answer"></span>
+      <span class="answer">예: "자리가 아쉬우셨겠어요. 상황 확인해서 CS 데스크로 안내드릴게요. 잠시만 기다려주세요." 공감 + 연결 + 다음 안내.</span>
+    </div>
+    <div class="sub-checklist">
+      <b>현장 체크</b>
+      <ul>
+        <li>"저희 잘못 아닌데요" 금지</li>
+        <li>"규정상 어쩔 수 없어요" 금지</li>
+        <li>격해지면 조용한 공간으로 안내</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- =================================================== -->
+<!-- p11 / 06 EMERGENCY (2/2)                            -->
+<!-- =================================================== -->
+<div class="page">
+  <div class="sub-block">
+    <div class="sub-header">
+      <span class="sub-num">06.3</span>
+      <h3 class="sub-title">우선순위 판단</h3>
+    </div>
+    <div class="sub-scenario">
+      <b>시나리오</b>동시에 발생: (1) 음향 볼륨 불만 3건 (2) 아티스트 도시락 부족 (3) 관객이 넘어져 발목 부상.
+    </div>
+    <div class="sub-exercise">
+      <b>실습</b>
+      <p class="q">Q. 세 건의 처리 순서와 이유를 적어보세요.</p>
+      <span class="sub-answer"></span>
+      <span class="answer">1) 부상 (안전이 최우선) 2) 음향 (공연 진행에 영향) 3) 도시락 (공연 뒤에도 해결 가능). 판단 기준은 "지금 안 하면 무엇이 커지는가".</span>
+    </div>
+    <div class="sub-checklist">
+      <b>현장 체크</b>
+      <ul>
+        <li>사람 안전 관련은 즉시 대응</li>
+        <li>공연 진행 관련은 15분 안</li>
+        <li>불편 사항은 공연 뒤 개선</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub-block">
+    <div class="sub-header">
+      <span class="sub-num">06.4</span>
+      <h3 class="sub-title">인수인계</h3>
+    </div>
+    <div class="sub-scenario">
+      <b>시나리오</b>본인이 20분간 자리를 비워야 합니다. 인수자에게 무엇을 넘길까요?
+    </div>
+    <div class="sub-exercise">
+      <b>실습</b>
+      <p class="q">Q. 인수인계 3요소는?</p>
+      <span class="sub-answer"></span>
+      <span class="answer">(1) 진행 상황 (완료 / 진행 중) (2) 남은 이슈 (3) 다음 담당자 할 일. 무전 채널 / 콜사인도 함께 확인.</span>
+    </div>
+    <div class="sub-checklist">
+      <b>현장 체크</b>
+      <ul>
+        <li>교대 10분 전 후임 도착 확인</li>
+        <li>인수인계 3요소를 노트에 기록</li>
+        <li>"이해했어요" 구두 확답 후 이동</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- =================================================== -->
+<!-- p12 / 자가 진단 24문항 + 서명                          -->
+<!-- =================================================== -->
+<div class="page break-before">
+  <div class="section-eyebrow">Self-diagnosis</div>
+  <h2 class="section-title">현장 투입 자가 진단 24문항</h2>
+  <p class="section-lede">
+    공연 현장에 가기 전, 아래 24개 항목을 스스로 체크합니다. 20개 이상이면 준비 완료.
+  </p>
+
+  <div class="diag-intro">
+    <strong>사용 방법 /</strong> 각 문항에 "네" 라고 답할 수 있으면 체크. 못한 항목은 해당 챕터를 다시 읽으세요.
+  </div>
+
+  <div class="diag-group">
+    <h4>01 Safety (4문항)</h4>
+    <ul class="diag-list">
+      <li>도착 즉시 확인할 것 4가지를 말할 수 있다</li>
+      <li>관객 실신 시 첫 5초 행동 2가지를 안다</li>
+      <li>정전 시 관객에게 하면 안 되는 말을 안다</li>
+      <li>비상 대피 경로 2개 이상 확인한다</li>
+    </ul>
+  </div>
+
+  <div class="diag-group">
+    <h4>02 Artist (4문항)</h4>
+    <ul class="diag-list">
+      <li>대기실 기본 세팅 5요소를 안다</li>
+      <li>패스 없는 방문자 응대 문장을 말할 수 있다</li>
+      <li>백스테이지 4가지 금지 행동을 안다</li>
+      <li>아티스트와 마주쳤을 때 표준 행동을 안다</li>
+    </ul>
+  </div>
+
+  <div class="diag-group">
+    <h4>03 Audience (4문항)</h4>
+    <ul class="diag-list">
+      <li>스캐너 장애 시 첫 행동 3가지를 안다</li>
+      <li>지각 관객 안내 시점을 안다</li>
+      <li>특전회 위반 관객 안내 문장을 말할 수 있다</li>
+      <li>컴플레인 응대 5단계를 안다</li>
+    </ul>
+  </div>
+
+  <div class="diag-group">
+    <h4>04 Rehearsal (4문항)</h4>
+    <ul class="diag-list">
+      <li>공연 당일 6단계 흐름을 안다</li>
+      <li>콜타임 = 준비 완료 시각임을 안다</li>
+      <li>지연 시 즉시 전화 원칙을 안다</li>
+      <li>큐 모를 때 무전 재확인 요청을 안다</li>
+    </ul>
+  </div>
+
+  <div class="diag-group">
+    <h4>05 Comms (4문항)</h4>
+    <ul class="diag-list">
+      <li>PTT 1초 룰을 안다</li>
+      <li>무전 호출 순서 (상대 → 자기 → 용건 → Over) 를 안다</li>
+      <li>SBAR 4단계 (S / B / A / R) 를 안다</li>
+      <li>사실과 판단을 구분해 말할 수 있다</li>
+    </ul>
+  </div>
+
+  <div class="diag-group">
+    <h4>06 Emergency (4문항)</h4>
+    <ul class="diag-list">
+      <li>지연 안내 15분 간격 원칙을 안다</li>
+      <li>컴플레인 절대 금지 표현을 안다</li>
+      <li>우선순위 판단 기준 (안전 우선) 을 안다</li>
+      <li>인수인계 3요소를 안다</li>
+    </ul>
+  </div>
+
+  <div class="sign-box">
+    <div class="sign-row">
+      <div class="k">학생 이름</div>
+      <div class="line"></div>
+    </div>
+    <div class="sign-row">
+      <div class="k">서명 / 날짜</div>
+      <div class="line"></div>
+    </div>
+    <div class="sign-brand">
+      본 워크북의 24문항 자가 진단을 스스로 완료했음을 확인합니다.<br/>
+      <strong>Dropdown</strong> / Fan to Pro 1기 사전 교육 워크북
+    </div>
+  </div>
+
+  <div class="credits">
+    Fan to Pro 1기 / 공연 현장 실무 워크북 / <span class="brand">Growth Career</span> / Dropdown / 발행 2026-06-27
+  </div>
+</div>
+
+</body>
+</html>
