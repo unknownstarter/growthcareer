@@ -43,12 +43,21 @@
   .page {
     width: 794px;
     max-width: 100%;
+    min-height: 1123px;
     margin: 0 auto 24px;
     background: var(--bg);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow);
     padding: 48px 52px 56px;
     color: var(--fg);
+    position: relative;
+  }
+  /* credits 는 각 page 하단에 absolute 고정. 다른 요소 밀림 없음. */
+  .credits {
+    position: absolute;
+    left: 52px;
+    right: 52px;
+    bottom: 32px;
   }
   @page { size: A4; margin: 0; }
   @media print {
@@ -56,13 +65,22 @@
     .page {
       width: 100%;
       max-width: none;
+      min-height: 295mm;
+      height: 295mm;
       margin: 0;
-      padding: 18mm 18mm;
+      padding: 8mm 14mm 15mm;
       box-shadow: none;
       border-radius: 0;
       page-break-after: always;
+      position: relative;
+      overflow: hidden;
     }
     .page:last-child { page-break-after: auto; }
+    .credits {
+      left: 14mm;
+      right: 14mm;
+      bottom: 6mm;
+    }
   }
 
   /* Cover */
@@ -93,7 +111,7 @@
     padding: 24px;
     font-size: 14px; line-height: 1.75;
     color: var(--fg-muted);
-    margin-bottom: 32px;
+    margin-bottom: 110px;
   }
   .cover-intro strong { color: var(--fg); font-weight: 700; }
   .toc {
@@ -103,16 +121,16 @@
   }
   .toc-row {
     display: grid;
-    grid-template-columns: 40px 1fr 60px;
-    padding: 14px 20px;
+    grid-template-columns: 48px 1fr 68px;
+    padding: 19px 22px;
     border-bottom: 1px solid var(--border-soft);
-    font-size: 14px;
+    font-size: 17px;
     align-items: center;
   }
   .toc-row:last-child { border-bottom: none; }
-  .toc-n { font-weight: 800; color: var(--accent); font-size: 13px; }
+  .toc-n { font-weight: 800; color: var(--accent); font-size: 16px; }
   .toc-title { color: var(--fg); font-weight: 600; }
-  .toc-page { text-align: right; color: var(--fg-subtle); font-size: 12px; font-weight: 600; }
+  .toc-page { text-align: right; color: var(--fg-subtle); font-size: 14px; font-weight: 600; }
 
   /* Section header */
   .section-eyebrow {
@@ -121,71 +139,72 @@
     font-weight: 800;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    margin-bottom: 6px;
+    margin-bottom: 3px;
   }
   .section-title {
-    margin: 0 0 28px;
-    font-size: 26px;
+    margin: 0 0 10px;
+    font-size: 21px;
     font-weight: 800;
     letter-spacing: -0.02em;
-    line-height: 1.25;
-    padding-bottom: 16px;
+    line-height: 1.2;
+    padding-bottom: 6px;
     border-bottom: 2px solid var(--fg);
   }
 
   /* Sub-topic */
   .sub {
-    margin-top: 24px;
-    padding-top: 24px;
+    margin-top: 12px;
+    padding-top: 12px;
     border-top: 1px dashed var(--border);
   }
   .sub:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
   .sub-no {
-    font-size: 11px; font-weight: 800;
+    font-size: 10.5px; font-weight: 800;
     color: var(--fg-subtle); letter-spacing: 0.08em;
-    margin-bottom: 6px;
+    margin-bottom: 3px;
   }
   .sub-title {
-    font-size: 18px; font-weight: 800;
+    font-size: 16px; font-weight: 800;
     color: var(--fg);
     letter-spacing: -0.01em;
-    margin: 0 0 12px;
+    margin: 0 0 8px;
   }
   .sub-lead {
     font-style: italic;
     color: var(--accent);
-    font-size: 14px;
+    font-size: 12.5px;
     font-weight: 600;
-    line-height: 1.5;
-    margin: 0 0 14px;
-    padding: 10px 14px;
+    line-height: 1.4;
+    margin: 0 0 6px;
+    padding: 6px 10px;
     background: var(--accent-soft);
     border-left: 3px solid var(--accent);
     border-radius: 6px;
   }
   .sub-body {
-    font-size: 13.5px;
-    line-height: 1.75;
+    font-size: 12.5px;
+    line-height: 1.45;
     color: var(--fg-muted);
     font-weight: 500;
-    margin: 0 0 14px;
+    margin: 0 0 6px;
   }
   .sub-body strong { color: var(--fg); font-weight: 700; }
   .check-list {
     background: var(--bg-soft);
     border: 1px solid var(--border-soft);
     border-radius: 10px;
-    padding: 12px 14px;
-    margin: 0 0 12px;
+    padding: 7px 10px;
+    margin: 0 0 6px;
   }
   .check-list li {
     list-style: none;
-    font-size: 13px;
-    line-height: 1.7;
+    font-size: 12px;
+    line-height: 1.45;
     color: var(--fg);
-    padding-left: 22px;
+    padding-left: 19px;
     position: relative;
     font-weight: 500;
+    margin-bottom: 0;
   }
   .check-list li::before {
     content: "✓";
@@ -196,13 +215,13 @@
   }
   .check-list ul { margin: 0; padding: 0; }
   .tip {
-    font-size: 12.5px;
+    font-size: 11.5px;
     color: var(--fg);
     background: var(--brand-soft);
     border-radius: 8px;
-    padding: 10px 14px;
+    padding: 7px 11px;
     margin: 0;
-    line-height: 1.6;
+    line-height: 1.5;
   }
   .tip-label {
     font-weight: 800;
@@ -283,11 +302,11 @@
     <div class="toc-row"><span class="toc-n">04</span><span class="toc-title">리허설 및 공연 진행 프로세스</span><span class="toc-page">p.5</span></div>
     <div class="toc-row"><span class="toc-n">05</span><span class="toc-title">파트별 체크리스트 및 현장 커뮤니케이션</span><span class="toc-page">p.6</span></div>
     <div class="toc-row"><span class="toc-n">06</span><span class="toc-title">돌발 상황 대응 및 CS 매뉴얼</span><span class="toc-page">p.7</span></div>
-    <div class="toc-row"><span class="toc-n">부록</span><span class="toc-title">영어 용어 사전 / Venue 규모별 차이 / 사전 학습 체크</span><span class="toc-page">p.8</span></div>
+    <div class="toc-row"><span class="toc-n">부록</span><span class="toc-title">영어 용어 사전 / Venue 규모별 차이</span><span class="toc-page">p.8</span></div>
   </div>
 
   <div class="credits">
-    Fan to Pro 1기 / 발행 2026-06-27 / <span class="brand">Growth Career</span> · Dropdown
+    Fan to Pro 1기 / 발행 2026-06-27 / <span class="brand">Growth Career</span> / Dropdown
   </div>
 </div>
 
@@ -655,22 +674,8 @@
   </table>
   <p class="sub-body" style="margin-top:12px;">블루스프링하우스 (1기 강의장)는 중소형 클럽급이지만, 여러분이 향후 투입될 협력 공연은 대형 venue 일 가능성이 높습니다. 두 규모의 차이를 미리 인지하고, 어느 쪽에 가도 본인 위치를 빠르게 파악하는 능력이 핵심입니다.</p>
 
-  <div style="margin-top:32px;">
-    <div class="section-eyebrow">APPENDIX C / CHECK</div>
-    <h2 class="section-title" style="font-size:22px;">사전 학습 체크 (출발 전 점검)</h2>
-    <div class="check-list" style="background:var(--accent-soft);border-color:var(--accent);"><ul>
-      <li>본 가이드 1독 완료</li>
-      <li>영어 용어 15개 + 응급 5문장 암기</li>
-      <li>본인 콜타임 + 본인 파트 + 본인 무전 채널 확인</li>
-      <li>안전조끼 + 인이어 + 무전기 + 신분증 + 본 가이드 인쇄본 5종 휴대</li>
-      <li>venue 평면도 사전 확인 (제공받은 경우)</li>
-      <li>비상 연락처 (매니저, 안전총괄, 119) 휴대폰 저장</li>
-      <li>"오늘 본 것은 오늘 잊는다" NDA 룰 숙지</li>
-    </ul></div>
-  </div>
-
   <div class="credits">
-    Fan to Pro 1기 / 공연 현장 실무 가이드 / <span class="brand">Growth Career</span> · Dropdown · 발행 2026-06-27<br/>
+    Fan to Pro 1기 / 공연 현장 실무 가이드 / <span class="brand">Growth Career</span> / Dropdown / 발행 2026-06-27<br/>
     참고: 한국 공연법, 문화체육관광부 공연장 안전매뉴얼, YG 공연장 안전 가이드, K-pop 콘서트 실무 표준
   </div>
 </div>
