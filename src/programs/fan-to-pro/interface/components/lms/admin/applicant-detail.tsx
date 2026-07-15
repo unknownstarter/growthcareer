@@ -136,6 +136,7 @@ const MESSAGE_KINDS: MessageKind[] = [
   "referralInvite",
   "cohortKickoff",
   "week1Materials",
+  "stageOpsGuide",
 ];
 
 // -------------------------------------------------------------------------

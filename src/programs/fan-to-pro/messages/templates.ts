@@ -19,7 +19,8 @@ export type MessageKind =
   | "reminderD1"
   | "referralInvite"
   | "cohortKickoff"
-  | "week1Materials";
+  | "week1Materials"
+  | "stageOpsGuide";
 export type MessageChannel = "sms" | "email";
 
 /**
@@ -878,6 +879,74 @@ const week1Materials_email_subject_ko = "[Fan to Pro] 1주차 일요일 강의 (
 const week1Materials_email_subject_en = "[Fan to Pro] Week 1 Sunday class materials (Jun 28)";
 
 /* ---------------------------------------------------------------------------
+ * 9. stageOpsGuide. 공연 현장 실무 가이드 PDF 전달 (paid/enrolled 전용).
+ *
+ * 종강 후 실제 유니온픽처스 협력 공연 투입 전, 사전 학습용 PDF 안내.
+ * 첨부 파일은 mailto 표준상 안 붙음. 노아가 이메일 앱에서 수동 첨부 후 발송.
+ * ------------------------------------------------------------------------- */
+
+const stageOpsGuide_sms_ko = `[Fan to Pro] 공연 현장 실무 가이드 안내
+
+{name} 님, 협력 공연 투입 전 사전 학습용 실무 가이드 (A4 9p PDF) 를 이메일로 함께 전달드려요. 사전에 한 번 정독하시고 현장에서는 필요한 섹션만 빠르게 펼쳐 확인하세요.
+
+문의는 카톡 채널로 :)
+${KAKAO}`;
+
+const stageOpsGuide_sms_en = `[Fan to Pro] K-pop concert field operations guide
+
+Hi {name}, we are sending the field operations guide (A4 9p PDF) by email for your pre-show preparation. Please read through once in advance and pull up the relevant section on-site when needed.
+
+Questions? Use the KakaoTalk channel.
+${KAKAO}`;
+
+const stageOpsGuide_email_ko = `안녕하세요, Fan to Pro 입니다 :)
+
+{name} 님, 향후 참여하실 협력 공연 현장에서 바로 활용하실 수 있는 "공연 현장 실무 가이드" 를 전달드려요.
+
+[가이드 구성 안내]
+
+A4 9페이지 PDF 로 구성되어 있고, 6개 챕터 (공연장 안전 / 아티스트 응대 / 관객 운영 / 리허설 / 현장 커뮤 / 돌발 대응) 와 부록 (영어 핵심 용어 사전 / Venue 규모별 운영 차이) 을 담고 있어요.
+
+한국 공연장 안전 기준법과 K-pop 콘서트 실무 표준을 기반으로 작성했으며, 외국인 학생분들을 위해 핵심 용어는 한국어와 영어를 함께 표기했습니다.
+
+[활용 권장]
+
+* 사전: 한 번 정독하시면 흐름 파악에 도움이 됩니다.
+* 현장: 필요한 섹션만 빠르게 펼쳐 확인하세요.
+* 원칙: 모르는 것을 모른다고 말하는 것이 가장 안전합니다. 의심되면 무전으로 선임자에게 즉시 확인하세요.
+
+첨부 파일로 PDF 를 함께 보내드리니 다운로드 후 휴대폰이나 태블릿에 저장해두시면 현장에서 유용하게 사용하실 수 있어요.
+
+궁금한 점은 카톡 채널로 편하게 연락 부탁드려요.
+
+Fan to Pro 운영진 드림`;
+
+const stageOpsGuide_email_en = `Hello, this is Fan to Pro.
+
+Hi {name}, we are sending the "K-pop Concert Field Operations Guide" so you can use it right away in your upcoming partner shows.
+
+[ABOUT THE GUIDE]
+
+An A4 9-page PDF covering 6 chapters (venue safety, artist handling, audience operations, rehearsal, on-site communication, emergency response) plus an appendix (English glossary, venue-size operations comparison).
+
+The content is based on Korean concert venue safety standards and K-pop concert field practices. Core terms are labeled in both Korean and English for international students.
+
+[RECOMMENDED USE]
+
+* Before the show: Read through once to get familiar with the flow.
+* On-site: Pull up the relevant section quickly when needed.
+* Rule of thumb: Saying you do not know is the safest thing you can do. When in doubt, radio your senior right away.
+
+The PDF is attached to this email. Download it and save it on your phone or tablet so you can access it easily on-site.
+
+Any questions, use the KakaoTalk channel.
+
+Fan to Pro Team`;
+
+const stageOpsGuide_email_subject_ko = "[Fan to Pro] 공연 현장 실무 가이드 안내";
+const stageOpsGuide_email_subject_en = "[Fan to Pro] K-pop concert field operations guide";
+
+/* ---------------------------------------------------------------------------
  * 통합 매핑
  * ------------------------------------------------------------------------- */
 
@@ -968,6 +1037,16 @@ const TEMPLATES: Record<MessageKind, Template> = {
         en: week1Materials_email_subject_en,
       },
       body: { ko: week1Materials_email_ko, en: week1Materials_email_en },
+    },
+  },
+  stageOpsGuide: {
+    sms: { ko: stageOpsGuide_sms_ko, en: stageOpsGuide_sms_en },
+    email: {
+      subject: {
+        ko: stageOpsGuide_email_subject_ko,
+        en: stageOpsGuide_email_subject_en,
+      },
+      body: { ko: stageOpsGuide_email_ko, en: stageOpsGuide_email_en },
     },
   },
 };
@@ -1365,6 +1444,7 @@ export const MESSAGE_KIND_LABELS: Record<MessageKind, string> = {
   referralInvite: "친구초대 이벤트",
   cohortKickoff: "기수 첫 강의 안내",
   week1Materials: "1주차 일요일 자료 (6/28)",
+  stageOpsGuide: "공연 현장 실무 가이드",
 };
 
 /**
@@ -1380,4 +1460,5 @@ export const MESSAGE_KIND_PAID_ONLY: ReadonlySet<MessageKind> = new Set([
   "referralInvite",
   "cohortKickoff",
   "week1Materials",
+  "stageOpsGuide",
 ]);
