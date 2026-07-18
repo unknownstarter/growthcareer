@@ -132,7 +132,13 @@ html, body {
 }
 
 .cert-brand { display: flex; flex-direction: column; gap: 2mm; }
-.cert-brand-logo { height: 6mm; width: auto; display: block; }
+.cert-brand-name {
+  font-family: 'Times New Roman', 'Georgia', serif;
+  font-size: 16pt;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #111;
+}
 .cert-brand-sub { font-size: 9pt; color: #6b5c3f; letter-spacing: 0.3px; }
 
 .cert-serial {
@@ -370,7 +376,7 @@ html, body {
 
   <header class="cert-header">
     <div class="cert-brand">
-      <img class="cert-brand-logo" src="/brand/dropdown-logo.png" alt="Dropdown" />
+      <span class="cert-brand-name">Dropdown</span>
       <span class="cert-brand-sub">Fan to Pro / K-Pop Live Production</span>
     </div>
     <div>
