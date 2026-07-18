@@ -45,21 +45,9 @@ export type CertificateData = {
 };
 
 const PLACEHOLDER_ATTEST_KO =
-  "위 사람은 Growth Career 의 Fan to Pro 4주 K-pop 공연 실무 교육 과정을 성실히 이수하였음을 증명합니다.";
+  "위 사람은 Fan to Pro 4주 K-pop 공연 실무 교육 과정을 성실히 이수하였음을 증명합니다.";
 const PLACEHOLDER_ATTEST_EN =
-  "This is to certify that the above named person has successfully completed the Fan to Pro 4-week K-Pop Live Production program of Growth Career.";
-
-/**
- * 1기 확정 커리큘럼 5줄 (2026-06-27 ~ 07-19, 4주 8회 16시간).
- * 수료증 하단 실무 증빙 섹션에 삽입. 2기 5주 스펙과 혼동 금지.
- */
-const CURRICULUM_1ST_COHORT = [
-  "뮤직 비즈니스와 K-pop 산업 구조 이해",
-  "A&R 및 기획사 실무 케이스 스터디 (현직 전문가 라이브 세션)",
-  "무대 음향 시스템 셋팅 원리 및 미니 콘서트 실습 조율",
-  "Visual Director와 무대 연출 실무 관점 학습",
-  "K-pop 콘텐츠 기획 및 공연 연출 실무",
-] as const;
+  "This is to certify that the above named person has successfully completed the Fan to Pro 4-week K-Pop Live Production program.";
 
 /** HTML escape — &, <, >, ", '. */
 export function escapeHtml(s: string): string {
@@ -93,11 +81,6 @@ export function renderCertificateHtml(data: CertificateData): string {
   const issuer = escapeHtml(data.issuer_name);
   const bizNo = escapeHtml(data.issuer_biz_no);
   const signaturePath = escapeHtml(data.signature_image_path);
-
-  const curriculumItems = CURRICULUM_1ST_COHORT.map(
-    (line, idx) =>
-      `<li class="cert-curriculum-item"><span class="cert-curriculum-num">${idx + 1}.</span><span class="cert-curriculum-text">${escapeHtml(line)}</span></li>`,
-  ).join("");
 
   return `<!DOCTYPE html>
 <html lang="ko">
@@ -149,16 +132,8 @@ html, body {
 }
 
 .cert-brand { display: flex; flex-direction: column; gap: 2mm; }
-.cert-brand-mark { display: flex; align-items: center; gap: 3mm; }
-.cert-brand-dot { width: 6mm; height: 6mm; background: #3182f6; border-radius: 1.5mm; flex-shrink: 0; }
-.cert-brand-name {
-  font-family: 'Times New Roman', 'Georgia', serif;
-  font-size: 14pt;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  color: #111;
-}
-.cert-brand-sub { font-size: 9pt; color: #6b5c3f; letter-spacing: 0.3px; margin-left: 9mm; }
+.cert-brand-logo { height: 6mm; width: auto; display: block; }
+.cert-brand-sub { font-size: 9pt; color: #6b5c3f; letter-spacing: 0.3px; }
 
 .cert-serial {
   text-align: right;
@@ -248,47 +223,6 @@ html, body {
   font-style: italic;
   padding: 0 6mm;
 }
-
-/* 커리큘럼 5줄 섹션 — 실무 이수 증빙 (1기 4주 8회) */
-.cert-curriculum {
-  margin-bottom: 8mm;
-  padding: 5mm 7mm;
-  border-top: 1px solid #d9cfbc;
-  border-bottom: 1px solid #d9cfbc;
-}
-.cert-curriculum-heading {
-  font-family: 'Times New Roman', 'Georgia', serif;
-  font-size: 10pt;
-  font-weight: 600;
-  color: #3182f6;
-  text-align: center;
-  letter-spacing: 3px;
-  margin-bottom: 4mm;
-  text-transform: uppercase;
-}
-.cert-curriculum-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.cert-curriculum-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 3mm;
-  font-size: 9.5pt;
-  line-height: 1.7;
-  color: #1f2937;
-  padding: 0.8mm 0;
-}
-.cert-curriculum-num {
-  font-family: 'Times New Roman', 'Georgia', serif;
-  font-size: 10pt;
-  font-weight: 600;
-  color: #3182f6;
-  flex-shrink: 0;
-  min-width: 5mm;
-}
-.cert-curriculum-text { flex: 1; }
 
 .cert-footer {
   display: flex;
@@ -436,10 +370,7 @@ html, body {
 
   <header class="cert-header">
     <div class="cert-brand">
-      <div class="cert-brand-mark">
-        <div class="cert-brand-dot"></div>
-        <span class="cert-brand-name">Growth Career</span>
-      </div>
+      <img class="cert-brand-logo" src="/brand/dropdown-logo.png" alt="Dropdown" />
       <span class="cert-brand-sub">Fan to Pro / K-Pop Live Production</span>
     </div>
     <div>
@@ -477,12 +408,6 @@ html, body {
       <p class="cert-attest-en">${attestEn}</p>
     </div>
 
-    <section class="cert-curriculum">
-      <div class="cert-curriculum-heading">Curriculum Completed / 이수 커리큘럼</div>
-      <ol class="cert-curriculum-list">
-        ${curriculumItems}
-      </ol>
-    </section>
   </main>
 
   <footer class="cert-footer">
@@ -507,7 +432,7 @@ html, body {
         <div class="cert-signature-title">${issuer}</div>
       </div>
       <div class="cert-seal">
-        <span class="cert-seal-top">GROWTH CAREER</span>
+        <span class="cert-seal-top">DROPDOWN</span>
         <span class="cert-seal-mid">성실 이수</span>
         <span class="cert-seal-bot">2026</span>
       </div>
