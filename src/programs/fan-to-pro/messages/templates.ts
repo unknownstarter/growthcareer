@@ -887,21 +887,23 @@ const week1Materials_email_subject_en = "[Fan to Pro] Week 1 Sunday class materi
 
 const stageOpsGuide_sms_ko = `[Fan to Pro] 공연 현장 실무 가이드 안내
 
-{name} 님, 협력 공연 투입 전 사전 학습용 실무 가이드 (A4 9p PDF) 를 이메일로 함께 전달드려요. 사전에 한 번 정독하시고 현장에서는 필요한 섹션만 빠르게 펼쳐 확인하세요.
+{name} 님, K-pop 공연 스태프 실무 핸드북 (A4 9p PDF) 을 이메일로 함께 전달드려요. 한 번 정독해두시고 현장에서는 필요한 섹션만 빠르게 펼쳐 확인하세요.
 
 문의는 카톡 채널로 :)
 ${KAKAO}`;
 
 const stageOpsGuide_sms_en = `[Fan to Pro] K-pop concert field operations guide
 
-Hi {name}, we are sending the field operations guide (A4 9p PDF) by email for your pre-show preparation. Please read through once in advance and pull up the relevant section on-site when needed.
+Hi {name}, we are sending the K-pop concert staff handbook (A4 9p PDF) by email. Read through once, then pull up the relevant section on-site when needed.
 
 Questions? Use the KakaoTalk channel.
 ${KAKAO}`;
 
 const stageOpsGuide_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 
-{name} 님, 향후 참여하실 협력 공연 현장에서 바로 활용하실 수 있는 "공연 현장 실무 가이드" 를 전달드려요.
+{name} 님, 교육 자료로 "공연 현장 실무 가이드" 를 전달드려요.
+
+K-pop 공연 스태프라면 알아두어야 하는 공연장 안전, 아티스트 응대, 관객 운영, 현장 커뮤니케이션 등 실무 전반을 담은 핸드북입니다.
 
 [가이드 구성 안내]
 
@@ -911,7 +913,7 @@ A4 9페이지 PDF 로 구성되어 있고, 6개 챕터 (공연장 안전 / 아�
 
 [활용 권장]
 
-* 사전: 한 번 정독하시면 흐름 파악에 도움이 됩니다.
+* 사전: 한 번 정독하시면 전체 흐름 파악에 도움이 됩니다.
 * 현장: 필요한 섹션만 빠르게 펼쳐 확인하세요.
 * 원칙: 모르는 것을 모른다고 말하는 것이 가장 안전합니다. 의심되면 무전으로 선임자에게 즉시 확인하세요.
 
@@ -923,7 +925,9 @@ Fan to Pro 운영진 드림`;
 
 const stageOpsGuide_email_en = `Hello, this is Fan to Pro.
 
-Hi {name}, we are sending the "K-pop Concert Field Operations Guide" so you can use it right away in your upcoming partner shows.
+Hi {name}, we are sending the "K-pop Concert Field Operations Guide" as educational material.
+
+It is a general handbook covering what any K-pop concert staff should know: venue safety, artist handling, audience operations, on-site communication, and more.
 
 [ABOUT THE GUIDE]
 
@@ -933,7 +937,7 @@ The content is based on Korean concert venue safety standards and K-pop concert 
 
 [RECOMMENDED USE]
 
-* Before the show: Read through once to get familiar with the flow.
+* Before working a show: Read through once to get familiar with the overall flow.
 * On-site: Pull up the relevant section quickly when needed.
 * Rule of thumb: Saying you do not know is the safest thing you can do. When in doubt, radio your senior right away.
 
