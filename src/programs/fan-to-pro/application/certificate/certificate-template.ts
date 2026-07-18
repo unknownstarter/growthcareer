@@ -91,6 +91,7 @@ export function renderCertificateHtml(data: CertificateData): string {
 <meta name="robots" content="noindex,nofollow,noarchive" />
 <style>
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap');
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -278,22 +279,12 @@ html, body {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  font-family: 'Brush Script MT', 'Snell Roundhand', cursive;
-  font-size: 20pt;
+  font-family: 'Nanum Pen Script', 'Brush Script MT', cursive;
+  font-size: 30pt;
   color: #1f2937;
   padding-bottom: 1mm;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   line-height: 1.1;
-}
-.cert-signature-company {
-  font-family: 'Times New Roman', 'Georgia', serif;
-  font-style: italic;
-  font-size: 10pt;
-  color: #6b5c3f;
-  margin-top: 1mm;
-  letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 .cert-signature-name { font-size: 9pt; color: #374151; font-weight: 500; }
 .cert-signature-title { font-size: 8pt; color: #6b5c3f; margin-top: 0.5mm; }
@@ -337,28 +328,13 @@ html, body {
   right: 20mm;
   padding-top: 4mm;
   border-top: 1px solid #d9cfbc;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   font-size: 8pt;
   color: #8a7a5d;
-  gap: 6mm;
 }
 .cert-verify-text { line-height: 1.5; }
 .cert-verify-url {
   font-family: 'SF Mono', 'JetBrains Mono', 'Courier New', monospace;
   color: #6b5c3f;
-}
-.cert-qr {
-  width: 18mm;
-  height: 18mm;
-  background: #fff;
-  border: 1px solid #d9cfbc;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 7pt;
-  color: #8a7a5d;
 }
 
 @media screen {
@@ -432,14 +408,14 @@ html, body {
       <div class="cert-signature">
         <div class="cert-signature-line">
           <img class="cert-signature-img" src="${signaturePath}" alt="Signature" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'" />
-          <span class="cert-signature-fallback" style="display:none">Noah<span class="cert-signature-company">Dropdown</span></span>
+          <span class="cert-signature-fallback" style="display:none">황재하</span>
         </div>
         <div class="cert-signature-name">대표 / CEO</div>
         <div class="cert-signature-title">${issuer}</div>
       </div>
       <div class="cert-seal">
         <span class="cert-seal-top">DROPDOWN</span>
-        <span class="cert-seal-mid">성실 이수</span>
+        <span class="cert-seal-mid">Certified</span>
         <span class="cert-seal-bot">2026</span>
       </div>
     </div>
@@ -451,7 +427,6 @@ html, body {
       Verify this certificate at:
       <span class="cert-verify-url">${verifyUrl}</span>
     </div>
-    <div class="cert-qr">QR</div>
   </div>
 
 </div>
