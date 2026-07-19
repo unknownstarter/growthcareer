@@ -197,6 +197,14 @@ export async function buildCertificateData(
   const baseUrl = getSiteBaseUrl();
   const verifyUrl = `${baseUrl}/verify/${encodeURIComponent(serialNo)}`;
 
+  // 재설계 (2026-07-19): attest_en 을 서술문 형태로 조립.
+  //   T4 = "This certifies that the recipient has completed the Fan to Pro
+  //         4-week K-Pop Live Production program from <시작일> to <종료일>,
+  //         comprising <N> sessions."
+  //   T3 에 이름이 이미 크게 표시되므로 서술문에서 이름 반복 X (the recipient).
+  //   cohort 라벨은 별도 span 으로 밑에 표시 (템플릿).
+  const attestEn = `This certifies that the recipient has completed the Fan to Pro 4-week K-Pop Live Production program from ${startsEn} to ${endsEn}, comprising ${sessionCount} sessions of hands-on training.`;
+
   return {
     serial_no: serialNo,
     program_name_ko: "Fan to Pro 4주 K-pop 공연 실무 교육 과정",
@@ -208,8 +216,7 @@ export async function buildCertificateData(
     recipient_name_en: nameEn,
     attest_ko:
       "위 사람은 Fan to Pro 4주 K-pop 공연 실무 교육 과정을 성실히 이수하였음을 증명합니다.",
-    attest_en:
-      "This is to certify that the above named person has successfully completed the Fan to Pro 4-week K-Pop Live Production program.",
+    attest_en: attestEn,
     issued_date_ko: fmtKoreanDate(issueDate),
     issued_date_en: fmtEnglishDate(issueDate),
     issuer_name: "Dropdown (드롭다운)",
