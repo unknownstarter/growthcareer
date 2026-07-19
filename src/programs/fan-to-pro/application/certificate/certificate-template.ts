@@ -276,8 +276,8 @@ html, body {
   width: 35mm;
   height: 35mm;
   border-radius: 50%;
-  border: 2.5px solid #111;
-  color: #111;
+  border: 2.5px solid #3182f6;
+  color: #3182f6;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -297,7 +297,7 @@ html, body {
   position: absolute;
   inset: 2mm;
   border-radius: 50%;
-  border: 1px solid #111;
+  border: 1px solid #3182f6;
   pointer-events: none;
 }
 .cert-seal-top { font-size: 7.5pt; margin-bottom: 1mm; letter-spacing: 1.2px; }
