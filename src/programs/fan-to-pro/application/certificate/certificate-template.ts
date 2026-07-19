@@ -124,7 +124,7 @@ html, body {
 .cert-page {
   width: 210mm;
   height: 297mm;
-  padding: 25mm 30mm 40mm;
+  padding: 40mm 30mm 40mm;
   position: relative;
   background: #ffffff;
   border: 1px solid #e5e7eb;
