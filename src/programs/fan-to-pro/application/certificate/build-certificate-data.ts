@@ -166,10 +166,10 @@ export async function buildCertificateData(
   const nameEn = profile?.name_en || student.display_name;
   const nameKo = profile?.name_ko || null;
 
-  // 발급번호
-  const serialNo = options.dryRun
-    ? "GC-FTP-PREVIEW"
-    : await generateSerialNo(student.id, cohort.id);
+  // 발급번호. dryRun 이어도 실 형식 (GC-FTP-{N기}-{seq}) 표시.
+  // generateSerialNo 는 idempotent 이며 INSERT 안 함 (호출자 책임) — 노아 결정 2026-07-19.
+  const serialNo = await generateSerialNo(student.id, cohort.id);
+  void options.dryRun;
 
   // 회차 수
   const sessionCount = await countCohortSessions(cohort.id);

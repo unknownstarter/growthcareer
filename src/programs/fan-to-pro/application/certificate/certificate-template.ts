@@ -66,9 +66,8 @@ export function escapeHtml(s: string): string {
 export function renderCertificateHtml(data: CertificateData): string {
   const attestKo = escapeHtml(data.attest_ko || PLACEHOLDER_ATTEST_KO);
   const attestEn = escapeHtml(data.attest_en || PLACEHOLDER_ATTEST_EN);
-  // 노아 fix (2026-07-11): 원본 이름 (영문) 크게, 한글 이름 (있을 때만) 서브 작게 회색.
+  // 노아 fix (2026-07-19): 영문 이름만 표시. 한글 이름 서브 제거.
   const nameEn = escapeHtml(data.recipient_name_en);
-  const nameKo = data.recipient_name_ko ? escapeHtml(data.recipient_name_ko) : null;
   const serial = escapeHtml(data.serial_no);
   const verifyUrl = escapeHtml(data.verify_url);
   const programKo = escapeHtml(data.program_name_ko);
@@ -91,14 +90,14 @@ export function renderCertificateHtml(data: CertificateData): string {
 <meta name="robots" content="noindex,nofollow,noarchive" />
 <style>
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
-@import url('https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
   font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, BlinkMacSystemFont, sans-serif;
   color: #111;
-  background: #FAF6EF;
+  background: #ffffff;
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
@@ -110,8 +109,8 @@ html, body {
   height: 297mm;
   padding: 25mm 20mm 40mm;
   position: relative;
-  background: #FAF6EF;
-  border: 1px solid #d9cfbc;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   overflow: hidden;
 }
 
@@ -119,7 +118,7 @@ html, body {
   content: "";
   position: absolute;
   inset: 6mm;
-  border: 1px solid #c9bea3;
+  border: 1px solid #d1d5db;
   pointer-events: none;
 }
 
@@ -128,25 +127,27 @@ html, body {
   justify-content: space-between;
   align-items: flex-start;
   padding-bottom: 7mm;
-  border-bottom: 1px solid #d9cfbc;
-  margin-bottom: 10mm;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 12mm;
 }
 
-.cert-brand { display: flex; flex-direction: column; gap: 2mm; }
+.cert-brand { display: flex; flex-direction: column; gap: 1mm; }
 .cert-brand-name {
   font-family: 'Times New Roman', 'Georgia', serif;
-  font-size: 16pt;
+  font-size: 20pt;
   font-weight: 700;
   letter-spacing: 0.5px;
   color: #111;
+  line-height: 1.1;
 }
-.cert-brand-sub { font-size: 9pt; color: #6b5c3f; letter-spacing: 0.3px; }
+.cert-brand-sub { font-size: 9pt; color: #6b7280; letter-spacing: 0.3px; }
+.cert-brand-issuer { font-size: 9pt; color: #374151; font-weight: 500; }
 
 .cert-serial {
   text-align: right;
   font-family: 'SF Mono', 'JetBrains Mono', 'Courier New', monospace;
   font-size: 10pt;
-  color: #3182f6;
+  color: #111;
   letter-spacing: 0.5px;
   font-weight: 500;
 }
@@ -154,81 +155,57 @@ html, body {
   display: block;
   font-family: 'Pretendard', sans-serif;
   font-size: 8pt;
-  color: #8a7a5d;
+  color: #6b7280;
   letter-spacing: 1px;
   margin-bottom: 1mm;
   text-transform: uppercase;
 }
 
-.cert-title { text-align: center; margin-bottom: 10mm; }
+.cert-title { text-align: center; margin-bottom: 12mm; }
 .cert-title-en {
-  font-family: 'Times New Roman', 'Georgia', serif;
-  font-size: 26pt;
+  font-family: 'Great Vibes', 'Snell Roundhand', cursive;
+  font-size: 56pt;
   font-weight: 400;
-  letter-spacing: 4px;
+  letter-spacing: 1px;
   color: #111;
-  margin-bottom: 2mm;
-}
-.cert-title-ko {
-  font-size: 14pt;
-  font-weight: 600;
-  color: #374151;
-  letter-spacing: 6px;
+  line-height: 1.05;
 }
 
 .cert-body { padding: 0 6mm; }
 .cert-recipient-name {
   text-align: center;
   font-family: 'Times New Roman', 'Georgia', serif;
-  font-size: 28pt;
+  font-size: 30pt;
   font-weight: 700;
   color: #111;
-  margin-bottom: 3mm;
+  margin-bottom: 10mm;
   letter-spacing: 0.5px;
-}
-.cert-recipient-name-sub {
-  text-align: center;
-  font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
-  font-size: 12pt;
-  font-weight: 400;
-  color: #6b7280;
-  margin-bottom: 8mm;
-  letter-spacing: -0.3px;
 }
 
 .cert-program {
-  background: #f4ecdb;
+  background: #f9fafb;
   border-radius: 3mm;
   padding: 5mm 7mm;
-  margin-bottom: 8mm;
-  border: 1px solid #e7dcc4;
+  margin-bottom: 10mm;
+  border: 1px solid #e5e7eb;
 }
 .cert-program-row {
   display: flex;
   gap: 6mm;
   padding: 2mm 0;
-  font-size: 10pt;
+  font-size: 10.5pt;
   line-height: 1.6;
 }
-.cert-program-row + .cert-program-row { border-top: 1px solid #e7dcc4; }
-.cert-program-key { flex: 0 0 30mm; color: #6b5c3f; font-weight: 500; }
+.cert-program-row + .cert-program-row { border-top: 1px solid #e5e7eb; }
+.cert-program-key { flex: 0 0 26mm; color: #6b7280; font-weight: 500; }
 .cert-program-value { flex: 1; color: #111; font-weight: 500; }
 
-.cert-attest { text-align: center; margin-bottom: 7mm; }
+.cert-attest { text-align: center; margin-bottom: 10mm; }
 .cert-attest-ko {
-  font-size: 11pt;
+  font-size: 11.5pt;
   line-height: 1.9;
   color: #1f2937;
-  margin-bottom: 4mm;
   padding: 0 4mm;
-}
-.cert-attest-en {
-  font-family: 'Times New Roman', 'Georgia', serif;
-  font-size: 10.5pt;
-  line-height: 1.8;
-  color: #4b5563;
-  font-style: italic;
-  padding: 0 6mm;
 }
 
 .cert-footer {
@@ -237,7 +214,7 @@ html, body {
   align-items: flex-end;
   padding-top: 5mm;
   margin-top: 2mm;
-  border-top: 1px solid #d9cfbc;
+  border-top: 1px solid #e5e7eb;
 }
 .cert-issuer { flex: 1; }
 .cert-issue-date {
@@ -255,13 +232,13 @@ html, body {
   margin-bottom: 1mm;
   letter-spacing: 0.3px;
 }
-.cert-issuer-meta { font-size: 9pt; color: #6b5c3f; line-height: 1.7; }
+.cert-issuer-meta { font-size: 9pt; color: #6b7280; line-height: 1.7; }
 
 .cert-sign { display: flex; align-items: flex-end; gap: 10mm; }
 .cert-signature { text-align: center; min-width: 42mm; }
 .cert-signature-line {
   height: 20mm;
-  border-bottom: 1.2px solid #6b5c3f;
+  border-bottom: 1.2px solid #374151;
   margin-bottom: 2mm;
   position: relative;
 }
@@ -279,22 +256,22 @@ html, body {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  font-family: 'Nanum Pen Script', 'Brush Script MT', cursive;
-  font-size: 30pt;
-  color: #1f2937;
-  padding-bottom: 1mm;
+  font-family: 'Great Vibes', 'Snell Roundhand', cursive;
+  font-size: 34pt;
+  color: #111;
+  padding-bottom: 0.5mm;
   line-height: 1.1;
   white-space: nowrap;
 }
 .cert-signature-name { font-size: 9pt; color: #374151; font-weight: 500; }
-.cert-signature-title { font-size: 8pt; color: #6b5c3f; margin-top: 0.5mm; }
+.cert-signature-title { font-size: 8pt; color: #6b7280; margin-top: 0.5mm; }
 
 .cert-seal {
   width: 35mm;
   height: 35mm;
   border-radius: 50%;
-  border: 2.5px solid #3182f6;
-  color: #3182f6;
+  border: 2.5px solid #111;
+  color: #111;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -306,7 +283,7 @@ html, body {
   text-align: center;
   flex-shrink: 0;
   transform: rotate(-6deg);
-  background: #FAF6EF;
+  background: #ffffff;
   position: relative;
 }
 .cert-seal::before {
@@ -314,7 +291,7 @@ html, body {
   position: absolute;
   inset: 2mm;
   border-radius: 50%;
-  border: 1px solid #3182f6;
+  border: 1px solid #111;
   pointer-events: none;
 }
 .cert-seal-top { font-size: 7.5pt; margin-bottom: 1mm; letter-spacing: 1.2px; }
@@ -327,22 +304,22 @@ html, body {
   left: 20mm;
   right: 20mm;
   padding-top: 4mm;
-  border-top: 1px solid #d9cfbc;
+  border-top: 1px solid #e5e7eb;
   font-size: 8pt;
-  color: #8a7a5d;
+  color: #6b7280;
 }
 .cert-verify-text { line-height: 1.5; }
 .cert-verify-url {
   font-family: 'SF Mono', 'JetBrains Mono', 'Courier New', monospace;
-  color: #6b5c3f;
+  color: #374151;
 }
 
 @media screen {
-  body { background: #eee6d3; padding: 20mm 0; display: flex; justify-content: center; }
+  body { background: #f3f4f6; padding: 20mm 0; display: flex; justify-content: center; }
   .cert-page { box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12); }
 }
 @media print {
-  body { background: #FAF6EF; padding: 0; }
+  body { background: #ffffff; padding: 0; }
   .cert-page { box-shadow: none; }
 }
 </style>
@@ -352,8 +329,9 @@ html, body {
 
   <header class="cert-header">
     <div class="cert-brand">
-      <span class="cert-brand-name">Dropdown</span>
-      <span class="cert-brand-sub">Fan to Pro / K-Pop Live Production</span>
+      <span class="cert-brand-name">Fan to Pro</span>
+      <span class="cert-brand-sub">K-Pop Live Production</span>
+      <span class="cert-brand-issuer">Dropdown</span>
     </div>
     <div>
       <span class="cert-serial-label">Serial No.</span>
@@ -362,32 +340,29 @@ html, body {
   </header>
 
   <div class="cert-title">
-    <div class="cert-title-en">CERTIFICATE OF COMPLETION</div>
-    <div class="cert-title-ko">수 료 증</div>
+    <div class="cert-title-en">Certificate of Completion</div>
   </div>
 
   <main class="cert-body">
     <div class="cert-recipient-name">${nameEn}</div>
-    ${nameKo ? `<div class="cert-recipient-name-sub">${nameKo}</div>` : `<div style="margin-bottom: 8mm;"></div>`}
 
     <div class="cert-program">
       <div class="cert-program-row">
-        <div class="cert-program-key">Program / 과정</div>
-        <div class="cert-program-value">${programKo}<br>${programEn}</div>
+        <div class="cert-program-key">과정</div>
+        <div class="cert-program-value">${programKo}</div>
       </div>
       <div class="cert-program-row">
-        <div class="cert-program-key">Duration / 기간</div>
-        <div class="cert-program-value">${durationKo}<br>${durationEn}</div>
+        <div class="cert-program-key">기간</div>
+        <div class="cert-program-value">${durationKo}</div>
       </div>
       <div class="cert-program-row">
-        <div class="cert-program-key">Cohort / 기수</div>
+        <div class="cert-program-key">기수</div>
         <div class="cert-program-value">${cohortLabel}</div>
       </div>
     </div>
 
     <div class="cert-attest">
       <p class="cert-attest-ko">${attestKo}</p>
-      <p class="cert-attest-en">${attestEn}</p>
     </div>
 
   </main>
@@ -395,12 +370,11 @@ html, body {
   <footer class="cert-footer">
     <div class="cert-issuer">
       <div class="cert-issue-date">
-        발급일 Issued on: ${issuedKo} / ${issuedEn}
+        발급일: ${issuedKo}
       </div>
       <div class="cert-issuer-name">${issuer}</div>
       <div class="cert-issuer-meta">
         사업자등록번호 ${bizNo}<br>
-        Business Registration No. ${bizNo}<br>
         growthcareer.xyz
       </div>
     </div>
@@ -408,9 +382,9 @@ html, body {
       <div class="cert-signature">
         <div class="cert-signature-line">
           <img class="cert-signature-img" src="${signaturePath}" alt="Signature" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'" />
-          <span class="cert-signature-fallback" style="display:none">황재하</span>
+          <span class="cert-signature-fallback" style="display:none">Jaeha</span>
         </div>
-        <div class="cert-signature-name">대표 / CEO</div>
+        <div class="cert-signature-name">대표</div>
         <div class="cert-signature-title">${issuer}</div>
       </div>
       <div class="cert-seal">
@@ -423,8 +397,7 @@ html, body {
 
   <div class="cert-verify">
     <div class="cert-verify-text">
-      본 수료증은 아래 URL 에서 진위를 확인할 수 있습니다.<br>
-      Verify this certificate at:
+      본 수료증은 아래 URL 에서 진위를 확인할 수 있습니다.
       <span class="cert-verify-url">${verifyUrl}</span>
     </div>
   </div>
