@@ -141,7 +141,13 @@ html, body {
   line-height: 1.1;
 }
 .cert-brand-sub { font-size: 9pt; color: #6b7280; letter-spacing: 0.3px; font-weight: 500; }
-.cert-brand-issuer { font-size: 9pt; color: #374151; font-weight: 600; }
+.cert-brand-issuer {
+  font-size: 10pt;
+  color: #111;
+  font-weight: 700;
+  font-family: 'Pretendard', sans-serif;
+  margin-top: 1mm;
+}
 
 .cert-serial {
   text-align: right;
@@ -164,12 +170,11 @@ html, body {
 .cert-title { text-align: center; margin-bottom: 12mm; }
 .cert-title-en {
   font-family: 'Great Vibes', 'Snell Roundhand', cursive;
-  font-size: 60pt;
-  font-weight: 700;
+  font-size: 42pt;
+  font-weight: 400;
   letter-spacing: 1px;
   color: #111;
-  line-height: 1.05;
-  text-shadow: 0.4px 0 0 currentColor;
+  line-height: 1.1;
 }
 
 .cert-body { padding: 0 6mm; }
@@ -204,12 +209,11 @@ html, body {
 .cert-attest { text-align: center; margin-bottom: 10mm; }
 .cert-attest-en {
   font-family: 'Great Vibes', 'Snell Roundhand', cursive;
-  font-size: 22pt;
-  font-weight: 700;
-  line-height: 1.35;
-  color: #111;
-  padding: 0 6mm;
-  text-shadow: 0.3px 0 0 currentColor;
+  font-size: 15pt;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #374151;
+  padding: 0 8mm;
 }
 
 .cert-footer {
@@ -261,13 +265,12 @@ html, body {
   left: 50%;
   transform: translateX(-50%);
   font-family: 'Great Vibes', 'Snell Roundhand', cursive;
-  font-size: 36pt;
-  font-weight: 700;
+  font-size: 30pt;
+  font-weight: 400;
   color: #111;
   padding-bottom: 0.5mm;
   line-height: 1.1;
   white-space: nowrap;
-  text-shadow: 0.4px 0 0 currentColor;
 }
 .cert-signature-name { font-size: 9pt; color: #374151; font-weight: 500; }
 .cert-signature-title { font-size: 8pt; color: #6b7280; margin-top: 0.5mm; }
