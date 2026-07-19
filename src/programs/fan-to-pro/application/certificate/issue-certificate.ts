@@ -27,6 +27,7 @@ import {
 import { fetchCertificatesByStudent, insertCertificate } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/certificate-repository";
 import { loadCertificateContext } from "./build-certificate-data";
 import { generateSerialNo } from "./serial-no";
+import { generateVerifyToken } from "./verify-token";
 import { evaluateCompletionEligibility } from "@/src/programs/fan-to-pro/domain/services/certificate-eligibility";
 
 const InputSchema = z.object({
@@ -110,6 +111,10 @@ export async function issueCertificateForStudentAction(
       parsed.data.student_id,
       ctx.cohort.id,
     );
+    // verify URL 용 opaque 토큰. serial_no 와 별개 자산.
+    // DB 는 UNIQUE 이므로 극히 낮은 확률 (62^10) 로 충돌 시 INSERT 실패
+    // → 상위 batch/재시도가 다시 호출하면 새 nanoid 로 재발급 시도.
+    const verifyToken = generateVerifyToken();
     const attendancePercent = Math.round(eligibility.attendance_rate * 100);
 
     // getLmsUser() 이미 assertCanReadStudentProfile 이 호출 — cache() 로 1회 재사용.
@@ -121,6 +126,7 @@ export async function issueCertificateForStudentAction(
       cohort_id: ctx.cohort.id,
       kind: "completion",
       serial_no: serialNo,
+      verify_token: verifyToken,
       issued_by: issuedBy,
       attendance_rate: attendancePercent,
       notes: `Issued by ${meUser?.isSuperAdmin ? "super_admin" : "self-or-admin"} at ${new Date().toISOString()}`,

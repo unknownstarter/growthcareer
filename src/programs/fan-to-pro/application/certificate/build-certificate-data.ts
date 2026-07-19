@@ -21,11 +21,13 @@ import "server-only";
 import { fetchStudentById } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/student-repository";
 import { fetchCohortById } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-repository";
 import { fetchStudentProfile } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/student-profile-repository";
+import { fetchCertificatesByStudent } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/certificate-repository";
 import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
 import { generateSerialNo } from "./serial-no";
 import type { CertificateData } from "./certificate-template";
 import type { Student } from "@/src/programs/fan-to-pro/domain/entities/student";
 import type { Cohort } from "@/src/programs/fan-to-pro/domain/entities/cohort";
+import type { Certificate } from "@/src/programs/fan-to-pro/domain/entities/certificate";
 
 /** verify URL host — env 없으면 growthcareer.xyz 기본. */
 function getSiteBaseUrl(): string {
@@ -123,12 +125,19 @@ export type BuildCertificateContext = {
   student: Student;
   cohort: Cohort;
   attendanceRate: number | null;
+  /**
+   * 이미 발급된 (student × cohort × completion) certificate row. verify URL 조립 시
+   * verify_token 재사용. 미발급 preview 상황에서는 null.
+   */
+  existingCompletionCertificate: Certificate | null;
 };
 
 /**
  * 학생 + cohort + attendance 병렬 fetch.
  * eligibility 판정에 필요한 raw context. certificate data 생성 전 preview 모드에서
  * 사용.
+ *
+ * 기존 certificate 도 함께 조회해 verify_token 재사용 가능하게 노출.
  */
 export async function loadCertificateContext(
   studentId: string,
@@ -136,13 +145,24 @@ export async function loadCertificateContext(
   const student = await fetchStudentById(studentId);
   if (!student) return null;
 
-  const [cohort, rate] = await Promise.all([
+  const [cohort, rate, existingCerts] = await Promise.all([
     fetchCohortById(student.cohort_id),
     computeAttendanceRate(studentId, student.cohort_id),
+    fetchCertificatesByStudent(studentId).catch(() => [] as Certificate[]),
   ]);
   if (!cohort) return null;
 
-  return { student, cohort, attendanceRate: rate };
+  const existingCompletionCertificate =
+    existingCerts.find(
+      (c) => c.cohort_id === cohort.id && c.kind === "completion",
+    ) ?? null;
+
+  return {
+    student,
+    cohort,
+    attendanceRate: rate,
+    existingCompletionCertificate,
+  };
 }
 
 /**
@@ -193,9 +213,15 @@ export async function buildCertificateData(
     ? `${cohortNumMatch[0]} / Cohort ${cohortNumMatch[1]}`
     : cohortName;
 
-  // verify URL (익명 접근 가능)
+  // verify URL (익명 접근 가능).
+  // 재설계 (2026-07-19, B0081): URL param 은 opaque nanoid (verify_token).
+  //   1) 이미 발급 = 저장된 verify_token 재사용 (재출력 시 동일 URL 유지).
+  //   2) preview / 미발급 = "PREVIEW" placeholder — 실제 조회 시 not-found.
+  // serial_no 는 문서 UI 표기 전용이라 URL 에 노출 X.
   const baseUrl = getSiteBaseUrl();
-  const verifyUrl = `${baseUrl}/verify/${encodeURIComponent(serialNo)}`;
+  const verifyTokenForUrl =
+    ctx.existingCompletionCertificate?.verify_token ?? "PREVIEW";
+  const verifyUrl = `${baseUrl}/verify/${verifyTokenForUrl}`;
 
   // 재설계 (2026-07-19): attest_en 을 서술문 형태로 조립.
   //   T4 = "This certifies that the recipient has completed the Fan to Pro

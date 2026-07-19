@@ -56,6 +56,9 @@ importers:
       mammoth:
         specifier: ^1.12.0
         version: 1.12.0
+      nanoid:
+        specifier: ^6.0.0
+        version: 6.0.0
       next:
         specifier: ^16.0.0
         version: 16.2.4(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -1391,6 +1394,11 @@ packages:
   nanoid@5.1.16:
     resolution: {integrity: sha512-kVrnsrJqMR8+oLJnGEmSWw9BivK5mt7H3FZatVRjrc5wGqFYuBxX1yG7+A7Gi5AefkX6t/oCkizcQgpu0cY1dQ==}
     engines: {node: ^18 || >=20}
+    hasBin: true
+
+  nanoid@6.0.0:
+    resolution: {integrity: sha512-mkUH+rPkwU2qPadJ0oJZOjeZ5Mxn8Q1UhevwkTRWNuUZzyia3h4rhzK39hxaHTk0o2OxB8W2SQ6A8k23ZDi1pQ==}
+    engines: {node: ^22 || ^24 || >=26}
     hasBin: true
 
   negotiator@1.0.0:
@@ -2859,6 +2867,8 @@ snapshots:
   nanoid@3.3.11: {}
 
   nanoid@5.1.16: {}
+
+  nanoid@6.0.0: {}
 
   negotiator@1.0.0: {}
 

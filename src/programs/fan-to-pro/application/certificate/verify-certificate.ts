@@ -19,16 +19,23 @@ import "server-only";
  * Rate limiting: 향후 Sage 권고 시 Vercel Firewall custom rule 적용 예정.
  */
 
-import { fetchCertificateBySerialNo } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/certificate-repository";
+import {
+  fetchCertificateByVerifyToken,
+  fetchCertificateBySerialNo,
+} from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/certificate-repository";
 import { fetchCohortById } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-repository";
 import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
+import { isPlausibleVerifyToken } from "./verify-token";
+import type { Certificate } from "@/src/programs/fan-to-pro/domain/entities/certificate";
 import { z } from "zod";
 
-const SerialSchema = z
+// URL param 통합 스키마.
+// 신규 verify_token = 10자 alphanumeric (hex 백필 row 는 16자).
+// 기존 serial_no = "GC-FTP-1기-003" 형태 (한글 포함) — backward compat.
+const TokenOrSerialSchema = z
   .string()
   .min(6)
   .max(60)
-  // 발급번호 문자셋: 한글 (기), 영숫자, hyphen 만. 다른 문자 유입 시 즉시 reject.
   .regex(/^[A-Za-z0-9가-힣-]+$/);
 
 export type VerifyCertificateResult =
@@ -44,22 +51,40 @@ export type VerifyCertificateResult =
     };
 
 /**
- * serial_no 로 발급 여부 조회.
+ * URL param (verify_token 또는 serial_no) 로 발급 여부 조회.
+ *
+ * 조회 우선순위:
+ *   1) verify_token 매칭 (신규 opaque URL, 2026-07-19+ 발급물)
+ *   2) serial_no 매칭 (backward compat, 이전 URL 캡처 대응)
+ *
+ * 함수명은 `BySerialNo` 로 남기지만 실제로는 두 매핑 모두 시도. 라우트 param
+ * 이름 (`[serialNo]`) 유지 위해 이름 유지 = breaking rename 회피.
  *
  * 노출 정책 (§7.4 옵션 B):
  *   - PII 반환 X. 학생 이름, 이메일, 전화, 사업자번호 등 절대 X.
  *   - "유효 + 프로그램명 + 기수 + 발급일 + 발급 주체" 만 노출.
  *
- * @param serialNo — URL path 로부터 (이미 decodeURIComponent 완료된 상태)
+ * @param token — URL path 로부터 (이미 decodeURIComponent 완료된 상태)
  */
 export async function verifyCertificateBySerialNo(
-  serialNo: string,
+  token: string,
 ): Promise<VerifyCertificateResult> {
   // 1) 입력 검증 — 형식 벗어나면 조회 자체 skip.
-  const parsed = SerialSchema.safeParse(serialNo);
+  const parsed = TokenOrSerialSchema.safeParse(token);
   if (!parsed.success) return { status: "invalid-format" };
 
-  const cert = await fetchCertificateBySerialNo(parsed.data);
+  // 2) verify_token 매칭 우선. 형식이 alphanumeric only 일 때만 시도해 불필요
+  //    쿼리 회피 (한글 포함 문자열 = serial_no 형식).
+  let cert: Certificate | null = null;
+  if (isPlausibleVerifyToken(parsed.data)) {
+    cert = await fetchCertificateByVerifyToken(parsed.data);
+  }
+
+  // 3) verify_token 미매칭이면 serial_no fallback (backward compat).
+  if (!cert) {
+    cert = await fetchCertificateBySerialNo(parsed.data);
+  }
+
   if (!cert) return { status: "not-found" };
 
   // 2) cohort 정보 join (프로그램명 조회용)

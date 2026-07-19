@@ -20,6 +20,9 @@ export const CertificateSchema = z.object({
   kind: CertificateKindSchema,
 
   serial_no: z.string().min(1),
+  // verify URL 용 opaque 토큰 (10자 nanoid). serial_no 는 UI 표기 전용.
+  // 기존 row 는 SQL 백필로 hex(16자) 값 보유. 신규는 애플리케이션 nanoid(10자).
+  verify_token: z.string().min(6),
   issued_at: z.string(),
   issued_by: z.string().uuid().nullable(),
   file_path: z.string().nullable(),
