@@ -207,9 +207,9 @@ export async function buildCertificateData(
     recipient_name_ko: nameKo,
     recipient_name_en: nameEn,
     attest_ko:
-      "위 사람은 Growth Career 의 Fan to Pro 4주 K-pop 공연 실무 교육 과정을 성실히 이수하였음을 증명합니다.",
+      "위 사람은 Fan to Pro 4주 K-pop 공연 실무 교육 과정을 성실히 이수하였음을 증명합니다.",
     attest_en:
-      "This is to certify that the above named person has successfully completed the Fan to Pro 4-week K-Pop Live Production program of Growth Career.",
+      "This is to certify that the above named person has successfully completed the Fan to Pro 4-week K-Pop Live Production program.",
     issued_date_ko: fmtKoreanDate(issueDate),
     issued_date_en: fmtEnglishDate(issueDate),
     issuer_name: "Dropdown (드롭다운)",

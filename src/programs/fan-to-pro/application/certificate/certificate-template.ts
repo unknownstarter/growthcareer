@@ -133,23 +133,23 @@ html, body {
 
 .cert-brand { display: flex; flex-direction: column; gap: 1mm; }
 .cert-brand-name {
-  font-family: 'Times New Roman', 'Georgia', serif;
+  font-family: 'Pretendard', sans-serif;
   font-size: 20pt;
-  font-weight: 700;
-  letter-spacing: 0.5px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
   color: #111;
   line-height: 1.1;
 }
-.cert-brand-sub { font-size: 9pt; color: #6b7280; letter-spacing: 0.3px; }
-.cert-brand-issuer { font-size: 9pt; color: #374151; font-weight: 500; }
+.cert-brand-sub { font-size: 9pt; color: #6b7280; letter-spacing: 0.3px; font-weight: 500; }
+.cert-brand-issuer { font-size: 9pt; color: #374151; font-weight: 600; }
 
 .cert-serial {
   text-align: right;
-  font-family: 'SF Mono', 'JetBrains Mono', 'Courier New', monospace;
+  font-family: 'Pretendard', sans-serif;
   font-size: 10pt;
   color: #111;
-  letter-spacing: 0.5px;
-  font-weight: 500;
+  letter-spacing: 0.3px;
+  font-weight: 600;
 }
 .cert-serial-label {
   display: block;
@@ -164,22 +164,23 @@ html, body {
 .cert-title { text-align: center; margin-bottom: 12mm; }
 .cert-title-en {
   font-family: 'Great Vibes', 'Snell Roundhand', cursive;
-  font-size: 56pt;
-  font-weight: 400;
+  font-size: 60pt;
+  font-weight: 700;
   letter-spacing: 1px;
   color: #111;
   line-height: 1.05;
+  text-shadow: 0.4px 0 0 currentColor;
 }
 
 .cert-body { padding: 0 6mm; }
 .cert-recipient-name {
   text-align: center;
-  font-family: 'Times New Roman', 'Georgia', serif;
-  font-size: 30pt;
-  font-weight: 700;
+  font-family: 'Pretendard', sans-serif;
+  font-size: 28pt;
+  font-weight: 800;
   color: #111;
   margin-bottom: 10mm;
-  letter-spacing: 0.5px;
+  letter-spacing: -0.3px;
 }
 
 .cert-program {
@@ -201,11 +202,14 @@ html, body {
 .cert-program-value { flex: 1; color: #111; font-weight: 500; }
 
 .cert-attest { text-align: center; margin-bottom: 10mm; }
-.cert-attest-ko {
-  font-size: 11.5pt;
-  line-height: 1.9;
-  color: #1f2937;
-  padding: 0 4mm;
+.cert-attest-en {
+  font-family: 'Great Vibes', 'Snell Roundhand', cursive;
+  font-size: 22pt;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #111;
+  padding: 0 6mm;
+  text-shadow: 0.3px 0 0 currentColor;
 }
 
 .cert-footer {
@@ -225,12 +229,12 @@ html, body {
   letter-spacing: 0.3px;
 }
 .cert-issuer-name {
-  font-family: 'Times New Roman', 'Georgia', serif;
+  font-family: 'Pretendard', sans-serif;
   font-size: 13pt;
-  font-weight: 600;
+  font-weight: 800;
   color: #111;
   margin-bottom: 1mm;
-  letter-spacing: 0.3px;
+  letter-spacing: -0.2px;
 }
 .cert-issuer-meta { font-size: 9pt; color: #6b7280; line-height: 1.7; }
 
@@ -257,11 +261,13 @@ html, body {
   left: 50%;
   transform: translateX(-50%);
   font-family: 'Great Vibes', 'Snell Roundhand', cursive;
-  font-size: 34pt;
+  font-size: 36pt;
+  font-weight: 700;
   color: #111;
   padding-bottom: 0.5mm;
   line-height: 1.1;
   white-space: nowrap;
+  text-shadow: 0.4px 0 0 currentColor;
 }
 .cert-signature-name { font-size: 9pt; color: #374151; font-weight: 500; }
 .cert-signature-title { font-size: 8pt; color: #6b7280; margin-top: 0.5mm; }
@@ -276,9 +282,9 @@ html, body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-family: 'Times New Roman', 'Georgia', serif;
-  font-weight: 700;
-  letter-spacing: 0.6px;
+  font-family: 'Pretendard', sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.5px;
   line-height: 1.3;
   text-align: center;
   flex-shrink: 0;
@@ -310,8 +316,9 @@ html, body {
 }
 .cert-verify-text { line-height: 1.5; }
 .cert-verify-url {
-  font-family: 'SF Mono', 'JetBrains Mono', 'Courier New', monospace;
+  font-family: 'Pretendard', sans-serif;
   color: #374151;
+  font-weight: 500;
 }
 
 @media screen {
@@ -362,7 +369,7 @@ html, body {
     </div>
 
     <div class="cert-attest">
-      <p class="cert-attest-ko">${attestKo}</p>
+      <p class="cert-attest-en">${attestEn}</p>
     </div>
 
   </main>
