@@ -228,7 +228,7 @@ html, body {
   font-weight: 700;
   color: #111;
   letter-spacing: 0.5px;
-  margin-bottom: 10mm;
+  margin-bottom: 18mm;
   line-height: 1.15;
 }
 
