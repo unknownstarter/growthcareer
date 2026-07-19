@@ -16,6 +16,7 @@ import {
   PageHeader,
   EmptyState,
 } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-header";
+import { CohortTabsNav } from "@/src/programs/fan-to-pro/interface/components/lms/admin/cohort-tabs-nav";
 
 export const metadata: Metadata = {
   title: "기수 상세 - Fan to Pro",
@@ -53,6 +54,7 @@ export default async function FanToProAdminCohortDetailPage({
   if (applicantsResult.error) {
     return (
       <PageContainer>
+        <CohortTabsNav cohortSlug={cohortSlug} />
         <PageHeader title={cohort.name} description="기수 상세" />
         <EmptyState
           title="신청자 데이터를 불러올 수 없습니다"
@@ -64,6 +66,7 @@ export default async function FanToProAdminCohortDetailPage({
 
   return (
     <PageContainer>
+      <CohortTabsNav cohortSlug={cohortSlug} />
       <PageGuideBot {...PAGE_GUIDES["cohort-detail"]} />
       <CohortDetail
         cohort={cohort}

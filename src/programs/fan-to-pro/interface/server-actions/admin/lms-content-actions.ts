@@ -19,6 +19,15 @@ import {
 } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/announcement-repository";
 import { insertAssignment } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/assignment-repository";
 
+/**
+ * 다중 cohort 대응 (2026-07-19): materials / announcements 페이지가
+ * /admin/cohorts/[slug]/* 안으로 이동. legacy /admin/materials · /admin/announcements
+ * 는 redirect 만. /admin/cohorts 를 layout scope 로 revalidate 해서 하위 페이지 갱신.
+ */
+function revalidateCohortsLayout(): void {
+  revalidatePath("/[locale]/fan-to-pro/admin/cohorts", "layout");
+}
+
 // ---------- Materials ----------
 
 const MaterialInsertSchema = z.object({
@@ -48,6 +57,7 @@ export async function createMaterialAction(
       uploaded_by: user.instructorId, // super_admin 은 보통 null
     });
     revalidatePath("/ko/fan-to-pro/admin/materials");
+    revalidateCohortsLayout();
     return { status: "ok", id: m.id };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
@@ -62,6 +72,7 @@ export async function publishMaterialAction(input: {
   try {
     await updateMaterialStatus(input.id, "published");
     revalidatePath("/ko/fan-to-pro/admin/materials");
+    revalidateCohortsLayout();
     return { status: "ok" };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
@@ -76,6 +87,7 @@ export async function archiveMaterialAction(input: {
   try {
     await updateMaterialStatus(input.id, "archived");
     revalidatePath("/ko/fan-to-pro/admin/materials");
+    revalidateCohortsLayout();
     return { status: "ok" };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
@@ -90,6 +102,7 @@ export async function deleteMaterialAction(input: {
   try {
     await deleteMaterial(input.id);
     revalidatePath("/ko/fan-to-pro/admin/materials");
+    revalidateCohortsLayout();
     return { status: "ok" };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
@@ -119,6 +132,7 @@ export async function createAnnouncementAction(
       created_by: user.id,
     });
     revalidatePath("/ko/fan-to-pro/admin/announcements");
+    revalidateCohortsLayout();
     return { status: "ok", id: a.id };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
@@ -133,6 +147,7 @@ export async function publishAnnouncementAction(input: {
   try {
     await updateAnnouncementStatus(input.id, "published");
     revalidatePath("/ko/fan-to-pro/admin/announcements");
+    revalidateCohortsLayout();
     return { status: "ok" };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
@@ -147,6 +162,7 @@ export async function archiveAnnouncementAction(input: {
   try {
     await updateAnnouncementStatus(input.id, "archived");
     revalidatePath("/ko/fan-to-pro/admin/announcements");
+    revalidateCohortsLayout();
     return { status: "ok" };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
@@ -161,6 +177,7 @@ export async function deleteAnnouncementAction(input: {
   try {
     await deleteAnnouncement(input.id);
     revalidatePath("/ko/fan-to-pro/admin/announcements");
+    revalidateCohortsLayout();
     return { status: "ok" };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";

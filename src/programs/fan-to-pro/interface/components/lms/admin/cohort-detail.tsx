@@ -18,8 +18,6 @@ import Link from "next/link";
 import type { Route } from "next";
 import { useParams, useRouter } from "next/navigation";
 import {
-  FileText,
-  ClipboardCheck,
   ArrowRight,
   Users,
   GraduationCap,
@@ -267,24 +265,7 @@ export function CohortDetail({ cohort, applicants, studentCount, overview }: Pro
           </p>
         </div>
         <div className="flex flex-col items-end gap-2">
-          <div className="flex items-center gap-2">
-            <Button asChild variant="outline" size="sm">
-              <Link href={`/${locale}/fan-to-pro/admin/attendance` as Route}>
-                <ClipboardCheck className="h-3.5 w-3.5 mr-1.5" />
-                출결
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="sm">
-              <Link
-                href={
-                  `/${locale}/fan-to-pro/admin/cohorts/${cohort.slug}/materials` as Route
-                }
-              >
-                <FileText className="h-3.5 w-3.5 mr-1.5" />
-                강의 자료
-              </Link>
-            </Button>
-          </div>
+          {/* 출결 / 강의 자료 진입은 상단 탭 (CohortTabsNav) 에서. 여기는 slug 만 표시. */}
           <div className="text-right text-xs text-[var(--muted-foreground)]">
             slug: <code className="font-mono">{cohort.slug}</code>
           </div>
@@ -560,7 +541,9 @@ function OverviewKpiGrid({
 
       {/* 2. 학생 invite 진척 */}
       <KpiCard
-        href={`/${locale}/fan-to-pro/admin/students` as Route}
+        href={
+          `/${locale}/fan-to-pro/admin/cohorts/${cohort.slug}/students` as Route
+        }
         icon={<GraduationCap className="h-4 w-4" />}
         title="학생 등록 + 초대"
         description={
@@ -623,7 +606,9 @@ function OverviewKpiGrid({
 
       {/* 4. 회차 / 출결 */}
       <KpiCard
-        href={`/${locale}/fan-to-pro/admin/attendance` as Route}
+        href={
+          `/${locale}/fan-to-pro/admin/cohorts/${cohort.slug}/attendance` as Route
+        }
         icon={<CalendarCheck className="h-4 w-4" />}
         title="회차 / 출결"
         description={

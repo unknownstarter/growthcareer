@@ -36,17 +36,20 @@ import { assertProgramAdmin } from "@/src/programs/fan-to-pro/infrastructure/aut
 // 공통 — revalidate, error code 정규화
 // -------------------------------------------------------------------------
 
+// 다중 cohort 대응 (2026-07-19): 출결 페이지가 /admin/cohorts/[slug]/attendance
+// 로 이동. legacy /admin/attendance 는 redirect 만 하므로 revalidate 무의미하지만
+// 기존 유지 (호환). /admin/cohorts 를 "layout" scope 로 revalidate 해서 하위
+// [cohortSlug]/attendance 페이지 모두 갱신.
 const REVALIDATE_PATHS = [
   "/ko/fan-to-pro/admin/attendance",
   "/en/fan-to-pro/admin/attendance",
-  "/ko/fan-to-pro/admin/cohorts",
-  "/en/fan-to-pro/admin/cohorts",
 ];
 
 function revalidateAll(): void {
   for (const p of REVALIDATE_PATHS) {
     revalidatePath(p);
   }
+  revalidatePath("/[locale]/fan-to-pro/admin/cohorts", "layout");
 }
 
 /**

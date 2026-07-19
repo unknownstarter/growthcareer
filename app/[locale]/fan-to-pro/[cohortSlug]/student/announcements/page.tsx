@@ -40,7 +40,8 @@ export default async function StudentAnnouncementsPage({
   if (!user) redirect(`/${locale}/auth/login` as Route);
   if (!user.studentId) {
     if (user.isSuperAdmin) {
-      redirect(`/${locale}/fan-to-pro/admin/announcements` as Route);
+      // 다중 cohort 대응 (2026-07-19): announcements 는 cohort scope. 기수 리스트로 유도.
+      redirect(`/${locale}/fan-to-pro/admin/cohorts` as Route);
     }
     redirect(`/${locale}/auth/login?error=no_student` as Route);
   }

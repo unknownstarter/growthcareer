@@ -6,19 +6,15 @@ import type { Route } from "next";
 import {
   LayoutDashboard,
   Layers,
-  Users,
   GraduationCap,
   Building2,
   Wallet,
-  FileText,
   Megaphone,
   MessageSquare,
   Sparkles,
   Briefcase,
   User,
-  ClipboardCheck,
   BookOpen,
-  ListTodo,
 } from "lucide-react";
 import { cn } from "@/src/programs/fan-to-pro/interface/components/lms/lib/utils";
 import type { LmsRole } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
@@ -38,17 +34,15 @@ type NavItem = {
  */
 function adminItems(locale: string): NavItem[] {
   const base = `/${locale}/fan-to-pro/admin`;
+  // 다중 cohort 대응 (2026-07-19): 출결 / 학생 / 공지 / 자료 는 기수 상세 안 탭.
+  // 사이드바에서 제거하고 [기수] 로 진입 → cohort 선택 → 서브 탭.
   return [
     { href: `${base}/dashboard`, label: "대시보드", icon: LayoutDashboard },
     { href: `${base}/cohorts`, label: "기수", icon: Layers },
-    { href: `${base}/attendance`, label: "출결", icon: ClipboardCheck },
     { href: `${base}/talent-pool`, label: "인재풀", icon: Sparkles },
-    { href: `${base}/students`, label: "학생", icon: Users },
     { href: `${base}/instructors`, label: "강사", icon: GraduationCap },
     { href: `${base}/companies`, label: "회사", icon: Building2 },
     { href: `${base}/finance`, label: "재무", icon: Wallet },
-    { href: `${base}/materials`, label: "자료", icon: FileText },
-    { href: `${base}/announcements`, label: "공지", icon: Megaphone },
     { href: `${base}/consultations`, label: "컨설팅", icon: MessageSquare },
   ];
 }
