@@ -36,6 +36,7 @@ const base = await readFile(SAMPLE, "utf8");
 // 기존 sample: "Kim Ji-Woo" · "GC-FTP-1-0007" · "1기 / Cohort 1" 유지
 const ORIG_NAME_RE = /<div class="cert-recipient-name">[^<]*<\/div>/;
 const ORIG_SERIAL_RE = /<span class="cert-serial-value">[^<]*<\/span>/;
+const ORIG_VERIFY_RE = /https:\/\/growthcareer\.xyz\/verify\/[A-Za-z0-9-]+/g;
 
 const browser = await chromium.launch();
 const ctx = await browser.newContext({
@@ -46,6 +47,7 @@ const page = await ctx.newPage();
 
 for (const s of STUDENTS) {
   const serial = `GC-FTP-1기-${s.seq}`;
+  const verifyUrl = `https://growthcareer.xyz/verify/${encodeURIComponent(serial)}`;
   const html = base
     .replace(
       ORIG_NAME_RE,
@@ -54,7 +56,8 @@ for (const s of STUDENTS) {
     .replace(
       ORIG_SERIAL_RE,
       `<span class="cert-serial-value">${serial}</span>`,
-    );
+    )
+    .replace(ORIG_VERIFY_RE, verifyUrl);
   const tmp = `/tmp/cert-batch-${s.seq}.html`;
   await writeFile(tmp, html, "utf8");
 
