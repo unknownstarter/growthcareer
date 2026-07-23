@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * 수료증 샘플 HTML 생성기 (B0081).
  *
@@ -7,18 +8,18 @@
  *
  * 템플릿 변경 시 이 스크립트만 다시 돌리면 샘플이 항상 최신 동기화.
  *
- * 실행: node tools/gen-cert-sample.ts  (Node 23+ 네이티브 TS type-stripping)
+ * .ts 템플릿 import = Node 23+ 네이티브 type-stripping. 생성기 자체는 .mjs 라
+ * tsc 대상 아님 (다른 tools/*.mjs 와 동일).
+ *
+ * 실행: node tools/gen-cert-sample.mjs
  */
 import { writeFile } from "node:fs/promises";
-import {
-  renderCertificateHtml,
-  type CertificateData,
-} from "../src/programs/fan-to-pro/application/certificate/certificate-template.ts";
+import { renderCertificateHtml } from "../src/programs/fan-to-pro/application/certificate/certificate-template.ts";
 
 const OUT = "/tmp/cert-sample-preview.html";
 
 // 실 1기 값 기준 샘플. 이름 · serial 은 batch 스크립트가 학생별로 교체.
-const sample: CertificateData = {
+const sample = {
   serial_no: "GC-FTP-1기-001",
   program_name_ko: "Fan to Pro 4주 K-pop 공연 실무 교육 과정",
   program_name_en: "Fan to Pro 4-week K-Pop Live Production Program",
