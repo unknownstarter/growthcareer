@@ -1,6 +1,6 @@
 # Backlog
 
-> Owner: Aria · Last reviewed: 2026-06-05
+> Owner: Aria · Last reviewed: 2026-07-23 (코드베이스 기준 상태 정정)
 >
 > 운영 매뉴얼: [docs/decisions/0002-backlog-and-spec-system.md](../decisions/0002-backlog-and-spec-system.md)
 >
@@ -271,6 +271,8 @@ D-9. 1주차 강의 자료 Google Drive 모바일 다운로드 사고 → 자체
 로드맵: [`docs/playbook/12-lms-launch-roadmap.md`](../playbook/12-lms-launch-roadmap.md).
 기존 영역 변경 금지 (CLAUDE.md §7.4). Sage 검토 필수 (CLAUDE.md §7.4).
 
+> **✅ B0044~B0047 전체 done (2026-07-23 코드 확인)**: 마이그레이션 `20260625000000_lecture_materials.sql` + `20260625001_student_career_profile.sql`. student surface 7페이지 (career/materials/announcements/certificates/dashboard/sessions/profile) + admin/materials + admin/cohorts/[slug]/materials 전부 존재. 7/4 가동 완료.
+
 - **B0044** · **LMS Launch Phase 1** — 인프라 + entity · status: **ready** · 2026-06-25 captured · owner: Iris
   - 신규 entity 2개: `lecture_materials` (cohort_id + session_no + file_path + uploaded_by) + `student_career_profiles` (target_role + certifications + experience + education + visa_type)
   - Storage bucket `lecture-materials` private + RLS 4 policies (super_admin write / cohort_memberships read)
@@ -325,23 +327,20 @@ D-9. 1주차 강의 자료 Google Drive 모바일 다운로드 사고 → 자체
 
 **단기 (2기 시작 전, 8~9월)**:
 
-- **B0068** · courses 스키마 도입 (단과반) · status: **approved** · 2026-07-04 노아 승인
-  - 신규 테이블: courses (id, program_id, slug, title_ko, title_en, hours, price)
-  - cohorts.course_id 컬럼 추가 (nullable, additive) — 기존 cohort 는 null 유지
-  - Strangler Fig 마이그레이션 (기존 cohort 스키마 무손실)
-  - 노아 승인 필요 (스키마 변경 결정 1)
+- **B0068** · courses 스키마 도입 (단과반) · status: **done** · 2026-07-05 완료
+  - ✅ 마이그레이션 `20260705000001_courses_bundles.sql` — courses (id, program_id, slug, title_ko/en, hours, price) + cohorts.course_id + instructors.course_ids
+  - ✅ 1기 backfill (fan-to-pro-1 course + legacy cohort 자동 매핑)
 
-- **B0069** · enrollments 승격 — bundle 지원 · status: **approved** · 2026-07-04 노아 승인
-  - 신규 테이블: bundles / bundle_courses / enrollments / enrollment_courses
-  - applicants.enrollment_id / bundle_id 컬럼 추가 (nullable)
-  - 결제 SKU 계층 (개별 course vs bundle) fan-out 로직
-  - applicants shape 절대 보존 (ADR 0010)
+- **B0069** · enrollments 승격 — bundle 지원 · status: **done** · 2026-07-05 완료
+  - ✅ bundles / bundle_courses / enrollments / enrollment_courses 5테이블 (같은 마이그레이션)
+  - ✅ applicants.enrollment_id / bundle_id 컬럼 (nullable, additive)
+  - ✅ 결제 fan-out (bundle_id → bundle_courses unpack → enrollment_courses) · applicants shape 보존 (ADR 0010)
 
-- **B0070** · instructor surface 5 페이지 · status: **approved** · 2026-07-04 노아 승인
-  - dashboard / students / sessions / sessions[id] / consultations
-  - 강사 로그인 → 본인 cohort 학생만 read + 코멘트 write
-  - 권한 가드는 이미 준비됨 (assertCanReadStudentProfile / assertCanWriteStudentNote)
-  - 종강 (7/19) 전 최소 dashboard + students + sessions 3 페이지 착수 권장
+- **B0070** · instructor surface 5 페이지 · status: **approved (미착수)** · 2026-07-23 코드 확인
+  - ⚠️ `/fan-to-pro/[cohortSlug]/instructor/*` 디렉토리 **0개**. student/ 만 존재.
+  - 권한 가드만 준비됨 (assertCanReadStudentProfile / assertCanWriteStudentNote)
+  - dashboard / students / sessions / sessions[id] / consultations — 2기 강사 로그인 필요 시 최우선
+  - 종강(7/19) 전 착수 권장했으나 미착수 → 2기 launch(8/1) 전 필요
 
 - **B0071** · admin course/bundle CRUD · status: **approved** · 2026-07-04 노아 승인
   - super_admin + program admin 이 트랙 스케일 시 병목 해소
@@ -349,17 +348,17 @@ D-9. 1주차 강의 자료 Google Drive 모바일 다운로드 사고 → 자체
 
 **중장기 (3기+, 10월~)**:
 
-- **B0072** · 채용 파이프라인 스키마 · status: **approved** · 2026-07-04 노아 승인
-  - 신규 테이블 3: companies_partners / job_postings / student_applications
-  - status 6단계: prep → resume_ready → applied → interview → offer → hired
-  - append-only history 로 취업률 recompute 가능
+- **B0072** · 채용 파이프라인 스키마 · status: **done** · 2026-07-06 완료
+  - ✅ 마이그레이션 `20260706100000_recruitment_mvp.sql` — job_postings / student_applications / recruitment_email_log + `apply_to_job_atomic()` RPC (SECURITY DEFINER) + RLS
+  - status 6단계 (prep → hired) append-only history
 
-- **B0073** · admin recruitment 3 페이지 · status: **approved** · 2026-07-04 노아 승인
-  - /admin/companies / /admin/postings / /admin/applications
+- **B0073** · admin recruitment 3 페이지 · status: **partial (일부 착수)** · 2026-07-23 코드 확인
+  - ✅ `/admin/companies` 완성 (CompaniesDashboard)
+  - ⚠️ `/admin/postings` + `/admin/applications` 미착수
   - Partner 회사 등록 + JD 관리 + 학생 지원 트래킹
 
-- **B0074** · student recruitment surface · status: **approved** · 2026-07-04 노아 승인
-  - student/jobs (JD list + 지원) + student/applications (본인 지원 트래킹)
+- **B0074** · student recruitment surface · status: **approved (미착수)** · 2026-07-23 코드 확인
+  - ⚠️ `/student/jobs` (JD list + 지원) + `/student/applications` 미착수 (스키마·RPC 는 준비됨)
   - 이력서 / 자소서 재사용 (career_documents 기존)
 
 - **B0075** · matching-service · status: **approved** · 2026-07-04 노아 승인 · Nova 후보
@@ -384,8 +383,9 @@ D-9. 1주차 강의 자료 Google Drive 모바일 다운로드 사고 → 자체
 
 **UX P0 fix (즉시)**:
 
-- **B0079** · student/announcements + login i18n 배선 · status: **approved** · 2026-07-04 노아 승인
-  - 완전 한국어 하드코딩 상태, 외국인 학생 접근 시 언어 장벽
+- **B0079** · student/announcements + login i18n 배선 · status: **approved (미착수)** · 2026-07-23 코드 확인
+  - ⚠️ login(`auth/login`) + student/announcements 완전 한국어 하드코딩 유지. next-intl 설치·라우팅은 됐으나 useTranslations 배선 0.
+  - 외국인 학생 접근 시 언어 장벽 → 2기 launch 전 필요
   - messages/en 리소스 확장 + next-intl 배선
 
 - **B0080** · Luna 재발 방지 훅 (grep self-check) · status: **approved** · 2026-07-04 노아 승인
@@ -405,6 +405,20 @@ D-9. 1주차 강의 자료 Google Drive 모바일 다운로드 사고 → 자체
   - BEP mix (재협상 실패): 660 = 37명 / 550 = 42명
   - 노아 결정 4건 대기 (단과 660 vs 550 subvariant / 강사 재협상 확신도 / 폐강 기준 8명 승인 / launch 2026-08-01 유지)
   - 매출 단위 룰 (원 단위 필수) CLAUDE.md §6.6 신규 후보
+
+- **B0081** · 수료증 시스템 (student 기반 + 일괄 발급 + verify) · status: **done** · 2026-07-19 완료 · owner: Luna + Iris
+  - ✅ 마이그레이션 `20260705000000_certificates_student_based.sql` (student_id/cohort_id/kind/file_path, UNIQUE(student_id,kind)) + `20260719000000_certificates_verify_token.sql` (verify opaque 10자 nanoid)
+  - ✅ cohort 일괄 발급 server action `application/certificate/batch-issue-certificates.ts` (super_admin, 순차, idempotent) + admin 버튼
+  - ✅ 개별 PDF `generate-certificate-pdf.ts` + `certificate-eligibility.ts` + verify 쿼리
+  - 최종 디자인: Pretendard / 모노크롬 / 황재하 서명 필기체 / Certified 인장 (K-pop Blue) / GROWTH CAREER 우산 로고 / Dropdown 명의
+  - `tools/` 1기 실 학생 10명 명단 조회 + 10장 PNG 캡처
+  - 출처: 노아 요청 (수료식 7/25 대비)
+
+- **B0083** · 전시(showcase) 페이지 — Platform Evolution 첫 조각 · status: **done** · 2026-07-06 완료 (Phase 1) · owner: Luna + Iris + Aria + Sophia
+  - ✅ 마이그레이션 `20260706000000_cohorts_showcase.sql` (showcase_slug UNIQUE + hero_stat JSONB + thumbnail_path + `cohort-thumbnails` public bucket + 1기 backfill)
+  - ✅ `app/[locale]/cohorts/[showcase_slug]/page.tsx` (SSG + generateStaticParams + ISR 1h + StoryGrid + MDX story-loader)
+  - 후속: ADR 0015/0016 Platform Evolution 14 라우트 중 첫 조각. 나머지 (Outcomes / methodology / partners wall 등) = 노아 결정 대기
+  - 출처: 노아 2026-07-04 발화 (전시 필요) + ADR 0015/0016
 
 ---
 

@@ -9,206 +9,115 @@
 
 ---
 
-## 📅 Last updated: 2026-07-04
+## 📅 Last updated: 2026-07-23 (코드베이스 기준 재구성)
 
-## 🎯 최신 세션 요약 — LMS 전체 진단 완료 (B0066)
+> ⚠️ 이 파일은 2026-07-04 에서 3주간 미갱신 상태였음. 그 사이 7/5~7/19 작업이 커밋으로만 쌓여 있어, git 기록 + 코드 검증 기준으로 실제 상태를 재구성함. 이전 스냅샷: [`docs/sessions/SESSION-2026-07-04-lms-multitrack-diagnosis.md`](./docs/sessions/SESSION-2026-07-04-lms-multitrack-diagnosis.md).
 
-3 에이전트 병렬 진단 완료. Echo (리서치) + Sophia (아키텍처, ADR 0013) + Luna (UX).
+## 🎯 현재 상태 — 1기 종강 완료 / 수료식 D-2 / 2기 launch D-9
 
-- **통합 리포트**: [`docs/reports/2026-07-04-lms-diagnosis-summary.md`](./docs/reports/2026-07-04-lms-diagnosis-summary.md)
-- **ADR 0013**: [`docs/decisions/0013-multi-track-and-recruitment-architecture.md`](./docs/decisions/0013-multi-track-and-recruitment-architecture.md)
-- **Luna UX 리포트**: [`docs/reports/2026-07-04-lms-ux-diagnosis.md`](./docs/reports/2026-07-04-lms-ux-diagnosis.md)
-
-**Feature Intent Gating 룰 신설** (§2.5): 새 기능/schema/UX 요청 시 즉시 코딩 X, 4 질문 답 후 승인. lesson 박제: `docs/lessons/2026-07-04-feature-intent-gating.md`.
-
-**노아 결정 필요 5건** (각 백로그 시작 전):
-1. 신규 테이블 5 (수강 확장) OK? — B0068 전
-2. 신규 테이블 3 (채용) OK? — B0072 전
-3. instructor surface 페이지 5개 OK? — B0070 전
-4. `domain/program.ts` (marketing) 리네임 vs 유지? — B0068 전
-5. 채용 매칭 = rule-based vs Nova AI? — B0075 전 (11월 이후)
-
-**이번 세션 즉시 처리**:
-- Luna JD v2 재작업 (그라데이션 X, Toss 라이트)
-- P0 UX fix 5건 (부호 4 + gradient 1)
-- BACKLOG B0068~B0080 추가
-- 3 진단 리포트 박제
+- **1기 종강**: 7/19 (일) 완료
+- **수료식 + 네트워킹**: 7/25 (토) — **D-2**
+- **2기 launch 목표**: 8/1 (금) — **D-9**
+- 사이트: `growthcareer.xyz` 라이브. 1기 모집은 마감 자동 전환 상태 (B0039).
 
 ---
 
-## 📅 Prev: 2026-06-23
+## ✅ 최근 완료 (2026-07-05 ~ 07-19) — 코드 검증 완료
 
-## 🎯 현재 상태 — 1기 모집 마감일 (D-day) / 첫 강의 D-6
+### 수료증 시스템 (B0081) — 최근 2주 최대 작업
+- 마이그레이션 `20260705000000_certificates_student_based.sql` (student 기반 재설계) + `20260719000000_certificates_verify_token.sql` (verify opaque 10자 nanoid)
+- **cohort 일괄 발급** server action `application/certificate/batch-issue-certificates.ts` (super_admin, 순차 실행, idempotent) + admin 버튼
+- 개별 PDF 생성 `generate-certificate-pdf.ts` + 도메인 `certificate-eligibility.ts` + verify 쿼리
+- 디자인 다수 반복 → 최종: Pretendard 통일 / 모노크롬 / 황재하 서명 필기체 / Certified 인장 (K-pop Blue) / GROWTH CAREER 우산 브랜드 텍스트 로고 / Dropdown 명의
+- `tools/` 1기 실 학생 10명 명단 조회 + 10장 PNG 일괄 캡처
 
-- **모집 마감**: 오늘 (6/21 일) 자정
-- **현재 결제**: **10명** (PAID) — 6/22 11명 → 6/23 1명 환불. 폐강 기준 8명 초과, 강의 확정
-- **첫 강의**: 6/27(토) 14:00~16:00 / 블루스프링하우스 (서울 마포구 월드컵북로 161)
-- **종강**: 7/19(일)
-- **수료식**: 7/25(토)
-- **카톡 오픈채팅**: https://open.kakao.com/o/gX12jFAi (비번 fan06pro) — 오픈프로필 모드
-- **LMS Wave 1+2 배포 완료**: `/fan-to-pro/(lms)/admin/*` (super_admin) + `/fan-to-pro/[cohortSlug]/student/career` (학생, career documents 만)
+### 2기 base + 스키마 (체크포인트 1~3)
+- **B0068** courses/bundles 스키마 — `20260705000001_courses_bundles.sql` (courses/bundles/bundle_courses/enrollments/enrollment_courses 5테이블 + 1기 backfill) ✅ done
+- **B0069** enrollments/bundle 결제 — fan-out 로직(개별 course vs bundle) + applicants.enrollment_id/bundle_id 컬럼 ✅ done
+- **체크포인트 2** 이메일 매칭 — 1기 재지원 자동 인식 (`applicants.previous_applicant_id`)
+- **체크포인트 3** Signed Upload URL (500MB/50MB) + 학생 영문 이름 자동 채움
 
-### 새로 박힌 결정 (2026-06-21)
+### B0083 전시(showcase) 페이지 — Platform Evolution 첫 조각
+- 마이그레이션 `20260706000000_cohorts_showcase.sql` (showcase_slug + hero_stat JSONB + thumbnail + `cohort-thumbnails` bucket)
+- `app/[locale]/cohorts/[showcase_slug]/page.tsx` 완성 (SSG + ISR 1h, StoryGrid, MDX story-loader)
 
-- **LMS 자체 구축** — Wave 0~2 prod 적용 완료, Wave 1 Step 3/4 (instructor/student 풀 surface) 는 노아가 본인 계정으로 테스트하며 점진 보강
-- **클린 아키텍처 (Layered Pragmatic)** + Strangler Fig (ADR 0005)
-- **URL/디자인 분리** — `/admin/*` (Basic Auth, 다크, 기존) vs `/fan-to-pro/(lms)/*` (Supabase Auth, 라이트, 토스 톤) (ADR 0006 + 0008)
-- **3 권한 계층** — super_admin (글로벌, is_super_admin) / admin (program_memberships) / instructor+student (cohort_memberships) (ADR 0008)
-- **회원가입 X** — 운영자 invite + must_change_password 흐름
-- **B0037 career documents Wave A+ 완료** — 이력서/자기소개서/포트폴리오 단일 최신본 + Storage bucket + RLS 4종. 학생 + 어드민 surface. Sage 검토 pass + H-2 SSRF fix 적용
+### B0072 채용 파이프라인 (스키마 + 일부 UI)
+- 마이그레이션 `20260706100000_recruitment_mvp.sql` (job_postings / student_applications / recruitment_email_log + `apply_to_job_atomic()` RPC)
+- `/admin/companies` 페이지 완성 (CompaniesDashboard)
 
----
+### LMS IA 재구성 (P1 + P2)
+- P1: instructor 링크 감춤 / `[정산]→[재무]` / profile·career 중복 제거
+- P2: `/admin/cohorts` index 재작성 + 다중 cohort 대응 (attendance/students/announcements/materials 를 `/cohorts/[slug]/` 안으로)
 
-## ✅ 최근 완료 (2026-06-08 ~ 06-21)
-
-### 6/22 0시 작업
-- **B0039 1기 모집 마감 자동 전환** — isEnrollmentClosed() + cutoffAt + Hero/Pricing/StickyCTA/ApplyForm 자동 전환 + DB status enum 확장 (next_cohort_interest) + cohort_id nullable + XOR check. SSG cache hotfix (force-dynamic). apply form 헤드라인/lead/summary cell/chip/PaymentNotice/SuccessBlock 모두 closed 변형. commit `cd0405a`
-- **B0040 playbook 박제** — `docs/playbook/` 10 파일 (README + 01 overview + 02-build-tracks/{website,admin,lms} + 03 recruitment + 04 marketing + 05 class-ops + 06 finance + 07 timeline ⭐ + 08 automation + 09 features + 10 next-cohort checklist). 다음 기수 운영 자산 + 자동화/기능 후보 추출 기반.
-
-### 6/21 마감일 작업
-- **B0037 career documents Wave A+** — 이력서/자기소개서/포트폴리오 단일 최신본 (학생 + 어드민). Sage pass + H-2 fix. commit `aa02a44`
-- **cohortKickoff 메시지** (어드민 메시지 종류) — 첫 강의 안내 SMS/email × ko/en (강의장 + 시간 + 카톡 + 준비물 + 8회 일정). commit `8b1c94d`
-- **원페이저 PDF** (Cohort 1 leave-behind) — `tools/onepager-cohort-1.html` 3페이지 A4 토스 톤. Paged.js v2 도 함께 박제. `docs/screenshots/onepager/onepager-cohort-1.pdf`
-- **LMS Wave 1+2** — Supabase Auth + login + admin LMS 페이지 (cohorts/students/finance/instructors/consultations/announcements/materials/comments) + ADR 0008 URL 분리 + cohort slug nanoid 8자
-- **B0018 Wave 2 운영자 페이지** — 강사 정산 + 재무 / `/admin/instructors` + `/admin/finance` 3-tab. commit `8388209`, `29b2c34`
-- **B0019 SEO + GEO** — JSON-LD 5종 + OG locale + llms.txt. commit `9207de3`
-- **세션 핸드오프 문서** — `WORKING-SESSION.md` + `docs/sessions/README.md` 신설. commit `778401c`
-
-### 1기 모집 운영
-- **친구 초대 이벤트 (referralInvite)** 어드민 메시지 종류 추가 (paid 전용) — 매칭: 친구 결제 후 결제 안내 메시지에 답장으로 추천인 이름
-- 약관 §15 추천 보상 정책 박제 (1인당 최대 5명, 소득세법 §84 4호 비과세 한도 5만원)
-- 비자 칩에 F-시리즈 추가 (히어로 + 신청 자격 카드, KO+EN 동기화)
-- 어드민 신청자 정렬: status 운영 우선순위 (pending 상단 → cancelled 최하)
-- 어드민 통계 chip OVERDUE / CANCELLED / REFUNDED 추가
-- 어드민 모바일 반응형 Wave 1-4 (admin-nav / applicants-dashboard / instructors / finance / 모달/드로어 / 다이얼로그 전체)
-- 입금 확인 메시지 + 리마인드 6종 톤 정정 (모든 메시지 마지막 "문의사항은 하단의 카카오톡 채널" 통일)
-- 이메일 + SMS paymentConfirmed 강의장 정보 제거 (다음 안내 메일로 일원화)
-- nationality 기반 phone country code 자동 prefix (40개국, 인도 신청자 +1 자동 인식 사고 해결)
-- 어드민 신청자 테이블 nationality 컬럼 추가 (viewer 도 노출)
-- 모바일 PaymentNotice spacing 보정 + SuccessBlock Application ID 노출 제거
-
-### 마케팅 + 모집 가속 (D-7 ~ D-2)
-- Craigslist Seoul 광고 (한/영 1500자 안 축약)
-- 커뮤니티 침투 영문 게시글 (Reddit / FB 그룹 용 짧은 영국식 톤)
-- 외국 유학생 커뮤니티 리서치 (Echo): 알럽코 / @student.in.korea / PERPIKA / 한양대 / HUFS / 연세 KLI / VSAK 등 40+ 채널
-- 강사 카톡 중간 현황 공유 카피
-
-### 시스템 + 문서
-- ADR 0005 — LMS 클린 아키텍처 (Layered Pragmatic + Strangler Fig)
-- ADR 0006 — LMS 디자인 시스템 (라이트 + 토스 톤 + shadcn/ui + `(lms)` route group)
-- CLAUDE.md §7.4 보강 — LMS 작업 시 기존 영역 보호 룰 추가
-- `docs/research/notion-daily-ralph-loop-자동화.md` — 매일 아침 자동 ralph 루프 아키텍처 검토 (1기 종료 후 도입 검토)
-- B0030 박제 — 모바일 fluid typography 카드/박스 (deferred)
-- B0031~B0036 박제 — LMS Wave 0~5
+### 기타
+- **tickets** — LMS 내 티켓 관리 탭 (`20260710000000_tickets.sql`) + 2기 이해관계자별 세분화 티켓 10개
+- **stageOpsGuide** — 공연 현장 실무 가이드 이메일 템플릿 (범용 핸드북 톤)
+- **CLAUDE.md** §2.6 Agile Dispatch / §6.6 매출 원 단위 / §6.7 인터렉션 디자인 시스템 룰 박제
+- **LMS dashboard** 4개 카드 실제 데이터 fetch 연결
 
 ---
 
-## 🔄 진행 중 / 대기 중
+## 🔄 다음 할 일 — 2기 launch (8/1) 전 실제 갭
 
-### 6/22 (월) 발송 예정
+> 코드 검증 기준. "approved 인데 실제 미착수" 항목이 진짜 남은 일.
 
-- 어드민 [메시지] > "기수 첫 강의 안내" 선택 → 11명 발송 (메일 본문에 원페이저 PDF 링크 paste)
-- 원페이저 PDF 구글 드라이브 업로드 후 공유 링크 받기
+### 🔴 최우선 — 미착수
+- **B0070 instructor surface** — `/fan-to-pro/[cohortSlug]/instructor/*` 디렉토리 **0개**. 권한 가드(assertCanReadStudentProfile/assertCanWriteStudentNote)만 준비됨. dashboard/students/sessions/sessions[id]/consultations 5페이지. 2기 강사 로그인 필요하면 필수.
+- **B0079 student i18n** — login (`auth/login`) + student/announcements 완전 한국어 하드코딩. next-intl 설치·라우팅은 됐으나 useTranslations 배선 0. 외국인 학생 언어 장벽.
 
-### LMS 트랙 (B0031~B0038)
+### 🟡 부분 완료 — UI 마저
+- **B0073 admin 채용 UI** — `/admin/companies`만 됨. `/admin/postings` + `/admin/applications` 미착수.
+- **B0074 student 채용 surface** — `/student/jobs` + `/student/applications` 미착수 (스키마·RPC 는 준비됨).
 
-- **B0031 Wave 0** — DB minimum + 출결 UI (Iris) ✅ done
-- **B0032 Wave 1** — Supabase Auth + admin LMS 골격 + cohort/student/finance ✅ done (Step 3/4 = instructor/student 풀 surface 는 강의 운영하며 점진)
-- **B0033 Wave 2** — 과제 + 컨설팅 + 수료증 + 캘린더 (Iris+Luna, 5.5일) — 강의 시작 후 점진
-- B0034 Wave 3 — 회사 단위 정산 (Iris) — Wave 1 Step 2 finance 페이지로 흡수, 추가 작업 필요 시 진행
-- B0035 Wave 4 — RLS 본격 + follow-up + 영문 UX (Iris+Sage, 6일)
-- B0036 Wave 5 — Realtime + 자동 정산 (deferred)
-- **B0037 career docs Wave A+** ✅ done 2026-06-21
-- **B0038 career docs Wave B** — instructor surface + path randomness + magic byte + bidi sanitize + 작품 collection — raw
-
-### B0018 Wave 3 (출결) — LMS B0031 에 통합됨
-
-기존 B0018 Wave 3 = LMS 의 attendance entity 로 흡수. 별도 작업 X.
-
-### B0018 Wave 4 (수료증 + 공연) — LMS B0033 에 통합됨
-
-기존 수료증 작업 = LMS 의 certificates entity 로 흡수.
+### 🟢 전략 결정 대기 (노아)
+- **ADR 0014** 2기 프로그램 구성 + 매출 프로젝션 — 결정 5건 대기 (단과 660 vs 550 / 강사 재협상 확신도 / 폐강 8명 / launch 8/1 유지 등)
+- **ADR 0015 Platform Evolution PO** — 결정 7건 대기 (전시 사이트 진화 방향)
+- **ADR 0016 Platform Evolution Architecture** — 결정 10건 대기 (14 신규 라우트 / outcome_reports·partners 테이블 / MDX 콘텐츠 계층)
+- **B0075 채용 매칭** — rule-based vs Nova AI (11월 이후 재확인)
 
 ---
 
 ## 🛠️ 노아 manual action 잔여
 
-### 즉시 (6/22 월요일 아침)
+### 즉시 (수료식 7/25 전)
+- 수료증 10장 실제 학생 전달 방식 확정 (일괄 발급 코드는 완료, verify 링크 배포/발송은 수동)
 
-- 어드민 [메시지] > "기수 첫 강의 안내" 선택 → 11명 발송 (메일 본문에 원페이저 PDF 링크 paste)
-- 원페이저 PDF (`docs/screenshots/onepager/onepager-cohort-1.pdf`) 구글 드라이브 업로드 + 공유 링크 받기
+### 프로세스 부채 (이번 세션 처리 중)
+- ✅ WORKING-SESSION 재작성 (이 파일)
+- 🔄 BACKLOG 상태값 실제 코드에 맞게 정정 (B0068/69/81/83 done, B0070/73/74/79 실제 미착수 명시)
+- 미반영 lesson: `2026-07-12-pdf-guidebook-pitfalls.md` (🚧) 역반영 완료 확인 필요
 
-### LMS career docs (B0037) 테스트
-
-1. **`/fan-to-pro/(lms)/admin/students` 접속** → 학생 1명 선택 → [문서] 클릭
-2. resume 외부 링크 + cover_letter 파일 업로드 + portfolio 외부 링크 등록/수정/삭제 시나리오 확인
-3. student account (가짜) 로 로그인 → `/[cohortSlug]/student/career` 진입 → 본인 것만 보이는지 확인
-4. 다른 student id URL 직접 입력 시 403 — IDOR 차단 확인
-
-### LMS Wave 0 → Wave 1 전 결정 보류 (강의 첫주 안에 컨펌)
-
-- **AdminNav 에 cohorts 진입점 추가 여부** — Wave 0 는 노아가 직접 `/admin/cohorts` URL 진입. 기존 admin-nav 변경 금지 룰 (CLAUDE.md §7.4) 와 트레이드오프. Wave 1 진입 시 신규 LMS 네비 (라이트 톤) 분리 권장
-- **Strangler Fig Step 2** (`domain/application.ts` 의 4 split — entity/zod/DTO/Result) — Wave 1 에 새 entity (instructor/material) 추가하며 점진 처리
-
-### LMS Wave 0 사전 결정 보류 항목 (Wave 2~3 안에 컨펌)
-
-1. **Consultation review 권한** — 모든 강사 풀 vs 배정 강사만 vs 학생이 강사 지정
-2. **정산 메일 강사 breakdown** — 회사 정산 메일에 강사 개인별 금액 노출 vs 회사 합계만
-3. **알림 채널** — 이메일만 vs 알림톡 옵트인 추가
-
-### 강사 2개 회사 정보 (Wave 0 안 채워도 OK, Wave 3 정산 전 필요)
-
-- 회사명 / 사업자번호 / 주소 / 담당자 이메일 / 계좌 / 부가세 발행 여부
-
-### B0019 SEO/GEO 후속
-
-- Google Search Console: `growthcareer.xyz` 등록 + `sitemap.xml` 제출
-- Naver Search Advisor 등록 (한국 시장)
-- PageSpeed Insights 측정
-- Schema.org Validator + Rich Results Test
-
-### B0019 placeholder 정정
-
-- `structured-data.tsx` EducationEvent 시간 (현재 14:00~16:00 placeholder)
-- `structured-data.tsx` LocalBusiness 우편번호 (현재 05718 placeholder)
+### 기존 잔여 (B0019 SEO/GEO)
+- Google Search Console `growthcareer.xyz` 등록 + sitemap 제출 / Naver Search Advisor
+- `structured-data.tsx` placeholder 정정 (EducationEvent 시간 / LocalBusiness 우편번호)
 
 ---
 
 ## 📁 핵심 파일 / 경로
 
-### LMS 신규 트랙
-- **ADR**: `docs/decisions/0005-lms-clean-architecture.md` · `docs/decisions/0006-lms-design-system.md`
-- **Backlog**: `docs/tasks/BACKLOG.md` B0031 ~ B0036
-- **신규 폴더 (Wave 0 시작 시)**:
-  - `src/programs/fan-to-pro/domain/entities/` (13 entity)
-  - `src/programs/fan-to-pro/application/use-cases/`
-  - `src/programs/fan-to-pro/infrastructure/supabase/repositories/`
-  - `src/programs/fan-to-pro/interface/components/lms/ui/` (shadcn primitives)
-- **신규 라우트 그룹**: `app/[locale]/(lms)/layout.tsx` (data-theme="light")
+### 최신 마이그레이션 (7월)
+- `supabase/migrations/20260705000000_certificates_student_based.sql` · `20260719000000_certificates_verify_token.sql`
+- `20260705000001_courses_bundles.sql` · `20260706000000_cohorts_showcase.sql` · `20260706100000_recruitment_mvp.sql` · `20260710000000_tickets.sql`
 
-### 기존 (변경 금지)
-- **Spec**: `docs/specs/B0007-payment-flow-split.md` · `docs/specs/B0018-operator-dashboard-expansion.md`
-- **ADR**: `docs/decisions/0001~0004`
-- **운영자 페이지**: `app/[locale]/admin/{applicants,instructors,finance}/`
-- **마이그레이션**: `supabase/migrations/` 7개 (대학·국적 컬럼 추가 포함)
-- **메시지**: `messages/{en,ko}.json` + `src/programs/fan-to-pro/messages/templates.ts`
+### 최신 전략 문서
+- **ADR 0013** multi-track + recruitment · **0014** 2기 프로그램+매출 · **0015** platform evolution PO · **0016** platform evolution architecture
+- **진단 리포트**: `docs/reports/2026-07-04-lms-diagnosis-summary.md`
 
----
+### 신규 surface
+- 수료증: `src/programs/fan-to-pro/application/certificate/`
+- 전시: `app/[locale]/cohorts/[showcase_slug]/`
+- 채용 admin: `app/[locale]/fan-to-pro/(lms)/admin/companies/`
 
-## 📚 다음 세션 시작 시 권장 흐름
-
-1. **이 파일 (`WORKING-SESSION.md`) 먼저 읽기** — 컨텍스트 복원
-2. `git log --oneline -15` — 최근 커밋 흐름
-3. `git status` — 작업 중 변경 사항
-4. `docs/tasks/BACKLOG.md` 의 B0031 (Wave 0) 부터 진행 — LMS 신규 트랙
-5. `docs/decisions/0005-lms-clean-architecture.md` + `0006-lms-design-system.md` — LMS 설계 컨텍스트 복원
-6. CLAUDE.md / 메모리는 자동 로드
+### 기존 (변경 금지 — CLAUDE.md §7.4)
+- 모집 페이지 `app/[locale]/fan-to-pro/(marketing)/*` · 어드민 3-tab `/admin/{applicants,instructors,finance}`
+- 기존 server actions 시그니처
 
 ---
 
-## ⚠️ LMS 작업 시 절대 룰 (CLAUDE.md §7.4)
+## 📚 다음 세션 시작 30초 체크 (CLAUDE.md §7.5)
 
-- 기존 모집 페이지 (`app/[locale]/fan-to-pro/*` + `presentation/sections/*`) **변경 금지**
-- 어드민 기존 3-tab (`/admin/applicants` `/admin/instructors` `/admin/finance`) **변경 금지**
-- 기존 server actions 함수 시그니처 **변경 금지** (내부 구현 Strangler Fig 이전은 OK)
-- 신규 LMS = 별도 라우트 그룹 `(lms)/` + 라이트 디자인 + shadcn/ui
+1. 이 파일 먼저 읽기
+2. `git log --oneline -15`
+3. `git status`
+4. `docs/tasks/BACKLOG.md` — 다음 우선순위 (B0070 instructor / B0079 i18n / B0073·74 채용 UI)
+5. `docs/lessons/README.md` 인덱스 — 미반영(❌/🚧) lesson 우선
