@@ -84,7 +84,8 @@ export function renderCertificateHtml(data: CertificateData): string {
   // 노아 fix (2026-07-19): 영문 이름만 표시. 한글 이름 서브 제거.
   const nameEn = escapeHtml(data.recipient_name_en);
   const serial = escapeHtml(data.serial_no);
-  const verifyUrl = escapeHtml(data.verify_url);
+  // 노아 fix (2026-07-23): 최하단 verify 문장 + URL 제거. 진위 확인은 백엔드 verify 페이지 유지.
+  void data.verify_url;
   // 재설계 후 program_name / duration / cohort_label 은 seal + attest 안 통합.
   // 데이터 계약은 유지하되 명시적으로 참조.
   void data.program_name_ko;
@@ -262,7 +263,7 @@ html, body {
   padding-top: 6mm;
   border-top: 1px solid #e5e7eb;
   position: absolute;
-  bottom: 30mm;
+  bottom: 18mm;
   left: 30mm;
   right: 30mm;
 }
@@ -375,25 +376,6 @@ html, body {
 .cert-seal-mid { font-size: 11pt; font-weight: 800; letter-spacing: 1px; }
 .cert-seal-bot { font-size: 7.5pt; margin-top: 1mm; letter-spacing: 0.8px; }
 
-/* Verify URL (최하단) */
-.cert-verify {
-  position: absolute;
-  bottom: 14mm;
-  left: 30mm;
-  right: 30mm;
-  padding-top: 4mm;
-  border-top: 1px solid #e5e7eb;
-  font-family: 'Pretendard', sans-serif;
-  font-size: 8pt;
-  font-weight: 400;
-  color: #6b7280;
-  line-height: 1.5;
-}
-.cert-verify-url {
-  color: #374151;
-  font-weight: 500;
-}
-
 @media screen {
   body { background: #f3f4f6; padding: 20mm 0; display: flex; justify-content: center; }
   .cert-page { box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12); }
@@ -456,11 +438,6 @@ html, body {
       <span class="cert-seal-bot">2026</span>
     </div>
   </footer>
-
-  <div class="cert-verify">
-    본 수료증은 아래 URL 에서 진위를 확인할 수 있습니다.
-    <span class="cert-verify-url">${verifyUrl}</span>
-  </div>
 
 </div>
 </body>
