@@ -25,6 +25,8 @@ import { fetchCertificatesByStudent } from "@/src/programs/fan-to-pro/infrastruc
 import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
 import { generateSerialNo } from "./serial-no";
 import type { CertificateData } from "./certificate-template";
+import { hasSessionElapsed } from "@/src/programs/fan-to-pro/domain/entities/session";
+import type { Session } from "@/src/programs/fan-to-pro/domain/entities/session";
 import type { Student } from "@/src/programs/fan-to-pro/domain/entities/student";
 import type { Cohort } from "@/src/programs/fan-to-pro/domain/entities/cohort";
 import type { Certificate } from "@/src/programs/fan-to-pro/domain/entities/certificate";
@@ -83,8 +85,11 @@ async function countCohortSessions(cohortId: string): Promise<number> {
 }
 
 /**
- * 학생 출석률 계산 (0-1). ended session 기준 present+late / ended session count.
- * ended 회차 0이면 null.
+ * 학생 출석률 계산 (0-1). 이미 진행된 회차 기준 present+late / 진행된 회차 수.
+ *
+ * "진행된 회차" = hasSessionElapsed (status=ended 또는 ends_at<now 인 비취소 회차).
+ * status=ended 명시 전환에 의존하지 않음 — 2026-07-23 출석률 0% 사고 방지.
+ * 진행된 회차 0이면 null (아직 첫 회차 전).
  */
 export async function computeAttendanceRate(
   studentId: string,
@@ -95,16 +100,18 @@ export async function computeAttendanceRate(
 
   const { data: sessions, error: sessErr } = await supabase
     .from("sessions")
-    .select("id, status")
+    .select("id, status, ends_at")
     .eq("cohort_id", cohortId);
   if (sessErr) throw new Error(sessErr.message);
 
-  const endedIds = new Set(
+  const elapsedIds = new Set(
     (sessions ?? [])
-      .filter((s) => (s as { status: string }).status === "ended")
+      .filter((s) =>
+        hasSessionElapsed(s as Pick<Session, "status" | "ends_at">),
+      )
       .map((s) => (s as { id: string }).id),
   );
-  if (endedIds.size === 0) return null;
+  if (elapsedIds.size === 0) return null;
 
   const { data: attendance, error: attErr } = await supabase
     .from("attendance")
@@ -115,10 +122,10 @@ export async function computeAttendanceRate(
   let attended = 0;
   for (const a of attendance ?? []) {
     const row = a as { session_id: string; status: string };
-    if (!endedIds.has(row.session_id)) continue;
+    if (!elapsedIds.has(row.session_id)) continue;
     if (row.status === "present" || row.status === "late") attended += 1;
   }
-  return attended / endedIds.size;
+  return attended / elapsedIds.size;
 }
 
 export type BuildCertificateContext = {

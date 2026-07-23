@@ -22,6 +22,7 @@
 import { assertCanReadStudentProfile } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
 import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
 import type { AttendanceStatus } from "@/src/programs/fan-to-pro/domain/entities/attendance";
+import { hasSessionElapsed } from "@/src/programs/fan-to-pro/domain/entities/session";
 
 export type StudentSessionAttendanceStatus = AttendanceStatus | "unmarked";
 
@@ -255,17 +256,19 @@ export async function fetchStudentSessionsView(
     };
   });
 
-  // 9) 출석률 — ended 회차 중 본인 present+late / ended 회차 수.
-  const endedSessionIds = new Set(
-    sessionRows.filter((s) => s.status === "ended").map((s) => s.id),
+  // 9) 출석률 — 진행된 회차 중 본인 present+late / 진행된 회차 수.
+  //    "진행된 회차" = hasSessionElapsed (status=ended 또는 ends_at<now 비취소).
+  //    status=ended 명시 전환에 의존 X — 2026-07-23 출석률 0% 사고 방지.
+  const elapsedSessionIds = new Set(
+    sessionRows.filter((s) => hasSessionElapsed(s)).map((s) => s.id),
   );
   let attendedCount = 0;
   for (const a of attendanceRows) {
-    if (!endedSessionIds.has(a.session_id)) continue;
+    if (!elapsedSessionIds.has(a.session_id)) continue;
     if (a.status === "present" || a.status === "late") attendedCount += 1;
   }
   const attendanceRate =
-    endedSessionIds.size > 0 ? attendedCount / endedSessionIds.size : 0;
+    elapsedSessionIds.size > 0 ? attendedCount / elapsedSessionIds.size : 0;
 
   return {
     status: "ok",

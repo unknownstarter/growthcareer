@@ -377,6 +377,10 @@ production 영향 PR 또는 commit 직전:
 
 위반 시 *그 commit 자체가 사고* 로 간주, lesson 박제.
 
+### ⛔ 집계 로직은 운영자 수동 상태 전환에 의존 금지 (2026-07-23 갱신)
+
+출석률·진도율·정산 등 **시각/상태 기반 집계**는 운영자가 실제로는 안 쓰는 lifecycle 단계 (예: session `status="ended"` 수동 전환) 를 전제로 삼지 말 것. 물리적 시각 (`ends_at < now`) 또는 실 데이터로 판정. 사고 박제: `docs/lessons/2026-07-23-attendance-rate-ended-status-gap.md` (1기 전원 출석률 0% → 수료증 발급 차단). 재발 방지 헬퍼: `hasSessionElapsed` (`domain/entities/session.ts`).
+
 ---
 
 ## 7.5 세션 핸드오프 (Session Handoff)

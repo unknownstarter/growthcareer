@@ -70,6 +70,27 @@ export function isTerminalSessionStatus(status: SessionStatus): boolean {
 }
 
 /**
+ * 출석률 분모 판정 — 이 회차가 "이미 진행된" 회차인가.
+ *
+ * 근거 (2026-07-23 출석률 0% 사고): 운영자가 세션 lifecycle 전환
+ * (scheduled → in_progress → ended) 을 실제로 안 쓰고 출석만 직접 mark 함.
+ * 1기 8회차 전부 종강(7/19) 후에도 status="scheduled" 로 남아 있었음.
+ * 따라서 `status === "ended"` 만으로 분모를 세면 출석 100% 여도 0% 로 계산됨.
+ *
+ * 판정: cancelled 는 제외, ended 는 무조건 포함, 그 외에는 물리적으로 끝난
+ * (ends_at < now) 회차면 포함. 명시적 status 전환에 의존하지 않아 재발 방지.
+ */
+export function hasSessionElapsed(
+  session: Pick<Session, "status" | "ends_at">,
+  now: Date = new Date(),
+): boolean {
+  if (session.status === "cancelled") return false;
+  if (session.status === "ended") return true;
+  const endsAt = new Date(session.ends_at).getTime();
+  return Number.isFinite(endsAt) && endsAt < now.getTime();
+}
+
+/**
  * session 의 KST 표시 — UI 가 사용. UTC ISO → KST datetime 문자열.
  * domain 안에 둠 (시간 표시 룰은 비즈니스 룰).
  */
