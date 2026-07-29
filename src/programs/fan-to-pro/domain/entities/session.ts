@@ -91,6 +91,22 @@ export function hasSessionElapsed(
 }
 
 /**
+ * 출석률 분모용 — 진행된 회차 id 집합 (hasSessionElapsed 기준).
+ *
+ * 수료증 / admin cohort 개요 / roster / 학생 뷰가 전부 이 헬퍼로 통일해
+ * 같은 학생이 어느 화면에서도 동일 출석률을 낸다.
+ * (2026-07-23 사고: 계산처마다 분모가 달라 admin 대시보드만 0% 오표시.)
+ */
+export function getElapsedSessionIds(
+  sessions: readonly Pick<Session, "id" | "status" | "ends_at">[],
+  now: Date = new Date(),
+): Set<string> {
+  return new Set(
+    sessions.filter((s) => hasSessionElapsed(s, now)).map((s) => s.id),
+  );
+}
+
+/**
  * session 의 KST 표시 — UI 가 사용. UTC ISO → KST datetime 문자열.
  * domain 안에 둠 (시간 표시 룰은 비즈니스 룰).
  */

@@ -22,6 +22,7 @@ import {
 } from "@/src/programs/fan-to-pro/domain/entities/attendance";
 import type { Cohort } from "@/src/programs/fan-to-pro/domain/entities/cohort";
 import type { Session } from "@/src/programs/fan-to-pro/domain/entities/session";
+import { getElapsedSessionIds } from "@/src/programs/fan-to-pro/domain/entities/session";
 import type { Student } from "@/src/programs/fan-to-pro/domain/entities/student";
 import type { ApplicantStatus } from "@/src/programs/fan-to-pro/application/dto/applicant-row";
 
@@ -106,16 +107,24 @@ export async function fetchCohortRoster(
     ]);
 
     const totalSessions = sessions.length;
+    // 출석률 분모 = 진행된 회차(hasSessionElapsed). sessions.length(미래 포함)로
+    // 세면 진행 중 코호트에서 출석률이 낮게 왜곡됨. cert/개요/학생뷰와 통일
+    // (2026-07-23 사고). totalSessions 필드는 전체 계획 회차로 표시용 유지.
+    const elapsedSessionIds = getElapsedSessionIds(sessions);
+    const elapsedSessionCount = elapsedSessionIds.size;
 
     const studentRows: CohortRosterStudentRow[] = students.map((student) => {
       const myAttendances = attendances.filter(
         (a) => a.student_id === student.id,
       );
-      const attendanceRate = calculateAttendanceRate(
-        myAttendances,
-        totalSessions,
+      const myElapsedAttendances = myAttendances.filter((a) =>
+        elapsedSessionIds.has(a.session_id),
       );
-      const presentCount = myAttendances.filter(
+      const attendanceRate = calculateAttendanceRate(
+        myElapsedAttendances,
+        elapsedSessionCount,
+      );
+      const presentCount = myElapsedAttendances.filter(
         (a) => a.status === "present" || a.status === "late",
       ).length;
       const attendanceMap: Record<string, AttendanceStatus | "unmarked"> = {};

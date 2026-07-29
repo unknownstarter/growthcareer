@@ -24,6 +24,7 @@ import { fetchAttendanceByCohort } from "@/src/programs/fan-to-pro/infrastructur
 import { fetchStudentsByCohort } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/student-repository";
 import { fetchLectureMaterialsByCohort } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/lecture-material-repository";
 import { isCountedAsExpense } from "@/src/programs/fan-to-pro/domain/entities/cohort-expense";
+import { getElapsedSessionIds } from "@/src/programs/fan-to-pro/domain/entities/session";
 
 export type CohortOverview = {
   /** 학생 invite 진척. */
@@ -112,15 +113,18 @@ export async function fetchCohortOverview(
 
   // 회차 / 출결 ────────────────────────────────────────────────
   const totalSessions = sessions.length;
-  const endedSessions = sessions.filter((s) => s.status === "ended").length;
+  // 진행된 회차 = hasSessionElapsed (status=ended 또는 ends_at<now, cancelled 제외).
+  // status="ended" 수동 전환에 의존하면 종강 후에도 endedSessions=0 → 0% 오표시
+  // (2026-07-23 사고). endedSessions 필드명은 유지(반환 계약), 값만 elapsed 기준.
+  const elapsedSessionIds = getElapsedSessionIds(sessions);
+  const endedSessions = elapsedSessionIds.size;
 
-  // 평균 출석률: present + late / (active student × ended sessions)
+  // 평균 출석률: present + late / (active student × 진행된 회차)
   let averageRate = 0;
   if (endedSessions > 0 && studentCount > 0) {
-    const endedSessionIds = new Set(
-      sessions.filter((s) => s.status === "ended").map((s) => s.id),
+    const relevant = attendances.filter((a) =>
+      elapsedSessionIds.has(a.session_id),
     );
-    const relevant = attendances.filter((a) => endedSessionIds.has(a.session_id));
     const presentCount = relevant.filter(
       (a) => a.status === "present" || a.status === "late",
     ).length;
