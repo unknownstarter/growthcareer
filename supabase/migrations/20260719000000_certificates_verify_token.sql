@@ -45,11 +45,12 @@ comment on index public.certificates_verify_token_uidx is
 -- 3. 기존 row 백필 (safety net — 실제로는 대상 0)
 -- ---------------------------------------------------------------------------
 -- 1기 아직 발급 X 라 대상 row 없음. 그러나 어떤 이유로든 남아있는 row 있으면
--- 마이그레이션이 NOT NULL 강제에서 실패하지 않도록 hex 백필.
--- hex 는 16자, 애플리케이션 발급의 10자 nanoid 와 형식 다름 (구분 가능).
+-- 마이그레이션이 NOT NULL 강제에서 실패하지 않도록 백필.
+-- built-in 함수만 사용 (pgcrypto gen_random_bytes 미가용 → md5 기반 16자 hex).
+-- 16자 hex 는 애플리케이션 발급의 10자 nanoid 와 형식 다름 (구분 가능).
 
 update public.certificates
-   set verify_token = encode(gen_random_bytes(8), 'hex')
+   set verify_token = substr(md5(random()::text || clock_timestamp()::text), 1, 16)
  where verify_token is null;
 
 -- ---------------------------------------------------------------------------
