@@ -17,10 +17,12 @@ export const fetchCache = "force-no-store";
 export default async function AdminApplicantsPage() {
   const role = await getAdminRole();
   const isViewer = role === "viewer";
-  // 2026-06-22: viewer (cowork) 도 email / phone 전체 노출 — 노아 정책 결정.
-  // 신청자 직접 contact 가능성을 위해. mutation 권한은 여전히 admin 만 (readOnly={isViewer}).
+  // ADR 0017 Decision A / D1 (2026-07-29): viewer (코워크) 는 PII 마스킹.
+  // name / email / phone / 입금자명 / university 를 repository 단에서 가림.
+  // admin / super 는 mask:false 로 원문 불변. mutation 권한도 여전히 admin 만
+  // (readOnly={isViewer}). 마스킹은 server 단이라 원문이 클라로 안 감.
   const { rows, eligibility, error, supabaseAvailable } = await fetchApplicants(
-    { mask: false },
+    { mask: isViewer },
   );
 
   return (

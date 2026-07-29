@@ -40,6 +40,36 @@ function maskPhone(raw: string): string {
   return "****";
 }
 
+/**
+ * 이름 마스킹 (ADR 0017 Decision A / D1).
+ * 첫 글자만 노출하고 나머지는 별표. 한글 "김민수" → "김**", 영문 "Martina
+ * Rampoldi" → "M******" (공백 제거 후 첫 글자 + 나머지 길이만큼 별표).
+ * 입금자명(depositor_name_observed) = 신청자 실명이므로 동일 규칙 적용.
+ */
+function maskName(raw: string): string {
+  const trimmed = raw.trim();
+  if (trimmed.length === 0) return "";
+  if (trimmed.length === 1) return "*";
+  const first = trimmed.slice(0, 1);
+  return `${first}${"*".repeat(trimmed.length - 1)}`;
+}
+
+/**
+ * 대학 마스킹 (ADR 0017 Decision A 정밀화 — 재식별 방지).
+ * university + nationality + visa 조합이 소규모 기수에서 유일 식별자가 되므로
+ * 국내/해외 카테고리로만 축약. "한국"/"korea"/한글 포함 = 국내, 그 외 = 해외.
+ * 빈 값은 그대로 null 처리 (호출부에서 null fallback).
+ */
+function maskUniversity(raw: string): string {
+  const lower = raw.toLowerCase();
+  const domestic =
+    /[가-힣]/.test(raw) ||
+    lower.includes("korea") ||
+    lower.includes("한국") ||
+    lower.includes("대학");
+  return domestic ? "국내 대학" : "해외 대학";
+}
+
 export async function fetchApplicants(options?: {
   mask?: boolean;
   cohortId?: string | null;
@@ -177,16 +207,25 @@ export async function fetchApplicants(options?: {
     return {
       id: aid,
       createdAt: String(raw.created_at ?? ""),
-      name: String(raw.name ?? ""),
+      // ADR 0017 Decision A / D1: viewer(코워크)만 PII 마스킹. admin/super 는
+      // mask:false 로 원문 불변. 마스킹은 반드시 이 repository 단(page 진입 전)
+      // 에서 — display-time 마스킹 금지 (정렬/검색이 원문 기준으로 누출).
+      name: mask ? maskName(String(raw.name ?? "")) : String(raw.name ?? ""),
       email: mask ? maskEmail(String(raw.email ?? "")) : String(raw.email ?? ""),
       phone: mask ? maskPhone(String(raw.phone ?? "")) : String(raw.phone ?? ""),
       nationality: raw.nationality ? String(raw.nationality) : null,
-      birthdate: raw.birthdate ? String(raw.birthdate) : null,
-      university: raw.university ? String(raw.university) : null,
+      // mask 시 client payload 에서 제거 (화면 미표시여도 RSC 직렬화로 누출,
+      // Sage 배포게이트 HIGH). viewer 에게 불필요한 순수 PII.
+      birthdate: mask ? null : raw.birthdate ? String(raw.birthdate) : null,
+      university: raw.university
+        ? mask
+          ? maskUniversity(String(raw.university))
+          : String(raw.university)
+        : null,
       visa: raw.visa ? String(raw.visa) : null,
-      address: raw.address ? String(raw.address) : null,
+      address: mask ? null : raw.address ? String(raw.address) : null,
       status,
-      notes: raw.notes ? String(raw.notes) : null,
+      notes: mask ? null : raw.notes ? String(raw.notes) : null,
       cohortId: raw.cohort_id ? String(raw.cohort_id) : null,
       courseId: raw.course_id ? String(raw.course_id) : null,
       bundleId: raw.bundle_id ? String(raw.bundle_id) : null,
@@ -206,8 +245,11 @@ export async function fetchApplicants(options?: {
         : null,
       paidAmountKrw:
         typeof raw.paid_amount_krw === "number" ? raw.paid_amount_krw : null,
+      // 입금자명 = 신청자 실명 (name 가려도 여기 남으면 마스킹 무력화, ADR 0017).
       depositorNameObserved: raw.depositor_name_observed
-        ? String(raw.depositor_name_observed)
+        ? mask
+          ? maskName(String(raw.depositor_name_observed))
+          : String(raw.depositor_name_observed)
         : null,
       paidConfirmedBy: raw.paid_confirmed_by
         ? String(raw.paid_confirmed_by)

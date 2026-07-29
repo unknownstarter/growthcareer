@@ -34,11 +34,13 @@ export type PollApplicantsResult = {
 
 export async function pollApplicants(): Promise<PollApplicantsResult> {
   // role 검증 — middleware 가 admin/viewer 만 통과시키지만 헤더 부재면 throw.
-  // 2026-06-22: viewer 도 email / phone 전체 노출 (admin 페이지와 동일 정책).
-  await getAdminRole();
+  // ADR 0017 D1: viewer(코워크) 는 PII 마스킹. page.tsx 진입 렌더와 동일 규칙을
+  // 폴링에도 적용해야 함 — 안 그러면 30초 뒤 폴링 응답이 마스킹을 덮어써 원문
+  // 노출 (Sage 배포게이트 CRIT). admin/super 는 mask:false 로 원문 불변.
+  const role = await getAdminRole();
 
   const { rows, eligibility, error, supabaseAvailable } = await fetchApplicants(
-    { mask: false },
+    { mask: role === "viewer" },
   );
 
   return {

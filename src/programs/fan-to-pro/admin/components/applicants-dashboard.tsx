@@ -663,6 +663,34 @@ function DashboardInner({
               </button>
             )}
           </div>
+          {/* ADR 0017 Decision B / D5: 코워크 커미션 정산 요약. admin 도 확인용
+              으로 노출. §6.6 원 단위 필수 (M/K 축약 금지). */}
+          {stats.commissionBaseKrw > 0 ? (
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border border-brand-pink/40 bg-brand-pink/[0.06] px-2.5 py-1.5 text-[11px] text-fg">
+              <span
+                className="font-black uppercase text-brand-pink"
+                style={{ letterSpacing: "0.12em" }}
+              >
+                커미션 12%
+              </span>
+              <span className="font-black text-fg">
+                {stats.commissionKrw.toLocaleString()}원
+              </span>
+              <span className="text-fg/60">
+                결제 확정 {stats.commissionCount}명 (
+                {stats.commissionBaseKrw.toLocaleString()}원) 기준
+              </span>
+              {stats.commissionCount > 0 ? (
+                <span className="text-fg/60">
+                  1명당{" "}
+                  {Math.round(
+                    stats.commissionKrw / stats.commissionCount,
+                  ).toLocaleString()}
+                  원
+                </span>
+              ) : null}
+            </div>
+          ) : null}
         </div>
       </header>
 
@@ -765,15 +793,19 @@ function DashboardInner({
                 다중 발송 ({selectedCount})
               </button>
             )}
-            <button
-              type="button"
-              onClick={() => downloadCsv(filtered)}
-              className={compactBtn}
-              style={compactStyle}
-              disabled={filtered.length === 0}
-            >
-              CSV 내려받기 ({filtered.length})
-            </button>
+            {/* ADR 0017 Decision A: viewer(코워크) 는 CSV 반출 차단 (오프라인
+                PII 반출 벡터 제거). 마스킹된 화면과 별개로 raw 다운로드 방지. */}
+            {!readOnly && (
+              <button
+                type="button"
+                onClick={() => downloadCsv(filtered)}
+                className={compactBtn}
+                style={compactStyle}
+                disabled={filtered.length === 0}
+              >
+                CSV 내려받기 ({filtered.length})
+              </button>
+            )}
             {!readOnly && (
               <button
                 type="button"

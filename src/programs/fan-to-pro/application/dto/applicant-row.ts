@@ -144,7 +144,29 @@ export type ApplicantStats = {
   reminderD1: number;
   /** 신청 24h 경과 + status=notified + reminder_count=0 */
   reminderT1: number;
+  /**
+   * 코워크(홍보 파트너) 커미션 정산 (ADR 0017 Decision B / D5).
+   * base = SUM(paidAmountKrw where status ∈ {paid, enrolled}) — 환불/취소 제외.
+   * commission = base × COMMISSION_RATE. cohort-revenue.ts 의 매출 정의와 동일
+   * 필터 (paid + enrolled). 1기 = 8,800,000원 × 12% = 1,056,000원.
+   */
+  commissionBaseKrw: number;
+  commissionKrw: number;
+  /** 결제 확정 인원 수 (paid + enrolled). 1명당 커미션 안내용. */
+  commissionCount: number;
 };
+
+/**
+ * 코워크 커미션 요율 (ADR 0017 Decision D5 — 1기 근거 12%).
+ * D6(기수별 확정성)는 open. 2기 다중 가격 도입 시 cohort 설정값 검토.
+ */
+export const COMMISSION_RATE = 0.12;
+
+/** 결제 확정으로 커미션 base 에 포함되는 status (환불/취소 자동 제외). */
+const COMMISSION_ELIGIBLE_STATUSES: readonly ApplicantStatus[] = [
+  "paid",
+  "enrolled",
+];
 
 /**
  * 마감 + 리마인드 임계점. KST 자정 = UTC 15:00.
@@ -196,6 +218,8 @@ export function computeStats(rows: ApplicantRow[]): ApplicantStats {
   let reminderT1 = 0;
   let reminderD3 = 0;
   let reminderD1 = 0;
+  let commissionBaseKrw = 0;
+  let commissionCount = 0;
   const now = new Date();
 
   for (const row of rows) {
@@ -204,6 +228,12 @@ export function computeStats(rows: ApplicantRow[]): ApplicantStats {
     if (u.level === "t1") reminderT1 += 1;
     if (u.level === "d3") reminderD3 += 1;
     if (u.level === "d1") reminderD1 += 1;
+    // 커미션 base = 결제 확정(paid/enrolled) 인원의 paid_amount_krw 합.
+    // 환불/취소 status 는 미포함 = 자동 제외 (ADR 0017 D5).
+    if (COMMISSION_ELIGIBLE_STATUSES.includes(row.status)) {
+      commissionBaseKrw += row.paidAmountKrw ?? 0;
+      commissionCount += 1;
+    }
   }
 
   return {
@@ -212,5 +242,8 @@ export function computeStats(rows: ApplicantRow[]): ApplicantStats {
     reminderT1,
     reminderD3,
     reminderD1,
+    commissionBaseKrw,
+    commissionKrw: Math.round(commissionBaseKrw * COMMISSION_RATE),
+    commissionCount,
   };
 }
