@@ -7,7 +7,10 @@
 
 ## 📅 Last updated: 2026-07-29 (LMS 하드닝 스프린트)
 
-> ▶ **다음 세션 시작점 (노아 지정): 인증 리팩터부터.** `#9 vitest 세팅` → `#10 authorize()/resolveAuthContext` → `#11 getClaims`. lms-role.ts(684줄) 판정/IO 분리가 몸통. 라이브 로그인 표면이라 Sage/Mira 게이트 + preview 검증 후 배포.
+> ▶ **다음 세션 시작점: `#10` (lms-role 684줄 God module 분해 = authorize() 순수 추출) → `#14`(2기 모집, 라우팅 결정부터).**
+>
+> **인증 perf 완결**: 리전핀 + `#9`(vitest 108 테스트 안전망) + `#11`(getLmsUser getClaims, ES256 로컬 검증) 배포 완료. `#10`은 이제 **순수 아키텍처 청소**(perf 값은 리전핀/getClaims가 흡수) — Sophia C1: 판정+IO 15함수 뒤엉킴, 큰 careful 리팩터. 안전망 = `pnpm test` green 유지(108). 라이브 로그인 표면 → Sage/Mira 게이트.
+> middleware getUser 는 세션 refresh 겸용이라 **유지가 정답**(getClaims 로 바꾸면 로그아웃 사고).
 
 ## 🎯 현재 상태
 - **1기**: 종강(7/19) + 수료식(7/25) 완료. 수료증 발급 시스템 정상(P-1 fix 후).
@@ -64,8 +67,9 @@
 - Google Search Console / Naver / structured-data placeholder (기존 B0019 잔여).
 
 ## 📋 태스크 보드 (harness 태스크, 파일로 백업)
-- ✅ 완료: #1 #2 #4 #5 #7 #8 #12 #16 #17 #18
-- ⏳ 대기: #3(→#10) #6(2기) #9 #10 #11 #13 #14
+- ✅ 완료: #1 #2 #4 #5 #7 #8 #9 #11 #12 #16 #17 #18
+- ⏳ 대기: #3(→#10) #6(2기) #10(God module 분해) #13(Strangler) #14(2기)
+- **인증 안전망**: `src/programs/fan-to-pro/infrastructure/auth/*.test.ts` (108 tests, `pnpm test`). #10 리팩터 중 green 유지 = 회귀 0.
 
 ---
 
