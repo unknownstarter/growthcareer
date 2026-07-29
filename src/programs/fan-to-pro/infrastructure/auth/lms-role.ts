@@ -55,11 +55,20 @@ export interface LmsUser {
  */
 export const getLmsUser = cache(async (): Promise<LmsUser | null> => {
   const auth = await getSupabaseAuthServer();
-  const {
-    data: { user },
-  } = await auth.auth.getUser();
+  // #11: getUser()(Auth 서버 네트워크 왕복) → getClaims()(ES256 로컬 JWKS 검증).
+  // ES256 비대칭 키 활성(실측) → 네트워크 0. claims.sub = auth.users.id.
+  // 주의: getClaims 는 로컬 검증이라 revocation(로그아웃/ban)이 access token
+  // 만료까지 지연될 수 있음. 그러나 인가(role/membership)는 아래 DB 조회로
+  // 매 요청 실시간 유지 → 데이터 접근은 즉시 반영. mutation 은 assert* + RLS 2중.
+  const { data: claimsData, error: claimsError } = await auth.auth.getClaims();
+  // Sage LOW-1: 검증 실패 원인(서명 불일치/JWKS 롤테이션 등)을 로그로 남김.
+  // 값 노출 없이 error.name 만. 인증 결과는 fail-closed(아래 !userId).
+  if (claimsError) {
+    console.warn("[lms-role] getClaims failed:", claimsError.name);
+  }
+  const userId = claimsData?.claims?.sub;
 
-  if (!user) return null;
+  if (!userId) return null;
 
   const supabase = getSupabaseServer();
   if (!supabase) {
@@ -72,7 +81,7 @@ export const getLmsUser = cache(async (): Promise<LmsUser | null> => {
     .select(
       "id, display_name, email, company_id, student_id, instructor_id, is_super_admin, must_change_password",
     )
-    .eq("id", user.id)
+    .eq("id", userId)
     .single();
 
   if (error || !profile) return null;
@@ -87,7 +96,7 @@ export const getLmsUser = cache(async (): Promise<LmsUser | null> => {
     const { data: cm } = await supabase
       .from("cohort_memberships")
       .select("role")
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .order("created_at", { ascending: false });
     if (cm && cm.length > 0) {
       const inst = cm.find((r) => r.role === "instructor");

@@ -144,11 +144,20 @@ export function makeServiceClient(db: FakeDb) {
   return { from: makeFrom(db) };
 }
 
-/** getSupabaseAuthServer mock — .auth.getUser() 가 주어진 user 반환. */
+/**
+ * getSupabaseAuthServer mock — .auth.getUser() / .auth.getClaims() 둘 다 주어진
+ * user 로 일관 반환 (#11: getLmsUser 가 getClaims 로 전환됨. getClaims 는
+ * ES256 로컬 검증, sub = auth.users.id).
+ */
 export function makeAuthClient(user: { id: string } | null) {
   return {
     auth: {
       getUser: () => Promise.resolve({ data: { user }, error: null }),
+      getClaims: () =>
+        Promise.resolve({
+          data: user ? { claims: { sub: user.id } } : null,
+          error: null,
+        }),
     },
   };
 }
