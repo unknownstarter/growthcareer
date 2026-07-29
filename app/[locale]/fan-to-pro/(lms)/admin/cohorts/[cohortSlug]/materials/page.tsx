@@ -4,8 +4,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { assertProgramAdmin } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
-import { fetchCohortBySlug } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-repository";
-import { fetchLectureMaterialsByCohort } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/lecture-material-repository";
+import { getCohortBySlugCached } from "@/src/programs/fan-to-pro/application/queries/cache/cached-cohort-meta";
+import { getLectureMaterialsByCohortCached } from "@/src/programs/fan-to-pro/application/queries/cache/cached-materials";
 import { CohortMaterialsDashboard } from "@/src/programs/fan-to-pro/interface/components/lms/admin/cohort-materials-dashboard";
 import { PageGuideBot } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guide-bot";
 import { PAGE_GUIDES } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guides";
@@ -42,10 +42,10 @@ export default async function FanToProAdminCohortMaterialsPage({
   // 권한 가드 — program admin.
   await assertProgramAdmin("fan-to-pro");
 
-  const cohort = await fetchCohortBySlug(cohortSlug);
+  const cohort = await getCohortBySlugCached(cohortSlug);
   if (!cohort) notFound();
 
-  const materials = await fetchLectureMaterialsByCohort(cohort.id).catch(
+  const materials = await getLectureMaterialsByCohortCached(cohort.id).catch(
     () => [],
   );
 

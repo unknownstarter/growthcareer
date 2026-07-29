@@ -57,6 +57,10 @@ import { deleteLectureMaterialAction } from "@/src/programs/fan-to-pro/applicati
 import { getMaterialDownloadUrlAction } from "@/src/programs/fan-to-pro/application/lecture-material/get-material-download-url";
 import { useSignedUpload } from "@/src/programs/fan-to-pro/interface/hooks/use-signed-upload";
 import {
+  STAGGER_ITEM_CLASS,
+  staggerDelay,
+} from "@/src/programs/fan-to-pro/interface/components/lms/ui/stagger";
+import {
   MAX_LECTURE_FILE_SIZE_BYTES,
   MAX_WEEK_NUMBER,
   MIN_WEEK_NUMBER,
@@ -226,9 +230,10 @@ export function CohortMaterialsDashboard({
                       </span>
                     </h3>
                     <div className="space-y-2">
-                      {items.map((m) => (
+                      {items.map((m, i) => (
                         <MaterialRow
                           key={m.id}
+                          index={i}
                           material={m}
                           pending={pending}
                           onDelete={() => onDelete(m.id, m.title)}
@@ -250,18 +255,23 @@ export function CohortMaterialsDashboard({
 function MaterialRow({
   material,
   pending,
+  index,
   onDelete,
   onDownload,
 }: {
   material: LectureMaterial;
   pending: boolean;
+  index: number;
   onDelete: () => void;
   onDownload: () => void;
 }) {
   const isFile = material.storage_method === "file_upload";
   const Icon = isFile ? FileText : ExternalLink;
   return (
-    <div className="flex items-start gap-3 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] p-4">
+    <div
+      className={`flex items-start gap-3 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] p-4 ${STAGGER_ITEM_CLASS}`}
+      style={staggerDelay(index)}
+    >
       <Icon
         className="h-5 w-5 text-[var(--muted-foreground)] shrink-0 mt-0.5"
         aria-hidden

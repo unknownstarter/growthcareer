@@ -15,6 +15,10 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { assertCanUploadMaterial } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
 import {
+  materialsTag,
+  purgeTag,
+} from "@/src/programs/fan-to-pro/application/queries/cache/cache-tags";
+import {
   LectureMaterialVisibilitySchema,
   MIN_WEEK_NUMBER,
   MAX_WEEK_NUMBER,
@@ -116,6 +120,7 @@ export async function saveMaterialExternalUrlAction(
       uploaded_by: uploadedBy,
     });
 
+    purgeTag(materialsTag(data.cohort_id));
     revalidatePath("/ko/fan-to-pro/admin/materials");
     revalidatePath("/en/fan-to-pro/admin/materials");
 

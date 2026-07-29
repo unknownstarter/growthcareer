@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { assertProgramAdmin } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
-import { fetchCohortBySlug } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-repository";
-import { fetchAnnouncementsByCohort } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/announcement-repository";
+import { getCohortBySlugCached } from "@/src/programs/fan-to-pro/application/queries/cache/cached-cohort-meta";
+import {
+  fetchAnnouncementsByCohort,
+} from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/announcement-repository";
+import { getAnnouncementsByCohortCached } from "@/src/programs/fan-to-pro/application/queries/cache/cached-announcements";
 import { isMissingTableError } from "@/src/programs/fan-to-pro/infrastructure/supabase/error-utils";
 import { AnnouncementsDashboard } from "@/src/programs/fan-to-pro/interface/components/lms/admin/announcements-dashboard";
 import { PageGuideBot } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guide-bot";
@@ -35,7 +38,7 @@ export default async function FanToProAdminCohortAnnouncementsPage({
   await assertProgramAdmin("fan-to-pro");
   const { cohortSlug } = await params;
 
-  const cohort = await fetchCohortBySlug(cohortSlug);
+  const cohort = await getCohortBySlugCached(cohortSlug);
   if (!cohort) notFound();
 
   // Wave 2 entity (announcements) 마이그레이션 대기 가능. graceful fallback.
@@ -43,7 +46,7 @@ export default async function FanToProAdminCohortAnnouncementsPage({
   let entityMissing = false;
   let unexpectedError: string | null = null;
   try {
-    announcements = await fetchAnnouncementsByCohort(cohort.id);
+    announcements = await getAnnouncementsByCohortCached(cohort.id);
   } catch (err) {
     if (isMissingTableError(err)) {
       entityMissing = true;

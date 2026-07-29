@@ -28,6 +28,10 @@ import {
 import { Button } from "@/src/programs/fan-to-pro/interface/components/lms/ui/button";
 import { Badge } from "@/src/programs/fan-to-pro/interface/components/lms/ui/badge";
 import { getMaterialDownloadUrlAction } from "@/src/programs/fan-to-pro/application/lecture-material/get-material-download-url";
+import {
+  STAGGER_ITEM_CLASS,
+  staggerDelay,
+} from "@/src/programs/fan-to-pro/interface/components/lms/ui/stagger";
 import type { LectureMaterial } from "@/src/programs/fan-to-pro/domain/entities/lecture-material";
 
 type Props = {
@@ -150,9 +154,10 @@ export function StudentMaterialsPanel({ initialMaterials, locale }: Props) {
                 </span>
               </h2>
               <div className="space-y-2">
-                {items.map((m) => (
+                {items.map((m, i) => (
                   <StudentMaterialCard
                     key={m.id}
+                    index={i}
                     material={m}
                     pending={pending}
                     isEn={isEn}
@@ -172,17 +177,22 @@ function StudentMaterialCard({
   material,
   pending,
   isEn,
+  index,
   onDownload,
 }: {
   material: LectureMaterial;
   pending: boolean;
   isEn: boolean;
+  index: number;
   onDownload: () => void;
 }) {
   const isExternal = material.storage_method === "external_url";
   const Icon = isExternal ? ExternalLink : FileText;
   return (
-    <div className="flex flex-col gap-3 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] p-4 sm:flex-row sm:items-center sm:gap-4">
+    <div
+      className={`flex flex-col gap-3 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] p-4 sm:flex-row sm:items-center sm:gap-4 ${STAGGER_ITEM_CLASS}`}
+      style={staggerDelay(index)}
+    >
       <Icon
         className="h-5 w-5 text-[var(--muted-foreground)] shrink-0"
         aria-hidden

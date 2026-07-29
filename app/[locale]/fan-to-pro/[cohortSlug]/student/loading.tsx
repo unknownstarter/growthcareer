@@ -8,7 +8,7 @@ import { LoadingOverlay } from "@/src/programs/fan-to-pro/interface/components/l
 export default function StudentLoading() {
   return (
     <LoadingOverlay title="페이지">
-      <div className="px-6 py-8 md:px-10 md:py-10 max-w-5xl mx-auto animate-pulse">
+      <div className="px-6 py-8 md:px-10 md:py-10 max-w-5xl mx-auto motion-safe:animate-pulse">
         {/* PageHeader */}
         <header className="border-b border-[var(--border)] pb-6 mb-6 space-y-2">
           <div className="h-7 w-56 rounded bg-[var(--muted)]" />

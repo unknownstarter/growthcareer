@@ -19,9 +19,9 @@ import {
   getCohortMembershipRole,
 } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
 import {
-  fetchLectureMaterialsByCohort,
-  fetchVisibleLectureMaterialsByCohort,
-} from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/lecture-material-repository";
+  getLectureMaterialsByCohortCached,
+  getVisibleLectureMaterialsByCohortCached,
+} from "@/src/programs/fan-to-pro/application/queries/cache/cached-materials";
 import type { LectureMaterial } from "@/src/programs/fan-to-pro/domain/entities/lecture-material";
 
 const InputSchema = z.object({
@@ -44,7 +44,7 @@ export async function listLectureMaterialsAction(
   try {
     if (mode === "admin") {
       await assertCanUploadMaterial(cohort_id);
-      const materials = await fetchLectureMaterialsByCohort(cohort_id);
+      const materials = await getLectureMaterialsByCohortCached(cohort_id);
       return { status: "ok", materials };
     }
 
@@ -57,7 +57,7 @@ export async function listLectureMaterialsAction(
         return { status: "error", error: "forbidden" };
       }
     }
-    const materials = await fetchVisibleLectureMaterialsByCohort(cohort_id);
+    const materials = await getVisibleLectureMaterialsByCohortCached(cohort_id);
     return { status: "ok", materials };
   } catch (err) {
     return {

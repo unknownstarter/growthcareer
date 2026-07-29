@@ -19,6 +19,10 @@ import { Input } from "@/src/programs/fan-to-pro/interface/components/lms/ui/inp
 import { Label } from "@/src/programs/fan-to-pro/interface/components/lms/ui/label";
 import { Textarea } from "@/src/programs/fan-to-pro/interface/components/lms/ui/textarea";
 import {
+  STAGGER_ITEM_CLASS,
+  staggerDelay,
+} from "@/src/programs/fan-to-pro/interface/components/lms/ui/stagger";
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -169,10 +173,11 @@ export function AnnouncementsDashboard({ cohort_id, announcements }: Props) {
           </p>
         ) : (
           <div className="space-y-2">
-            {announcements.map((a) => (
+            {announcements.map((a, i) => (
               <div
                 key={a.id}
-                className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] p-4"
+                className={`rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] p-4 ${STAGGER_ITEM_CLASS}`}
+                style={staggerDelay(i)}
               >
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <div className="flex items-center gap-2 min-w-0">

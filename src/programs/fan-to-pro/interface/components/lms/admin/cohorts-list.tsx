@@ -26,6 +26,10 @@ import {
   CardTitle,
 } from "@/src/programs/fan-to-pro/interface/components/lms/ui/card";
 import { Badge } from "@/src/programs/fan-to-pro/interface/components/lms/ui/badge";
+import {
+  STAGGER_ITEM_CLASS,
+  staggerDelay,
+} from "@/src/programs/fan-to-pro/interface/components/lms/ui/stagger";
 import type { CohortStatus } from "@/src/programs/fan-to-pro/domain/entities/cohort";
 
 export type CohortListRow = {
@@ -201,9 +205,9 @@ function CohortCard({
     <Card
       className={
         "h-full transition-all duration-150 hover:border-[var(--primary)] hover:shadow-md " +
-        "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-bottom-2 motion-safe:duration-300"
+        STAGGER_ITEM_CLASS
       }
-      style={{ animationDelay: `${Math.min(index, 12) * 40}ms` }}
+      style={staggerDelay(index)}
     >
       <CardHeader className="space-y-2">
         <div className="flex items-start justify-between gap-3">

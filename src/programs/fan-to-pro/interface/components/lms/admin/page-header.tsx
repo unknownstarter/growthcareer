@@ -31,7 +31,7 @@ export function PageHeader({
 
 export function PageContainer({ children }: { children: React.ReactNode }) {
   return (
-    <div className="px-6 py-8 md:px-10 md:py-10 max-w-7xl mx-auto">
+    <div className="px-6 py-8 md:px-10 md:py-10 max-w-7xl mx-auto motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-500">
       {children}
     </div>
   );

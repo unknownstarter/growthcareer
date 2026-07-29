@@ -24,6 +24,10 @@
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { assertCanUploadMaterial } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
+import {
+  materialsTag,
+  purgeTag,
+} from "@/src/programs/fan-to-pro/application/queries/cache/cache-tags";
 import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
 import {
   LectureMaterialVisibilitySchema,
@@ -154,6 +158,7 @@ export async function finalizeMaterialUploadAction(
   }
 
   // ----- 6. revalidate -----
+  purgeTag(materialsTag(data.cohort_id));
   revalidatePath("/ko/fan-to-pro/admin/cohorts");
   revalidatePath("/en/fan-to-pro/admin/cohorts");
   revalidatePath("/ko/fan-to-pro/admin/materials");

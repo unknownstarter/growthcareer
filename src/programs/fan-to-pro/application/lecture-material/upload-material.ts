@@ -19,6 +19,10 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { assertCanUploadMaterial } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
 import {
+  materialsTag,
+  purgeTag,
+} from "@/src/programs/fan-to-pro/application/queries/cache/cache-tags";
+import {
   validateLectureFileInput,
   buildLectureMaterialPath,
   LectureMaterialVisibilitySchema,
@@ -219,7 +223,9 @@ export async function uploadLectureMaterialAction(
   return { status: "ok", material_id: materialId, file_path: finalPath };
 }
 
-function revalidateMaterialPaths(_cohortId: string): void {
+function revalidateMaterialPaths(cohortId: string): void {
+  // 캐시 태그 무효화 (cohort 공용 자료 목록) — Task #8.
+  purgeTag(materialsTag(cohortId));
   // admin surface
   revalidatePath("/ko/fan-to-pro/admin/cohorts");
   revalidatePath("/en/fan-to-pro/admin/cohorts");

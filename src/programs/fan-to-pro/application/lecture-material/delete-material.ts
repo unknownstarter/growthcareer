@@ -11,6 +11,10 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { assertCanUploadMaterial } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
 import {
+  materialsTag,
+  purgeTag,
+} from "@/src/programs/fan-to-pro/application/queries/cache/cache-tags";
+import {
   fetchLectureMaterialById,
   deleteLectureMaterial,
 } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/lecture-material-repository";
@@ -70,6 +74,7 @@ export async function deleteLectureMaterialAction(
     };
   }
 
+  purgeTag(materialsTag(material.cohort_id));
   revalidatePath("/ko/fan-to-pro/admin/materials");
   revalidatePath("/en/fan-to-pro/admin/materials");
 

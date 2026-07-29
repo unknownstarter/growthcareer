@@ -8,6 +8,10 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { assertProgramAdmin } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
 import {
+  announcementsTag,
+  purgeTag,
+} from "@/src/programs/fan-to-pro/application/queries/cache/cache-tags";
+import {
   insertMaterial,
   updateMaterialStatus,
   deleteMaterial,
@@ -16,6 +20,7 @@ import {
   insertAnnouncement,
   updateAnnouncementStatus,
   deleteAnnouncement,
+  fetchAnnouncementById,
 } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/announcement-repository";
 import { insertAssignment } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/assignment-repository";
 
@@ -131,6 +136,7 @@ export async function createAnnouncementAction(
       ...parsed.data,
       created_by: user.id,
     });
+    purgeTag(announcementsTag(parsed.data.cohort_id));
     revalidatePath("/ko/fan-to-pro/admin/announcements");
     revalidateCohortsLayout();
     return { status: "ok", id: a.id };
@@ -145,7 +151,8 @@ export async function publishAnnouncementAction(input: {
 }): Promise<{ status: "ok" } | { status: "error"; error: string }> {
   await assertProgramAdmin("fan-to-pro");
   try {
-    await updateAnnouncementStatus(input.id, "published");
+    const updated = await updateAnnouncementStatus(input.id, "published");
+    purgeTag(announcementsTag(updated.cohort_id));
     revalidatePath("/ko/fan-to-pro/admin/announcements");
     revalidateCohortsLayout();
     return { status: "ok" };
@@ -160,7 +167,8 @@ export async function archiveAnnouncementAction(input: {
 }): Promise<{ status: "ok" } | { status: "error"; error: string }> {
   await assertProgramAdmin("fan-to-pro");
   try {
-    await updateAnnouncementStatus(input.id, "archived");
+    const updated = await updateAnnouncementStatus(input.id, "archived");
+    purgeTag(announcementsTag(updated.cohort_id));
     revalidatePath("/ko/fan-to-pro/admin/announcements");
     revalidateCohortsLayout();
     return { status: "ok" };
@@ -175,7 +183,10 @@ export async function deleteAnnouncementAction(input: {
 }): Promise<{ status: "ok" } | { status: "error"; error: string }> {
   await assertProgramAdmin("fan-to-pro");
   try {
+    // 삭제 전 cohort_id 확보 (캐시 태그 무효화용).
+    const existing = await fetchAnnouncementById(input.id);
     await deleteAnnouncement(input.id);
+    if (existing) purgeTag(announcementsTag(existing.cohort_id));
     revalidatePath("/ko/fan-to-pro/admin/announcements");
     revalidateCohortsLayout();
     return { status: "ok" };

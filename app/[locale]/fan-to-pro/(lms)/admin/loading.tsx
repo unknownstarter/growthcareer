@@ -9,7 +9,7 @@ import { LoadingOverlay } from "@/src/programs/fan-to-pro/interface/components/l
 export default function AdminLoading() {
   return (
     <LoadingOverlay title="페이지">
-      <div className="px-6 py-8 md:px-10 md:py-10 max-w-7xl mx-auto animate-pulse">
+      <div className="px-6 py-8 md:px-10 md:py-10 max-w-7xl mx-auto motion-safe:animate-pulse">
         {/* PageHeader skeleton */}
         <header className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between border-b border-[var(--border)] pb-6 mb-6">
           <div className="space-y-2">

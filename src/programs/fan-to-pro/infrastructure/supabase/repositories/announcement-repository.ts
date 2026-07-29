@@ -45,6 +45,21 @@ export async function fetchPublishedAnnouncementsByCohort(
   return (data ?? []).map((row) => AnnouncementSchema.parse(row));
 }
 
+/** id 로 단일 공지. 캐시 무효화 시 cohort_id 조회용. 없으면 null. */
+export async function fetchAnnouncementById(
+  id: string,
+): Promise<Announcement | null> {
+  const supabase = requireClient();
+  const { data, error } = await supabase
+    .from(TABLE)
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data) return null;
+  return AnnouncementSchema.parse(data);
+}
+
 export type InsertAnnouncementInput = {
   cohort_id: string;
   created_by?: string | null;

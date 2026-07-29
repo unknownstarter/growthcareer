@@ -5,8 +5,8 @@ import {
   getLmsUser,
   assertCohortRole,
 } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
-import { fetchCohortBySlug } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-repository";
-import { fetchVisibleLectureMaterialsByCohort } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/lecture-material-repository";
+import { getCohortBySlugCached } from "@/src/programs/fan-to-pro/application/queries/cache/cached-cohort-meta";
+import { getVisibleLectureMaterialsByCohortCached } from "@/src/programs/fan-to-pro/application/queries/cache/cached-materials";
 import { StudentMaterialsPanel } from "@/src/programs/fan-to-pro/interface/components/lms/student/student-materials-panel";
 import {
   PageContainer,
@@ -40,7 +40,7 @@ export default async function StudentMaterialsPage({
   const user = await getLmsUser();
   if (!user) redirect(`/${locale}/auth/login` as Route);
 
-  const cohort = await fetchCohortBySlug(cohortSlug);
+  const cohort = await getCohortBySlugCached(cohortSlug);
   if (!cohort) {
     return (
       <PageContainer>
@@ -69,9 +69,9 @@ export default async function StudentMaterialsPage({
     );
   }
 
-  const materials = await fetchVisibleLectureMaterialsByCohort(cohort.id).catch(
-    () => [],
-  );
+  const materials = await getVisibleLectureMaterialsByCohortCached(
+    cohort.id,
+  ).catch(() => []);
 
   const titleText = locale === "en" ? "Materials" : "수업 자료";
   const descriptionText =

@@ -100,11 +100,9 @@ export default async function FanToProAdminCohortsPage() {
 
   return (
     <PageContainer>
-      <div className="motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-500">
-        <PageGuideBot {...PAGE_GUIDES.cohorts} />
-        <PageHeader title="기수 관리" description={description} />
-        <CohortsList rows={rows} />
-      </div>
+      <PageGuideBot {...PAGE_GUIDES.cohorts} />
+      <PageHeader title="기수 관리" description={description} />
+      <CohortsList rows={rows} />
     </PageContainer>
   );
 }
