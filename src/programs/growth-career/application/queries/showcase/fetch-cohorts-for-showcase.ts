@@ -22,12 +22,12 @@
  *   - Supabase 미연결 시 { cohorts: [], instructorsByCohortSlug: {} }.
  *   - instructor 조회 실패 시 instructorsByCohortSlug 만 {} 로 fallback.
  */
-import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
-import { fetchPubliclyDisplayableCohorts } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-showcase-repository";
+import { getSupabaseServer } from "@/src/shared/supabase/server";
+import { fetchPubliclyDisplayableCohorts } from "@/src/programs/growth-career/infrastructure/supabase/cohort-showcase-repository";
 import type {
   CohortShowcase as CohortShowcaseWire,
   CohortInstructor,
-} from "@/src/programs/growth-career/presentation/components/showcase/types";
+} from "@/src/programs/growth-career/application/dto/showcase-view";
 
 export type FetchCohortsForShowcaseInput = {
   variant: "landing" | "archive";

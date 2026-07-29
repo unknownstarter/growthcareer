@@ -23,6 +23,6 @@ export type {
   CourseInstructor,
   Bundle,
   StoryFrontmatter,
-} from "./types";
+} from "@/src/programs/growth-career/application/dto/showcase-view";
 
 export { formatKrw, formatPeriod } from "./format";

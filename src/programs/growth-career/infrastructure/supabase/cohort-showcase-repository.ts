@@ -8,12 +8,12 @@
  *   - Zod 스키마로 row 정규화 (starts_on/ends_on → starts_at/ends_at 매핑)
  *   - 예외는 throw 로 경계 상단에 위임 (use case 에서 처리)
  */
-import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
+import { getSupabaseServer } from "@/src/shared/supabase/server";
 import {
   CohortShowcaseSchema,
   HeroStatSchema,
   type CohortShowcase,
-} from "@/src/programs/fan-to-pro/domain/entities/cohort-showcase";
+} from "@/src/programs/growth-career/domain/cohort-showcase";
 
 const TABLE = "cohorts";
 

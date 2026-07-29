@@ -19,7 +19,7 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import { Modal } from "./modal";
-import { cn } from "@/src/programs/fan-to-pro/presentation/components/cn";
+import { cn } from "@/src/shared/ui/cn";
 
 const CONFIRM_WORD = "ANONYMIZE";
 

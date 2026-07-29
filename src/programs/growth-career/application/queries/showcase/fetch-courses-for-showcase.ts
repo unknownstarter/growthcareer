@@ -23,11 +23,11 @@
  *
  * 실패 정책: Supabase 미연결 시 empty.
  */
-import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
+import { getSupabaseServer } from "@/src/shared/supabase/server";
 import type {
   Course as CourseWire,
   CourseInstructor,
-} from "@/src/programs/growth-career/presentation/components/showcase/types";
+} from "@/src/programs/growth-career/application/dto/showcase-view";
 
 export type FetchCoursesForShowcaseInput = {
   /** 특정 program 만. 예: "fan-to-pro". null 이면 전체 program. */

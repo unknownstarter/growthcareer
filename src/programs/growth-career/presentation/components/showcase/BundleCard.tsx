@@ -1,6 +1,6 @@
-import type { Bundle } from "./types";
+import type { Bundle } from "@/src/programs/growth-career/application/dto/showcase-view";
 import { formatKrw } from "./format";
-import { cn } from "@/src/programs/fan-to-pro/presentation/components/cn";
+import { cn } from "@/src/shared/ui/cn";
 
 /**
  * 번들 카드. /bundles + /bundles/[slug] + 코스 상세 관련 번들.

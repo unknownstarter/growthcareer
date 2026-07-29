@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { cn } from "../components/cn";
+import { cn } from "@/src/shared/ui/cn";
 import { Container } from "../ui/container";
 import { Eyebrow } from "../ui/eyebrow";
 import { Section } from "../ui/section";

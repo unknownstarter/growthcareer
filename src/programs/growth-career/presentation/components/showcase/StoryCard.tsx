@@ -1,5 +1,5 @@
-import type { StoryFrontmatter } from "./types";
-import { cn } from "@/src/programs/fan-to-pro/presentation/components/cn";
+import type { StoryFrontmatter } from "@/src/programs/growth-career/application/dto/showcase-view";
+import { cn } from "@/src/shared/ui/cn";
 
 /**
  * 수료생 스토리 카드. /stories + 우산 랜딩 하단.

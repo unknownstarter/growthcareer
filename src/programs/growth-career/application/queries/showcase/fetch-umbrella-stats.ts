@@ -25,9 +25,9 @@
  */
 import { z } from "zod";
 
-import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
-import { fetchPubliclyDisplayableCohorts } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-showcase-repository";
-import type { HeroUmbrellaStatsData } from "@/src/programs/growth-career/presentation/components/showcase/types";
+import { getSupabaseServer } from "@/src/shared/supabase/server";
+import { fetchPubliclyDisplayableCohorts } from "@/src/programs/growth-career/infrastructure/supabase/cohort-showcase-repository";
+import type { HeroUmbrellaStatsData } from "@/src/programs/growth-career/application/dto/showcase-view";
 
 export type FetchUmbrellaStatsInput = {
   /** apply CTA href. locale 기준 라우트. */

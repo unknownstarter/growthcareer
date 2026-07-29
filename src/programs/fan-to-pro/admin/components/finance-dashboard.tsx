@@ -2,7 +2,7 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { cn } from "@/src/programs/fan-to-pro/presentation/components/cn";
+import { cn } from "@/src/shared/ui/cn";
 import { exportFinanceCsv } from "@/src/programs/fan-to-pro/application/finance-actions";
 import type { FinanceKpi } from "@/src/programs/fan-to-pro/domain/finance";
 import { ToastProvider, useToast } from "./toast";

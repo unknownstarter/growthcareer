@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { cn } from "../components/cn";
+import { cn } from "@/src/shared/ui/cn";
 
 export function Container({
   className,

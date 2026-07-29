@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { cn } from "../components/cn";
+import { cn } from "@/src/shared/ui/cn";
 import { useSectionImpression } from "../hooks/use-section-impression";
 
 type Tone = "bg" | "surface" | "purple" | "pink" | "indigo" | "violet";

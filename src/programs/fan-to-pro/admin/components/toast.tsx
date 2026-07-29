@@ -10,7 +10,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { cn } from "@/src/programs/fan-to-pro/presentation/components/cn";
+import { cn } from "@/src/shared/ui/cn";
 
 /**
  * 최소 토스트 시스템 - 외부 의존성 없음.

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Modal } from "./modal";
-import { cn } from "@/src/programs/fan-to-pro/presentation/components/cn";
+import { cn } from "@/src/shared/ui/cn";
 import {
   buildMailtoUrl,
   buildSmsUrl,

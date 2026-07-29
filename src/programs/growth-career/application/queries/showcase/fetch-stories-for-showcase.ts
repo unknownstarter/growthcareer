@@ -31,7 +31,7 @@ import {
   getAllStories,
   getStoriesByCohortShowcaseSlug,
 } from "@/src/programs/growth-career/infrastructure/content/story-loader";
-import type { StoryFrontmatter as StoryWire } from "@/src/programs/growth-career/presentation/components/showcase/types";
+import type { StoryFrontmatter as StoryWire } from "@/src/programs/growth-career/application/dto/showcase-view";
 import type { StoryFrontmatter as StoryRaw } from "@/src/programs/growth-career/domain/content/story-frontmatter";
 
 export type FetchStoriesForShowcaseInput = {

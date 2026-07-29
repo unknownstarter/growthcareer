@@ -1,4 +1,4 @@
-import type { Course, CourseInstructor } from "./types";
+import type { Course, CourseInstructor } from "@/src/programs/growth-career/application/dto/showcase-view";
 import { CourseCard } from "./CourseCard";
 
 /**

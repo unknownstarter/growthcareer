@@ -20,8 +20,8 @@
  *
  * 실패 정책: Supabase 미연결 시 empty.
  */
-import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
-import type { Bundle as BundleWire } from "@/src/programs/growth-career/presentation/components/showcase/types";
+import { getSupabaseServer } from "@/src/shared/supabase/server";
+import type { Bundle as BundleWire } from "@/src/programs/growth-career/application/dto/showcase-view";
 
 export type FetchBundlesForShowcaseInput = {
   programSlug: string | null;

@@ -1,4 +1,4 @@
-import type { Bundle } from "./types";
+import type { Bundle } from "@/src/programs/growth-career/application/dto/showcase-view";
 import { BundleCard } from "./BundleCard";
 
 /**

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { cn } from "@/src/programs/fan-to-pro/presentation/components/cn";
+import { cn } from "@/src/shared/ui/cn";
 
 /**
  * Admin 페이지 공용 미니 네비게이션.

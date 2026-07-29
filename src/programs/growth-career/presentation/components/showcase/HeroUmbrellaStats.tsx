@@ -1,5 +1,5 @@
-import type { HeroUmbrellaStatsData } from "./types";
-import { cn } from "@/src/programs/fan-to-pro/presentation/components/cn";
+import type { HeroUmbrellaStatsData } from "@/src/programs/growth-career/application/dto/showcase-view";
+import { cn } from "@/src/shared/ui/cn";
 
 /**
  * 우산 랜딩 Hero. 지표 4개 + 다음 기수 CTA.

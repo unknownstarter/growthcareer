@@ -1,6 +1,6 @@
-import type { CohortShowcase, CohortInstructor } from "./types";
+import type { CohortShowcase, CohortInstructor } from "@/src/programs/growth-career/application/dto/showcase-view";
 import { formatPeriod } from "./format";
-import { cn } from "@/src/programs/fan-to-pro/presentation/components/cn";
+import { cn } from "@/src/shared/ui/cn";
 
 /**
  * 기수 showcase 카드. 우산 랜딩 + /cohorts 아카이브에서 재사용.

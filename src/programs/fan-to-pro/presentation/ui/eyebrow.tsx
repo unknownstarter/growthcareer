@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { cn } from "../components/cn";
+import { cn } from "@/src/shared/ui/cn";
 
 /**
  * 섹션 상단 라벨 — "01 / PROBLEM" 처럼 작고 트래킹 넓은 텍스트.

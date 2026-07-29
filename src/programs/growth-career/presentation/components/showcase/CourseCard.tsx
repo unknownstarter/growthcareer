@@ -1,6 +1,6 @@
-import type { Course, CourseInstructor } from "./types";
+import type { Course, CourseInstructor } from "@/src/programs/growth-career/application/dto/showcase-view";
 import { formatKrw } from "./format";
-import { cn } from "@/src/programs/fan-to-pro/presentation/components/cn";
+import { cn } from "@/src/shared/ui/cn";
 
 /**
  * 단과 코스 카드. /courses + /courses/[slug] + 우산 랜딩 미리보기.

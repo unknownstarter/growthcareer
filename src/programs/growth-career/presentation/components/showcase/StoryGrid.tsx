@@ -1,4 +1,4 @@
-import type { StoryFrontmatter } from "./types";
+import type { StoryFrontmatter } from "@/src/programs/growth-career/application/dto/showcase-view";
 import { StoryCard } from "./StoryCard";
 import { EmptyStoriesState } from "./EmptyStoriesState";
 

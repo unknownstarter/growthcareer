@@ -1,4 +1,4 @@
-import type { CohortShowcase, CohortInstructor } from "./types";
+import type { CohortShowcase, CohortInstructor } from "@/src/programs/growth-career/application/dto/showcase-view";
 import { CohortShowcaseCard } from "./CohortShowcaseCard";
 
 /**

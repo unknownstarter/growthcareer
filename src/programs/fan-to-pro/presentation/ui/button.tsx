@@ -1,5 +1,5 @@
 import type { ComponentProps, ReactNode } from "react";
-import { cn } from "../components/cn";
+import { cn } from "@/src/shared/ui/cn";
 
 type Variant = "primary" | "secondary" | "ghost";
 type Size = "md" | "lg" | "xl";

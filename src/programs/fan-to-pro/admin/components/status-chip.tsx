@@ -1,4 +1,4 @@
-import { cn } from "@/src/programs/fan-to-pro/presentation/components/cn";
+import { cn } from "@/src/shared/ui/cn";
 import type { ApplicantStatus } from "../types";
 
 /**
