@@ -13,14 +13,15 @@ const badgeVariants = cva(
         default:
           "border-transparent bg-[var(--primary)] text-[var(--primary-foreground)]",
         secondary:
-          "border-transparent bg-[var(--secondary)] text-[var(--secondary-foreground)]",
-        outline: "border-[var(--border)] text-[var(--foreground)]",
-        success:
-          "border-transparent bg-[#dcfae6] text-[#067647]",
-        warning:
-          "border-transparent bg-[#fef0c7] text-[#b54708]",
-        destructive:
-          "border-transparent bg-[#fee4e2] text-[#b42318]",
+          "border-transparent bg-[var(--secondary)] text-[var(--secondary-foreground)] border-[var(--border)]",
+        outline: "border-[var(--border-strong)] text-[var(--foreground)]",
+        // 브랜드 soft-tint — 핑크 (주) + 남보라 (보조). 상태 라벨용.
+        pink: "border-transparent bg-[var(--color-pink-soft)] text-[var(--color-pink-soft-fg)]",
+        indigo:
+          "border-transparent bg-[var(--color-indigo-soft)] text-[var(--color-indigo-soft-fg)]",
+        success: "border-transparent bg-[#dcfae6] text-[#067647]",
+        warning: "border-transparent bg-[#fef0c7] text-[#b54708]",
+        destructive: "border-transparent bg-[#fee4e2] text-[#b42318]",
       },
     },
     defaultVariants: {
