@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef } from "react";
+import { Button } from "@/src/programs/fan-to-pro/interface/components/lms/ui/button";
 
 /**
  * 이력서 인쇄 trigger button (B0062).
@@ -31,12 +32,8 @@ export function ResumePrintButton({ iframeId }: { iframeId: string }) {
   }, [iframeId]);
 
   return (
-    <button
-      type="button"
-      onClick={handlePrint}
-      className="rounded-md bg-neutral-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-neutral-800"
-    >
+    <Button type="button" onClick={handlePrint} size="sm">
       PDF 로 저장 / 인쇄
-    </button>
+    </Button>
   );
 }

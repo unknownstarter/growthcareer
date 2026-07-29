@@ -534,8 +534,8 @@ function OverviewKpiGrid({
         }
         accent={
           minToOpenMet
-            ? "text-emerald-600 dark:text-emerald-400"
-            : "text-amber-600 dark:text-amber-400"
+            ? "text-emerald-600"
+            : "text-amber-600"
         }
       />
 
@@ -567,7 +567,7 @@ function OverviewKpiGrid({
         accent={
           students.invitedCount === students.paidApplicantCount &&
           students.paidApplicantCount > 0
-            ? "text-emerald-600 dark:text-emerald-400"
+            ? "text-emerald-600"
             : "text-[var(--foreground)]"
         }
       />
@@ -597,10 +597,10 @@ function OverviewKpiGrid({
         accent={
           instructors.unassignedSessionCount === 0 &&
           instructors.assignedCount > 0
-            ? "text-emerald-600 dark:text-emerald-400"
+            ? "text-emerald-600"
             : instructors.assignedCount === 0
               ? "text-[var(--muted-foreground)]"
-              : "text-amber-600 dark:text-amber-400"
+              : "text-amber-600"
         }
       />
 
@@ -630,8 +630,8 @@ function OverviewKpiGrid({
           attendance.endedSessions === 0
             ? "text-[var(--muted-foreground)]"
             : attendancePct >= 75
-              ? "text-emerald-600 dark:text-emerald-400"
-              : "text-amber-600 dark:text-amber-400"
+              ? "text-emerald-600"
+              : "text-amber-600"
         }
       />
 
@@ -660,7 +660,7 @@ function OverviewKpiGrid({
           materials.totalCount === 0
             ? "text-[var(--muted-foreground)]"
             : materials.coveredWeekCount === materials.totalWeekCount
-              ? "text-emerald-600 dark:text-emerald-400"
+              ? "text-emerald-600"
               : "text-[var(--foreground)]"
         }
       />
@@ -680,8 +680,8 @@ function OverviewKpiGrid({
             <TrendingUp
               className={`h-4 w-4 ${
                 finance.netKrw >= 0
-                  ? "text-emerald-600 dark:text-emerald-400"
-                  : "text-red-600 dark:text-red-400"
+                  ? "text-emerald-600"
+                  : "text-red-600"
               }`}
             />
             {netSign}
@@ -703,8 +703,8 @@ function OverviewKpiGrid({
           finance.revenue.paid_count === 0
             ? "text-[var(--muted-foreground)]"
             : finance.netKrw >= 0
-              ? "text-emerald-600 dark:text-emerald-400"
-              : "text-red-600 dark:text-red-400"
+              ? "text-emerald-600"
+              : "text-red-600"
         }
       />
     </div>
@@ -804,13 +804,13 @@ function FunnelChip({
 
 const STATUS_COLOR: Record<ApplicantStatus, string> = {
   pending: "text-[var(--muted-foreground)]",
-  notified: "text-amber-700 dark:text-amber-400",
-  paid: "text-emerald-700 dark:text-emerald-400",
-  overdue: "text-red-700 dark:text-red-400",
+  notified: "text-amber-700",
+  paid: "text-emerald-700",
+  overdue: "text-red-700",
   cancelled: "text-[var(--muted-foreground)]",
-  enrolled: "text-emerald-700 dark:text-emerald-400",
+  enrolled: "text-emerald-700",
   refunded: "text-[var(--muted-foreground)]",
-  next_cohort_interest: "text-sky-700 dark:text-sky-400",
+  next_cohort_interest: "text-sky-700",
 };
 
 function ApplicantStatusBadge({ status }: { status: ApplicantStatus }) {

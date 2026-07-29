@@ -12,6 +12,7 @@ import {
   type Ticket,
 } from "@/src/programs/fan-to-pro/domain/entities/ticket";
 import { updateTicketStatusAction } from "@/src/programs/fan-to-pro/application/tickets/update-ticket-status";
+import { Button } from "@/src/programs/fan-to-pro/interface/components/lms/ui/button";
 
 export const metadata: Metadata = {
   title: "할일 상세 - Fan to Pro",
@@ -105,12 +106,9 @@ function StatusSection({ ticket }: { ticket: Ticket }) {
           </option>
         ))}
       </select>
-      <button
-        type="submit"
-        className="rounded-md bg-[var(--primary)] px-3 py-1.5 text-sm font-medium text-white hover:opacity-90"
-      >
+      <Button type="submit" size="sm">
         갱신
-      </button>
+      </Button>
     </form>
   );
 }

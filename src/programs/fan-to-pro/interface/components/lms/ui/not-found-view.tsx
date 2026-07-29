@@ -13,6 +13,7 @@ import Link from "next/link";
 import type { Route } from "next";
 import { usePathname } from "next/navigation";
 import { Compass } from "lucide-react";
+import { Button } from "@/src/programs/fan-to-pro/interface/components/lms/ui/button";
 
 export function NotFoundView({
   title,
@@ -47,12 +48,9 @@ export function NotFoundView({
         <p className="mt-2 text-sm leading-relaxed text-[var(--muted-foreground)]">
           {description}
         </p>
-        <Link
-          href={home}
-          className="mt-6 inline-flex h-11 items-center justify-center rounded-[var(--radius)] bg-[var(--primary)] px-6 text-sm font-semibold text-[var(--primary-foreground)] transition-all duration-150 hover:opacity-90 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2"
-        >
-          {homeLabel}
-        </Link>
+        <Button asChild size="lg" className="mt-6">
+          <Link href={home}>{homeLabel}</Link>
+        </Button>
       </div>
     </div>
   );

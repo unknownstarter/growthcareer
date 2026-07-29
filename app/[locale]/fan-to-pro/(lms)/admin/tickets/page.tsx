@@ -9,6 +9,10 @@ import {
   STATUS_LABELS,
   type Ticket,
 } from "@/src/programs/fan-to-pro/domain/entities/ticket";
+import {
+  Badge,
+  type BadgeProps,
+} from "@/src/programs/fan-to-pro/interface/components/lms/ui/badge";
 
 export const metadata: Metadata = {
   title: "할일 - Fan to Pro",
@@ -92,33 +96,27 @@ export default async function TicketsPage({
 }
 
 function PriorityBadge({ priority }: { priority: "P0" | "P1" | "P2" }) {
-  const map = {
-    P0: "bg-red-100 text-red-800 border-red-200",
-    P1: "bg-amber-100 text-amber-800 border-amber-200",
-    P2: "bg-slate-100 text-slate-700 border-slate-200",
+  const variant: Record<typeof priority, BadgeProps["variant"]> = {
+    P0: "destructive",
+    P1: "warning",
+    P2: "secondary",
   };
   return (
-    <span
-      className={`inline-flex items-center rounded-md border px-1.5 py-0.5 text-[10px] font-semibold ${map[priority]}`}
-    >
+    <Badge variant={variant[priority]} className="px-1.5 py-0.5 text-[10px]">
       {priority}
-    </span>
+    </Badge>
   );
 }
 
 function StatusBadge({ status }: { status: Ticket["status"] }) {
-  const map = {
-    backlog: "bg-slate-100 text-slate-700 border-slate-200",
-    in_progress: "bg-blue-100 text-blue-800 border-blue-200",
-    done: "bg-emerald-100 text-emerald-800 border-emerald-200",
-    blocked: "bg-red-100 text-red-800 border-red-200",
-    deferred: "bg-slate-100 text-slate-500 border-slate-200",
+  const variant: Record<Ticket["status"], BadgeProps["variant"]> = {
+    backlog: "secondary",
+    in_progress: "indigo",
+    done: "success",
+    blocked: "destructive",
+    deferred: "outline",
   };
   return (
-    <span
-      className={`inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium ${map[status]}`}
-    >
-      {STATUS_LABELS[status]}
-    </span>
+    <Badge variant={variant[status]}>{STATUS_LABELS[status]}</Badge>
   );
 }
