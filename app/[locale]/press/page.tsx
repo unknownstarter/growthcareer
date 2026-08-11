@@ -4,7 +4,7 @@
  * Slice D. Luna.
  *
  * PEOPLEGATE 등 외부 매체 기사 모음. 공유 도메인 PRESS_ARTICLES 단일 소스.
- * 라이트 GC 디자인 시스템 (gc-preview 와 동일 크롬). 프리뷰 단계 = noindex.
+ * 라이트 GC 디자인 시스템 (루트 GC 메인과 동일 크롬). 색인 허용.
  * 카드 클릭 = 외부 기사 새 탭. globals.css 안 건드림 (1기 동결).
  * 컬러 그라데이션 X, 글로우 X (§6.8). 딤은 단색 alpha 만.
  */
@@ -40,10 +40,9 @@ function localePrefix(locale: string): string {
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "Press Room (프리뷰)",
+    title: "Press Room",
     description:
       "Growth Career 와 Fan to Pro 를 다룬 언론 보도 모음입니다.",
-    robots: { index: false, follow: false },
   };
 }
 
@@ -62,7 +61,7 @@ export default async function PressRoomPage({
   return (
     <>
       <SiteHeader
-        brand={<GcWordmark variant="light-clean" href={`${prefix}/gc-preview`} />}
+        brand={<GcWordmark variant="light-clean" href={`${prefix}/`} />}
         menu={[
           ...gcNavBefore(prefix),
           { label: "커뮤니티", node: <CommunityGate /> },

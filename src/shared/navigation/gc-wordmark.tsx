@@ -19,7 +19,7 @@ export type GcWordmarkVariant = keyof typeof GROWTH_COLOR;
 
 export function GcWordmark({
   variant,
-  href = "/gc-preview",
+  href = "/",
   className = "",
 }: {
   variant: GcWordmarkVariant;

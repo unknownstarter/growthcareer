@@ -29,7 +29,7 @@ export function InsightChrome({
   return (
     <>
       <SiteHeader
-        brand={<GcWordmark variant="light-clean" href={`${prefix}/gc-preview`} />}
+        brand={<GcWordmark variant="light-clean" href={`${prefix}/`} />}
         menu={[
           ...gcNavBefore(prefix),
           { label: "커뮤니티", node: <CommunityGate /> },

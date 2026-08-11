@@ -24,12 +24,12 @@ export function LocaleSwitcher() {
   const pathname = usePathname();
 
   // LMS / auth surface 에서는 hide. 마케팅 (랜딩 + apply) 에서만 노출.
-  // gc-preview 는 공통 SiteHeader 가 언어 스위처를 GNB 안에 편입하므로 전역 스위처 hide.
+  // 루트(/) = GC 메인. 공통 SiteHeader 가 언어 스위처를 GNB 안에 편입하므로 전역 스위처 hide.
   // LMS 의 i18n 토글은 별도 (라이트 토스 톤, topbar 안) — Wave 4 보강.
   const usesOwnHeader =
+    pathname === "/" || // 루트 GC 메인 = 공통 SiteHeader
     pathname.startsWith("/auth/") ||
     pathname === "/auth" ||
-    pathname.startsWith("/gc-preview") ||
     pathname.startsWith("/insight") || // 인사이트 = 공통 SiteHeader (InsightChrome)
     pathname.startsWith("/press") || // Press Room = 공통 SiteHeader
     pathname === "/fan-to-pro" || // 기수 리스트 = 공통 SiteHeader

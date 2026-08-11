@@ -162,7 +162,7 @@ export default async function FanToProPage({
           이 페이지 포커싱 앵커는 제거했으므로 scroll-mt 여유는 단일바 높이에 맞아 그대로 OK. */}
       <SiteHeader
         containerClassName={WRAP}
-        brand={<GcWordmark variant="light-clean" href={`${prefix}/gc-preview`} />}
+        brand={<GcWordmark variant="light-clean" href={`${prefix}/`} />}
         menu={[
           ...gcNavBefore(prefix),
           { label: "Community", node: <CommunityGate /> },

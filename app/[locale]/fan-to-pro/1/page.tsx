@@ -192,7 +192,7 @@ export default async function FanToProPage({
       {/* 상단 공통 GC GNB (전역 이동, 라이트 통일). 동결 1기 본문은 그대로, 네비 chrome 만 추가.
           6개 GC 서피스 GNB 픽셀 동일 = light-clean brand + 4탭 + locale + CTA. */}
       <SiteHeader
-        brand={<GcWordmark variant="light-clean" href={`${prefix}/gc-preview`} />}
+        brand={<GcWordmark variant="light-clean" href={`${prefix}/`} />}
         menu={[
           ...gcNavBefore(prefix),
           { label: "커뮤니티", node: <CommunityGate /> },

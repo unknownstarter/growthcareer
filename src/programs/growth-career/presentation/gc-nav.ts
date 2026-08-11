@@ -32,7 +32,7 @@ export function gcFooterNav(prefix = ""): GcNavLink[] {
   return [
     { label: "Fan to Pro", href: `${prefix}/fan-to-pro` },
     { label: "Insights", href: `${prefix}/insight` },
-    { label: "Community", href: `${prefix}/gc-preview#community` },
+    { label: "Community", href: `${prefix}/#community` },
     { label: "Press Room", href: `${prefix}/press` },
   ];
 }

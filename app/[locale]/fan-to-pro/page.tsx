@@ -13,7 +13,7 @@ import { SectionHeader } from "@/src/shared/ui/section-header";
 import { StatusBadge, type ProgramStatus } from "@/src/shared/ui/status-badge";
 
 /* =============================================================================
-   Fan to Pro 브랜드 소개 + 기수(cohort) 리스트. 프리뷰 (배포 X, noindex).
+   Fan to Pro 브랜드 소개 + 기수(cohort) 리스트. 색인 허용.
    히어로 → 철학 → 차별점 2 → 1기 흔적(실사진+후기) → 기수 리스트.
    "Fan to Pro란 무엇 + 왜 다른가" 전달. 2기 모집 상세(강사/커리큘럼/지원)는
    /fan-to-pro/2 에 있으니 여기선 반복 X.
@@ -290,7 +290,7 @@ export default async function FanToProPage({
   return (
     <main className="min-h-screen break-keep bg-white text-[#191F28]">
       <SiteHeader
-        brand={<GcWordmark variant="light-clean" href={`${prefix}/gc-preview`} />}
+        brand={<GcWordmark variant="light-clean" href={`${prefix}/`} />}
         menu={[
           ...gcNavBefore(prefix),
           { label: "Community", node: <CommunityGate /> },

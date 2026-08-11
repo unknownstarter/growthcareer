@@ -7,7 +7,7 @@
  * generateStaticParams 로 MDX slug 사전 렌더.
  * 레이아웃: 카테고리 chip → 큰 제목(h1) → 요약(리드) → 본문(가독폭 ~68ch) →
  *   출처 링크 블록 → 날짜 디스클레이머.
- * 라이트 GC 디자인 시스템. 프리뷰 단계 = noindex.
+ * 라이트 GC 디자인 시스템. 색인 허용 (존재하는 아티클만).
  */
 import type { Metadata } from "next";
 import { hasLocale } from "next-intl";
@@ -69,7 +69,7 @@ export async function generateMetadata({
   const localeTyped: "ko" | "en" = locale === "ko" ? "ko" : "en";
   const loaded = getInsightBySlug({ locale: localeTyped, slug });
   if (!loaded) {
-    // TODO: 실 배포(루트 승격) 시 noindex 해제
+    // 존재하지 않는 slug = 색인 제외 (실재 아티클만 색인). 정상 아티클은 색인 허용.
     return { title: "인사이트", robots: { index: false, follow: false } };
   }
 
