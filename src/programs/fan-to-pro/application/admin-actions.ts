@@ -55,8 +55,9 @@ const TABLE = "applicants";
 const OPERATOR_ID = process.env.ADMIN_OPERATOR_ID ?? "noah";
 
 // 신청 마감 - Asia/Seoul KST. payment_due_at 의 상한 cap.
-// 2026-06-21 23:59:59 KST = 2026-06-21 14:59:59 UTC
-const ENROLLMENT_DEADLINE_ISO = "2026-06-21T14:59:59Z";
+// 2기: 2026-08-30 23:59:59 KST = 2026-08-30 14:59:59 UTC (8/30 자정 마감).
+// TODO: cohort.enrollment_closes_at 로 디커플 (지금은 활성 기수 전역값).
+const ENROLLMENT_DEADLINE_ISO = "2026-08-30T14:59:59Z";
 
 // markAsNotified 시 자동 부여하는 payment_due_at 의 기본 grace.
 const PAYMENT_GRACE_DAYS = 3;
@@ -311,8 +312,8 @@ export async function markAsRefunded(
 /* ---------------------------------------------------------------------------
  * 7. markAsEnrolledBatch
  *   마감 +24h grace 후 운영자가 호출.
- *   paid 상태 ≥ ENROLLMENT_CAP.minToProceed (20) 이면 모두 enrolled.
- *   미만이면 모두 cancelled (자동 환불 대상).
+ *   paid 상태 ≥ 해당 기수 cohort.min_to_open 이면 모두 enrolled (전역 상수 디커플).
+ *   미만이면 모두 cancelled (자동 환불 대상). 기수별 스코프 (cohort_id 필터).
  *
  * 동시성:
  *   - Supabase JS 에서 트랜잭션을 한 번에 묶기 위해 Postgres RPC 가 이상적이나,
@@ -329,24 +330,44 @@ export async function markAsEnrolledBatch(): Promise<BatchEnrollResult> {
   const supabase = await requireSupabase();
   if (!supabase) return { status: "error", error: "supabaseUnavailable" };
 
-  const { count: paidCount, error: countErr } = await supabase
+  // paid 신청자의 기수 확인. 임계값은 그 기수의 min_to_open 으로 판정 (전역 상수
+  // ENROLLMENT_CAP 디커플 — 1기 archive 표시값과 무관). 여러 기수가 섞이면 안전상 중단.
+  const { data: paidRows, error: paidErr } = await supabase
     .from(TABLE)
-    .select("id", { count: "exact", head: true })
+    .select("cohort_id")
     .eq("status", "paid");
+  if (paidErr) return { status: "error", error: paidErr.message };
 
-  if (countErr) return { status: "error", error: countErr.message };
+  const rows = paidRows ?? [];
+  const cohortIds = [
+    ...new Set(rows.map((r) => r.cohort_id).filter(Boolean)),
+  ] as string[];
+  if (cohortIds.length === 0) {
+    return { status: "ok", outcome: "cancelled", counts: { affected: 0, threshold: 0 } };
+  }
+  if (cohortIds.length > 1) {
+    // 여러 기수의 paid 가 섞임 → 기수별 개별 처리 필요. 자동 batch 중단.
+    return { status: "error", error: "multipleCohorts" };
+  }
+  const cohortId = cohortIds[0];
 
-  const total = paidCount ?? 0;
-  const threshold = ENROLLMENT_CAP.minToProceed;
+  const { data: cohort } = await supabase
+    .from("cohorts")
+    .select("min_to_open")
+    .eq("id", cohortId)
+    .maybeSingle();
+  const threshold = cohort?.min_to_open ?? ENROLLMENT_CAP.minToProceed;
+
+  const total = rows.filter((r) => r.cohort_id === cohortId).length;
   const meets = total >= threshold;
-
   const nowIso = new Date().toISOString();
 
   if (meets) {
     const { error, count } = await supabase
       .from(TABLE)
       .update({ status: "enrolled" }, { count: "exact" })
-      .eq("status", "paid");
+      .eq("status", "paid")
+      .eq("cohort_id", cohortId);
     if (error) return { status: "error", error: error.message };
     return {
       status: "ok",
@@ -355,7 +376,7 @@ export async function markAsEnrolledBatch(): Promise<BatchEnrollResult> {
     };
   }
 
-  // 정원 미달 - paid 전원 cancelled (환불은 markAsRefunded 로 별도 처리).
+  // 정원 미달 - 해당 기수 paid 전원 cancelled (환불은 markAsRefunded 로 별도 처리).
   const { error, count } = await supabase
     .from(TABLE)
     .update(
@@ -366,7 +387,8 @@ export async function markAsEnrolledBatch(): Promise<BatchEnrollResult> {
       },
       { count: "exact" },
     )
-    .eq("status", "paid");
+    .eq("status", "paid")
+    .eq("cohort_id", cohortId);
 
   if (error) return { status: "error", error: error.message };
   return {

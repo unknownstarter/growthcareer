@@ -42,8 +42,8 @@ const HOLDER_KO = "드롭다운";
 const HOLDER_EN = "Dropdown";
 const TUITION_KO = "880,000원";
 const TUITION_EN = "KRW 880,000";
-const DEADLINE_KO = "6/21(일) 자정";
-const DEADLINE_EN = "Sun Jun 21 midnight (KST)";
+const DEADLINE_KO = "8/30(일) 자정";
+const DEADLINE_EN = "Sun Aug 30 midnight (KST)";
 
 function fill(template: string, name: string): string {
   return template.replaceAll("{name}", name);
@@ -111,7 +111,7 @@ const paymentGuide_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 - 입금 계좌: ${ACCOUNT}
 - 예금주: ${HOLDER_KO}
 - 입금자명: {name} 으로 입금 부탁드려요
-- 마감: 2026년 6월 21일(일) 자정
+- 마감: 2026년 8월 30일(일) 자정
 
 입금이 확인되면 첫 강의와 관련한 안내 문자와 메일이 발송됩니다.
 
@@ -133,7 +133,7 @@ A quick note before you transfer: your seat is only locked in once we receive pa
 - Account: ${ACCOUNT_EN}
 - Holder: ${HOLDER_EN}
 - Depositor name: ${"{name}"}
-- Deadline: Sunday, June 21, midnight (KST)
+- Deadline: Sunday, August 30, midnight (KST)
 
 Once your payment is verified, we will send the first-class details by text and email.
 
@@ -185,7 +185,7 @@ const paymentGuide_email_ko_noVisa = `안녕하세요, Fan to Pro 입니다 :)
 - 입금 계좌: ${ACCOUNT}
 - 예금주: ${HOLDER_KO}
 - 입금자명: {name}
-- 마감: 2026년 6월 21일(일) 자정
+- 마감: 2026년 8월 30일(일) 자정
 
 비자 상태가 바뀌었거나 다른 비자를 보유하고 계셨다면 그것도 함께 알려주세요.
 
@@ -210,7 +210,7 @@ If you have confirmed both points and still want to proceed, please reply to thi
 - Account: ${ACCOUNT_EN}
 - Holder: ${HOLDER_EN}
 - Depositor name: ${"{name}"}
-- Deadline: Sunday, June 21, midnight (KST)
+- Deadline: Sunday, August 30, midnight (KST)
 
 For any questions, please use the KakaoTalk channel below.
 ${KAKAO}
@@ -235,7 +235,7 @@ const paymentConfirmed_sms_ko = `[Fan to Pro] {name} 님 입금 확인 완료 :)
 첫 강의: 6/27(토)
 
 [다음 안내]
-6/21(일) 모집 마감 이후, 강의장 주소 / 준비물 / 카톡 오픈채팅 초대 등 자세한 안내 메일을 별도로 보내드려요.
+8/30(일) 모집 마감 이후, 강의장 주소 / 준비물 / 카톡 오픈채팅 초대 등 자세한 안내 메일을 별도로 보내드려요.
 
 문의사항은 하단의 카카오톡 채널을 이용해주세요.
 ${KAKAO}`;
@@ -246,7 +246,7 @@ const paymentConfirmed_sms_en = `[Fan to Pro] Hi {name}, payment confirmed.
 First class: Sat Jun 27
 
 [NEXT GUIDE]
-After the application deadline (Sun Jun 21), we will send a separate guide email with the venue, what to bring, KakaoTalk open chat invitation, and more.
+After the application deadline (Sun Aug 30), we will send a separate guide email with the venue, what to bring, KakaoTalk open chat invitation, and more.
 
 For any questions, please use the KakaoTalk channel below.
 ${KAKAO}`;
@@ -259,9 +259,9 @@ const paymentConfirmed_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 - 일시: 2026년 6월 27일(토)
 
 [다음 안내]
-6월 21일(일) 모집 마감 이후, 강의장 주소 / 준비물 / 수강생 카카오톡 오픈채팅 초대 링크 등 자세한 안내 메일을 별도로 보내드려요.
+8월 30일(일) 모집 마감 이후, 강의장 주소 / 준비물 / 수강생 카카오톡 오픈채팅 초대 링크 등 자세한 안내 메일을 별도로 보내드려요.
 
-환불이 필요하면 마감 전(6/21 자정) 까지는 100% 환불 가능합니다. 그 이후 환불 규정은 약관을 참고해주세요.
+환불이 필요하면 마감 전(8/30 자정) 까지는 100% 환불 가능합니다. 그 이후 환불 규정은 약관을 참고해주세요.
 https://growthcareer.xyz/terms
 
 문의사항은 하단의 카카오톡 채널을 이용해주세요.
@@ -278,9 +278,9 @@ Hi {name}, your payment has been confirmed. Your seat is locked in.
 - Date: Saturday, June 27, 2026
 
 [NEXT GUIDE]
-After the application deadline (Sunday, June 21), we will send a separate guide email with the venue, what to bring, the student KakaoTalk open chat invitation, and more.
+After the application deadline (Sunday, August 30), we will send a separate guide email with the venue, what to bring, the student KakaoTalk open chat invitation, and more.
 
-If you need a refund, 100% refund is available any time before the deadline (Sun Jun 21 midnight KST). Refund policy after that: https://growthcareer.xyz/terms
+If you need a refund, 100% refund is available any time before the deadline (Sun Aug 30 midnight KST). Refund policy after that: https://growthcareer.xyz/terms
 
 For any questions, please use the KakaoTalk channel below.
 ${KAKAO}
@@ -333,7 +333,7 @@ const reminderT1_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 - 수강료: ${TUITION_KO}
 - 계좌: ${ACCOUNT} (예금주 ${HOLDER_KO})
 - 입금자명: {name}
-- 마감: 2026년 6월 21일(일) 자정
+- 마감: 2026년 8월 30일(일) 자정
 
 이미 입금하셨다면 본 안내는 무시하셔도 좋아요.
 
@@ -353,7 +353,7 @@ Seats are locked in payment order. If you have not paid yet, here is the info ag
 - Tuition: ${TUITION_EN}
 - Account: ${ACCOUNT_EN} (Holder: ${HOLDER_EN})
 - Depositor name: your full name from the form
-- Deadline: Sunday, June 21, midnight (KST)
+- Deadline: Sunday, August 30, midnight (KST)
 
 If you have already paid, please disregard this message.
 
@@ -406,7 +406,7 @@ const reminderD3_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 - 수강료: ${TUITION_KO}
 - 계좌: ${ACCOUNT} (예금주 ${HOLDER_KO})
 - 입금자명: {name}
-- 마감: 2026년 6월 21일(일) 자정
+- 마감: 2026년 8월 30일(일) 자정
 
 결제 후 24시간 안에 확인 안내 보내드려요. 이미 입금하셨다면 본 안내는 무시하셔도 좋아요.
 
@@ -426,7 +426,7 @@ The application deadline is approaching. Your seat is locked in once payment is 
 - Tuition: ${TUITION_EN}
 - Account: ${ACCOUNT_EN} (Holder: ${HOLDER_EN})
 - Depositor name: your full name
-- Deadline: Sunday, June 21, midnight (KST)
+- Deadline: Sunday, August 30, midnight (KST)
 
 We send a confirmation within 24 hours of payment. If you have already paid, please disregard this message.
 
@@ -445,7 +445,7 @@ const reminderD3_email_subject_en = "[Fan to Pro] Friendly payment reminder";
 
 const reminderD1_sms_ko = `[Fan to Pro] {name} 님, 혹시 신청 후 입금을 잊으신 건 아닌지 리마인드 차원에서 안내드려요 :)
 
-신청 마감이 내일(6/21 일) 자정이에요. 자리 확정을 원하시면 마감 전에 입금 부탁드려요.
+신청 마감이 내일(8/30 일) 자정이에요. 자리 확정을 원하시면 마감 전에 입금 부탁드려요.
 
 [입금 정보]
 계좌 ${ACCOUNT}
@@ -457,7 +457,7 @@ ${KAKAO}`;
 
 const reminderD1_sms_en = `[Fan to Pro] Hi {name}, just a friendly reminder in case you might have forgotten about your payment :)
 
-The application deadline is tomorrow (Sun Jun 21) at midnight (KST). If you would like to lock in your seat, please send payment before then.
+The application deadline is tomorrow (Sun Aug 30) at midnight (KST). If you would like to lock in your seat, please send payment before then.
 
 [PAYMENT]
 Account ${ACCOUNT_EN}
@@ -471,13 +471,13 @@ const reminderD1_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 
 {name} 님, 혹시 신청 후 입금을 잊으신 건 아닌지 리마인드 차원에서 안내드려요.
 
-신청 마감이 내일(6/21 일) 자정이에요. 자리 확정을 원하시면 마감 전에 입금 부탁드려요.
+신청 마감이 내일(8/30 일) 자정이에요. 자리 확정을 원하시면 마감 전에 입금 부탁드려요.
 
 [입금 정보]
 - 수강료: ${TUITION_KO}
 - 계좌: ${ACCOUNT} (예금주 ${HOLDER_KO})
 - 입금자명: {name}
-- 마감: 2026년 6월 21일(일) 자정
+- 마감: 2026년 8월 30일(일) 자정
 
 마감 이후 입금된 건은 자리가 남은 경우에만 24시간 안에 확인 후 안내드리고, 자리가 없으면 자동 환불됩니다. 이미 입금하셨다면 본 안내는 무시하셔도 좋아요.
 
@@ -491,13 +491,13 @@ const reminderD1_email_en = `Hello, this is Fan to Pro.
 
 Hi {name}, just a friendly reminder in case you might have forgotten about your payment.
 
-The application deadline is tomorrow (Sun Jun 21) at midnight (KST). If you would like to lock in your seat, please send payment before then.
+The application deadline is tomorrow (Sun Aug 30) at midnight (KST). If you would like to lock in your seat, please send payment before then.
 
 [PAYMENT]
 - Tuition: ${TUITION_EN}
 - Account: ${ACCOUNT_EN} (Holder: ${HOLDER_EN})
 - Depositor name: your full name
-- Deadline: Sun Jun 21 midnight (KST)
+- Deadline: Sun Aug 30 midnight (KST)
 
 After the deadline, we will process any late payments within 24 hours if seats remain, and auto-refund if no seat is available. If you have already paid, please disregard this message.
 
