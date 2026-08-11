@@ -108,7 +108,7 @@ const CONTENT = {
       cmd: "cat schedule.json", label: "일정", h1: "언제, 어디서.", readonly: "read-only",
       start: "2026년 9월 5일 (토)", startNote: "첫 수업 예정. 모집 마감 8월 30일. 상세 일정은 확정 시 개별 안내",
       place: "서울 강남 또는 마포", placeNote: "결제 후 수업 확정 시 개별 안내",
-      enroll: { value: "최소 10명", note: "최소 10명 이상 모집 시 진행되며, 인원이 미달되면 강좌를 취소하고 결제 금액 전액을 환불합니다." },
+      enroll: { value: "과정별 최소 10명", note: "단과반은 각각 최소 10명 이상 모집 시 진행됩니다. 두 과정 중 한 과정만 충족해도 그 과정은 열리며, 미달한 과정은 취소하고 전액 환불합니다. 정원은 과정별 30명." },
       refund: {
         title: "환불 정책",
         lines: [
@@ -293,7 +293,7 @@ const CONTENT = {
       cmd: "cat schedule.json", label: "Schedule", h1: "When and where.", readonly: "read-only",
       start: "September 5, 2026 (Sat)", startNote: "First class. Applications close August 30. Detailed schedule shared once confirmed",
       place: "Gangnam or Mapo, Seoul", placeNote: "Venue shared individually after payment and class confirmation",
-      enroll: { value: "Minimum 10", note: "The course runs with at least 10 students. If enrollment falls short, it is canceled and payments are fully refunded." },
+      enroll: { value: "10 per course", note: "Each course runs with at least 10 students. If only one course meets the minimum, that course still runs, and any course that falls short is canceled and fully refunded. Capacity is 30 per course." },
       refund: {
         title: "Refund policy",
         lines: [

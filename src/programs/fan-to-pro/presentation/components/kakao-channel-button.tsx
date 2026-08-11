@@ -47,6 +47,9 @@ export function KakaoChannelButton() {
   const t = useTranslations("kakao");
   const pathname = usePathname();
   if (isLmsSurface(pathname)) return null;
+  // 2기 모집 페이지(/fan-to-pro/2)엔 하단 StickyCTA 바가 있어 카카오 버튼을 그 위로
+  // 올린다(겹침 방지). 그 외 페이지에서는 일반 코너 위치.
+  const onCohort2 = /^\/(?:[a-z]{2}\/)?fan-to-pro\/2(?:\/|$)/.test(pathname ?? "");
   return (
     <a
       href={KAKAO_CHANNEL_CHAT_URL}
@@ -55,18 +58,12 @@ export function KakaoChannelButton() {
       aria-label={t("ariaLabel")}
       style={{
         backgroundColor: KAKAO_BRAND_YELLOW,
-        // Sit above the slide-up StickyCTA bar (~72-88px) on fan-to-pro page;
-        // on other pages the button just floats a little higher than usual,
-        // which is an acceptable trade-off for a single global mount point.
-        // Mobile (default) keeps a bigger gap from the StickyCTA so the
-        // button never grazes the recruitment card header or the hero
-        // pink pill on 360px viewports; sm+ keeps the original 5rem.
-        bottom:
-          "calc(env(safe-area-inset-bottom, 0px) + var(--kakao-floater-offset, 6.5rem))",
+        // 2기(하단 StickyCTA 바 존재) 에서는 바 위로 7rem, 그 외엔 코너 1.5rem.
+        bottom: `calc(env(safe-area-inset-bottom, 0px) + ${onCohort2 ? "7rem" : "1.5rem"})`,
       }}
       className="
         fixed right-4 z-[60]
-        sm:right-6 sm:[--kakao-floater-offset:5rem]
+        sm:right-6
         flex h-12 w-12 items-center justify-center
         sm:h-14 sm:w-14
         rounded-full shadow-lg shadow-black/40
