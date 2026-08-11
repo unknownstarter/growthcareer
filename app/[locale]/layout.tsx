@@ -58,6 +58,12 @@ export async function generateMetadata({
       title: t("ogTitle"),
       description: t("ogDescription"),
     },
+    // Search Console 소유권 확인 (HTML 태그 방식). 코드는 공개값이지만 env 로 주입.
+    // 미설정이면 태그 자체가 안 나옴(안전). 설정 방법:
+    //   Vercel env NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=<Search Console content 값> → 재배포.
+    verification: {
+      google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    },
     robots: {
       index: true,
       follow: true,
