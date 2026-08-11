@@ -126,6 +126,8 @@ export async function fetchApplicants(options?: {
         // course:courses(...) join 이 null 로 나옴 (course_id 자체가 NULL).
         "course_id",
         "bundle_id",
+        "selected_course_slugs",
+        "selection_mode",
         "course:courses(id,title_ko,slug)",
         "bundle:bundles(id,title_ko,slug)",
         // B0069 1기 재지원 링크. previous_applicant_id → previous:applicants row.
@@ -231,6 +233,10 @@ export async function fetchApplicants(options?: {
       bundleId: raw.bundle_id ? String(raw.bundle_id) : null,
       courseTitleKo: extractNestedTitleKo(raw.course),
       bundleTitleKo: extractNestedTitleKo(raw.bundle),
+      selectionMode: raw.selection_mode ? String(raw.selection_mode) : null,
+      selectedCourseSlugs: Array.isArray(raw.selected_course_slugs)
+        ? raw.selected_course_slugs.map(String)
+        : null,
       previousApplicantId: raw.previous_applicant_id
         ? String(raw.previous_applicant_id)
         : null,
@@ -394,6 +400,8 @@ export async function fetchApplicantById(
         // course:courses(...) join 이 null 로 나옴 (course_id 자체가 NULL).
         "course_id",
         "bundle_id",
+        "selected_course_slugs",
+        "selection_mode",
         "course:courses(id,title_ko,slug)",
         "bundle:bundles(id,title_ko,slug)",
         // B0069 1기 재지원 링크. previous_applicant_id → previous:applicants row.
@@ -464,6 +472,10 @@ export async function fetchApplicantById(
     bundleId: raw.bundle_id ? String(raw.bundle_id) : null,
     courseTitleKo: extractNestedTitleKo(raw.course),
     bundleTitleKo: extractNestedTitleKo(raw.bundle),
+    selectionMode: raw.selection_mode ? String(raw.selection_mode) : null,
+    selectedCourseSlugs: Array.isArray(raw.selected_course_slugs)
+      ? raw.selected_course_slugs.map(String)
+      : null,
     previousApplicantId: raw.previous_applicant_id
       ? String(raw.previous_applicant_id)
       : null,

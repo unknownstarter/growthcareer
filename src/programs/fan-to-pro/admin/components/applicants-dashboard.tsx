@@ -1551,9 +1551,23 @@ function StatPill({
  *   둘 다 null → "-"                          (1기 legacy 신청자)
  * bundle 우선 (한 row 에 둘 다 있는 케이스는 없지만 방어).
  */
+// ADR 0019 2기 단과 slug → 읽기 쉬운 이름 (course_id 미해결이라 slug 로 저장됨).
+const COURSE_SLUG_LABEL: Record<string, string> = {
+  "a-r": "A&R",
+  sound: "음향 감독",
+};
+
 function formatCourseLabel(row: ApplicantRow): string {
   if (row.bundleTitleKo) return `올인원 / ${row.bundleTitleKo}`;
   if (row.courseTitleKo) return `단과 / ${row.courseTitleKo}`;
+  // ADR 0019 2기 멀티 단과 (간이 정책 B) — selection_mode + slug 배열로 저장.
+  if (row.selectionMode && row.selectedCourseSlugs?.length) {
+    const kind = row.selectionMode === "all_in_one" ? "올인원" : "단과";
+    const names = row.selectedCourseSlugs
+      .map((s) => COURSE_SLUG_LABEL[s] ?? s)
+      .join(", ");
+    return `${kind} / ${names}`;
+  }
   return "-";
 }
 

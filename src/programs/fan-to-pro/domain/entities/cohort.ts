@@ -44,6 +44,8 @@ export const CohortSchema = z
     program_id: z.string().uuid().nullish(),
     slug: z.string().nullish(),
     accepts_signup_now: z.boolean().nullish(),
+    // 기수별 모집 마감 시각 (마이그레이션 20260811000000). NULL = 마감 시각 미설정.
+    enrollment_closes_at: z.string().nullish(),
   })
   .refine((c) => c.min_to_open <= c.capacity, {
     message: "min_to_open must be ≤ capacity",

@@ -1,0 +1,44 @@
+/* =============================================================================
+   Growth Career 우산 메인 — 라이트 콘텐츠 플랫폼 디자인 시스템 (원티드/잡플래닛 결).
+   카드는 보더 대신 부드러운 중립 그림자로 띄운다. 모노 폰트·글래스·컬러 그라데이션·
+   글로우 전부 배제(§6.8). 딤은 단색 alpha 만 허용.
+   ============================================================================= */
+
+/* ---- 카드 — 보더 없이 그림자로 띄움 (원티드 방식) ---- */
+.card {
+  box-shadow:
+    0 2px 6px rgba(17, 24, 39, 0.08),
+    0 10px 24px -12px rgba(17, 24, 39, 0.12);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 8px 16px rgba(17, 24, 39, 0.1),
+    0 26px 50px -20px rgba(17, 24, 39, 0.26);
+}
+
+/* ---- 섹션 등장 fade-up (§6.7). motion-safe ---- */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: gcReveal 600ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+}
+@keyframes gcReveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---- 커뮤니티 잠금 티저 — 본문을 회색 블록으로 가림 (blur 아님) ---- */
+.redact {
+  display: inline-block;
+  height: 0.6em;
+  border-radius: 3px;
+  background: #e5e8eb;
+}

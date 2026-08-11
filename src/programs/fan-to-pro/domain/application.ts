@@ -135,6 +135,20 @@ const SlugSchema = z
 export const CourseBundleSelectionSchema = z.object({
   course_slug: SlugSchema,
   bundle_slug: SlugSchema,
+  // 2기 멀티 단과 선택 (간이 정책 B, ADR 0019). 1기는 미전송 → undefined (회귀 X).
+  //   selection_mode: 올인원 vs 단과-set 구분 (가격 다름).
+  //   selected_course_slugs: form 에서 콤마조인 문자열로 전송 → 액션에서 배열 split.
+  selection_mode: z
+    .enum(["all_in_one", "single"])
+    .optional()
+    .or(z.literal("").transform(() => undefined)),
+  selected_course_slugs: z
+    .string()
+    .trim()
+    .max(200)
+    .regex(/^[a-z0-9,\- ]*$/i, "invalidSlug")
+    .optional()
+    .or(z.literal("").transform(() => undefined)),
 });
 
 export const ApplicationSchema = Step1Schema.extend(Step2Schema.shape).extend(

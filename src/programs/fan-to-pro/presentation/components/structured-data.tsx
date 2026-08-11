@@ -52,10 +52,11 @@ type StructuredDataProps = { locale: string };
 export async function StructuredData({ locale }: StructuredDataProps) {
   const tMeta = await getTranslations({ locale, namespace: "meta.fanToPro" });
   const tFaq = await getTranslations({ locale, namespace: "faq" });
+  // 이 컴포넌트는 1기 아카이브 페이지(/fan-to-pro/1)에서만 렌더된다. url 은 현재 페이지와 일치.
   const courseUrl =
     locale === "en"
-      ? `${SITE_URL}/fan-to-pro`
-      : `${SITE_URL}/${locale}/fan-to-pro`;
+      ? `${SITE_URL}/fan-to-pro/1`
+      : `${SITE_URL}/${locale}/fan-to-pro/1`;
 
   const faqItems = tFaq.raw("items") as FAQItem[];
 

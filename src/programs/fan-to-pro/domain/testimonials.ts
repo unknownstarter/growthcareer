@@ -37,7 +37,7 @@ export const TESTIMONIALS: readonly Testimonial[] = [
     nationality: "중국",
     aspiration: "공연 기획 지망",
     quote:
-      "비자 상태가 모호해서 망설였는데, 멘토가 케이스별로 정리해줬다. 그게 결정타.",
+      "공연 기획을 책으로만 봤는데, 실제 팀이 어떻게 움직이는지 옆에서 보니 완전히 달랐다. 현장 감각이 잡혔다.",
   },
   {
     id: "t-04",

@@ -49,6 +49,11 @@ export type ApplicantRow = {
   bundleId: string | null;
   courseTitleKo: string | null;
   bundleTitleKo: string | null;
+  // ADR 0019 2기 멀티 단과 (간이 정책 B). course_id/bundle_id 미해결, raw 선택 저장.
+  //   selectionMode: 'all_in_one' | 'single' | null(1기).
+  //   selectedCourseSlugs: 선택 과정 slug 배열 (예 ["a-r","sound"]) | null.
+  selectionMode: string | null;
+  selectedCourseSlugs: string[] | null;
 
   // B0069 1기 재지원 이력.
   //   previousApplicantId: 이전 신청 row 링크 (submit-application 이 이메일 매칭 시 채움).

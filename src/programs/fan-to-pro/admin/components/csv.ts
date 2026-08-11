@@ -42,6 +42,11 @@ const COLUMNS: ReadonlyArray<CsvColumn> = [
 function csvCourseLabel(row: ApplicantRow): string {
   if (row.bundleTitleKo) return `올인원 / ${row.bundleTitleKo}`;
   if (row.courseTitleKo) return `단과 / ${row.courseTitleKo}`;
+  // ADR 0019 2기 멀티 단과 (간이 정책 B).
+  if (row.selectionMode && row.selectedCourseSlugs?.length) {
+    const kind = row.selectionMode === "all_in_one" ? "올인원" : "단과";
+    return `${kind} / ${row.selectedCourseSlugs.join(", ")}`;
+  }
   return "";
 }
 

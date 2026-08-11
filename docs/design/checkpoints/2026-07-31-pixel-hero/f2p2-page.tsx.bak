@@ -1,0 +1,471 @@
+import type { Metadata } from "next";
+import Image from "next/image";
+import { Space_Mono } from "next/font/google";
+import styles from "./glass.module.css";
+
+// 터미널/픽셀 크롬 폰트 (라벨·넘버·태그·핸들). 한국어 본문/헤드라인은 Pretendard 유지.
+const pixelMono = Space_Mono({
+  weight: ["400", "700"],
+  subsets: ["latin"],
+  variable: "--font-pixel-mono",
+  display: "swap",
+});
+
+/* =============================================================================
+   TEMP 프리뷰 v4 — Fan to Pro (K-ent) 2기 모집 페이지
+   방향(노아): 다크 에디토리얼 + 원티드 철학 + 절제된 글래스(시그니처 = 최종 CTA).
+   v4 반영:
+   - 컨테이너 max 1120px 센터 + gutter 20/32px, 배경 full-bleed / 콘텐츠 컨테이너 (Aria 토큰)
+   - 한국어 타이틀 line-height 상향 (display-lg 1.15, display-sm 1.25 — Aria 토큰)
+   - 히어로 강화 + 콘서트 사진 삽입(임팩트), 섹션별 이미지
+   - 아이돌 정식 명칭 X, 2기 미정값 "확정 예정", 8개국 사실 기반
+   전역 globals.css 는 안 건드림 (라이브 1기 회귀 방지 §7.4). 토큰은 이 페이지 로컬.
+   noindex. 실 라우트 이관은 #14 결정 후.
+   ============================================================================= */
+
+export const metadata: Metadata = {
+  title: "Fan to Pro 2기 (프리뷰)",
+  robots: { index: false, follow: false },
+};
+
+// 로컬 컨테이너 (Aria: max 1120px, gutter 20/32px). 배경은 full-bleed, 콘텐츠만 가둠.
+const WRAP = "mx-auto w-full max-w-[1120px] px-5 md:px-8";
+// 한국어 타이틀 줄간격 (Aria 토큰) — 라틴 1.05 대신 상향.
+const LEAD_LG = { lineHeight: 1.16, letterSpacing: "-0.035em" } as const;
+const LEAD_SM = { lineHeight: 1.24, letterSpacing: "-0.03em" } as const;
+
+const NINO = {
+  name: "Nino",
+  nameSub: "이세환",
+  role: "A&R 디렉터",
+  affiliation: ["Sherpa Music CEO", "27년차 뮤직 비즈니스"],
+  photo: "/images/instructors/nino-lee.jpg",
+  // 아이돌/음반/프로그램 정식 명칭은 노출 금지 (권리 이슈). 역할과 규모만.
+  credits: [
+    {
+      label: "CJ ENM A&R",
+      items: [
+        "국내 최대 규모 아이돌 오디션 프로그램 시리즈",
+        "글로벌 데뷔 아이돌 그룹 다수 음반 기획",
+        "한국과 일본 아이돌 프로젝트 A&R 총괄",
+      ],
+    },
+    {
+      label: "Sherpa Music CEO",
+      items: [
+        "음원 기획 및 아티스트 비주얼 디렉팅",
+        "음악 시상식 수상 아티스트 프로젝트",
+        "국내외 290여 팀 작가 계약 총괄",
+      ],
+    },
+  ],
+};
+
+const OPTIONS = [
+  {
+    tag: "단과",
+    title: "A&R 단과반",
+    lead: "Nino 확정",
+    desc: "아이돌을 만드는 A&R의 실제 업무. 기획, 캐스팅, 음반 제작 전략을 현업 디렉터에게 직접 배웁니다.",
+    included: false,
+  },
+  {
+    tag: "올인원",
+    title: "전 과정 패키지",
+    lead: "A&R 단과 포함",
+    desc: "A&R 단과반을 포함한 K엔터 실무 풀 트랙. 실제 공연 프로젝트 참여로 포트폴리오까지 완성합니다.",
+    included: true,
+  },
+];
+
+// 1기 실제 국적 (Supabase, 10명 8개국). 후기 본문은 실제 후기로 교체 예정.
+const REVIEW_SLOTS = [{ country: "베트남" }, { country: "프랑스" }, { country: "중국" }];
+
+// 히어로 협업 커서 — 1기 8개국 학생 + Nino. 함께 만들어가는 느낌 + 온브랜드.
+const CURSORS = [
+  { name: "LINH_V", color: "#ec4899", anim: "float1", top: "22%", left: "56%" },
+  { name: "MEI_C", color: "#6366f1", anim: "float2", top: "64%", left: "68%" },
+  { name: "PIERRE_F", color: "#8b5cf6", anim: "float3", top: "36%", left: "82%" },
+  { name: "SOFIA_M", color: "#d946ef", anim: "float4", top: "76%", left: "52%" },
+  { name: "NINO", color: "#a855f7", anim: "float5", top: "14%", left: "74%" },
+] as const;
+
+export default function F2P2PreviewPage() {
+  return (
+    <main className={`${pixelMono.variable} ${styles.canvas} min-h-screen bg-bg text-fg`}>
+      {/* ===== GNB (solid) ===== */}
+      <header className="sticky top-0 z-50 border-border border-b bg-bg/95 backdrop-blur-sm">
+        <nav
+          className={`${WRAP} flex items-center justify-between py-4`}
+          aria-label="주요 네비게이션"
+        >
+          <a href="/" className="flex items-baseline gap-2">
+            <span className="font-black text-lg tracking-tight">Fan to Pro</span>
+            <span className="font-bold text-brand-pink text-sm">2기</span>
+          </a>
+          <ul className="hidden items-center gap-8 font-medium text-fg-muted text-sm md:flex">
+            <li><a href="#instructors" className="transition-colors hover:text-fg">강사진</a></li>
+            <li><a href="#program" className="transition-colors hover:text-fg">프로그램</a></li>
+            <li><a href="#courses" className="transition-colors hover:text-fg">과정</a></li>
+            <li><a href="/fan-to-pro/cohorts/fan-to-pro-1" className="transition-colors hover:text-fg">1기 아카이브</a></li>
+          </ul>
+          <a href="#apply" className={`${styles.glassCta} px-5 py-2.5 font-bold text-sm text-white`}>
+            2기 신청
+          </a>
+        </nav>
+      </header>
+
+      {/* ===== HERO (터미널 윈도우 + 픽셀 폰트 + 스캔라인 + 네온, 극도 컨셉) ===== */}
+      <section className={`${WRAP} pt-6 pb-16 lg:pt-10`}>
+        <div className={`${styles.pixelBorder} ${styles.scanlines} relative overflow-hidden`}>
+          {/* 터미널 윈도우 타이틀바 */}
+          <div className={styles.windowBar}>
+            <span className={styles.winDot} style={{ background: "#ec4899" }} />
+            <span className={styles.winDot} style={{ background: "#a855f7" }} />
+            <span className={styles.winDot} style={{ background: "#6366f1" }} />
+            <span className="ml-2 text-fg-muted">fan_to_pro.exe</span>
+            <span className="ml-auto text-fg-subtle">[ COHORT_02 / SEATS:30 ]</span>
+          </div>
+
+          <div className="relative">
+            {/* 배경 사진 */}
+            <div aria-hidden className="pointer-events-none absolute inset-0">
+              <Image
+                src="/images/stock/concert-stage-from-behind-performer-1.jpg"
+                alt=""
+                fill
+                priority
+                sizes="1120px"
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-bg via-bg/85 to-bg/35" />
+              <div className="absolute inset-0 bg-gradient-to-t from-bg/90 via-transparent to-bg/40" />
+            </div>
+
+            {/* 협업 커서 레이어 */}
+            <div className={styles.cursorLayer} aria-hidden>
+              {CURSORS.map((c) => (
+                <div
+                  key={c.name}
+                  className={`${styles.cursor} ${styles[c.anim]}`}
+                  style={{ top: c.top, left: c.left }}
+                >
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill={c.color} stroke="#fff" strokeWidth="1.5" strokeLinejoin="miter" shapeRendering="crispEdges">
+                    <path d="M5 3 L5 19 L9 15 L12 21 L14 20 L11 14 L17 14 Z" />
+                  </svg>
+                  <span className={styles.cursorLabel} style={{ backgroundColor: c.color }}>
+                    {c.name}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div className="relative max-w-2xl px-8 py-20 sm:px-12 sm:py-24 lg:py-28">
+              <p
+                className={`${styles.mono} ${styles.reveal} mb-7 font-bold text-brand-pink text-xs`}
+                style={{ letterSpacing: "0.1em" }}
+              >
+                &gt; NOW_CASTING --cohort=02 --track=k_ent
+                <span className={styles.blink}>█</span>
+              </p>
+              <h1
+                className={`${styles.pixelFont} ${styles.neon} ${styles.reveal}`}
+                style={{ fontSize: "clamp(2.25rem, 5vw, 4rem)", lineHeight: 1.35, animationDelay: "0.06s" }}
+              >
+                <span className="block">
+                  팬에서 <span className="text-brand-pink">프로</span>로.
+                </span>
+                <span className="block">무대 뒤의 커리어.</span>
+              </h1>
+              <p
+                className={`${styles.reveal} mt-7 max-w-xl text-fg-muted text-lg leading-relaxed`}
+                style={{ animationDelay: "0.14s" }}
+              >
+                국내 최대 아이돌 오디션 프로그램과 글로벌 아이돌 그룹을 기획한 A&R
+                디렉터가 직접 가르칩니다. 강의실에서 끝나지 않고, 실제 공연 프로젝트에
+                참여해 포트폴리오가 되는 경험을 남깁니다.
+              </p>
+              <div
+                className={`${styles.reveal} mt-10 flex flex-col gap-4 sm:flex-row sm:items-center`}
+                style={{ animationDelay: "0.22s" }}
+              >
+                <a href="#apply" className={`${styles.pixelBtn} px-8 py-4 text-base`}>
+                  2기 신청하기
+                </a>
+                <a href="#instructors" className={`${styles.pixelBtnGhost} px-8 py-4 text-base`}>
+                  강사진 먼저 보기
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== 강사진 (SIGNATURE — 실제 크레딧 wall) ===== */}
+      <section id="instructors" className={`${WRAP} scroll-mt-20 py-20`}>
+        <p className="mb-4 font-bold text-fg-subtle text-xs uppercase" style={{ letterSpacing: "0.2em" }}>
+          <span className={`${styles.mono} text-brand-pink`}>[01]</span> 강사진
+        </p>
+        <h2 className="max-w-3xl font-black text-display-sm" style={LEAD_SM}>
+          현업이 가르칩니다.
+          <br />
+          <span className="text-brand-pink">이력서로 증명된 사람들.</span>
+        </h2>
+
+        {/* Nino — 확정 강사 */}
+        <article className="mt-12 border border-border bg-surface">
+          <div className="flex flex-col gap-8 border-border border-b p-8 sm:flex-row sm:items-center sm:p-10">
+            <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-sm border border-border">
+              <Image src={NINO.photo} alt={`${NINO.name} 강사`} fill sizes="112px" className="object-cover" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="mb-3 flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center rounded-sm bg-brand-pink/15 px-3 py-1 font-bold text-brand-pink text-xs">
+                  A&R 단과 확정
+                </span>
+                {NINO.affiliation.map((a) => (
+                  <span key={a} className="inline-flex items-center rounded-sm border border-border px-3 py-1 font-medium text-fg-muted text-xs">
+                    {a}
+                  </span>
+                ))}
+              </div>
+              <p className="font-black text-4xl sm:text-5xl" style={{ letterSpacing: "-0.04em" }}>
+                {NINO.name}
+                <span className="ml-3 align-middle font-bold text-fg-muted text-lg">{NINO.nameSub}</span>
+              </p>
+              <p className="mt-2 font-bold text-brand-pink">{NINO.role}</p>
+            </div>
+          </div>
+          <div className="grid gap-8 p-8 sm:grid-cols-2 sm:p-10">
+            {NINO.credits.map((group) => (
+              <div key={group.label}>
+                <p className={`${styles.mono} mb-4 font-bold text-brand-pink text-sm uppercase`} style={{ letterSpacing: "0.08em" }}>
+                  {group.label}
+                </p>
+                <ul className="space-y-2.5">
+                  {group.items.map((item) => (
+                    <li key={item} className="flex items-start gap-2.5 text-fg text-sm leading-relaxed">
+                      <span aria-hidden className="mt-2 h-1 w-1 shrink-0 rounded-sm bg-brand-pink" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </article>
+
+        {/* 미확정 강사 슬롯 */}
+        <div className="mt-5 grid gap-5 sm:grid-cols-2">
+          {[0, 1].map((i) => (
+            <div key={i} className="flex items-center gap-6 border border-border bg-surface/40 p-8">
+              <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-sm border border-border-strong font-black text-3xl text-fg-subtle">
+                ?
+              </div>
+              <div>
+                <p className="font-bold text-fg text-lg">강사 확정 예정</p>
+                <p className="mt-1 text-fg-muted text-sm leading-relaxed">
+                  1기 현업 강사진 수준으로 섭외 중입니다. 확정 시 공개합니다.
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="mt-6 text-fg-subtle text-xs">
+          강사 섭외 및 운영 협력 DEEPI. 2기 강사 구성은 확정 순서대로 공개됩니다.
+        </p>
+      </section>
+
+      {/* ===== 프로그램 (full-bleed 무대 이미지 밴드, 임팩트) ===== */}
+      <section id="program" className="relative scroll-mt-20 overflow-hidden border-border border-y bg-surface">
+        <div aria-hidden className="pointer-events-none absolute inset-0">
+          <Image
+            src="/images/stock/male-singer-silhouette-stage-2.jpg"
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover opacity-20"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-bg via-bg/85 to-bg/40" />
+        </div>
+        <div className={`${WRAP} relative py-24`}>
+          <p className="mb-4 font-bold text-fg-subtle text-xs uppercase" style={{ letterSpacing: "0.2em" }}>
+            <span className={`${styles.mono} text-brand-pink`}>[02]</span> 프로그램
+          </p>
+          <div className="grid gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-20">
+            <h2 className="font-black text-display-sm" style={LEAD_SM}>
+              배우는 게 아니라,
+              <br />
+              이미 일하는 것처럼.
+            </h2>
+            <div className="flex flex-col gap-6 text-fg-muted text-base leading-relaxed sm:text-lg">
+              <p>
+                Fan to Pro는 K엔터 산업의 실무를 그대로 옮겨온 교육입니다. 현장에서
+                바로 쓰는 워크플로우와 문서, 툴을 다룹니다.
+              </p>
+              <p>
+                핵심은 실제 프로젝트입니다. 수료생은 유니온 픽처스의 실제 공연 제작
+                과정에 참여해 포트폴리오용 경험을 쌓고, 참여 확인서를 받습니다.
+              </p>
+              <p className="text-fg">
+                수료증은 Dropdown 명의로 발급됩니다. 이력서에 한 줄 더해지는 신뢰
+                신호입니다.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== 과정 (단과 + 올인원) ===== */}
+      <section id="courses" className={`${WRAP} scroll-mt-20 py-24`}>
+        <p className="mb-4 font-bold text-fg-subtle text-xs uppercase" style={{ letterSpacing: "0.2em" }}>
+          <span className={`${styles.mono} text-brand-pink`}>[03]</span> 과정
+        </p>
+        <h2 className="mb-12 max-w-3xl font-black text-display-sm" style={LEAD_SM}>
+          필요한 만큼만. 또는 전부.
+        </h2>
+        <div className="grid gap-5 md:grid-cols-2">
+          {OPTIONS.map((opt) => (
+            <article
+              key={opt.title}
+              className={`flex flex-col border bg-surface p-9 transition-colors ${
+                opt.included ? "border-brand-pink" : "border-border hover:border-border-strong"
+              }`}
+            >
+              <div className="mb-5 flex items-center gap-3">
+                <span
+                  className={`inline-flex items-center rounded-sm px-3 py-1 font-bold text-xs ${
+                    opt.included ? "bg-brand-pink/15 text-brand-pink" : "border border-border text-fg-muted"
+                  }`}
+                >
+                  {opt.tag}
+                </span>
+                <span className="font-semibold text-fg-subtle text-xs">{opt.lead}</span>
+              </div>
+              <h3 className="font-black text-2xl" style={{ letterSpacing: "-0.03em" }}>{opt.title}</h3>
+              <p className="mt-4 flex-1 text-fg-muted text-sm leading-relaxed">{opt.desc}</p>
+              <div className="mt-8 flex items-end justify-between border-border border-t pt-6">
+                <div>
+                  <p className="text-fg-subtle text-xs">수강료</p>
+                  <p className="mt-1 font-bold text-fg text-lg">확정 예정</p>
+                </div>
+                <a href="#apply" className="font-bold text-brand-pink text-sm transition-colors hover:text-brand-fuchsia">
+                  신청 문의 →
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* ===== 1기 이야기 (full-bleed 관객 사진 + 8개국 + 후기) ===== */}
+      <section className="relative overflow-hidden border-border border-y">
+        <div aria-hidden className="pointer-events-none absolute inset-0">
+          <Image
+            src="/images/stock/korean-concert-audience-2.jpg"
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover opacity-[0.18]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-bg via-bg/90 to-bg" />
+        </div>
+        <div className={`${WRAP} relative py-24`}>
+          <p className="mb-4 font-bold text-fg-subtle text-xs uppercase" style={{ letterSpacing: "0.2em" }}>
+            <span className={`${styles.mono} text-brand-pink`}>[04]</span> 1기 이야기
+          </p>
+          <div className="grid gap-12 lg:grid-cols-[1fr_1fr] lg:items-end lg:gap-20">
+            <div>
+              <h2 className="font-black text-display-sm" style={LEAD_SM}>
+                <span className="text-brand-pink">8개국</span>에서 온 1기,
+                <br />
+                끝까지 함께 마쳤습니다.
+              </h2>
+              <p className="mt-6 max-w-lg text-fg-muted text-base leading-relaxed sm:text-lg">
+                2026년 6월부터 7월까지, 8개국에서 온 수강생들이 총 8회 16시간의 전
+                과정을 마치고 수료했습니다. 그들이 남긴 이야기입니다.
+              </p>
+              <a
+                href="/fan-to-pro/cohorts/fan-to-pro-1"
+                className={`${styles.ghostCta} mt-9 inline-flex px-6 py-3 font-semibold text-fg text-sm`}
+              >
+                1기 아카이브 보기 →
+              </a>
+            </div>
+            <dl className="grid grid-cols-2 gap-x-8 gap-y-10">
+              {[
+                { n: "8개국", l: "수강생 10명 수료" },
+                { n: "8회", l: "16시간 전 과정" },
+                { n: "4주", l: "주말 집중 커리큘럼" },
+                { n: "실무", l: "공연 프로젝트 참여" },
+              ].map((s) => (
+                <div key={s.l}>
+                  <dd className="font-black text-fg text-5xl" style={{ letterSpacing: "-0.04em" }}>{s.n}</dd>
+                  <dt className="mt-2 text-fg-muted text-sm">{s.l}</dt>
+                </div>
+              ))}
+            </dl>
+          </div>
+
+          {/* 후기 카드 — 실제 후기 교체 예정 */}
+          <div className="mt-16 grid gap-5 sm:grid-cols-3">
+            {REVIEW_SLOTS.map((r) => (
+              <figure key={r.country} className="flex flex-col justify-between border border-border bg-surface p-7">
+                <blockquote className="text-fg-muted text-base leading-relaxed">
+                  <span aria-hidden className="mr-1 text-brand-pink">"</span>
+                  1기 수강생 후기가 곧 공개됩니다.
+                  <span aria-hidden className="ml-1 text-brand-pink">"</span>
+                </blockquote>
+                <figcaption className="mt-6 flex items-center gap-3 border-border border-t pt-4">
+                  <span aria-hidden className="flex h-9 w-9 items-center justify-center rounded-sm bg-brand-indigo/20 font-bold text-brand-indigo text-sm">
+                    {r.country.slice(0, 1)}
+                  </span>
+                  <span className="text-fg-muted text-sm">{r.country} 수강생</span>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+          <p className="mt-5 text-fg-subtle text-xs">
+            실제 후기는 1기 수강생 동의 아래 순차 공개됩니다.
+          </p>
+        </div>
+      </section>
+
+      {/* ===== 신청 (SIGNATURE 글래스 — 유일) ===== */}
+      <section id="apply" className={`${WRAP} scroll-mt-20 py-24`}>
+        <div className={`${styles.glassPanel} relative overflow-hidden p-10 sm:p-16`}>
+          <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 opacity-25">
+            <Image src="/images/stock/korean-concert-audience-1.jpg" alt="" fill sizes="100vw" className="object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-r from-bg via-bg/70 to-bg/30" />
+          </div>
+          <h2 className="max-w-2xl font-black text-display-sm" style={LEAD_SM}>
+            무대는 이미
+            <br />
+            당신을 기다립니다.
+          </h2>
+          <p className="mt-5 max-w-lg text-fg-muted text-lg leading-relaxed">
+            Fan to Pro 2기, 모집 일정이 확정되면 가장 먼저 안내드립니다.
+          </p>
+          <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <a href="#" className={`${styles.glassCta} px-9 py-4 font-bold text-base text-white`}>
+              2기 신청하기
+            </a>
+            <span className="text-fg-subtle text-sm">
+              수강료 결제 후 이메일로 계정을 안내드립니다.
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== Footer ===== */}
+      <footer className="border-border border-t">
+        <div className={`${WRAP} flex flex-col gap-2 py-12 text-fg-subtle text-xs leading-relaxed`}>
+          <p className="font-bold text-fg-muted">Growth Career | Fan to Pro</p>
+          <p>수료증 발급 Dropdown (사업자 154-28-02110). 공연 프로젝트 참여 확인서 유니온 픽처스.</p>
+          <p>강사 섭외 및 운영 협력 DEEPI. 문의는 카카오톡 채널 또는 신청 후 안내 메일.</p>
+          <p className="mt-3 text-fg-subtle">프리뷰 v4. 내부 검토용 draft.</p>
+        </div>
+      </footer>
+    </main>
+  );
+}

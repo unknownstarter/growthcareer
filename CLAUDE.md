@@ -299,6 +299,30 @@ transition-all duration-150 hover:opacity-90 active:scale-95
 
 ---
 
+## 6.8 디자인 금지 — 컬러 그라데이션 + 폰트 글로우 (AI 티 회피)
+
+> 노아 룰 (2026-07-31): "폰트에 이상한 뿌옇게 만드는 효과는 하지마! 이게 AI로 만든 티가 팍팍 나게 만드는 요인이야. 다른 컴포넌트도 마찬가지! 딤처리를 어두운 부분과 아닌 부분에 그라데이션 주는건 좋지만 컬러값을 그라데이션으로 처리하는 것 또한 절대 금지야!"
+
+신규 UI/컴포넌트 작성 시 **아래 2종 절대 금지**. AI-slop 대표 시그니처.
+
+### ❌ 금지
+
+1. **컬러값 그라데이션**: 서로 다른 색 사이 gradient. `linear-gradient(pink, indigo)`, 그라데이션 텍스트, `bg-gradient-to-r from-brand-pink to-brand-indigo`, 두 색 사이 `color-mix` gradient 등. accent 는 **solid 블록**으로만.
+2. **폰트/컴포넌트 blur glow (뿌옇게)**: `text-shadow` 발광(네온), 과한 box-shadow glow. 그림자는 **검정 하드 드롭만**.
+
+### ✅ 허용
+
+- **딤(dim) = 단색 alpha/명도 그라데이션**: 이미지 위 어둡게 (`from-bg via-bg/85 to-bg/35`, 같은 배경색 alpha 변화), 가독용 어둠. "어두운 부분과 아닌 부분" 딤이라 OK.
+- **단색 solid** accent (핑크/남보라 블록).
+
+### 적용 범위
+
+- ✅ 모든 신규 페이지·컴포넌트 (§6.5 와 동급 상시 룰). 신규 작성 즉시 적용, 기존은 자연스러운 변경 시점에.
+
+메모리: `feedback_no_color_gradient_no_glow`. 계열: §6.5(AI 부호), §6.7(인터렉션).
+
+---
+
 ## 7. 환경 가정 (Vercel Defaults)
 
 - Next.js App Router, AI SDK v6

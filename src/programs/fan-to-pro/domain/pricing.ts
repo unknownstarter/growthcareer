@@ -47,14 +47,16 @@ export const discountRate = (original: number, discounted: number): number =>
  * 얼리버드 기간은 recruitmentStartsAt 이 확정된 후에만 계산됨.
  * 미지정 (null) 이면 얼리버드 항상 false → 정가로 표시.
  *
- * 노아 확정값 (2026-07-06):
- *   - 얼리버드 550,000 / 정가 660,000 / 올인원 880,000
+ * 노아 확정값 (2026-07-06, 올인원은 2026-08-05 ADR 0019 로 갱신):
+ *   - 얼리버드 550,000 / 정가 660,000 / 올인원 990,000 (정가 1,320,000)
  *   - 기간 1주일 = 7일 * 24h
  */
 export const PRICING_PHASES = {
   earlyBirdKrw: 550_000,
   regularKrw: 660_000,
-  bundleKrw: 880_000,
+  // ADR 0019 (2026-08-05): 올인원 990,000원 (정가 1,320,000 = 660,000 × 2 에서 할인).
+  bundleKrw: 990_000,
+  bundleOriginalKrw: 1_320_000,
   earlyBirdDurationMs: 7 * 24 * 60 * 60 * 1000,
 } as const;
 

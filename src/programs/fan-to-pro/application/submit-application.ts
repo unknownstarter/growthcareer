@@ -4,12 +4,8 @@ import {
   ApplicationSchema,
   type ApplicationActionState,
 } from "@/src/programs/fan-to-pro/domain/application";
-import { isEnrollmentClosed } from "@/src/programs/fan-to-pro/domain/marketing/program-config";
 import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
-import {
-  fetchSignupOpenCohort,
-  fetchActiveCohorts,
-} from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-repository";
+import { fetchSignupOpenCohort } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-repository";
 
 const TABLE = "applicants";
 const FAN_TO_PRO_PROGRAM_SLUG = "fan-to-pro";
@@ -42,39 +38,26 @@ export async function submitApplication(
     };
   }
 
-  // 1기 모집 마감 분기. cutoff datetime 이후의 submission 은:
-  //   - status = 'next_cohort_interest'
-  //   - cohort_id = NULL (다음 기수 cohort 가 아직 없음, 운영자가 추후 생성)
-  // applicants_status_cohort_xor check 가 이 조합을 강제. UI 도 마감 후엔
-  // CTA / 카피 자동 전환.
-  const enrollmentClosed = isEnrollmentClosed();
-
-  // B0032 cohort 자동 매칭 (마감 전에만). 우선순위:
-  //   1) accepts_signup_now=true + status=open (운영자가 명시적으로 모집 받는 cohort)
-  //   2) fallback — 활성 cohort (open/enrollment_closed/in_progress) 중 가장 빠른 starts_on
+  // Slice O — cohort별 시각 기반 모집 마감 디커플.
+  // 전역 program-config.isEnrollmentClosed (1기 cutoff 하드코딩) 제거. 대신 지금
+  // 열린 signup cohort (accepts_signup_now=true + status=open + 마감 전) 를 조회해:
+  //   있으면 → status='pending', cohort_id = 그 cohort.
+  //   없으면 → status='next_cohort_interest', cohort_id = NULL (waitlist).
+  // applicants_status_cohort_xor check 가 이 조합을 강제.
+  // 조회 실패 (인프라 오류) 시에도 신청 자체는 waitlist 로 계속 받음 (blocking X).
   let cohortId: string | null = null;
-  if (!enrollmentClosed) {
-    try {
-      const open = await fetchSignupOpenCohort();
-      if (open) {
-        cohortId = open.id;
-      } else {
-        const active = await fetchActiveCohorts();
-        if (active.length > 0) {
-          cohortId = active[active.length - 1].id;
-        }
-      }
-    } catch (e) {
-      if (process.env.NODE_ENV !== "production") {
-        console.warn("[applicants] cohort fetch failed", e);
-      }
+  try {
+    const open = await fetchSignupOpenCohort();
+    if (open) {
+      cohortId = open.id;
     }
-
-    if (!cohortId) {
-      console.error("[applicants] noActiveCohort — signup blocked");
-      return { status: "error", errors: { _form: [FORM_ERROR_KEY] } };
+  } catch (e) {
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("[applicants] cohort fetch failed", e);
     }
   }
+
+  const enrollmentClosed = cohortId === null;
 
   // B0068 Slice 2c — course_slug / bundle_slug → id 조회.
   // 둘 다 optional. 하나만 채워지는 게 정상 (UI 가 강제).
@@ -161,6 +144,18 @@ export async function submitApplication(
   //   - enrollment_id: 결제 승격 후 결정 (여기서는 NULL)
   // B0069 Slice 1 추가:
   //   - previous_applicant_id: 이전 신청 링크 (있으면). 어드민 "이력" 컬럼 소스.
+  // ADR 0019 (2기 멀티 단과, 간이 정책 B) 추가:
+  //   - selection_mode: 'all_in_one' | 'single' (가격 구분). 1기 = NULL.
+  //   - selected_course_slugs: 콤마조인 문자열 → 배열. slug 유효성은 운영자 확인
+  //     (기존 course_slug 패턴과 동일 — 잘못돼도 신청은 받고 수동 매핑).
+  const selectionMode = parsed.data.selection_mode ?? null;
+  const selectedCourseSlugs = parsed.data.selected_course_slugs
+    ? parsed.data.selected_course_slugs
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean)
+    : null;
+
   const { data, error } = await supabase
     .from(TABLE)
     .insert({
@@ -184,6 +179,8 @@ export async function submitApplication(
       course_id: courseId,
       bundle_id: bundleId,
       previous_applicant_id: previousApplicantId,
+      selection_mode: selectionMode,
+      selected_course_slugs: selectedCourseSlugs,
     })
     .select("id")
     .single();

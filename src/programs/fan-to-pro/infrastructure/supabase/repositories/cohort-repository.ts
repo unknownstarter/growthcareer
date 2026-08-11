@@ -69,24 +69,43 @@ export async function fetchCohortBySlug(slug: string): Promise<Cohort | null> {
 }
 
 /**
- * 신규 신청을 받을 cohort — accepts_signup_now=true + status=open.
+ * 신규 신청을 받을 cohort — cohort별 시각 기반 판정 (Slice O 디커플).
  *
- * submit-application 이 이 값으로 cohort_id 자동 매칭.
- * 0건이면 신청 불가 (운영자가 새 cohort 의 accepts_signup_now toggle 해야 함).
+ * 조건: accepts_signup_now=true AND status=open AND
+ *       (enrollment_closes_at IS NULL OR now < enrollment_closes_at).
+ * 전역 program-config.isEnrollmentClosed (1기 cutoff 하드코딩) 대체 — 기수별
+ * 독립 마감 시각으로 판정. 서버 시각 (`now`) 을 인자로 받아 SSG 캐시 회피 (§7).
+ *
+ * submit-application 이 이 값으로 pending vs next_cohort_interest 를 결정:
+ *   있으면 → status='pending', cohort_id = 이 cohort.
+ *   없으면 → status='next_cohort_interest', cohort_id = NULL (waitlist).
+ *
+ * 0건이면 신청은 waitlist 로 계속 받음 (신청 blocking X).
  * 2건 이상이면 가장 빠른 starts_on 우선 (=다음 코앞 기수).
  */
-export async function fetchSignupOpenCohort(): Promise<Cohort | null> {
+export async function fetchSignupOpenCohort(
+  now: Date = new Date(),
+): Promise<Cohort | null> {
   const supabase = requireClient();
+  // accepts_signup_now + status=open 은 DB filter. 마감 시각 (enrollment_closes_at)
+  // 비교는 JS 에서 (PostgREST .or() 의 timestamp 파싱 엣지케이스 회피 + 서버 시각 일관).
+  // starts_on ASC 로 가장 코앞 기수 우선. 후보 여러 개일 수 있어 limit 없이 받아
+  // 마감 전 첫 cohort 를 고른다.
   const { data, error } = await supabase
     .from(TABLE)
     .select("*")
     .eq("accepts_signup_now", true)
     .eq("status", "open")
-    .order("starts_on", { ascending: true })
-    .limit(1);
+    .order("starts_on", { ascending: true });
   if (error) throw new Error(error.message);
-  if (!data || data.length === 0) return null;
-  return CohortSchema.parse(data[0]);
+  const rows = (data ?? []).map((row) => CohortSchema.parse(row));
+  const nowMs = now.getTime();
+  const open = rows.find(
+    (c) =>
+      c.enrollment_closes_at == null ||
+      new Date(c.enrollment_closes_at).getTime() > nowMs,
+  );
+  return open ?? null;
 }
 
 /** 신규 cohort INSERT. id/created_at/updated_at 은 DB default. */

@@ -1,0 +1,291 @@
+import type { Metadata } from "next";
+import Image from "next/image";
+import styles from "../f2p2-preview/glass.module.css";
+
+/* =============================================================================
+   TEMP 프리뷰 — Growth Career 플랫폼 메인 (우산 브랜드)
+   방향: F2P 2기 v4 와 동일 디자인 언어 (다크 에디토리얼 + 절제된 글래스 + Pretendard).
+   구조(노아 확정): 히어로(비전) → F2P 2기 모집 → 교육 → 인사이트 허브(크게)
+                    → 1기 성과 → 비전. 채용/로그인 = 공개 미노출 (B, 로그인 유저 전용).
+   콘텐츠 원칙: 미정값 지어내지 않음. 인사이트 = 공식 출처 기반(외교부/HiKorea/TOPIK 등).
+   전역 globals.css 안 건드림 (1기 동결). 토큰은 로컬. noindex. 실 라우트(/)는 승인 후.
+   ============================================================================= */
+
+export const metadata: Metadata = {
+  title: "Growth Career (프리뷰)",
+  robots: { index: false, follow: false },
+};
+
+const WRAP = "mx-auto w-full max-w-[1120px] px-5 md:px-8";
+const LEAD_LG = { lineHeight: 1.16, letterSpacing: "-0.035em" } as const;
+const LEAD_SM = { lineHeight: 1.24, letterSpacing: "-0.03em" } as const;
+
+// 인사이트 6 카테고리 — 공식 출처 기반. 예시 질문은 실제 질문형(AEO).
+const INSIGHT = [
+  { key: "visa", label: "비자", q: "D-2 유학 비자, 어떻게 연장하나요?", src: "HiKorea 출입국" },
+  { key: "topik", label: "TOPIK", q: "2026 TOPIK 일정과 접수 방법은?", src: "국립국제교육원" },
+  { key: "korean", label: "한국어", q: "무료로 한국어를 배우려면?", src: "세종학당" },
+  { key: "finance", label: "금융", q: "외국인이 은행 계좌를 만들려면?", src: "금융감독원" },
+  { key: "work", label: "취업/알바", q: "유학생도 아르바이트할 수 있나요?", src: "고용노동부" },
+  { key: "living", label: "생활", q: "한국 정착에 필요한 서류와 절차는?", src: "정부24, 서울글로벌센터" },
+];
+
+// 교육 트랙 — Fan to Pro (K-culture). K엔터만 운영중, 나머지는 확장 예정.
+const TRACKS = [
+  { name: "Fan to Pro", domain: "K엔터테인먼트", status: "2기 모집", live: true, href: "/fan-to-pro" },
+  { name: "Fan to Pro", domain: "K패션", status: "확장 예정", live: false },
+  { name: "Fan to Pro", domain: "K뷰티", status: "확장 예정", live: false },
+];
+
+// 히어로 자동 무한 스와이프 이미지 세트 (좌로 끝없이 흐름).
+const HERO_IMGS = [
+  "/images/stock/boy-group-concert-stage-1.jpg",
+  "/images/stock/stage-lights-purple-pink-1.jpg",
+  "/images/stock/korean-concert-audience-3.jpg",
+  "/images/stock/male-singer-silhouette-stage-1.jpg",
+  "/images/stock/performer-back-audience-kpop-1.jpg",
+];
+
+export default function GcPreviewPage() {
+  return (
+    <main className="min-h-screen bg-bg text-fg">
+      {/* ===== GNB (로그인/채용 미노출) ===== */}
+      <header className="sticky top-0 z-50 border-border border-b bg-bg/95 backdrop-blur-sm">
+        <nav className={`${WRAP} flex items-center justify-between py-4`} aria-label="주요 네비게이션">
+          <a href="/" className="font-black text-lg tracking-tight">
+            Growth<span className="text-brand-pink">Career</span>
+          </a>
+          <ul className="hidden items-center gap-8 font-medium text-fg-muted text-sm md:flex">
+            <li><a href="#education" className="transition-colors hover:text-fg">교육</a></li>
+            <li><a href="#insight" className="transition-colors hover:text-fg">인사이트</a></li>
+            <li><a href="/fan-to-pro" className="transition-colors hover:text-fg">Fan to Pro</a></li>
+          </ul>
+          <a href="/fan-to-pro" className={`${styles.glassCta} px-5 py-2.5 font-bold text-sm text-white`}>
+            2기 모집 중
+          </a>
+        </nav>
+      </header>
+
+      {/* ===== HERO (컨테이너 안 rounded 배너 + 자동 무한 스와이프 배경) ===== */}
+      <section className={`${WRAP} pt-6 pb-20 lg:pt-10`}>
+        <div className="relative overflow-hidden rounded-3xl border border-border">
+          {/* 자동 무한 스와이프 이미지 스트립 (배경) */}
+          <div aria-hidden className="pointer-events-none absolute inset-0">
+            <div className={styles.marqueeTrack}>
+              {[...HERO_IMGS, ...HERO_IMGS].map((src, i) => (
+                <div key={i} className={styles.marqueeItem}>
+                  <Image src={src} alt="" fill sizes="40vw" className="object-cover" />
+                </div>
+              ))}
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-r from-bg via-bg/85 to-bg/45" />
+            <div className="absolute inset-0 bg-gradient-to-t from-bg/90 via-transparent to-bg/45" />
+          </div>
+
+          <div className="relative max-w-2xl px-8 py-24 sm:px-12 sm:py-32">
+            <p className={`${styles.reveal} mb-6 font-bold text-brand-pink text-sm uppercase`} style={{ letterSpacing: "0.25em" }}>
+              Growth Career
+            </p>
+            <h1
+              className={`${styles.reveal} font-black`}
+              style={{ ...LEAD_LG, fontSize: "clamp(2.25rem, 5vw, 4rem)", animationDelay: "0.06s" }}
+            >
+              <span className="block whitespace-nowrap">한국에서 커리어를</span>
+              <span className="block whitespace-nowrap">
+                시작하는 <span className="text-brand-pink">확실한 길.</span>
+              </span>
+            </h1>
+            <p
+              className={`${styles.reveal} mt-8 max-w-2xl text-fg-muted text-lg leading-relaxed sm:text-xl`}
+              style={{ animationDelay: "0.14s" }}
+            >
+              재한 외국인을 위한 실무 교육과 커리어 플랫폼. K엔터 실무 교육 Fan to
+              Pro에서 시작해, 비자부터 취업까지 한국 생활에 꼭 필요한 정보를 공식
+              자료로 한곳에 모았습니다.
+            </p>
+            <div className={`${styles.reveal} mt-10 flex flex-col gap-3 sm:flex-row`} style={{ animationDelay: "0.22s" }}>
+              <a href="#insight" className={`${styles.glassCta} px-8 py-4 font-bold text-base text-white`}>
+                인사이트 둘러보기
+              </a>
+              <a href="#education" className={`${styles.ghostCta} px-8 py-4 font-semibold text-base text-fg`}>
+                지금 모집 중인 교육
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== 지금 모집: F2P 2기 feature (임팩트 밴드) ===== */}
+      <section className="relative overflow-hidden border-border border-y">
+        <div aria-hidden className="pointer-events-none absolute inset-0">
+          <Image src="/images/stock/boy-group-concert-stage-2.jpg" alt="" fill sizes="100vw" className="object-cover opacity-25" />
+          <div className="absolute inset-0 bg-gradient-to-r from-bg via-bg/85 to-bg/50" />
+        </div>
+        <div className={`${WRAP} relative py-20`}>
+          <p className="mb-4 font-bold text-fg-subtle text-xs uppercase" style={{ letterSpacing: "0.3em" }}>
+            지금 모집 중
+          </p>
+          <div className="grid items-end gap-8 lg:grid-cols-[1.4fr_1fr]">
+            <div>
+              <h2 className="max-w-2xl font-black text-display-sm" style={LEAD_SM}>
+                Fan to Pro <span className="text-brand-pink">2기</span>
+              </h2>
+              <p className="mt-5 max-w-xl text-fg-muted text-base leading-relaxed sm:text-lg">
+                국내 최대 아이돌 오디션 프로그램과 글로벌 아이돌 그룹을 기획한 A&R
+                디렉터가 직접 가르치는 K엔터 실무 교육. 실제 공연 프로젝트 참여로
+                포트폴리오까지 완성합니다.
+              </p>
+            </div>
+            <a href="/fan-to-pro" className={`${styles.glassCta} justify-self-start px-8 py-4 font-bold text-base text-white lg:justify-self-end`}>
+              2기 자세히 보기 →
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== 교육 (Fan to Pro 트랙) ===== */}
+      <section id="education" className={`${WRAP} scroll-mt-20 py-24`}>
+        <p className="mb-4 font-bold text-fg-subtle text-xs uppercase" style={{ letterSpacing: "0.3em" }}>
+          01 &nbsp; 교육
+        </p>
+        <h2 className="max-w-3xl font-black text-display-sm" style={LEAD_SM}>
+          K컬처를 좋아하는 마음을,
+          <br />
+          <span className="text-brand-pink">실무 경력</span>으로.
+        </h2>
+        <p className="mt-6 max-w-2xl text-fg-muted text-base leading-relaxed sm:text-lg">
+          Fan to Pro는 K컬처 도메인별 실무 교육 브랜드입니다. 지금은 K엔터로
+          시작해, 순차적으로 확장합니다.
+        </p>
+        <div className="mt-12 grid gap-5 md:grid-cols-3">
+          {TRACKS.map((t, i) => (
+            <article
+              key={`${t.domain}`}
+              className={`flex flex-col justify-between border bg-surface p-8 ${
+                t.live ? "border-brand-pink" : "border-border"
+              }`}
+            >
+              <div>
+                <div className="mb-4 flex items-center gap-2">
+                  <span className={`inline-flex items-center rounded-full px-3 py-1 font-bold text-xs ${
+                    t.live ? "bg-brand-pink/15 text-brand-pink" : "border border-border text-fg-subtle"
+                  }`}>
+                    {t.status}
+                  </span>
+                </div>
+                <h3 className="font-black text-2xl" style={{ letterSpacing: "-0.03em" }}>{t.domain}</h3>
+                <p className="mt-1 font-semibold text-fg-muted text-sm">{t.name}</p>
+              </div>
+              {t.live ? (
+                <a href={t.href} className="mt-8 font-bold text-brand-pink text-sm transition-colors hover:text-brand-fuchsia">
+                  2기 모집 보기 →
+                </a>
+              ) : (
+                <p className="mt-8 text-fg-subtle text-sm">공개 예정</p>
+              )}
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* ===== 인사이트 허브 (크게, SEO 엔진) ===== */}
+      <section id="insight" className="relative scroll-mt-20 overflow-hidden border-border border-y bg-surface">
+        <div className={`${WRAP} relative py-24`}>
+          <p className="mb-4 font-bold text-fg-subtle text-xs uppercase" style={{ letterSpacing: "0.3em" }}>
+            02 &nbsp; 인사이트
+          </p>
+          <div className="grid gap-8 lg:grid-cols-[1fr_1fr] lg:items-end lg:gap-16">
+            <h2 className="font-black text-display-sm" style={LEAD_SM}>
+              한국 생활, 막막하지 않게.
+              <br />
+              <span className="text-brand-pink">공식 자료</span>로만.
+            </h2>
+            <p className="max-w-xl text-fg-muted text-base leading-relaxed sm:text-lg">
+              비자, TOPIK, 한국어, 금융, 취업. 외교부와 출입국, 국립국제교육원 등
+              공식 국가기관 자료와 먼저 겪은 사람의 검증된 팁만 담습니다. 확인되지
+              않은 정보는 싣지 않습니다.
+            </p>
+          </div>
+
+          <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {INSIGHT.map((c) => (
+              <a
+                key={c.key}
+                href={`/insight/${c.key}`}
+                className="group flex flex-col justify-between border border-border bg-bg p-7 transition-colors hover:border-brand-pink"
+              >
+                <div>
+                  <p className="font-black text-fg text-xl" style={{ letterSpacing: "-0.02em" }}>{c.label}</p>
+                  <p className="mt-3 text-fg-muted text-sm leading-relaxed">{c.q}</p>
+                </div>
+                <div className="mt-8 flex items-center justify-between border-border border-t pt-4">
+                  <span className="text-fg-subtle text-xs">출처 {c.src}</span>
+                  <span aria-hidden className="text-brand-pink transition-transform group-hover:translate-x-0.5">→</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== 신뢰 / 1기 성과 ===== */}
+      <section className={`${WRAP} py-24`}>
+        <p className="mb-4 font-bold text-fg-subtle text-xs uppercase" style={{ letterSpacing: "0.3em" }}>
+          03 &nbsp; 신뢰
+        </p>
+        <div className="grid gap-12 lg:grid-cols-[1fr_1fr] lg:items-end lg:gap-20">
+          <h2 className="font-black text-display-sm" style={LEAD_SM}>
+            <span className="text-brand-pink">8개국</span>에서 온 1기가
+            <br />
+            먼저 증명했습니다.
+          </h2>
+          <dl className="grid grid-cols-2 gap-x-8 gap-y-10">
+            {[
+              { n: "8개국", l: "1기 수강생 10명 수료" },
+              { n: "8회", l: "16시간 실무 커리큘럼" },
+              { n: "실무", l: "공연 프로젝트 참여" },
+              { n: "공식", l: "Dropdown 수료증 발급" },
+            ].map((s) => (
+              <div key={s.l}>
+                <dd className="font-black text-fg text-5xl" style={{ letterSpacing: "-0.04em" }}>{s.n}</dd>
+                <dt className="mt-2 text-fg-muted text-sm">{s.l}</dt>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+
+      {/* ===== 비전 (글래스 시그니처) ===== */}
+      <section className={`${WRAP} pb-24`}>
+        <div className={`${styles.glassPanel} relative overflow-hidden p-10 sm:p-16`}>
+          <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 opacity-20">
+            <Image src="/images/stock/stage-lights-purple-pink-2.jpg" alt="" fill sizes="100vw" className="object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-r from-bg via-bg/70 to-bg/30" />
+          </div>
+          <p className="font-bold text-brand-pink text-sm uppercase" style={{ letterSpacing: "0.2em" }}>
+            Vision
+          </p>
+          <h2 className="mt-4 max-w-3xl font-black text-display-sm" style={LEAD_SM}>
+            교육에서 시작해,
+            <br />
+            커리어로 이어집니다.
+          </h2>
+          <p className="mt-5 max-w-xl text-fg-muted text-lg leading-relaxed">
+            좋아하는 마음으로 한국에 온 사람들이 실무를 배우고, 경력을 쌓고, 일자리로
+            이어지는 길. Growth Career가 그 다리를 놓습니다.
+          </p>
+        </div>
+      </section>
+
+      {/* ===== Footer ===== */}
+      <footer className="border-border border-t">
+        <div className={`${WRAP} flex flex-col gap-2 py-12 text-fg-subtle text-xs leading-relaxed`}>
+          <p className="font-bold text-fg-muted">Growth Career</p>
+          <p>재한 외국인을 위한 교육과 커리어 플랫폼. 운영 Dropdown (사업자 154-28-02110).</p>
+          <p>인사이트 정보는 공식 국가기관 자료를 출처로 하며, 최종 확인일을 각 글에 표기합니다.</p>
+          <p className="mt-3 text-fg-subtle">프리뷰. 내부 검토용 draft.</p>
+        </div>
+      </footer>
+    </main>
+  );
+}

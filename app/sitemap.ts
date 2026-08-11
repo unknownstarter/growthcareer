@@ -3,11 +3,20 @@ import { routing } from "@/src/i18n/routing";
 
 const BASE = "https://growthcareer.xyz";
 
-const ROUTES = ["/", "/fan-to-pro", "/privacy", "/terms"] as const;
+const ROUTES = [
+  "/",
+  "/fan-to-pro",
+  "/fan-to-pro/2",
+  "/fan-to-pro/1",
+  "/privacy",
+  "/terms",
+] as const;
 
 const PRIORITY: Record<(typeof ROUTES)[number], number> = {
   "/": 1,
-  "/fan-to-pro": 1,
+  "/fan-to-pro": 0.8,
+  "/fan-to-pro/2": 1,
+  "/fan-to-pro/1": 0.6,
   "/privacy": 0.3,
   "/terms": 0.3,
 };
@@ -18,6 +27,8 @@ const FREQUENCY: Record<
 > = {
   "/": "weekly",
   "/fan-to-pro": "weekly",
+  "/fan-to-pro/2": "weekly",
+  "/fan-to-pro/1": "yearly",
   "/privacy": "yearly",
   "/terms": "yearly",
 };
