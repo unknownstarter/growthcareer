@@ -263,17 +263,29 @@ export type AdminActionResult =
   | { status: "error"; error: string };
 
 /**
- * markAsEnrolled_batch 전용 결과 - 단일 row 가 아니라 일괄 결과.
- *   ok       : Postgres 트랜잭션 성공
- *   outcome  : enrolled = 정원 충족 -> paid 전원 enrolled
- *              cancelled = 정원 미달 -> paid 전원 cancelled (환불 대상)
- *   counts   : 영향받은 row 수
+ * markAsEnrolledBatch 전용 결과 - per-course 정원 모델 (ADR 0019 확장).
+ *
+ *   ok       : DB update 성공.
+ *   runs     : 과정별 진행 여부 (count >= MIN_PER_COURSE).
+ *   courseCounts : 과정별 paid 카운트.
+ *   enrolledCount / cancelledCount : 전환된 row 수 (enrolled = full + partial).
+ *   partialRefundDue : 올인원 부분개강 → 안 열린 과정분 부분환불 대상 목록
+ *                      (운영자 수동 처리). 각 항목 = { id, droppedCourses }.
+ *   error    : 입력/DB 오류 (예: 'multipleCohorts', 'supabaseUnavailable').
+ *
+ * 하위호환: 기존 대시보드가 참조하던 outcome / counts.{affected,threshold} 도
+ * 유지한다. outcome = 하나라도 열리면 'enrolled', 아무 과정도 안 열리면 'cancelled'.
  */
 export type BatchEnrollResult =
   | {
       status: "ok";
       outcome: "enrolled" | "cancelled";
       counts: { affected: number; threshold: number };
+      runs: { "a-r": boolean; sound: boolean };
+      courseCounts: { "a-r": number; sound: number };
+      enrolledCount: number;
+      cancelledCount: number;
+      partialRefundDue: { id: string; droppedCourses: string[] }[];
     }
   | { status: "error"; error: string };
 

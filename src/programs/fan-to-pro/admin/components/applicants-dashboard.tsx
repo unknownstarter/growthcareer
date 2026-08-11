@@ -17,6 +17,7 @@ import {
   sendReminder,
   toggleApplicantMilestone,
 } from "@/src/programs/fan-to-pro/application/admin-actions";
+import type { BatchEnrollResult } from "@/src/programs/fan-to-pro/domain/application";
 import { pollApplicants } from "@/src/programs/fan-to-pro/application/polling-actions";
 import {
   APPLICANT_STATUSES,
@@ -233,6 +234,9 @@ function DashboardInner({
   const [cancelTarget, setCancelTarget] = useState<ApplicantRow | null>(null);
   const [refundTarget, setRefundTarget] = useState<ApplicantRow | null>(null);
   const [enrollBatchOpen, setEnrollBatchOpen] = useState(false);
+  const [enrollBatchResult, setEnrollBatchResult] = useState<
+    Extract<BatchEnrollResult, { status: "ok" }> | null
+  >(null);
   // B0018 Wave 1 T2 / T3
   const [receiptTarget, setReceiptTarget] = useState<ApplicantRow | null>(null);
   const [receiptRefreshKey, setReceiptRefreshKey] = useState(0);
@@ -424,12 +428,13 @@ function DashboardInner({
     startTransition(async () => {
       const result = await markAsEnrolledBatch();
       if (result.status === "ok") {
-        const verb = result.outcome === "enrolled" ? "enrolled" : "cancelled";
+        setEnrollBatchResult(result);
+        const arLabel = result.runs["a-r"] ? "A&R 개강" : "A&R 미달";
+        const soundLabel = result.runs.sound ? "음향 개강" : "음향 미달";
         show(
-          `${result.counts.affected}건이 ${verb} 로 전환됐어요 (정원 ${result.counts.threshold}).`,
+          `${arLabel} / ${soundLabel} / enrolled ${result.enrolledCount} / cancelled ${result.cancelledCount}`,
           "success",
         );
-        setEnrollBatchOpen(false);
         refresh();
         return;
       }
@@ -1152,8 +1157,11 @@ function DashboardInner({
         open={enrollBatchOpen}
         busy={isPending}
         paidCount={stats.byStatus.paid}
-        threshold={20}
-        onClose={() => setEnrollBatchOpen(false)}
+        result={enrollBatchResult}
+        onClose={() => {
+          setEnrollBatchOpen(false);
+          setEnrollBatchResult(null);
+        }}
         onSubmit={runEnrollBatch}
       />
       {receiptTarget ? (

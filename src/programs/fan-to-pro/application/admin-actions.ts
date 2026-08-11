@@ -18,7 +18,7 @@
  *   notified    -> overdue      (markAsOverdue)
  *   * any *     -> cancelled    (markAsCancelled)
  *   paid|cancel -> refunded     (markAsRefunded)
- *   paid (N개)  -> enrolled|cancelled (markAsEnrolledBatch, threshold 가드)
+ *   paid (N개)  -> enrolled|cancelled (markAsEnrolledBatch, per-course 정원 가드)
  */
 
 import {
@@ -37,7 +37,10 @@ import {
   type IndividualSendLogResult,
   type MilestoneToggleResult,
 } from "@/src/programs/fan-to-pro/domain/application";
-import { ENROLLMENT_CAP } from "@/src/programs/fan-to-pro/domain/marketing/program-config";
+import {
+  MIN_PER_COURSE,
+  resolveBatchOutcome,
+} from "@/src/programs/fan-to-pro/domain/services/batch-enroll";
 import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
 import { assertAdmin } from "@/src/programs/fan-to-pro/admin/role";
 import {
@@ -310,19 +313,27 @@ export async function markAsRefunded(
 }
 
 /* ---------------------------------------------------------------------------
- * 7. markAsEnrolledBatch
- *   마감 +24h grace 후 운영자가 호출.
- *   paid 상태 ≥ 해당 기수 cohort.min_to_open 이면 모두 enrolled (전역 상수 디커플).
- *   미만이면 모두 cancelled (자동 환불 대상). 기수별 스코프 (cohort_id 필터).
+ * 7. markAsEnrolledBatch  (per-course 정원 모델 — 노아 확정 2026-08, model A)
+ *
+ *   마감 +24h grace 후 운영자가 호출. 2기 단과반 2개 (a-r, sound) 각각 독립 진행.
+ *   과정별 paid 카운트가 MIN_PER_COURSE(10) 이상이면 그 과정만 열린다.
+ *
+ *   신청자별 결과 (resolveBatchOutcome 순수 함수가 판정):
+ *     - 고른 과정 전부 열림 → enrolled (full).
+ *     - 일부만 열림 (올인원 부분개강) → enrolled + selected_course_slugs=kept 로 갱신
+ *       + 안 열린 과정분은 partialRefundDue 로 수집 (운영자 수동 부분환불).
+ *     - 고른 과정 하나도 안 열림 → cancelled (전액 환불 대상, cancel_reason).
+ *
+ * 기수 스코프:
+ *   - paid 의 cohort_id 가 단일이어야 한다. 여러 기수 섞이면 'multipleCohorts' error
+ *     (기존 가드 유지 — 기수별 개별 처리 필요).
+ *
+ * DB 계층은 얇게: paid 조회 + 판정 위임 + 그룹 UPDATE 만 담당. 판정 로직 전체는
+ *   domain/services/batch-enroll.ts 의 순수 함수에서 검증.
  *
  * 동시성:
- *   - Supabase JS 에서 트랜잭션을 한 번에 묶기 위해 Postgres RPC 가 이상적이나,
- *     현 단계에서 RPC 함수 별도 마이그레이션 없이 처리하기 위해
- *     "두 단계 + count 가드" 패턴 사용.
- *   - 단계 1: paid count SELECT (FOR UPDATE 가 아닌 일반 read - race risk 인정).
- *   - 단계 2: UPDATE WHERE status='paid' (단일 SQL -> 원자적).
- *   - 본 액션은 운영자가 의도적으로 1회만 호출하는 batch 이므로 race 윈도우 무시 가능.
- *     동시 호출 위험은 dashboard 의 confirm 다이얼로그로 차단 (T7 Luna 책임).
+ *   - 운영자가 의도적으로 1회만 호출하는 batch. dashboard confirm 다이얼로그로
+ *     동시 호출 차단. UPDATE 는 status='paid' 가드로 이미 처리된 row 재전환 방지.
  *
  * 입력 없음. 결과는 BatchEnrollResult.
  * ------------------------------------------------------------------------- */
@@ -330,11 +341,10 @@ export async function markAsEnrolledBatch(): Promise<BatchEnrollResult> {
   const supabase = await requireSupabase();
   if (!supabase) return { status: "error", error: "supabaseUnavailable" };
 
-  // paid 신청자의 기수 확인. 임계값은 그 기수의 min_to_open 으로 판정 (전역 상수
-  // ENROLLMENT_CAP 디커플 — 1기 archive 표시값과 무관). 여러 기수가 섞이면 안전상 중단.
+  // paid 신청자 + 과정 정보 조회. 기수는 단일이어야 안전 (여러 기수 섞이면 중단).
   const { data: paidRows, error: paidErr } = await supabase
     .from(TABLE)
-    .select("cohort_id")
+    .select("id, selected_course_slugs, selection_mode, cohort_id")
     .eq("status", "paid");
   if (paidErr) return { status: "error", error: paidErr.message };
 
@@ -342,59 +352,76 @@ export async function markAsEnrolledBatch(): Promise<BatchEnrollResult> {
   const cohortIds = [
     ...new Set(rows.map((r) => r.cohort_id).filter(Boolean)),
   ] as string[];
-  if (cohortIds.length === 0) {
-    return { status: "ok", outcome: "cancelled", counts: { affected: 0, threshold: 0 } };
-  }
   if (cohortIds.length > 1) {
     // 여러 기수의 paid 가 섞임 → 기수별 개별 처리 필요. 자동 batch 중단.
     return { status: "error", error: "multipleCohorts" };
   }
-  const cohortId = cohortIds[0];
 
-  const { data: cohort } = await supabase
-    .from("cohorts")
-    .select("min_to_open")
-    .eq("id", cohortId)
-    .maybeSingle();
-  const threshold = cohort?.min_to_open ?? ENROLLMENT_CAP.minToProceed;
+  // 순수 판정 (DB 무관).
+  const outcome = resolveBatchOutcome(
+    rows.map((r) => ({
+      id: String(r.id),
+      selectedCourseSlugs: Array.isArray(r.selected_course_slugs)
+        ? (r.selected_course_slugs as string[]).map(String)
+        : null,
+      selectionMode: r.selection_mode ? String(r.selection_mode) : null,
+    })),
+    MIN_PER_COURSE,
+  );
 
-  const total = rows.filter((r) => r.cohort_id === cohortId).length;
-  const meets = total >= threshold;
   const nowIso = new Date().toISOString();
 
-  if (meets) {
-    const { error, count } = await supabase
+  // enrolled (full) 일괄 — 고른 과정 전부 열린 신청자.
+  if (outcome.enrolledFullIds.length > 0) {
+    const { error } = await supabase
       .from(TABLE)
-      .update({ status: "enrolled" }, { count: "exact" })
+      .update({ status: "enrolled" })
       .eq("status", "paid")
-      .eq("cohort_id", cohortId);
+      .in("id", outcome.enrolledFullIds);
     if (error) return { status: "error", error: error.message };
-    return {
-      status: "ok",
-      outcome: "enrolled",
-      counts: { affected: count ?? 0, threshold },
-    };
   }
 
-  // 정원 미달 - 해당 기수 paid 전원 cancelled (환불은 markAsRefunded 로 별도 처리).
-  const { error, count } = await supabase
-    .from(TABLE)
-    .update(
-      {
+  // enrolled (partial) — 올인원 부분개강. status=enrolled + slug=kept 로 갱신.
+  //   kept 값이 신청자마다 다를 수 있어 id 별 UPDATE. paid ≤ 60 규모라 성능 무관.
+  for (const p of outcome.enrolledPartial) {
+    const { error } = await supabase
+      .from(TABLE)
+      .update({ status: "enrolled", selected_course_slugs: p.kept })
+      .eq("status", "paid")
+      .eq("id", p.id);
+    if (error) return { status: "error", error: error.message };
+  }
+
+  // cancelled — 고른 과정 하나도 안 열림. 전액 환불 대상.
+  if (outcome.cancelledIds.length > 0) {
+    const { error } = await supabase
+      .from(TABLE)
+      .update({
         status: "cancelled",
         cancelled_at: nowIso,
-        cancel_reason: "cohort_min_not_met",
-      },
-      { count: "exact" },
-    )
-    .eq("status", "paid")
-    .eq("cohort_id", cohortId);
+        cancel_reason: "course_min_not_met",
+      })
+      .eq("status", "paid")
+      .in("id", outcome.cancelledIds);
+    if (error) return { status: "error", error: error.message };
+  }
 
-  if (error) return { status: "error", error: error.message };
+  const enrolledCount =
+    outcome.enrolledFullIds.length + outcome.enrolledPartial.length;
+  const cancelledCount = outcome.cancelledIds.length;
+  const anyRuns = outcome.runs["a-r"] || outcome.runs.sound;
+
   return {
     status: "ok",
-    outcome: "cancelled",
-    counts: { affected: count ?? 0, threshold },
+    // 하위호환 필드.
+    outcome: anyRuns ? "enrolled" : "cancelled",
+    counts: { affected: enrolledCount + cancelledCount, threshold: MIN_PER_COURSE },
+    // per-course 필드.
+    runs: outcome.runs,
+    courseCounts: outcome.counts,
+    enrolledCount,
+    cancelledCount,
+    partialRefundDue: outcome.partialRefundDue,
   };
 }
 

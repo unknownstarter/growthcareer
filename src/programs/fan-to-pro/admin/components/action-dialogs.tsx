@@ -4,6 +4,13 @@ import { useState, type FormEvent } from "react";
 import { Modal } from "./modal";
 import { cn } from "@/src/shared/ui/cn";
 import type { ApplicantRow } from "../types";
+import type { BatchEnrollResult } from "@/src/programs/fan-to-pro/domain/application";
+
+// 2기 단과 slug → 표시 이름 (per-course 정원 판정 결과 표시용).
+const ENROLL_COURSE_LABEL: Record<string, string> = {
+  "a-r": "A&R",
+  sound: "음향",
+};
 
 const fieldClass =
   "w-full border border-border bg-bg px-3 py-2 text-sm text-fg outline-none focus:border-brand-pink";
@@ -312,24 +319,29 @@ export function RefundDialog({
 }
 
 /** 일괄 강좌 확정 다이얼로그. */
+/**
+ * 강좌 확정 일괄 처리 - per-course 정원 모델 (노아 확정 model A).
+ *   과정별 (A&R / 음향) 각각 최소 10명 충족 시 그 과정만 개강.
+ *   제출 전: 현재 paid 인원 안내. 제출 후: result 로 과정별 개강 여부 +
+ *   enrolled/cancelled 카운트 + 부분환불 대상 목록 표시.
+ */
 export function EnrollBatchDialog({
   open,
   busy,
   paidCount,
-  threshold,
+  result,
   onClose,
   onSubmit,
 }: {
   open: boolean;
   busy: boolean;
   paidCount: number;
-  threshold: number;
+  result: Extract<BatchEnrollResult, { status: "ok" }> | null;
   onClose: () => void;
   onSubmit: () => void;
 }) {
   const [confirmed, setConfirmed] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const meets = paidCount >= threshold;
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -341,6 +353,8 @@ export function EnrollBatchDialog({
     onSubmit();
   };
 
+  const courseLabel = (slug: string) => ENROLL_COURSE_LABEL[slug] ?? slug;
+
   return (
     <Modal
       open={open}
@@ -348,62 +362,118 @@ export function EnrollBatchDialog({
       title="강좌 확정 일괄 처리"
       busy={busy}
     >
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div className="border border-border bg-bg p-3 text-xs leading-relaxed text-fg">
-          <p>
-            현재 status=paid 인원: <strong>{paidCount}명</strong>
-            <br />
-            최소 정원: <strong>{threshold}명</strong>
-          </p>
-          <p className="mt-2 text-fg">
-            {meets
-              ? "정원 충족 → paid 전원이 enrolled 로 전환돼요."
-              : "정원 미달 → paid 전원이 cancelled 로 전환되고 환불 대상이 돼요."}
-          </p>
+      {result ? (
+        // 처리 결과 화면.
+        <div className="flex flex-col gap-4">
+          <div className="border border-border bg-bg p-3 text-xs leading-relaxed text-fg">
+            <p className="mb-2 font-black uppercase" style={btnStyle}>
+              과정별 개강 판정 (최소 10명)
+            </p>
+            <ul className="space-y-1">
+              <li>
+                A&amp;R: <strong>{result.courseCounts["a-r"]}명</strong>{" "}
+                {result.runs["a-r"] ? "→ 개강" : "→ 미달 (취소)"}
+              </li>
+              <li>
+                음향: <strong>{result.courseCounts.sound}명</strong>{" "}
+                {result.runs.sound ? "→ 개강" : "→ 미달 (취소)"}
+              </li>
+            </ul>
+            <p className="mt-3">
+              enrolled 전환: <strong>{result.enrolledCount}건</strong>
+              <br />
+              cancelled 전환: <strong>{result.cancelledCount}건</strong>
+            </p>
+          </div>
+
+          {result.partialRefundDue.length > 0 ? (
+            <div className="border border-brand-pink bg-brand-pink/10 p-3 text-xs leading-relaxed text-fg">
+              <p className="mb-2 font-black uppercase text-brand-pink" style={btnStyle}>
+                부분환불 대상 ({result.partialRefundDue.length}명)
+              </p>
+              <p className="mb-2 text-fg/80">
+                올인원 신청자 중 일부 과정만 개강. 안 열린 과정분을 운영자가 직접
+                환불 처리해 주세요.
+              </p>
+              <ul className="space-y-1 font-mono text-[11px]">
+                {result.partialRefundDue.map((r) => (
+                  <li key={r.id}>
+                    {r.id.slice(0, 8)} /{" "}
+                    {r.droppedCourses.map(courseLabel).join(", ")} 환불 필요
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={busy}
+              className={primaryBtn}
+              style={btnStyle}
+            >
+              닫기
+            </button>
+          </div>
         </div>
+      ) : (
+        // 제출 전 확인 화면.
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div className="border border-border bg-bg p-3 text-xs leading-relaxed text-fg">
+            <p>
+              현재 status=paid 인원: <strong>{paidCount}명</strong>
+            </p>
+            <p className="mt-2 text-fg">
+              과정별 (A&amp;R / 음향) 각각 <strong>최소 10명</strong> 충족 시 그
+              과정만 개강해요. 개강 과정 신청자는 enrolled, 미달 과정만 신청한
+              분은 cancelled (환불 대상) 로 전환돼요. 올인원 신청자 중 일부 과정만
+              열리면 열린 과정만 등록되고 나머지는 부분환불 목록으로 안내돼요.
+            </p>
+          </div>
 
-        <label className="flex items-start gap-2 text-xs text-fg">
-          <input
-            type="checkbox"
-            checked={confirmed}
-            onChange={(e) => setConfirmed(e.target.checked)}
-            disabled={busy}
-            className="mt-0.5 h-4 w-4 accent-brand-pink"
-          />
-          <span>
-            일괄 처리는 되돌릴 수 없어요. 진행할게요.
-          </span>
-        </label>
+          <label className="flex items-start gap-2 text-xs text-fg">
+            <input
+              type="checkbox"
+              checked={confirmed}
+              onChange={(e) => setConfirmed(e.target.checked)}
+              disabled={busy}
+              className="mt-0.5 h-4 w-4 accent-brand-pink"
+            />
+            <span>일괄 처리는 되돌릴 수 없어요. 진행할게요.</span>
+          </label>
 
-        {error ? (
-          <p
-            role="alert"
-            className="border border-brand-pink bg-brand-pink/10 px-3 py-2 text-xs text-brand-pink"
-          >
-            {error}
-          </p>
-        ) : null}
+          {error ? (
+            <p
+              role="alert"
+              className="border border-brand-pink bg-brand-pink/10 px-3 py-2 text-xs text-brand-pink"
+            >
+              {error}
+            </p>
+          ) : null}
 
-        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={busy}
-            className={ghostBtn}
-            style={btnStyle}
-          >
-            돌아가기
-          </button>
-          <button
-            type="submit"
-            disabled={busy}
-            className={primaryBtn}
-            style={btnStyle}
-          >
-            {busy ? "처리 중..." : meets ? "일괄 enrolled" : "일괄 cancelled"}
-          </button>
-        </div>
-      </form>
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={busy}
+              className={ghostBtn}
+              style={btnStyle}
+            >
+              돌아가기
+            </button>
+            <button
+              type="submit"
+              disabled={busy}
+              className={primaryBtn}
+              style={btnStyle}
+            >
+              {busy ? "처리 중..." : "일괄 확정"}
+            </button>
+          </div>
+        </form>
+      )}
     </Modal>
   );
 }
