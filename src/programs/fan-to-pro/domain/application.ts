@@ -149,6 +149,20 @@ export const CourseBundleSelectionSchema = z.object({
     .regex(/^[a-z0-9,\- ]*$/i, "invalidSlug")
     .optional()
     .or(z.literal("").transform(() => undefined)),
+  // 레퍼럴 코드 (선택). 추천인의 referral_code 6자 A-Z0-9 를 신청자가 입력.
+  // optional + 관대함: 형식이 틀려도 신청 막지 않음 (저장 우선, 노아가 어드민에서
+  // 눈으로 확인 후 수동 할인). 여기서는 정규화만 (대문자 + 공백 제거).
+  // 빈 값 / 미전송 → null. 액션에서 한 번 더 방어적 정규화.
+  referred_by_code: z
+    .string()
+    .trim()
+    .max(20)
+    .optional()
+    .transform((v) => {
+      if (!v) return null;
+      const normalized = v.replace(/\s+/g, "").toUpperCase();
+      return normalized.length > 0 ? normalized : null;
+    }),
 });
 
 export const ApplicationSchema = Step1Schema.extend(Step2Schema.shape).extend(

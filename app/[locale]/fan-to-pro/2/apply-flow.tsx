@@ -63,6 +63,7 @@ export function ApplyFlow({
     { name: "birthdate", label: formT.birthdate, ph: "", type: "date" },
     { name: "address", label: formT.address, ph: formT.addressPh, type: "text", wide: true },
     { name: "university", label: formT.university, ph: formT.universityPh, type: "text", optional: true },
+    { name: "referred_by_code", label: formT.referral, ph: formT.referralPh, type: "text", optional: true, wide: true, uppercase: true },
   ] as const;
 
   return (
@@ -106,7 +107,10 @@ export function ApplyFlow({
                   type={f.type}
                   placeholder={f.ph}
                   required={!("optional" in f && f.optional)}
+                  maxLength={"uppercase" in f && f.uppercase ? 20 : undefined}
+                  autoCapitalize={"uppercase" in f && f.uppercase ? "characters" : undefined}
                   className={`${styles.pixelBorder} ${inputCls} ${errs[f.name] ? "border-brand-pink" : ""}`}
+                  style={"uppercase" in f && f.uppercase ? { textTransform: "uppercase" } : undefined}
                 />
               </label>
             ))}

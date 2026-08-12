@@ -156,6 +156,14 @@ export async function submitApplication(
         .filter(Boolean)
     : null;
 
+  // 레퍼럴 코드 (선택). zod 에서 이미 대문자/공백제거 정규화됐지만, 액션에서
+  // 한 번 더 방어적으로 정규화 후 저장. 빈 값이면 null. 존재 검증은 안 함
+  // (노아가 어드민에서 눈으로 확인 후 수동 할인). §7.4 additive nullable 컬럼.
+  const referredByCodeRaw = parsed.data.referred_by_code;
+  const referredByCode = referredByCodeRaw
+    ? referredByCodeRaw.replace(/\s+/g, "").toUpperCase() || null
+    : null;
+
   const { data, error } = await supabase
     .from(TABLE)
     .insert({
@@ -181,6 +189,7 @@ export async function submitApplication(
       previous_applicant_id: previousApplicantId,
       selection_mode: selectionMode,
       selected_course_slugs: selectedCourseSlugs,
+      referred_by_code: referredByCode,
     })
     .select("id")
     .single();
