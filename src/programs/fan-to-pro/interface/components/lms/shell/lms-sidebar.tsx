@@ -11,6 +11,7 @@ import {
   Wallet,
   Megaphone,
   MessageSquare,
+  MessagesSquare,
   Sparkles,
   Briefcase,
   User,
@@ -47,10 +48,12 @@ function adminItems(locale: string): NavItem[] {
   ];
 }
 
-function instructorItems(_locale: string, _cohortSlug: string): NavItem[] {
-  // instructor surface (B0070) 는 아직 페이지 파일이 없음. 404 방지를 위해 링크 감춤.
-  // 대신 사이드바에 "준비 중" 안내 카드 표시 (아래 LmsSidebar 안 empty state).
-  return [];
+function instructorItems(locale: string, cohortSlug: string): NavItem[] {
+  const base = `/${locale}/fan-to-pro/${cohortSlug}/instructor`;
+  // 강사 surface 는 현재 커뮤니티만 구현 (B0070). 대시보드 등은 후속.
+  return [
+    { href: `${base}/community`, label: "커뮤니티", icon: MessagesSquare },
+  ];
 }
 
 function studentItems(locale: string, cohortSlug: string): NavItem[] {
@@ -62,6 +65,7 @@ function studentItems(locale: string, cohortSlug: string): NavItem[] {
     { href: `${base}/sessions`, label: "수업", icon: Layers },
     { href: `${base}/materials`, label: "수업 자료", icon: BookOpen },
     { href: `${base}/announcements`, label: "공지", icon: Megaphone },
+    { href: `${base}/community`, label: "커뮤니티", icon: MessagesSquare },
     { href: `${base}/career`, label: "커리어 문서", icon: Briefcase },
     { href: `${base}/profile`, label: "내 프로필", icon: User },
     { href: `${base}/certificates`, label: "수료증", icon: GraduationCap },
