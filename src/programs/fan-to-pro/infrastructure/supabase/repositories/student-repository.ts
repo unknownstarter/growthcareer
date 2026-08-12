@@ -69,6 +69,8 @@ export type InsertStudentInput = {
   display_name: string;
   status?: StudentStatus;
   notes?: string | null;
+  referral_code?: string | null;
+  referred_by_code?: string | null;
 };
 
 export async function insertStudent(input: InsertStudentInput): Promise<Student> {
@@ -81,6 +83,8 @@ export async function insertStudent(input: InsertStudentInput): Promise<Student>
       display_name: input.display_name,
       status: input.status ?? "active",
       notes: input.notes ?? null,
+      referral_code: input.referral_code ?? null,
+      referred_by_code: input.referred_by_code ?? null,
     })
     .select("*")
     .single();

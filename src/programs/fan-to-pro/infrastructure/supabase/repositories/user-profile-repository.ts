@@ -20,6 +20,7 @@ export type UserProfileRow = {
   instructor_id: string | null;
   is_super_admin: boolean;
   must_change_password: boolean;
+  referral_code: string | null;
   password_changed_at: string | null;
   last_login_at: string | null;
   created_at: string;
@@ -45,6 +46,7 @@ function row(raw: Record<string, unknown>): UserProfileRow {
     instructor_id: raw.instructor_id ? String(raw.instructor_id) : null,
     is_super_admin: Boolean(raw.is_super_admin),
     must_change_password: Boolean(raw.must_change_password),
+    referral_code: raw.referral_code ? String(raw.referral_code) : null,
     password_changed_at: raw.password_changed_at
       ? String(raw.password_changed_at)
       : null,

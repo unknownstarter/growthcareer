@@ -27,6 +27,9 @@ export const StudentSchema = z.object({
   withdrawn_at: z.string().nullable(),
   completed_at: z.string().nullable(),
   notes: z.string().nullable(),
+  // 레퍼럴: 본인 공유 코드 + promote 시 승계한 추천인 입력 코드.
+  referral_code: z.string().nullable().optional(),
+  referred_by_code: z.string().nullable().optional(),
   created_at: z.string(),
   updated_at: z.string().nullable(),
 });

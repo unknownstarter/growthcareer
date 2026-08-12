@@ -24,6 +24,10 @@ import {
   updateProfile,
 } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/user-profile-repository";
 import { upsertCohortMembership } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-membership-repository";
+import {
+  assignInstructorReferralCode,
+  assignStudentReferralCode,
+} from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/referral-repository";
 
 const InputSchema = z.object({
   email: z.string().trim().min(3).email(),
@@ -119,6 +123,25 @@ export async function inviteUser(input: unknown): Promise<InviteUserResult> {
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
     return { status: "error", error: msg };
+  }
+
+  // 2b) 레퍼럴 코드 부여 (미부여 시에만, 멱등).
+  // super_admin(GCFTP0 노아)은 마이그레이션에서 고정 발급 → 여기서 건드리지 않음.
+  // instructor 는 instructors 테이블 코드 부여 (공유 주체 = 강사 마스터 레코드).
+  // student invite 는 promote 시점에 이미 부여됨 → student_id 있어도 재발급 X.
+  // 실패해도 invite 자체는 성공 처리 (코드는 추후 재부여 가능, 비필수).
+  try {
+    // 본인 코드의 소유 주체 = person 레코드(students / instructors). user_profiles
+    // 코드는 super_admin(노아 GCFTP0, 마이그레이션 고정)만 → invite 로는 부여 안 함.
+    // student/instructor 계정은 자기 person 레코드 코드를 씀(한 사람 코드 2개 방지).
+    if (data.instructor_id) {
+      await assignInstructorReferralCode(data.instructor_id);
+    }
+    if (data.student_id) {
+      await assignStudentReferralCode(data.student_id);
+    }
+  } catch {
+    // 레퍼럴 코드 부여 실패는 invite 를 막지 않음 (best-effort).
   }
 
   // 3) cohort_memberships — role 가드 통과에 필수.

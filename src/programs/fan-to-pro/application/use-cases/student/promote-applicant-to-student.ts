@@ -17,6 +17,7 @@ import {
 import { fetchCohortById } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-repository";
 import { canPromoteApplicant } from "@/src/programs/fan-to-pro/domain/entities/student";
 import type { Student } from "@/src/programs/fan-to-pro/domain/entities/student";
+import { generateUniqueReferralCode } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/referral-repository";
 
 const InputSchema = z.object({
   applicant_id: z.string().uuid(),
@@ -57,7 +58,7 @@ export async function promoteApplicantToStudent(
     if (!supabase) return { status: "error", error: "supabaseUnavailable" };
     const { data: applicant, error: readErr } = await supabase
       .from("applicants")
-      .select("status, name, redacted_at")
+      .select("status, name, redacted_at, referred_by_code")
       .eq("id", parsed.data.applicant_id)
       .maybeSingle();
     if (readErr) return { status: "error", error: readErr.message };
@@ -70,11 +71,19 @@ export async function promoteApplicantToStudent(
       return { status: "error", error: "applicantNotPromotable" };
     }
 
+    // 레퍼럴: 본인 코드 발급 + applicant 의 입력 코드(referred_by_code) 승계.
+    const referralCode = await generateUniqueReferralCode();
+    const referredByCode = applicant.referred_by_code
+      ? String(applicant.referred_by_code)
+      : null;
+
     const student = await insertStudent({
       applicant_id: parsed.data.applicant_id,
       cohort_id: parsed.data.cohort_id,
       display_name: String(applicant.name ?? "(이름없음)"),
       status: "active",
+      referral_code: referralCode,
+      referred_by_code: referredByCode,
     });
     return { status: "ok", data: student, alreadyExists: false };
   } catch (err) {
