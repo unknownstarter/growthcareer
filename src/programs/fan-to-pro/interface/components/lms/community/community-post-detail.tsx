@@ -13,6 +13,7 @@ import { Pin, PinOff, EyeOff, Trash2 } from "lucide-react";
 import { Badge } from "@/src/programs/fan-to-pro/interface/components/lms/ui/badge";
 import { Button } from "@/src/programs/fan-to-pro/interface/components/lms/ui/button";
 import { CommunityWriteForm } from "./community-write-form";
+import { AuthorBadges } from "./author-meta";
 import { formatDateTime } from "./format-time";
 import { communityErrorMessage } from "./community-post-actions";
 import {
@@ -97,10 +98,11 @@ export function CommunityPostDetail({
         ) : null}
       </div>
 
-      <div className="mt-3 flex items-center gap-3 text-xs text-[var(--muted-foreground)]">
+      <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-[var(--muted-foreground)]">
         <span className="font-medium text-[var(--foreground)]">
           {post.authorName}
         </span>
+        <AuthorBadges role={post.authorRole} cohorts={post.authorCohorts} />
         <span
           aria-hidden
           className="h-0.5 w-0.5 rounded-full bg-[var(--muted-foreground)]"

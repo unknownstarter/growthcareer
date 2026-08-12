@@ -11,11 +11,15 @@ import { getLmsUser } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-ro
 import { isProgramAdmin } from "@/src/programs/fan-to-pro/infrastructure/auth/program-guards";
 import { getSupabaseAuthServer } from "@/src/programs/fan-to-pro/infrastructure/auth/supabase-server-auth";
 import {
+  fetchAuthorInfo,
   fetchCommentRows,
   fetchDisplayNames,
   fetchPostRow,
   fetchPostRows,
   resolveFanToProProgramId,
+  type AuthorInfo,
+  type AuthorCohortLabel,
+  type AuthorRole,
   type CommunityCommentRow,
   type CommunityPostRow,
 } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/community-repository";
@@ -37,6 +41,10 @@ export type CommunityPostView = {
   createdAt: string;
   updatedAt: string | null;
   authorName: string;
+  /** fan-to-pro cohort membership 기준 역할. 겸임 시 instructor 우선. 없으면 null. */
+  authorRole: AuthorRole;
+  /** 작성자의 fan-to-pro cohort 라벨들 (starts_on asc, 예: 1기 → 2기). 없으면 빈 배열. */
+  authorCohorts: AuthorCohortLabel[];
   isOwn: boolean;
 };
 
@@ -47,6 +55,10 @@ export type CommunityCommentView = {
   status: "published" | "hidden";
   createdAt: string;
   authorName: string;
+  /** fan-to-pro cohort membership 기준 역할. 겸임 시 instructor 우선. 없으면 null. */
+  authorRole: AuthorRole;
+  /** 작성자의 fan-to-pro cohort 라벨들 (starts_on asc). 없으면 빈 배열. */
+  authorCohorts: AuthorCohortLabel[];
   isOwn: boolean;
 };
 
@@ -73,9 +85,26 @@ export type CommunityPostDetailResult =
 // helpers
 // -------------------------------------------------------------------------
 
+const EMPTY_COHORTS: AuthorCohortLabel[] = [];
+
+function authorRoleOf(
+  createdBy: string | null,
+  info: Map<string, AuthorInfo>,
+): AuthorRole {
+  return createdBy ? (info.get(createdBy)?.role ?? null) : null;
+}
+
+function authorCohortsOf(
+  createdBy: string | null,
+  info: Map<string, AuthorInfo>,
+): AuthorCohortLabel[] {
+  return createdBy ? (info.get(createdBy)?.cohorts ?? EMPTY_COHORTS) : EMPTY_COHORTS;
+}
+
 function toPostView(
   row: CommunityPostRow,
   names: Map<string, string>,
+  info: Map<string, AuthorInfo>,
   meId: string,
 ): CommunityPostView {
   return {
@@ -90,6 +119,8 @@ function toPostView(
     authorName: row.created_by
       ? (names.get(row.created_by) ?? DELETED_AUTHOR)
       : DELETED_AUTHOR,
+    authorRole: authorRoleOf(row.created_by, info),
+    authorCohorts: authorCohortsOf(row.created_by, info),
     isOwn: !!row.created_by && row.created_by === meId,
   };
 }
@@ -97,6 +128,7 @@ function toPostView(
 function toCommentView(
   row: CommunityCommentRow,
   names: Map<string, string>,
+  info: Map<string, AuthorInfo>,
   meId: string,
 ): CommunityCommentView {
   return {
@@ -108,6 +140,8 @@ function toCommentView(
     authorName: row.created_by
       ? (names.get(row.created_by) ?? DELETED_AUTHOR)
       : DELETED_AUTHOR,
+    authorRole: authorRoleOf(row.created_by, info),
+    authorCohorts: authorCohortsOf(row.created_by, info),
     isOwn: !!row.created_by && row.created_by === meId,
   };
 }
@@ -128,15 +162,20 @@ export async function fetchCommunityPosts(): Promise<CommunityListResult> {
     const auth = await getSupabaseAuthServer();
     const rows = await fetchPostRows(auth, programId);
 
-    const names = await fetchDisplayNames(
-      rows.map((r) => r.created_by).filter((id): id is string => !!id),
-    );
+    const authorIds = rows
+      .map((r) => r.created_by)
+      .filter((id): id is string => !!id);
+    // 두 batch (display_name + author-info) 병렬. author-info 는 내부 2 쿼리.
+    const [names, info] = await Promise.all([
+      fetchDisplayNames(authorIds),
+      fetchAuthorInfo(authorIds),
+    ]);
     const canModerate =
       me.isSuperAdmin || (await isProgramAdmin(me.id, PROGRAM_SLUG));
 
     return {
       status: "ok",
-      posts: rows.map((r) => toPostView(r, names, me.id)),
+      posts: rows.map((r) => toPostView(r, names, info, me.id)),
       canModerate,
       meId: me.id,
     };
@@ -166,15 +205,19 @@ export async function fetchCommunityPost(
       postRow.created_by,
       ...commentRows.map((c) => c.created_by),
     ].filter((id): id is string => !!id);
-    const names = await fetchDisplayNames(authorIds);
+    // post 작성자 + 모든 comment 작성자를 단일 batch (display_name + author-info 병렬).
+    const [names, info] = await Promise.all([
+      fetchDisplayNames(authorIds),
+      fetchAuthorInfo(authorIds),
+    ]);
 
     const canModerate =
       me.isSuperAdmin || (await isProgramAdmin(me.id, PROGRAM_SLUG));
 
     return {
       status: "ok",
-      post: toPostView(postRow, names, me.id),
-      comments: commentRows.map((c) => toCommentView(c, names, me.id)),
+      post: toPostView(postRow, names, info, me.id),
+      comments: commentRows.map((c) => toCommentView(c, names, info, me.id)),
       canModerate,
       meId: me.id,
     };

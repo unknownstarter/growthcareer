@@ -15,6 +15,7 @@ import {
   STAGGER_ITEM_CLASS,
   staggerDelay,
 } from "@/src/programs/fan-to-pro/interface/components/lms/ui/stagger";
+import { AuthorBadges } from "./author-meta";
 import { formatRelative } from "./format-time";
 import { communityErrorMessage } from "./community-post-actions";
 import {
@@ -60,6 +61,9 @@ export function CommunityComments({
         status: "published",
         createdAt: new Date().toISOString(),
         authorName: meName,
+        // 낙관적 렌더 — 본인 역할/기수 칩은 서버 재검증(router.refresh) 후 채워짐.
+        authorRole: null,
+        authorCohorts: [],
         isOwn: true,
         optimistic: true,
       });
@@ -179,10 +183,14 @@ function CommentItem({
         comment.optimistic ? "opacity-60" : ""
       }`}
     >
-      <div className="flex items-center gap-2 text-xs text-[var(--muted-foreground)]">
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-xs text-[var(--muted-foreground)]">
         <span className="font-medium text-[var(--foreground)]">
           {comment.authorName}
         </span>
+        <AuthorBadges
+          role={comment.authorRole}
+          cohorts={comment.authorCohorts}
+        />
         <span
           aria-hidden
           className="h-0.5 w-0.5 rounded-full bg-[var(--muted-foreground)]"

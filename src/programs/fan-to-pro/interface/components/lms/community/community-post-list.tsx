@@ -13,6 +13,7 @@ import {
   staggerDelay,
 } from "@/src/programs/fan-to-pro/interface/components/lms/ui/stagger";
 import type { CommunityPostView } from "@/src/programs/fan-to-pro/application/queries/lms/fetch-community";
+import { AuthorBadges } from "./author-meta";
 import { formatRelative } from "./format-time";
 
 /** 제목 없는 글의 목록 표시용 본문 미리보기 (첫 줄 기준). */
@@ -65,10 +66,14 @@ export function CommunityPostList({
               </p>
             ) : null}
 
-            <div className="mt-3 flex items-center gap-3 text-xs text-[var(--muted-foreground)]">
+            <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-[var(--muted-foreground)]">
               <span className="font-medium text-[var(--foreground)]">
                 {post.authorName}
               </span>
+              <AuthorBadges
+                role={post.authorRole}
+                cohorts={post.authorCohorts}
+              />
               <span
                 aria-hidden
                 className="h-0.5 w-0.5 rounded-full bg-[var(--muted-foreground)]"
