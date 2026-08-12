@@ -45,6 +45,7 @@ function adminItems(locale: string): NavItem[] {
     { href: `${base}/companies`, label: "회사", icon: Building2 },
     { href: `${base}/finance`, label: "재무", icon: Wallet },
     { href: `${base}/consultations`, label: "컨설팅", icon: MessageSquare },
+    { href: `${base}/community`, label: "커뮤니티", icon: MessagesSquare },
   ];
 }
 
