@@ -3,14 +3,18 @@
  *
  * 흐름:
  * 1. Supabase Auth admin.inviteUserByEmail → magic link 발송
- * 2. user_profiles row INSERT (role + lineage)
+ * 2. user_profiles row INSERT (lineage: company/student/instructor id)
+ * 3. cohort_id 가 있고 role 이 instructor|student 면 cohort_memberships upsert
+ *    (role 가드 통과에 필수 — 이게 없으면 로그인해도 LMS/커뮤니티 접근 불가).
  *
- * Sage critical: 이 use case 는 super_admin server action 안에서만 호출.
- * assertLmsRole('super_admin') 1차 가드는 호출자가 책임.
+ * Sage critical: 이 use case 는 program admin / super_admin server action 안에서만
+ * 호출. assertProgramAdmin('fan-to-pro') 1차 가드는 호출자(lms-invite-actions)가 책임.
+ * cohort_id 는 호출 action 이 결정 (per-cohort UI 또는 명시 파라미터) — 클라이언트가
+ * 임의 cohort 에 자기를 박을 수 없음 (invite 는 운영자만 트리거).
  *
- * 멱등성: 이미 같은 이메일의 user 가 있으면 invite 다시 발송 + profile 생성/갱신.
- * Supabase Auth 의 inviteUserByEmail 은 이미 존재하는 user 에 422 반환 — 그
- * 경우 user 만 조회 후 profile 만 upsert.
+ * 멱등성: 이미 같은 이메일의 user 가 있으면 invite 다시 발송 + profile 생성/갱신 +
+ * membership upsert (PK 충돌 no-op). Supabase Auth 의 inviteUserByEmail 은 이미
+ * 존재하는 user 에 422 반환 — 그 경우 user 만 조회 후 profile/membership upsert.
  */
 import { z } from "zod";
 import { getSupabaseAuthAdmin } from "@/src/programs/fan-to-pro/infrastructure/auth/supabase-admin-auth";
@@ -19,6 +23,7 @@ import {
   fetchProfileByEmail,
   updateProfile,
 } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/user-profile-repository";
+import { upsertCohortMembership } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-membership-repository";
 
 const InputSchema = z.object({
   email: z.string().trim().min(3).email(),
@@ -28,6 +33,9 @@ const InputSchema = z.object({
   student_id: z.string().uuid().nullable().optional(),
   instructor_id: z.string().uuid().nullable().optional(),
   phone: z.string().trim().nullable().optional(),
+  // cohort_id: 있으면 role(instructor|student) 로 cohort_memberships 생성.
+  // super_admin invite 는 cohort 없음 → 생략.
+  cohort_id: z.string().uuid().nullable().optional(),
 });
 
 export type InviteUserInput = z.infer<typeof InputSchema>;
@@ -111,6 +119,23 @@ export async function inviteUser(input: unknown): Promise<InviteUserResult> {
   } catch (err) {
     const msg = err instanceof Error ? err.message : "unknown";
     return { status: "error", error: msg };
+  }
+
+  // 3) cohort_memberships — role 가드 통과에 필수.
+  // super_admin 은 cohort 무관(글로벌 is_super_admin) → 스킵.
+  // 계정+프로필은 위에서 이미 커밋됨. 여기서 실패하면 에러 반환하되,
+  // 재초대 시 profile/membership 모두 upsert 라 멱등 복구된다.
+  if (data.cohort_id && data.role !== "super_admin") {
+    try {
+      await upsertCohortMembership({
+        user_id: userId,
+        cohort_id: data.cohort_id,
+        role: data.role,
+      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "unknown";
+      return { status: "error", error: `membershipFailed: ${msg}` };
+    }
   }
 
   return { status: "ok", user_id: userId, already_existed: alreadyExisted };

@@ -36,21 +36,30 @@ import { linkInstructorCompanyAction } from "@/src/programs/fan-to-pro/interface
 import type { InstructorWithProfile } from "@/src/programs/fan-to-pro/application/queries/lms/fetch-instructors-with-profiles";
 
 type Company = { id: string; name: string };
+type CohortOption = { id: string; name: string };
 type Props = {
   instructors: InstructorWithProfile[];
   companies: Company[];
+  cohorts: CohortOption[];
 };
 
-export function InstructorsDashboard({ instructors, companies }: Props) {
+export function InstructorsDashboard({ instructors, companies, cohorts }: Props) {
   const router = useRouter();
   const params = useParams();
   const locale = (params?.locale as string) ?? "ko";
   const [pending, startTransition] = React.useTransition();
   const [feedback, setFeedback] = React.useState<string | null>(null);
+  const [cohortId, setCohortId] = React.useState<string>(
+    cohorts[0]?.id ?? "",
+  );
 
   const notInvited = instructors.filter((i) => !i.invited);
 
   function onBatchInvite() {
+    if (!cohortId) {
+      setFeedback("배정할 기수를 먼저 선택하세요.");
+      return;
+    }
     if (notInvited.length === 0) {
       setFeedback("invite 보낼 강사가 없습니다.");
       return;
@@ -59,7 +68,7 @@ export function InstructorsDashboard({ instructors, companies }: Props) {
       return;
     setFeedback(null);
     startTransition(async () => {
-      const result = await inviteInstructorsBatchAction();
+      const result = await inviteInstructorsBatchAction({ cohort_id: cohortId });
       if (result.status === "error") {
         setFeedback(`오류: ${result.error}`);
         return;
@@ -78,6 +87,10 @@ export function InstructorsDashboard({ instructors, companies }: Props) {
       setFeedback(`${i.name}: 이메일이 없습니다. 기존 어드민에서 이메일을 채우세요.`);
       return;
     }
+    if (!cohortId) {
+      setFeedback("배정할 기수를 먼저 선택하세요.");
+      return;
+    }
     if (!confirm(`${i.name} (${i.email}) 에게 invite 메일을 발송할까요?`))
       return;
     setFeedback(null);
@@ -89,6 +102,7 @@ export function InstructorsDashboard({ instructors, companies }: Props) {
         instructor_id: i.instructor_id,
         company_id: i.company_id,
         phone: i.phone,
+        cohort_id: cohortId,
       });
       if (result.status === "error") {
         setFeedback(`오류: ${result.error}`);
@@ -124,7 +138,8 @@ export function InstructorsDashboard({ instructors, companies }: Props) {
           <div className="space-y-1">
             <CardTitle>강사 ({instructors.length}명)</CardTitle>
             <CardDescription>
-              회사 연결 + invite 발송. 강사 마스터 정보 수정은{" "}
+              회사 연결 + invite 발송. 초대 시 오른쪽에서 선택한 기수의 강사로
+              배정됩니다. 강사 마스터 정보 수정은{" "}
               <a
                 href="/admin/instructors"
                 className="text-[var(--primary)] hover:underline"
@@ -134,14 +149,36 @@ export function InstructorsDashboard({ instructors, companies }: Props) {
               에서.
             </CardDescription>
           </div>
-          <Button
-            onClick={onBatchInvite}
-            disabled={pending || notInvited.length === 0}
-            className="h-12 px-6"
-          >
-            <Mail className="h-4 w-4 mr-2" />
-            {pending ? "발송 중..." : `미발송 ${notInvited.length}명 일괄 초대`}
-          </Button>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <label htmlFor="instructor-cohort" className="sr-only">
+              배정 기수
+            </label>
+            <select
+              id="instructor-cohort"
+              value={cohortId}
+              disabled={pending || cohorts.length === 0}
+              onChange={(e) => setCohortId(e.target.value)}
+              className="h-12 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--background)] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
+            >
+              {cohorts.length === 0 ? (
+                <option value="">기수 없음</option>
+              ) : (
+                cohorts.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))
+              )}
+            </select>
+            <Button
+              onClick={onBatchInvite}
+              disabled={pending || notInvited.length === 0 || !cohortId}
+              className="h-12 px-6"
+            >
+              <Mail className="h-4 w-4 mr-2" />
+              {pending ? "발송 중..." : `미발송 ${notInvited.length}명 일괄 초대`}
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent>

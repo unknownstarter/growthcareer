@@ -1,9 +1,14 @@
 /**
- * Use case — 모든 instructor 일괄 invite.
+ * Use case — 모든 instructor 일괄 invite + 지정 cohort 의 강사 membership 부여.
  *
  * 흐름:
  * 1. instructors 조회 (email 보유한 강사만)
- * 2. 각 강사마다 inviteUser 호출 (role=instructor, instructor_id + company_id 박음)
+ * 2. 각 강사마다 inviteUser 호출 (role=instructor, instructor_id + company_id +
+ *    cohort_id 박음). cohort_id 로 cohort_memberships(role=instructor) 생성 →
+ *    해당 cohort 의 instructor surface + 커뮤니티(스코프 B) 접근 가능.
+ *
+ * cohort_id 는 호출 action 이 결정 (운영자가 UI 에서 cohort 선택). 강사는 여러
+ * cohort 에 배정될 수 있으므로, 각 cohort 마다 이 batch 를 호출 = 멱등 upsert.
  */
 import { fetchInstructorsLms } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/instructor-lms-repository";
 import { inviteUser } from "@/src/programs/fan-to-pro/application/use-cases/user/invite-user";
@@ -18,7 +23,9 @@ export type BatchInstructorInviteResult =
     }
   | { status: "error"; error: string };
 
-export async function inviteInstructorsBatch(): Promise<BatchInstructorInviteResult> {
+export async function inviteInstructorsBatch(input: {
+  cohort_id: string;
+}): Promise<BatchInstructorInviteResult> {
   let instructors;
   try {
     instructors = await fetchInstructorsLms();
@@ -44,6 +51,7 @@ export async function inviteInstructorsBatch(): Promise<BatchInstructorInviteRes
       instructor_id: r.id,
       company_id: r.company_id,
       phone: r.phone,
+      cohort_id: input.cohort_id,
     });
 
     if (result.status === "ok") {

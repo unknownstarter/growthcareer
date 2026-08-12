@@ -67,6 +67,7 @@ export async function inviteStudentsBatch(input: {
       role: "student",
       student_id: r.id,
       phone,
+      cohort_id: input.cohort_id,
     });
 
     if (result.status === "ok") {

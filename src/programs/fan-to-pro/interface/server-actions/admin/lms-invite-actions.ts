@@ -33,6 +33,9 @@ export async function inviteSingleUserAction(input: {
   instructor_id?: string | null;
   company_id?: string | null;
   phone?: string | null;
+  // cohort_id: 있으면 cohort_memberships(role) 생성 → role 가드 통과.
+  // 운영자만 이 action 을 트리거하고 cohort_id 를 결정하므로 위조 불가.
+  cohort_id?: string | null;
 }): Promise<InviteUserResult> {
   await assertProgramAdmin("fan-to-pro");
   const result = await inviteUser(input);
@@ -54,9 +57,11 @@ export async function inviteStudentsBatchAction(input: {
   return result;
 }
 
-export async function inviteInstructorsBatchAction(): Promise<BatchInstructorInviteResult> {
+export async function inviteInstructorsBatchAction(input: {
+  cohort_id: string;
+}): Promise<BatchInstructorInviteResult> {
   await assertProgramAdmin("fan-to-pro");
-  const result = await inviteInstructorsBatch();
+  const result = await inviteInstructorsBatch(input);
   if (result.status === "ok") {
     revalidatePath(`${NEW_BASE}/instructors`);
   }

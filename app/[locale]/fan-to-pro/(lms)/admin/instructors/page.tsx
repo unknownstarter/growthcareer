@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { assertProgramAdmin } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
 import { fetchInstructorsWithProfiles } from "@/src/programs/fan-to-pro/application/queries/lms/fetch-instructors-with-profiles";
 import { fetchAllCompanies } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/company-repository";
+import { fetchAllCohorts } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-repository";
 import { InstructorsDashboard } from "@/src/programs/fan-to-pro/interface/components/lms/admin/instructors-dashboard";
 import { PageGuideBot } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guide-bot";
 import { PAGE_GUIDES } from "@/src/programs/fan-to-pro/interface/components/lms/admin/page-guides";
@@ -26,10 +27,12 @@ export default async function FanToProAdminInstructorsPage() {
     data: [],
   };
   let companies: Awaited<ReturnType<typeof fetchAllCompanies>> = [];
+  let cohorts: Awaited<ReturnType<typeof fetchAllCohorts>> = [];
   let bootError: string | null = null;
   try {
     instructors = await fetchInstructorsWithProfiles();
     companies = await fetchAllCompanies();
+    cohorts = await fetchAllCohorts();
   } catch (err) {
     bootError = err instanceof Error ? err.message : "unknown";
   }
@@ -58,6 +61,7 @@ export default async function FanToProAdminInstructorsPage() {
       <InstructorsDashboard
         instructors={instructors.data}
         companies={companies.map((c) => ({ id: c.id, name: c.name }))}
+        cohorts={cohorts.map((c) => ({ id: c.id, name: c.name }))}
       />
     </PageContainer>
   );

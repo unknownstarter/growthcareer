@@ -85,6 +85,7 @@ export function StudentsDashboard({ cohort_id, cohort_name, students }: Props) {
         role: "student",
         student_id: s.student_id,
         phone: s.phone,
+        cohort_id,
       });
       if (result.status === "error") {
         setFeedback(`오류: ${result.error}`);
