@@ -107,7 +107,7 @@ export function StudentSessionsList({
           <p className="text-xs text-[var(--muted-foreground)]">
             {isEn
               ? "Your cohort schedule will appear here once sessions are created."
-              : "기수 일정이 등록되면 이 페이지에서 확인할 수 있어요."}
+              : "기수 일정이 등록되면 이 페이지에서 확인할 수 있어요"}
           </p>
         </Card>
       ) : (

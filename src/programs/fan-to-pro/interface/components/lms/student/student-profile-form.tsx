@@ -123,7 +123,7 @@ export function StudentProfileForm({
         );
         return;
       }
-      setFeedback(isEn ? "Saved." : "저장 완료.");
+      setFeedback(isEn ? "Saved." : "저장 완료");
       router.refresh();
     });
   }
@@ -137,7 +137,7 @@ export function StudentProfileForm({
         <CardDescription>
           {isEn
             ? "We use this for certificates, official documents, and instructor introductions."
-            : "수료증 / 공식 서류 / 강사 소개 시 사용됩니다."}
+            : "수료증 / 공식 서류 / 강사 소개 시 사용됩니다"}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -169,12 +169,12 @@ export function StudentProfileForm({
             <p className="text-xs text-[var(--muted-foreground)] leading-relaxed">
               {isEn
                 ? "Optional. Used in operator dashboard, attendance, and instructor introductions. Not shown publicly."
-                : "선택 사항. 운영자 대시보드 / 출석 체크 / 강사 소개 시 사용해요. 외부에는 공개되지 않습니다."}
+                : "선택 사항. 운영자 대시보드 / 출석 체크 / 강사 소개 시 사용해요. 외부에는 공개되지 않습니다"}
             </p>
             <p className="text-[11px] text-[var(--muted-foreground)] leading-relaxed">
               {isEn
                 ? "Upload only square-style headshots. Other photos auto-fit but corners may look awkward."
-                : "정사각형 프로필 사진을 업로드하면 가장 깔끔해요. 다른 비율도 자동으로 맞춰지지만 모서리가 잘릴 수 있습니다."}
+                : "정사각형 프로필 사진을 업로드하면 가장 깔끔해요. 다른 비율도 자동으로 맞춰지지만 모서리가 잘릴 수 있습니다"}
             </p>
           </div>
         </div>
@@ -209,7 +209,7 @@ export function StudentProfileForm({
               <p className="text-[11px] text-[var(--muted-foreground)]">
                 {isEn
                   ? "Auto-filled from signup form."
-                  : "신청서 원본의 이름으로 자동 채워져요."}
+                  : "신청서 원본의 이름으로 자동 채워져요"}
               </p>
             </div>
           </div>
@@ -353,7 +353,7 @@ export function StudentProfileForm({
             <p className="text-[11px] text-[var(--muted-foreground)]">
               {isEn
                 ? "Link 1 piece. Behance / Notion / personal site / Instagram all OK."
-                : "링크 1개. Behance / Notion / 개인 사이트 / Instagram 다 OK."}
+                : "링크 1개. Behance / Notion / 개인 사이트 / Instagram 다 OK"}
             </p>
           </div>
 

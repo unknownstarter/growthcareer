@@ -27,7 +27,7 @@ export function SubmissionForm({
     const body = String(formData.get("body") ?? "").trim();
     const file_path = String(formData.get("file_path") ?? "").trim();
     if (!body && !file_path) {
-      setFeedback("텍스트 또는 파일 path 중 하나를 입력하세요.");
+      setFeedback("텍스트 또는 파일 path 중 하나를 입력하세요");
       return;
     }
     setFeedback(null);
@@ -41,7 +41,7 @@ export function SubmissionForm({
         setFeedback(`오류: ${result.error}`);
         return;
       }
-      setFeedback(`v${result.version} 제출 완료.`);
+      setFeedback(`v${result.version} 제출 완료`);
       router.refresh();
     });
   }
@@ -50,7 +50,7 @@ export function SubmissionForm({
     <form action={onSubmit} className="space-y-4">
       <div className="space-y-1">
         <Label htmlFor="body" className="text-xs">텍스트 답변</Label>
-        <Textarea id="body" name="body" rows={8} placeholder="답안을 작성하세요." />
+        <Textarea id="body" name="body" rows={8} placeholder="답안을 작성하세요" />
       </div>
       <div className="space-y-1">
         <Label htmlFor="file_path" className="text-xs">파일 path (선택)</Label>
@@ -61,7 +61,7 @@ export function SubmissionForm({
         />
         <p className="text-xs text-[var(--muted-foreground)]">
           Storage 업로드 흐름은 Wave 4 에서 추가됩니다. 현재는 운영자에게
-          카톡으로 파일 전달 후 path 입력.
+          카톡으로 파일 전달 후 path 입력
         </p>
       </div>
       {feedback ? (

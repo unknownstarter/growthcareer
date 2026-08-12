@@ -57,7 +57,7 @@ export function ReferralCodeCard({
         <CardDescription className="text-xs">
           {isEn
             ? "Share this code with friends. When they apply, our team applies a discount manually."
-            : "친구에게 이 코드를 공유하세요. 친구가 신청 시 운영진이 할인을 적용해드려요."}
+            : "친구에게 이 코드를 공유하세요. 친구가 신청 시 운영진이 할인을 적용해드려요"}
         </CardDescription>
       </CardHeader>
       <CardContent>

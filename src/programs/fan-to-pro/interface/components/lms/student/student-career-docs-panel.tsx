@@ -111,7 +111,7 @@ const COPY: Record<"ko" | "en", CopyDict> = {
   ko: {
     title: "이력서 / 자기소개서 / 포트폴리오",
     description:
-      "원하는 형식 (PDF 파일 또는 외부 링크) 으로 등록해주세요. 운영진과 강사가 첨삭 시 참고합니다.",
+      "원하는 형식 (PDF 파일 또는 외부 링크) 으로 등록해주세요. 운영진과 강사가 첨삭 시 참고합니다",
     upload: "파일 업로드",
     addLink: "외부 링크 등록",
     download: "다운로드",
@@ -119,7 +119,7 @@ const COPY: Record<"ko" | "en", CopyDict> = {
     replace: "교체",
     remove: "삭제",
     removeConfirm: (label) =>
-      `${label} 을(를) 삭제할까요. 다시 등록할 수 있습니다.`,
+      `${label} 을(를) 삭제할까요. 다시 등록할 수 있습니다`,
     empty: "아직 등록되지 않음",
     updatedAt: "마지막 수정",
   },
@@ -243,7 +243,7 @@ export function StudentCareerDocsPanel({
           <p className="pt-2 text-[11px] text-[var(--muted-foreground)] leading-relaxed">
             {isEn
               ? "Operator upload: file or link is saved on behalf of the student. Visible to the student."
-              : "운영자 대리 업로드. 학생 본인 페이지에도 동일하게 표시됩니다."}
+              : "운영자 대리 업로드. 학생 본인 페이지에도 동일하게 표시됩니다"}
           </p>
         ) : null}
       </CardContent>
@@ -314,7 +314,7 @@ function DocRow({
             <DocSummary doc={doc} locale={locale} updatedLabel={t.updatedAt} />
           ) : (
             <p className="mt-1 text-xs text-[var(--muted-foreground)]">
-              {t.empty}. {mimeHint}.
+              {t.empty}. {mimeHint}
             </p>
           )}
         </div>

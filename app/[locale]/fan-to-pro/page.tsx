@@ -80,7 +80,7 @@ const COPY: Record<"ko" | "en", PageCopy> = {
     heroEyebrow: "Fan to Pro",
     heroH1: { l1: "좋아하던 K컬처,", l2: "이제 현장에서 만듭니다" },
     heroSub:
-      "Fan to Pro는 K컬처 산업의 직무 교육 프로그램입니다. 무대 뒤에서 일이 실제로 어떻게 돌아가는지, 현장에서 뛰는 사람들에게 직접 배웁니다.",
+      "Fan to Pro는 K컬처 산업의 직무 교육 프로그램입니다. 무대 뒤에서 일이 실제로 어떻게 돌아가는지, 현장에서 뛰는 사람들에게 직접 배웁니다",
     heroCta: "2기 모집 보기",
     heroAlt: "K팝 콘서트 무대",
     philLabel: "Fan to Pro",
@@ -108,7 +108,7 @@ const COPY: Record<"ko" | "en", PageCopy> = {
     proofLabel: "1기 흔적",
     proofTitle: { pre: "8개국이 함께 겪은 ", hi: "진짜 현장" },
     proofBody:
-      "1기는 8개국에서 온 수강생과 8회 16시간을 함께했고, 모두가 실제 공연 현장을 경험했습니다.",
+      "1기는 8개국에서 온 수강생과 8회 16시간을 함께했고, 모두가 실제 공연 현장을 경험했습니다",
     gallery: [
       { src: IMG("IMG_6076.jpg"), alt: "Fan to Pro 1기 현장 1" },
       { src: IMG("IMG_6122.jpg"), alt: "Fan to Pro 1기 현장 2" },
@@ -136,7 +136,7 @@ const COPY: Record<"ko" | "en", PageCopy> = {
     ],
     listLabel: "기수",
     listTitle: { pre: "모집 중인 기수와 ", hi: "지나온 기수" },
-    listBody: "지금 모집 중인 기수와 이미 마친 기수를 함께 봅니다.",
+    listBody: "지금 모집 중인 기수와 이미 마친 기수를 함께 봅니다",
     cohorts: [
       {
         edition: "2기",

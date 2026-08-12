@@ -87,7 +87,7 @@ export function CommunityComments({
       <ul className="mt-4 space-y-3">
         {optimistic.length === 0 ? (
           <li className="rounded-[var(--radius)] border border-dashed border-[var(--border)] px-4 py-6 text-center text-sm text-[var(--muted-foreground)]">
-            첫 댓글을 남겨보세요.
+            첫 댓글을 남겨보세요
           </li>
         ) : (
           optimistic.map((c, i) => (

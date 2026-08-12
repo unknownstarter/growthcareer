@@ -143,14 +143,14 @@ const COPY: Record<"ko" | "en", PageCopy> = {
     heroH1: { l1: "한국에서 커리어를 시작하는", l2: "가장 확실한 길" },
     heroImgAlt: "Fan to Pro 1기 현장",
     heroSub:
-      "K엔터 실무 교육 Fan to Pro에서 시작해, 비자부터 취업까지 한국 생활에 필요한 정보를 공식 자료로 한곳에 모았습니다.",
+      "K엔터 실무 교육 Fan to Pro에서 시작해, 비자부터 취업까지 한국 생활에 필요한 정보를 공식 자료로 한곳에 모았습니다",
     heroCtaPrimary: "지금 모집 중인 교육",
     heroCtaSecondary: "인사이트 둘러보기",
 
     eduLabel: "Fan to Pro",
     eduTitle: { pre: "좋아하는 마음을 ", hi: "실무 경력" },
     eduDesc:
-      "Fan to Pro는 K컬처 도메인별 실무 교육 브랜드입니다. 지금은 K엔터로 시작해, 하나씩 넓혀갑니다.",
+      "Fan to Pro는 K컬처 도메인별 실무 교육 브랜드입니다. 지금은 K엔터로 시작해, 하나씩 넓혀갑니다",
     eduCohortTag: "지금 모집 중",
     eduCohortTitle: { pre: "Fan to Pro 엔터 ", hi: "2기" },
     eduCohortCta: "2기 알아보기",
@@ -187,7 +187,7 @@ const COPY: Record<"ko" | "en", PageCopy> = {
     reviewsLabel: "1기 후기",
     reviewsTitle: { pre: "좋았던 것도 ", hi: "아쉬웠던 것도" },
     reviewsDesc:
-      "8개국에서 온 1기 수강생들이 4주 과정을 마쳤습니다. 꾸미지 않은 실제 후기입니다.",
+      "8개국에서 온 1기 수강생들이 4주 과정을 마쳤습니다. 꾸미지 않은 실제 후기입니다",
     reviews: [
       { name: "다비", origin: "베트남", liked: "음향 수업이 제일 좋았어요. 공연 하나가 무대에 오르기까지 뒤에서 이렇게 많은 걸 준비하는지 그때 처음 알았거든요", wish: "실습이 조금만 더 많았으면 싶어요" },
       { name: "Martina", origin: "이탈리아", liked: "혼자였으면 절대 못 만났을 업계 사람들한테 직접 배우고 궁금한 걸 바로바로 물어본 게 제일 컸어요. 이력서랑 포트폴리오 피드백을 받고 나서야 용기 내서 지원을 시작했고요", wish: "너무 좋아서 오히려 아쉬웠어요. 콘서트 기획이나 글로벌 투어는 더 깊게 파보고 싶었거든요" },
@@ -204,7 +204,7 @@ const COPY: Record<"ko" | "en", PageCopy> = {
     visionLabel: "비전",
     visionTitle: { pre: "교육에서 끝나지 않고 ", hi: "실제 커리어 기회" },
     visionDesc:
-      "좋아하는 마음으로 한국에 온 사람들이 실무를 배우고, 경력을 쌓고, 다음 기회로 이어지는 길. Growth Career가 그 다리를 놓아갑니다.",
+      "좋아하는 마음으로 한국에 온 사람들이 실무를 배우고, 경력을 쌓고, 다음 기회로 이어지는 길. Growth Career가 그 다리를 놓아갑니다",
 
     menuCommunity: "커뮤니티",
   },

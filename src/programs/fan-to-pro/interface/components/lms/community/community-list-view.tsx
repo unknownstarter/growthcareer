@@ -31,7 +31,7 @@ export function CommunityListView({
             커뮤니티를 불러오지 못했어요
           </h3>
           <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-            잠시 후 다시 시도해주세요.
+            잠시 후 다시 시도해주세요
           </p>
         </div>
       </PageContainer>
@@ -44,7 +44,7 @@ export function CommunityListView({
     <PageContainer>
       <PageHeader
         title="커뮤니티"
-        description="같은 기수 동료들과 자유롭게 이야기 나누는 공간."
+        description="같은 기수 동료들과 자유롭게 이야기 나누는 공간"
         action={<CommunityWriteForm mode="create" detailBase={base} />}
       />
 
@@ -57,7 +57,7 @@ export function CommunityListView({
             아직 글이 없어요
           </h3>
           <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-            첫 글을 남겨보세요. 소소한 근황도 좋고, 궁금한 점도 좋아요.
+            첫 글을 남겨보세요. 소소한 근황도 좋고, 궁금한 점도 좋아요
           </p>
           <div className="mt-5 flex justify-center">
             <CommunityWriteForm

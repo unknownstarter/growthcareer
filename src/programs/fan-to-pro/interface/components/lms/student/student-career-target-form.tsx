@@ -110,7 +110,7 @@ export function StudentCareerTargetForm({
         );
         return;
       }
-      setFeedback(isEn ? "Saved." : "저장 완료.");
+      setFeedback(isEn ? "Saved." : "저장 완료");
       router.refresh();
     });
   }
@@ -124,7 +124,7 @@ export function StudentCareerTargetForm({
         <CardDescription>
           {isEn
             ? "Tell us which role and companies you are aiming for so we can match opportunities."
-            : "운영진이 적합한 회사 / 포지션을 추천할 때 활용해요."}
+            : "운영진이 적합한 회사 / 포지션을 추천할 때 활용해요"}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -174,7 +174,7 @@ export function StudentCareerTargetForm({
               <p className="text-[11px] text-[var(--muted-foreground)]">
                 {isEn
                   ? "Auto-filled from docx import when enum does not match. Free-form text preserved."
-                  : "docx import 시 enum 매칭 실패하면 원본 표기가 그대로 저장돼요. 직접 추가/수정 가능."}
+                  : "docx import 시 enum 매칭 실패하면 원본 표기가 그대로 저장돼요. 직접 추가/수정 가능"}
               </p>
             </div>
             <div className="space-y-1.5">
@@ -267,7 +267,7 @@ export function StudentCareerTargetForm({
               placeholder={
                 isEn
                   ? "What kind of work do you want to do, what experiences do you have, what's your strength?"
-                  : "어떤 일을 하고 싶고, 어떤 경험이 있고, 강점이 무엇인지 짧게 적어주세요."
+                  : "어떤 일을 하고 싶고, 어떤 경험이 있고, 강점이 무엇인지 짧게 적어주세요"
               }
             />
             <p className="text-xs text-[var(--muted-foreground)] text-right">

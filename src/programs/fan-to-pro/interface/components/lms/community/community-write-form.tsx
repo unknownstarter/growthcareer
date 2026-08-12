@@ -61,7 +61,7 @@ export function CommunityWriteForm(props: Props) {
     const title = String(formData.get("title") ?? "").trim();
     const body = String(formData.get("body") ?? "").trim();
     if (body.length === 0) {
-      setError("본문을 입력해주세요.");
+      setError("본문을 입력해주세요");
       return;
     }
 
@@ -123,7 +123,7 @@ export function CommunityWriteForm(props: Props) {
           <DialogTitle>{isEdit ? "글 수정" : "새 글 쓰기"}</DialogTitle>
           <DialogDescription>
             같은 기수 동료들과 나누고 싶은 이야기를 남겨보세요. 제목은 선택,
-            내용은 필수입니다.
+            내용은 필수입니다
           </DialogDescription>
         </DialogHeader>
         <form action={onSubmit} className="space-y-4">
@@ -183,12 +183,12 @@ export function CommunityWriteForm(props: Props) {
 function errorMessage(code: string): string {
   switch (code) {
     case "unauthenticated":
-      return "로그인이 필요합니다.";
+      return "로그인이 필요합니다";
     case "invalidInput":
-      return "입력값을 확인해주세요.";
+      return "입력값을 확인해주세요";
     case "programUnavailable":
-      return "커뮤니티를 사용할 수 없습니다. 잠시 후 다시 시도해주세요.";
+      return "커뮤니티를 사용할 수 없습니다. 잠시 후 다시 시도해주세요";
     default:
-      return "저장에 실패했어요. 잠시 후 다시 시도해주세요.";
+      return "저장에 실패했어요. 잠시 후 다시 시도해주세요";
   }
 }

@@ -40,7 +40,7 @@ export function CommunityPostDetail({
   const [error, setError] = React.useState<string | null>(null);
 
   function onDelete() {
-    if (!window.confirm("이 글을 삭제할까요? 되돌릴 수 없어요.")) return;
+    if (!window.confirm("이 글을 삭제할까요? 되돌릴 수 없어요")) return;
     setError(null);
     startTransition(async () => {
       const result = await softDeletePostAction({ postId: post.id });
@@ -68,7 +68,7 @@ export function CommunityPostDetail({
   }
 
   function onHide() {
-    if (!window.confirm("이 글을 숨길까요? 학생에게 더 이상 보이지 않아요.")) {
+    if (!window.confirm("이 글을 숨길까요? 학생에게 더 이상 보이지 않아요")) {
       return;
     }
     setError(null);

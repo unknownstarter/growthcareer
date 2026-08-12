@@ -24,7 +24,7 @@ const TRIGGER_TONE = {
 const MODAL_COPY = {
   ko: {
     title: "커뮤니티",
-    body: "커뮤니티는 수강생에게만 공개됩니다.",
+    body: "커뮤니티는 수강생에게만 공개됩니다",
     ok: "확인",
   },
   en: {

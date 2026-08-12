@@ -101,7 +101,7 @@ export function StudentMaterialsPanel({ initialMaterials, locale }: Props) {
           <p className="text-xs text-[var(--muted-foreground)]">
             {isEn
               ? "Your instructor will upload session materials soon."
-              : "강의가 시작되면 강사님이 자료를 업로드합니다."}
+              : "강의가 시작되면 강사님이 자료를 업로드합니다"}
           </p>
         </CardContent>
       </Card>

@@ -192,7 +192,7 @@ export function StudentSessionDetailView({ detail, cohortSlug, locale }: Props) 
             <p className="text-sm text-[var(--muted-foreground)]">
               {isEn
                 ? "Session details will be added by your instructor."
-                : "강사님이 강의 내용을 추가하면 이곳에 표시돼요."}
+                : "강사님이 강의 내용을 추가하면 이곳에 표시돼요"}
             </p>
           )}
         </CardContent>
@@ -268,10 +268,10 @@ function AttendanceDisplay({
             {isFuture
               ? isEn
                 ? "Your attendance will appear here after the session."
-                : "회차가 끝나면 강사님이 출결을 기록해주세요."
+                : "회차가 끝나면 강사님이 출결을 기록해주세요"
               : isEn
                 ? "If you attended, please contact your instructor."
-                : "출석하셨다면 강사님께 문의해주세요."}
+                : "출석하셨다면 강사님께 문의해주세요"}
           </p>
         </div>
       </div>
@@ -366,7 +366,7 @@ function MaterialsSection({
         <p className="text-xs text-[var(--muted-foreground)]">
           {isEn
             ? "Your instructor will upload session materials soon."
-            : "강사님이 자료를 업로드하면 이곳에 표시돼요."}
+            : "강사님이 자료를 업로드하면 이곳에 표시돼요"}
         </p>
       </div>
     );

@@ -93,7 +93,7 @@ export function StudentResumeItemsEditor({
     const credentialUrl = String(formData.get("credential_url") ?? "").trim();
 
     if (!title) {
-      setError(isEn ? "Title is required." : "제목은 필수입니다.");
+      setError(isEn ? "Title is required." : "제목은 필수입니다");
       return;
     }
 
@@ -116,7 +116,7 @@ export function StudentResumeItemsEditor({
         );
         return;
       }
-      setFeedback(isEn ? "Added." : "추가 완료.");
+      setFeedback(isEn ? "Added." : "추가 완료");
       toggleEdit(`new:${type}`, false);
       router.refresh();
     });
@@ -133,7 +133,7 @@ export function StudentResumeItemsEditor({
     const credentialUrl = String(formData.get("credential_url") ?? "").trim();
 
     if (!title) {
-      setError(isEn ? "Title is required." : "제목은 필수입니다.");
+      setError(isEn ? "Title is required." : "제목은 필수입니다");
       return;
     }
 
@@ -156,7 +156,7 @@ export function StudentResumeItemsEditor({
         );
         return;
       }
-      setFeedback(isEn ? "Saved." : "저장 완료.");
+      setFeedback(isEn ? "Saved." : "저장 완료");
       toggleEdit(item.id, false);
       router.refresh();
     });
@@ -167,7 +167,7 @@ export function StudentResumeItemsEditor({
       !confirm(
         isEn
           ? `Delete "${item.title}"?`
-          : `"${item.title}" 항목을 삭제할까요.`,
+          : `"${item.title}" 항목을 삭제할까요`,
       )
     ) {
       return;
@@ -187,7 +187,7 @@ export function StudentResumeItemsEditor({
         );
         return;
       }
-      setFeedback(isEn ? "Deleted." : "삭제 완료.");
+      setFeedback(isEn ? "Deleted." : "삭제 완료");
       router.refresh();
     });
   }
@@ -201,7 +201,7 @@ export function StudentResumeItemsEditor({
         <CardDescription>
           {isEn
             ? "Add education, experience, certifications, awards, languages, projects, activities, and skills."
-            : "학력, 경력, 자격증, 수상, 어학, 프로젝트, 기타활동, 활용능력을 추가합니다."}
+            : "학력, 경력, 자격증, 수상, 어학, 프로젝트, 기타활동, 활용능력을 추가합니다"}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -265,7 +265,7 @@ export function StudentResumeItemsEditor({
                   <p className="text-xs text-[var(--muted-foreground)] italic">
                     {isEn
                       ? "No entries yet."
-                      : "아직 등록된 항목이 없습니다."}
+                      : "아직 등록된 항목이 없습니다"}
                   </p>
                 ) : null}
 
@@ -462,7 +462,7 @@ function ResumeItemForm({
           placeholder={
             isEn
               ? "Key responsibilities, achievements, what you learned."
-              : "주요 업무 / 성과 / 배운 점."
+              : "주요 업무 / 성과 / 배운 점"
           }
         />
       </div>
