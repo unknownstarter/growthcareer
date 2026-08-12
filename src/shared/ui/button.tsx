@@ -17,7 +17,8 @@ export type ButtonVariant =
   | "pixel"
   | "pixel-ghost";
 
-const BASE = "inline-flex items-center justify-center gap-1.5 font-bold";
+const BASE =
+  "inline-flex items-center justify-center gap-1.5 whitespace-nowrap font-bold";
 
 const VARIANT: Record<ButtonVariant, string> = {
   "pink-solid":

@@ -143,7 +143,7 @@ export default async function InsightDetail({
           {/* 뒤로 */}
           <a
             href={`${prefix}/insight`}
-            className="group inline-flex items-center gap-1.5 text-[#8B95A1] text-sm transition-colors duration-150 hover:text-brand-pink"
+            className="group flex w-fit items-center gap-1.5 text-[#8B95A1] text-sm transition-colors duration-150 hover:text-brand-pink"
           >
             <span aria-hidden className="transition-transform duration-150 group-hover:-translate-x-0.5">
               ←

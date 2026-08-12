@@ -128,7 +128,8 @@ export async function inviteUser(input: unknown): Promise<InviteUserResult> {
   // 2b) 레퍼럴 코드 부여 (미부여 시에만, 멱등).
   // super_admin(GCFTP0 노아)은 마이그레이션에서 고정 발급 → 여기서 건드리지 않음.
   // instructor 는 instructors 테이블 코드 부여 (공유 주체 = 강사 마스터 레코드).
-  // student invite 는 promote 시점에 이미 부여됨 → student_id 있어도 재발급 X.
+  // student invite 는 promote 시점에 이미 부여됨. student_id 있으면 멱등 재확인만
+  // (이미 있으면 no-op, promote 누락분 방어) → 중복 발급 없음.
   // 실패해도 invite 자체는 성공 처리 (코드는 추후 재부여 가능, 비필수).
   try {
     // 본인 코드의 소유 주체 = person 레코드(students / instructors). user_profiles

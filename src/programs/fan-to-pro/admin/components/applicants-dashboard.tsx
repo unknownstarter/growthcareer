@@ -19,7 +19,7 @@ import {
 } from "@/src/programs/fan-to-pro/application/admin-actions";
 import type { BatchEnrollResult } from "@/src/programs/fan-to-pro/domain/application";
 import { pollApplicants } from "@/src/programs/fan-to-pro/application/polling-actions";
-import { resolveReferrersForCodes } from "@/src/programs/fan-to-pro/application/referral-actions";
+import { resolveReferrersForCodes } from "@/src/programs/fan-to-pro/interface/server-actions/admin/lms-referral-actions";
 import type { Referrer } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/referral-repository";
 import {
   APPLICANT_STATUSES,

@@ -12,7 +12,7 @@
  * 20종이면 20회 조회. 결과를 code -> Referrer map 으로 반환 → 클라이언트가 각
  * row 의 referredByCode 로 lookup.
  */
-import { assertAdmin } from "@/src/programs/fan-to-pro/admin/role";
+import { assertAdmin } from "@/src/programs/fan-to-pro/infrastructure/auth/admin-role";
 import {
   resolveReferrerByCode,
   type Referrer,
@@ -33,9 +33,9 @@ export type ReferrerLookupResult =
 export async function resolveReferrersForCodes(
   codes: string[],
 ): Promise<ReferrerLookupResult> {
-  await assertAdmin();
-
   try {
+    await assertAdmin();
+
     const distinct = Array.from(
       new Set(
         codes

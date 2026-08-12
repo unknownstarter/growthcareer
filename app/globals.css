@@ -63,9 +63,10 @@
     word-break: keep-all;
     /* 컨테이너보다 긴 영문 단어/URL은 어절 경계에서만 끊는다. `anywhere`
        는 영문 단어를 글자 단위로 쪼개 가독성을 망가뜨리므로 `break-word`
-       정도로만 허용한다. URL 등 진짜 긴 토큰은 hyphens: auto 와 함께 동작. */
+       정도로만 허용한다. hyphens: auto 는 일반 영문 단어까지 중간에서 끊어
+       (de-buted, pro-duction 등) 기계번역/AI 티를 내므로 쓰지 않는다. 긴 토큰은
+       overflow-wrap 만으로 충분. */
     overflow-wrap: break-word;
-    hyphens: auto;
   }
 
   /* Display 사이즈 헤드라인은 컨테이너에 맞춰 줄바꿈하되, 마지막 줄이 외톨이로 남지 않도록 균형 잡힌 줄바꿈. */
