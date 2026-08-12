@@ -1,0 +1,38 @@
+/* 모바일 드로어 애니메이션 (§6.7). prefers-reduced-motion 존중.
+   globals.css / animate 플러그인 미의존 — 로컬 keyframes 로 자립.
+   §6.8: 컬러 그라데이션 / glow 없음. backdrop 은 단색 검정 alpha 딤. */
+
+.backdrop {
+  animation: navFade 0.18s ease-out;
+}
+
+.panel {
+  animation: navSlide 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes navFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes navSlide {
+  from {
+    transform: translateX(16px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backdrop,
+  .panel {
+    animation: none;
+  }
+}

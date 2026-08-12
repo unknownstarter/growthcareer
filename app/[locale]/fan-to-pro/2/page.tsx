@@ -419,7 +419,7 @@ export default async function FanToProPage({
                 <div>
                   <p className="text-fg-subtle text-xs">{c.courses.fee}</p>
                   <p className="mt-1 flex items-baseline gap-2">
-                    <span className={`${styles.mono} text-fg-subtle text-xs line-through`}>₩{opt.listPrice.toLocaleString("en-US")}</span>
+                    <span className={`${styles.mono} text-fg-muted text-xs line-through`}>₩{opt.listPrice.toLocaleString("en-US")}</span>
                     <span className={`${styles.pixelFont} text-fg text-lg`}>₩{opt.price.toLocaleString("en-US")}</span>
                   </p>
                 </div>

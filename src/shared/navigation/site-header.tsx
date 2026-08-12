@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { LocaleSwitch } from "./locale-switch";
+import { MobileNav } from "./mobile-nav";
 import { NavLink } from "./nav-link";
 
 /**
@@ -81,9 +82,19 @@ export function SiteHeader({
             ))}
           </ul>
         </div>
-        <div className="ml-auto flex items-center gap-5">
+        {/* 데스크탑 우측 그룹 — 무변경(md 이상). 모바일에선 드로어로 이동. */}
+        <div className="ml-auto hidden items-center gap-5 md:flex">
           {showLocaleSwitch ? <LocaleSwitch variant={t.localeVariant} /> : null}
           {actions}
+        </div>
+        {/* 모바일 햄버거 + 드로어 (additive, md 미만 전용). */}
+        <div className="ml-auto md:hidden">
+          <MobileNav
+            menu={menu}
+            actions={actions}
+            showLocaleSwitch={showLocaleSwitch}
+            variant={variant}
+          />
         </div>
       </nav>
       {below}

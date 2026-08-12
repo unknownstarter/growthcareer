@@ -360,7 +360,7 @@ export default async function GcHomePage({
         {/* 2기 하이라이트 */}
         <Card variant="clean" href={`${prefix}/fan-to-pro/2`} className="group mt-9 block overflow-hidden">
           <div className="grid gap-0 sm:grid-cols-[1fr_320px]">
-            <div className="p-8 sm:p-10">
+            <div className="flex flex-col justify-center p-8 sm:p-10">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-pink/10 px-3 py-1 font-bold text-sm text-brand-pink">
                 <span className="inline-block h-1.5 w-1.5 rounded-full bg-brand-pink" /> {t.eduCohortTag}
               </span>
@@ -526,7 +526,9 @@ export default async function GcHomePage({
 
           <div className="mt-12 grid gap-4 lg:grid-cols-[1.6fr_1fr]">
             {/* 피처 인용 — 가장 강력한 후기(Martina) 크게 */}
-            <Card variant="clean" as="figure" className="flex flex-col justify-center p-8 sm:p-10">
+            <Card variant="clean" as="figure" className="relative flex flex-col justify-center overflow-hidden p-8 pl-10 sm:p-10 sm:pl-12">
+              {/* 대표 인용 표식 — 좌측 핑크 solid accent bar (§6.8) */}
+              <span aria-hidden className="absolute inset-y-8 left-0 w-1 rounded-full bg-brand-pink sm:inset-y-10" />
               <blockquote className="text-[#191F28] text-[19px] leading-relaxed sm:text-[23px]">{t.reviews[1].liked}</blockquote>
               <figcaption className="mt-6">
                 <span className="font-bold text-[#191F28]">{t.reviews[1].name}</span>
