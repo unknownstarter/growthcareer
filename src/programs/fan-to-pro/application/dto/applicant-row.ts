@@ -87,6 +87,10 @@ export type ApplicantRow = {
   // B0018 Wave 1 T4 - 발송 카운트 chip / 발송 이력 drawer 트리거.
   messageCount: number;
 
+  // 레퍼럴 — 신청 시 입력한 추천인의 본인 코드. 없으면 null. 추천인 실명은
+  // 이 payload 에 담지 않음 (준-PII). admin 전용 server action 으로 별도 조회.
+  referredByCode: string | null;
+
   // B0041 - kind 별 마지막 발송 시각 (messages_log audit 요약).
   // 운영자 row 에 "가이드 보냄" 같은 chip 노출용. 발송 안 됐으면 null.
   messageLastSentByKind: {

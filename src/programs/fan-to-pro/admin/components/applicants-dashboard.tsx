@@ -19,6 +19,8 @@ import {
 } from "@/src/programs/fan-to-pro/application/admin-actions";
 import type { BatchEnrollResult } from "@/src/programs/fan-to-pro/domain/application";
 import { pollApplicants } from "@/src/programs/fan-to-pro/application/polling-actions";
+import { resolveReferrersForCodes } from "@/src/programs/fan-to-pro/application/referral-actions";
+import type { Referrer } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/referral-repository";
 import {
   APPLICANT_STATUSES,
   computeStats,
@@ -180,6 +182,33 @@ function DashboardInner({
     const id = window.setInterval(() => setNowTick(Date.now()), 1_000);
     return () => window.clearInterval(id);
   }, []);
+
+  // 레퍼럴 추천인 map. referred_by_code -> 추천인 (실명 + kind). 실명은 준-PII 라
+  // admin 전용 server action (assertAdmin 첫 줄) 으로 조회. distinct 코드만 배치
+  // 조회해 N+1 회피. rows 변경 시 새로 입력된 코드가 있으면 다시 조회.
+  const [referrers, setReferrers] = useState<Record<string, Referrer>>({});
+  const referralCodesKey = useMemo(() => {
+    const set = new Set<string>();
+    for (const row of rows) {
+      if (row.referredByCode) set.add(row.referredByCode.trim().toUpperCase());
+    }
+    return Array.from(set).sort().join(",");
+  }, [rows]);
+  useEffect(() => {
+    if (referralCodesKey.length === 0) {
+      setReferrers({});
+      return;
+    }
+    let cancelled = false;
+    void (async () => {
+      const result = await resolveReferrersForCodes(referralCodesKey.split(","));
+      if (cancelled) return;
+      if (result.status === "ok") setReferrers(result.referrers);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [referralCodesKey]);
 
   // pendingRows ↔ rows diff. 4 종 변경 cnt 합산.
   // - 신규: pending 에는 있고 rows 에는 없는 id
@@ -918,6 +947,10 @@ function DashboardInner({
                           {tint.label}
                         </span>
                       ) : null}
+                      <ReferralNote
+                        code={row.referredByCode}
+                        referrers={referrers}
+                      />
                     </td>
                     <td className="px-3 py-2 align-top text-fg whitespace-nowrap">
                       {formatCourseLabel(row)}
@@ -1089,6 +1122,17 @@ function DashboardInner({
                       ? `${formatDate(row.paymentConfirmedAt)}${row.paidAmountKrw ? ` / ${row.paidAmountKrw.toLocaleString()}원` : ""}`
                       : "-"}
                   </dd>
+                  {row.referredByCode ? (
+                    <>
+                      <dt>추천</dt>
+                      <dd className="text-fg">
+                        <ReferralNote
+                          code={row.referredByCode}
+                          referrers={referrers}
+                        />
+                      </dd>
+                    </>
+                  ) : null}
                 </dl>
                 {!readOnly && (
                   <div className="mt-3 flex flex-wrap gap-1.5 border-t border-border/60 pt-2.5">
@@ -1468,6 +1512,51 @@ function LastFetchedChip({
       <span>갱신</span>
       <span className="text-fg">{label}</span>
     </span>
+  );
+}
+
+const REFERRER_KIND_LABEL: Record<Referrer["kind"], string> = {
+  student: "수강생",
+  instructor: "강사",
+  user_profile: "운영",
+};
+
+/**
+ * 레퍼럴 표시 — 신청자가 입력한 추천 코드 + 추천인 실명/kind.
+ * referredByCode 없으면 아무것도 렌더 안 함 (additive, 코드 없으면 표시 X).
+ * 추천인 resolve 전(로딩) 또는 매칭 없는 코드면 코드만 노출.
+ */
+function ReferralNote({
+  code,
+  referrers,
+}: {
+  code: string | null;
+  referrers: Record<string, Referrer>;
+}) {
+  if (!code) return null;
+  const normalized = code.trim().toUpperCase();
+  const referrer = referrers[normalized];
+  return (
+    <div
+      className="mt-1 inline-flex flex-wrap items-center gap-1 text-[10px] font-normal text-fg/70"
+      title={
+        referrer
+          ? `추천 코드 ${normalized} (추천인 ${referrer.name} / ${REFERRER_KIND_LABEL[referrer.kind]})`
+          : `추천 코드 ${normalized}`
+      }
+    >
+      <span
+        className="inline-flex items-center border border-violet-400/50 bg-violet-500/10 px-1.5 py-0.5 font-black uppercase text-violet-200"
+        style={{ letterSpacing: "0.12em" }}
+      >
+        추천 {normalized}
+      </span>
+      {referrer ? (
+        <span className="text-fg/80">
+          {referrer.name || "이름 미상"} / {REFERRER_KIND_LABEL[referrer.kind]}
+        </span>
+      ) : null}
+    </div>
   );
 }
 

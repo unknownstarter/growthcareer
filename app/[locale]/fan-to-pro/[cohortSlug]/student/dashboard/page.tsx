@@ -7,6 +7,8 @@ import { getLmsUser } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-ro
 import { fetchStudentById } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/student-repository";
 import { fetchStudentProfile } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/student-profile-repository";
 import { fetchCohortById } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-repository";
+import { fetchOwnReferralCode } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/referral-repository";
+import { ReferralCodeCard } from "@/src/programs/fan-to-pro/interface/components/lms/student/referral-code-card";
 import { Badge } from "@/src/programs/fan-to-pro/interface/components/lms/ui/badge";
 import {
   PageContainer,
@@ -53,6 +55,10 @@ export default async function StudentDashboardPage({
   const cohort = student
     ? await fetchCohortById(student.cohort_id).catch(() => null)
     : null;
+  // 본인 공유용 추천 코드 (student.referral_code). 미부여 시 null → 카드 숨김.
+  const referralCode = await fetchOwnReferralCode({
+    studentId: user.studentId,
+  }).catch(() => null);
   const displayName = profile?.name_ko ?? student?.display_name ?? user.displayName;
   const isEn = locale === "en";
 
@@ -152,6 +158,12 @@ export default async function StudentDashboardPage({
           </Link>
         ))}
       </div>
+
+      {referralCode ? (
+        <div className="mt-6 max-w-md">
+          <ReferralCodeCard code={referralCode} locale={locale} />
+        </div>
+      ) : null}
     </PageContainer>
   );
 }

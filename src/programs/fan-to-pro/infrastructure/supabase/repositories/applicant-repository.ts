@@ -134,6 +134,7 @@ export async function fetchApplicants(options?: {
         // PostgREST FK 명시 필요 (self join) — !previous_applicant_id 로 FK 지정.
         "previous_applicant_id",
         "previous:applicants!previous_applicant_id(id,status)",
+        "referred_by_code",
         "cash_receipts(count)",
         "messages_log(count)",
       ].join(","),
@@ -267,6 +268,9 @@ export async function fetchApplicants(options?: {
       redactedAt: raw.redacted_at ? String(raw.redacted_at) : null,
       cashReceiptCount: extractAggregateCount(raw.cash_receipts),
       messageCount: extractAggregateCount(raw.messages_log),
+      referredByCode: raw.referred_by_code
+        ? String(raw.referred_by_code)
+        : null,
       messageLastSentByKind: {
         paymentGuide: bucket.paymentGuide ?? null,
         paymentConfirmed: bucket.paymentConfirmed ?? null,
@@ -408,6 +412,7 @@ export async function fetchApplicantById(
         // PostgREST FK 명시 필요 (self join) — !previous_applicant_id 로 FK 지정.
         "previous_applicant_id",
         "previous:applicants!previous_applicant_id(id,status)",
+        "referred_by_code",
         "cash_receipts(count)",
         "messages_log(count)",
       ].join(","),
@@ -503,6 +508,9 @@ export async function fetchApplicantById(
     redactedAt: raw.redacted_at ? String(raw.redacted_at) : null,
     cashReceiptCount: extractAggregateCount(raw.cash_receipts),
     messageCount: extractAggregateCount(raw.messages_log),
+    referredByCode: raw.referred_by_code
+      ? String(raw.referred_by_code)
+      : null,
     messageLastSentByKind: {
       paymentGuide: lastSent.paymentGuide ?? null,
       paymentConfirmed: lastSent.paymentConfirmed ?? null,

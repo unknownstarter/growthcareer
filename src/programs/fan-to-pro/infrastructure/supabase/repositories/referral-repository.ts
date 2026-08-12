@@ -129,6 +129,62 @@ export async function resolveReferrerByCode(
   return null;
 }
 
+/**
+ * 로그인 유저 본인의 공유용 레퍼럴 코드 조회 (LMS 표시용).
+ *
+ * 소유 규칙 (migration 20260813020000):
+ *   - student  → students.referral_code (user_profiles.student_id 링크)
+ *   - instructor → instructors.referral_code
+ *   - super_admin → user_profiles.referral_code (노아 = GCFTP0)
+ *
+ * 본인 것만 조회 (id 로 직접). service_role 이지만 호출측이 studentId/instructorId
+ * 를 세션(getLmsUser)에서 넘기므로 타인 코드 노출 경로 없음.
+ * 코드 미부여 시 null.
+ */
+export async function fetchOwnReferralCode(owner: {
+  studentId?: string | null;
+  instructorId?: string | null;
+  isSuperAdmin?: boolean;
+  userId?: string | null;
+}): Promise<string | null> {
+  const supabase = requireClient();
+
+  if (owner.studentId) {
+    const { data, error } = await supabase
+      .from("students")
+      .select("referral_code")
+      .eq("id", owner.studentId)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    const code = (data as Record<string, unknown> | null)?.referral_code;
+    return code ? String(code) : null;
+  }
+
+  if (owner.instructorId) {
+    const { data, error } = await supabase
+      .from("instructors")
+      .select("referral_code")
+      .eq("id", owner.instructorId)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    const code = (data as Record<string, unknown> | null)?.referral_code;
+    return code ? String(code) : null;
+  }
+
+  if (owner.isSuperAdmin && owner.userId) {
+    const { data, error } = await supabase
+      .from("user_profiles")
+      .select("referral_code")
+      .eq("id", owner.userId)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    const code = (data as Record<string, unknown> | null)?.referral_code;
+    return code ? String(code) : null;
+  }
+
+  return null;
+}
+
 /** students.referral_code 설정 (미부여 시에만). 이미 있으면 no-op. */
 export async function assignStudentReferralCode(studentId: string): Promise<string | null> {
   const supabase = requireClient();

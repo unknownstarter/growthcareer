@@ -119,6 +119,7 @@ export default async function AdminStudentDetailPage({
           profile?.months_in_korea != null
             ? `한국 거주 ${profile.months_in_korea}개월`
             : null,
+          student.referral_code ? `추천 코드 ${student.referral_code}` : null,
         ]
           .filter(Boolean)
           .join(" / ")}
