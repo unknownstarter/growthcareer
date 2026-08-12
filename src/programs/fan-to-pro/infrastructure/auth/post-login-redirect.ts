@@ -78,8 +78,13 @@ export async function resolvePostLoginRedirect(
       : cohortObj.programs;
     const programSlug = programObj?.slug ?? "fan-to-pro";
 
-    // 학생 dashboard 신설 (B0058) — 로그인 직후 빠른 3 link (프로필/자료/커리어)
-    // 강사 surface 는 1기 미구현 — 일단 student dashboard 로 fallback (운영 영향 0).
+    // role 별 진입점 분기. 강사 surface 신설(커뮤니티 MVP) — bare /instructor 가
+    // /instructor/community 로 리다이렉트. 강사를 student/dashboard 로 보내면 student
+    // layout role 가드에 막히므로 반드시 instructor surface 로.
+    if (target.role === "instructor") {
+      return `/${locale}/${programSlug}/${cohortObj.slug}/instructor`;
+    }
+    // 학생 dashboard (B0058) — 로그인 직후 빠른 3 link (프로필/자료/커리어).
     return `/${locale}/${programSlug}/${cohortObj.slug}/student/dashboard`;
   }
 
