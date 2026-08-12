@@ -34,8 +34,13 @@ const DialogContent = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <DialogPortal>
     <DialogOverlay />
+    {/* Radix 는 portal 로 body 에 렌더 → LMS 라이트 토큰이 정의된 `<div
+        data-theme="light">` wrapper 밖으로 나감. data-theme 를 여기 다시 박아
+        --card / --foreground / --border 등을 라이트 값으로 복원(안 하면 --card
+        미정의 → 패널 투명). LMS 전용 다이얼로그라 항상 light. */}
     <DialogPrimitive.Content
       ref={ref}
+      data-theme="light"
       className={cn(
         "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-5 border border-[var(--border)] bg-[var(--card)] p-6 shadow-lg duration-200 sm:rounded-[var(--radius-lg)] max-h-[90vh] overflow-y-auto",
         className,
