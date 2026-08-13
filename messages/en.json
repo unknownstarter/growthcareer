@@ -441,7 +441,7 @@
     "bullets": [
       "Class full? You join the waitlist for the next round immediately",
       "Seats confirmed in order of bank transfer received",
-      "100% refund within 7 days of payment or before the program starts",
+      "100% refund within 7 days of payment",
       "KakaoTalk open chat auto-add after payment is confirmed"
     ],
     "footnote": "* This class enrolls a total of 30 students. If fewer than 20 students have paid by midnight on Sunday, June 21, 2026, the class is canceled and all payments are automatically refunded in full before the next class opens.",
@@ -479,7 +479,7 @@
       },
       {
         "q": "What is the refund policy?",
-        "a": "100% refund within 7 days of payment or before the program starts. After the program starts, refunds follow the Korean Private Education Act Enforcement Decree (Table 4) and the Fair Trade Commission consumer dispute guidelines: 2/3 before 1/3 of the program, 1/2 before halfway, no refund after halfway. This class recruits 30 students, and if fewer than 20 have paid by the deadline (Sunday, June 21, 2026, midnight), the class is canceled, all payments are refunded in full automatically, and we re-open recruitment for the next class."
+        "a": "100% refund within 7 days of payment. After the program starts, refunds follow the Korean Private Education Act Enforcement Decree (Table 4) and the Fair Trade Commission consumer dispute guidelines: 2/3 before 1/3 of the program, 1/2 before halfway, no refund after halfway. This class recruits 30 students, and if fewer than 20 have paid by the deadline (Sunday, June 21, 2026, midnight), the class is canceled, all payments are refunded in full automatically, and we re-open recruitment for the next class."
       },
       {
         "q": "How does payment work?",
@@ -634,7 +634,7 @@
       },
       "operations": {
         "label": "Confirm operations and refund policy",
-        "bodyTemplate": "{commitment} Refunds are 100% within 7 days of payment or before the program starts. After the program starts, refunds are prorated under the Korean Private Education Act Enforcement Decree (Table 4) and the Fair Trade Commission consumer dispute guidelines."
+        "bodyTemplate": "{commitment} Refunds are 100% within 7 days of payment. After the program starts, refunds are prorated under the Korean Private Education Act Enforcement Decree (Table 4) and the Fair Trade Commission consumer dispute guidelines."
       },
       "marketing": {
         "label": "Consent to marketing communications (optional)",
@@ -663,7 +663,7 @@
       "completionTitle": "Enrollment is locked when payment lands",
       "completionBody": "Seats are confirmed in the order payments arrive.",
       "noticeBody": "Right after you apply, we send the bank details and full guide by KakaoTalk, SMS, and email.",
-      "refundSimpleA": "100% refund any time before the deadline.",
+      "refundSimpleA": "100% refund within 7 days of payment.",
       "refundSimpleB": "Full automatic refund if the cohort is cancelled.",
       "refundLinkText": "View full refund policy",
       "trustFooter": "Dropdown Co., Ltd. / Business Reg. 154-28-02110 / Mail-order Reg. 2026-Seoul-Songpa-0882",
