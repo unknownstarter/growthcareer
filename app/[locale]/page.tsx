@@ -532,9 +532,7 @@ export default async function GcHomePage({
 
           <div className="mt-12 grid gap-4 lg:grid-cols-[1.6fr_1fr]">
             {/* 피처 인용 — 가장 강력한 후기(Martina) 크게 */}
-            <Card variant="clean" as="figure" className="relative flex flex-col justify-center overflow-hidden p-8 pl-10 sm:p-10 sm:pl-12">
-              {/* 대표 인용 표식 — 좌측 핑크 solid accent bar (§6.8) */}
-              <span aria-hidden className="absolute inset-y-8 left-0 w-1 rounded-full bg-brand-pink sm:inset-y-10" />
+            <Card variant="clean" as="figure" className="flex flex-col justify-center p-8 sm:p-10">
               <blockquote className="text-[#191F28] text-[19px] leading-relaxed sm:text-[23px]">{t.reviews[1].liked}</blockquote>
               <figcaption className="mt-6">
                 <span className="font-bold text-[#191F28]">{t.reviews[1].name}</span>

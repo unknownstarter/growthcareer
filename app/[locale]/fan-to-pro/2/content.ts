@@ -112,7 +112,7 @@ const CONTENT = {
       refund: {
         title: "환불 정책",
         lines: [
-          "결제 후 7일 이내 또는 수강 시작 전에는 100% 환불됩니다.",
+          "결제 후 7일 이내에는 100% 환불됩니다.",
           "수강 시작 후에는 학원법 시행령 별표 4와 공정위 소비자분쟁해결기준에 따라 비례 환불됩니다. 전체 수업의 1/3 경과 전 2/3, 1/2 경과 전 1/2, 1/2 경과 후에는 환불되지 않습니다.",
         ],
       },
@@ -298,7 +298,7 @@ const CONTENT = {
       refund: {
         title: "Refund policy",
         lines: [
-          "Full refund within 7 days of payment, or any time before classes begin.",
+          "Full refund within 7 days of payment.",
           "After classes begin, refunds are prorated under the Academy Act Enforcement Decree (Table 4) and the KFTC consumer dispute resolution standards: two thirds before 1/3 of classes elapse, one half before 1/2 elapse, and none after 1/2.",
         ],
       },

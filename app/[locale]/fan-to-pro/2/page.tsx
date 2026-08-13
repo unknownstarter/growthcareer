@@ -471,25 +471,11 @@ export default async function FanToProPage({
                 <span className="mt-1 block text-fg-subtle text-xs">{c.schedule.placeNote}</span>
               </dd>
             </div>
-            <div className="flex flex-col gap-1 border-border border-b pb-5 sm:flex-row sm:items-baseline sm:justify-between">
+            <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
               <dt className={`${styles.mono} text-fg-subtle`}>"enrollment"</dt>
               <dd className="text-right sm:max-w-[62%]">
                 <span className="font-bold text-brand-pink text-lg">{c.schedule.enroll.value}</span>
                 <span className="mt-1 block text-fg-subtle text-xs leading-relaxed">{c.schedule.enroll.note}</span>
-              </dd>
-            </div>
-            <div>
-              <dt className={`${styles.mono} text-fg-subtle`}>"refund"</dt>
-              <dd className="mt-2.5">
-                <span className="font-bold text-fg">{c.schedule.refund.title}</span>
-                <ul className="mt-2 space-y-1.5 text-fg-muted text-xs leading-relaxed">
-                  {c.schedule.refund.lines.map((line) => (
-                    <li key={line} className="flex gap-2">
-                      <span aria-hidden className="text-brand-pink">-</span>
-                      <span>{line}</span>
-                    </li>
-                  ))}
-                </ul>
               </dd>
             </div>
           </dl>
