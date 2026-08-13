@@ -78,15 +78,15 @@ type PageCopy = {
 const COPY: Record<"ko" | "en", PageCopy> = {
   ko: {
     heroEyebrow: "Fan to Pro",
-    heroH1: { l1: "좋아하던 K컬처,", l2: "이제 현장에서 만듭니다" },
+    heroH1: { l1: "좋아하던 무대,", l2: "이제 현장에서 만듭니다" },
     heroSub:
-      "Fan to Pro는 K컬처 산업의 직무 교육 프로그램입니다. 무대 뒤에서 일이 실제로 어떻게 돌아가는지, 현장에서 뛰는 사람들에게 직접 배웁니다",
+      "Fan to Pro는 엔터테인먼트 산업의 직무 교육 프로그램입니다. 무대 뒤에서 일이 실제로 어떻게 돌아가는지, 현장에서 뛰는 사람들에게 직접 배웁니다",
     heroCta: "2기 모집 보기",
     heroAlt: "K팝 콘서트 무대",
     philLabel: "Fan to Pro",
     philTitle: { pre: "좋아하는 마음에서 ", hi: "시작합니다" },
     philBody:
-      "누구나 팬으로 시작합니다. 그 마음이 얼마나 큰 힘인지 압니다. Fan to Pro는 좋아하는 마음을 현장에서 통하는 실력으로 잇습니다. K컬처를 즐기던 사람이, K컬처를 함께 만드는 사람이 되도록.",
+      "누구나 팬으로 시작합니다. 그 마음이 얼마나 큰 힘인지 압니다. Fan to Pro는 좋아하는 마음을 현장에서 통하는 실력으로 잇습니다. 무대를 즐기던 사람이, 그 무대를 함께 만드는 사람이 되도록.",
     diffLabel: "왜 다른가",
     diffTitle: { pre: "현장에서 배우고 ", hi: "현장으로 이어집니다" },
     differentiators: [
@@ -178,15 +178,15 @@ const COPY: Record<"ko" | "en", PageCopy> = {
   },
   en: {
     heroEyebrow: "Fan to Pro",
-    heroH1: { l1: "You loved K-culture,", l2: "now you help make it" },
+    heroH1: { l1: "You loved the shows,", l2: "now you help make them" },
     heroSub:
-      "Fan to Pro is a job training program for the K-culture industry. You learn how the work really happens backstage, straight from the people who do it.",
+      "Fan to Pro is a job training program for the entertainment industry. You learn how the work really happens backstage, straight from the people who do it.",
     heroCta: "See Cohort 2",
     heroAlt: "K-pop concert stage",
     philLabel: "Fan to Pro",
     philTitle: { pre: "It starts with ", hi: "what you love" },
     philBody:
-      "Everyone starts as a fan. We know how far that love can carry you. Fan to Pro turns it into skills that hold up on a real set, so the people who enjoyed K-culture become the ones who help make it.",
+      "Everyone starts as a fan. We know how far that love can carry you. Fan to Pro turns it into skills that hold up on a real set, so the people who enjoyed the shows become the ones who help make them.",
     diffLabel: "Why it is different",
     diffTitle: { pre: "Learn on real sets, ", hi: "then work on them" },
     differentiators: [

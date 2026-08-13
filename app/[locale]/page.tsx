@@ -143,21 +143,21 @@ const COPY: Record<"ko" | "en", PageCopy> = {
     heroH1: { l1: "한국에서 커리어를 시작하는", l2: "가장 확실한 길" },
     heroImgAlt: "Fan to Pro 1기 현장",
     heroSub:
-      "K엔터 실무 교육 Fan to Pro에서 시작해, 비자부터 취업까지 한국 생활에 필요한 정보를 공식 자료로 한곳에 모았습니다",
+      "엔터테인먼트 실무 교육 Fan to Pro에서 시작해, 비자부터 취업까지 한국 생활에 필요한 정보를 공식 자료로 한곳에 모았습니다",
     heroCtaPrimary: "지금 모집 중인 교육",
     heroCtaSecondary: "인사이트 둘러보기",
 
     eduLabel: "Fan to Pro",
     eduTitle: { pre: "좋아하는 마음을 ", hi: "실무 경력" },
     eduDesc:
-      "Fan to Pro는 K컬처 도메인별 실무 교육 브랜드입니다. 지금은 K엔터로 시작해, 하나씩 넓혀갑니다",
+      "Fan to Pro는 엔터테인먼트 산업의 실무 직무 교육입니다. 무대 뒤에서 일이 실제로 어떻게 돌아가는지, 현장에서 뛰는 사람들에게 직접 배웁니다",
     eduCohortTag: "지금 모집 중",
     eduCohortTitle: { pre: "Fan to Pro 엔터 ", hi: "2기" },
     eduCohortCta: "2기 알아보기",
     tracks: [
-      { domain: "K엔터테인먼트", status: "2기 모집 중", live: true, cta: "아이돌과 공연 실무 보기" },
-      { domain: "K패션", status: "확장 예정", live: false },
-      { domain: "K뷰티", status: "확장 예정", live: false },
+      { domain: "A&R 단과반", status: "2기 모집 중", live: true, cta: "아이돌과 공연 실무 보기" },
+      { domain: "음향 감독 단과반", status: "2기 모집 중", live: true, cta: "무대 음향 실무 보기" },
+      { domain: "올인원", status: "2기 모집 중", live: true, cta: "두 과정과 공연 프로젝트" },
     ],
 
     insightLabel: "인사이트",
@@ -179,7 +179,7 @@ const COPY: Record<"ko" | "en", PageCopy> = {
       "수강생만의 공간입니다. 닉네임 옆에 들은 강의와 기수가 붙어, 같은 목표를 둔 사람을 바로 알아봅니다. 1기가 가장 오래 남긴 건 사람이었습니다.",
     communityStats: [
       { n: "8개국", l: "수강생 국적" },
-      { n: "K엔터 1기", l: "커뮤니티 개설" },
+      { n: "엔터 1기", l: "커뮤니티 개설" },
     ],
     communityGate: "수강 시작하면 열립니다",
     communityLockLabel: "수강생 전용",
@@ -204,7 +204,7 @@ const COPY: Record<"ko" | "en", PageCopy> = {
     visionLabel: "비전",
     visionTitle: { pre: "교육에서 끝나지 않고 ", hi: "실제 커리어 기회" },
     visionDesc:
-      "좋아하는 마음으로 한국에 온 사람들이 실무를 배우고, 경력을 쌓고, 다음 기회로 이어지는 길. Growth Career가 그 다리를 놓아갑니다",
+      "좋아하는 마음으로 한국에 온 사람들이 실무를 배우고, 유니온 픽처스 공연 프로젝트에서 실제 경험까지 쌓습니다. Growth Career가 그 길을 잇습니다",
 
     menuCommunity: "커뮤니티",
   },
@@ -213,21 +213,21 @@ const COPY: Record<"ko" | "en", PageCopy> = {
     heroH1: { l1: "The surest way to start", l2: "your career in Korea" },
     heroImgAlt: "Fan to Pro Cohort 1 on site",
     heroSub:
-      "Start with Fan to Pro, our hands-on K-ent training, and find everything you need for life in Korea from visas to jobs, gathered from official sources in one place.",
+      "Start with Fan to Pro, our hands-on entertainment training, and find everything you need for life in Korea from visas to jobs, gathered from official sources in one place.",
     heroCtaPrimary: "Programs open now",
     heroCtaSecondary: "Browse insights",
 
     eduLabel: "Fan to Pro",
     eduTitle: { pre: "Turn what you love into ", hi: "real experience" },
     eduDesc:
-      "Fan to Pro is a hands-on training brand for each part of K-culture. We are starting with K-ent and adding more, one at a time.",
+      "Fan to Pro is hands-on job training for the entertainment industry. You learn how the work really happens backstage, straight from the people who do it.",
     eduCohortTag: "Open now",
     eduCohortTitle: { pre: "Fan to Pro Ent ", hi: "Cohort 2" },
     eduCohortCta: "See Cohort 2",
     tracks: [
-      { domain: "K-Entertainment", status: "Cohort 2 open", live: true, cta: "See the idol and live show work" },
-      { domain: "K-Fashion", status: "Coming soon", live: false },
-      { domain: "K-Beauty", status: "Coming soon", live: false },
+      { domain: "A&R course", status: "Cohort 2 open", live: true, cta: "See the idol and live show work" },
+      { domain: "Sound course", status: "Cohort 2 open", live: true, cta: "See live sound work" },
+      { domain: "All-in-one", status: "Cohort 2 open", live: true, cta: "Both courses and the show project" },
     ],
 
     insightLabel: "Insights",
@@ -249,7 +249,7 @@ const COPY: Record<"ko" | "en", PageCopy> = {
       "A space just for students. Each nickname carries the classes and cohort someone took, so you spot people with the same goal right away. What Cohort 1 left behind most was the people.",
     communityStats: [
       { n: "8 countries", l: "Student nationalities" },
-      { n: "K-ent Cohort 1", l: "Community opened" },
+      { n: "Ent Cohort 1", l: "Community opened" },
     ],
     communityGate: "Opens when you enroll",
     communityLockLabel: "Students only",
@@ -274,7 +274,7 @@ const COPY: Record<"ko" | "en", PageCopy> = {
     visionLabel: "Vision",
     visionTitle: { pre: "Not ending at training, but leading to ", hi: "real career chances" },
     visionDesc:
-      "A path where people who came to Korea for something they love learn the craft, build experience, and move on to the next opportunity. Growth Career is building that bridge.",
+      "A path where people who came to Korea for something they love learn the craft and gain real experience on Union Pictures live show projects. Growth Career connects the two.",
 
     menuCommunity: "Community",
   },
@@ -295,7 +295,7 @@ export default async function GcHomePage({
   const { locale } = await params;
   const t = COPY[locale === "ko" ? "ko" : "en"];
   const prefix = locale === "ko" ? "/ko" : "";
-  const cohortBadge = locale === "ko" ? "K엔터 1기" : "K-ent Cohort 1";
+  const cohortBadge = locale === "ko" ? "엔터 1기" : "Ent Cohort 1";
 
   return (
     <main className="min-h-screen break-keep bg-white text-[#191F28]">
