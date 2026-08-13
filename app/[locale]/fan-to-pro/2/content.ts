@@ -35,7 +35,7 @@ const CONTENT = {
           displayName: "Nino", subName: "이세환",
           aff: ["Sherpa Music CEO", "27년차 뮤직 비즈니스"],
           credits: [
-            { label: "CJ ENM A&R", items: ["국내 최대 규모 아이돌 오디션 프로그램 시리즈", "글로벌 데뷔 아이돌 그룹 다수 음반 기획", "한국과 일본 아이돌 프로젝트 A&R 총괄"] },
+            { label: "메이저 엔터사 A&R", items: ["국내 최대 규모 아이돌 오디션 프로그램 시리즈", "글로벌 데뷔 아이돌 그룹 다수 음반 기획", "한국과 일본 아이돌 프로젝트 A&R 총괄"] },
             { label: "Sherpa Music CEO", items: ["음원 기획 및 아티스트 비주얼 디렉팅", "음악 시상식 수상 아티스트 프로젝트", "국내외 290여 팀 작가 계약 총괄"] },
           ],
         },
@@ -46,7 +46,7 @@ const CONTENT = {
           aff: ["E.K Ent. 실장", "라이브 사운드 엔지니어"],
           credits: [
             { label: "라이브 사운드 감독", items: ["팝페라, 오케스트라, 밴드 전담 음향감독", "방송사, 공공기관, 기업 VIP 행사 음향 운영", "국내외 공연 투어 프로덕션 기술 지원과 아티스트 케어"] },
-            { label: "주요 공연", items: ["MAMF", "꿈의 오케스트라", "종근당 오페라 콘서트 등 다수"] },
+            { label: "주요 공연", items: ["국제 음악 페스티벌", "오케스트라 정기 공연", "기업 오페라 콘서트 등 다수"] },
           ],
         },
       ],
@@ -221,7 +221,7 @@ const CONTENT = {
           displayName: "Nino", subName: "Lee Se-hwan",
           aff: ["CEO, Sherpa Music", "27 years in music business"],
           credits: [
-            { label: "CJ ENM A&R", items: ["Korea's largest idol audition program series", "A&R for many globally debuted idol groups", "Led A&R for Korean and Japanese idol projects"] },
+            { label: "Major label A&R", items: ["Korea's largest idol audition program series", "A&R for many globally debuted idol groups", "Led A&R for Korean and Japanese idol projects"] },
             { label: "CEO, Sherpa Music", items: ["Music planning and artist visual direction", "Award-winning artist projects", "Managed songwriter deals with 290+ teams worldwide"] },
           ],
         },
@@ -232,7 +232,7 @@ const CONTENT = {
           aff: ["Director, E.K Ent.", "Live sound engineer"],
           credits: [
             { label: "Live sound direction", items: ["Lead sound director for pop opera, orchestra, and band shows", "Sound operation for broadcasters, public institutions, and corporate VIP events", "Technical support and artist care on domestic and overseas tour productions"] },
-            { label: "Selected shows", items: ["MAMF", "Orchestra of Dreams", "Chong Kun Dang Opera Concert, and more"] },
+            { label: "Selected shows", items: ["International music festivals", "Orchestra concert series", "Corporate opera concerts, and more"] },
           ],
         },
       ],

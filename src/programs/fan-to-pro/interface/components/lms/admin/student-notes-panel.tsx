@@ -185,7 +185,7 @@ export function StudentNotesPanel({ studentId, initialNotes }: Props) {
               maxLength={STUDENT_NOTE_MAX_BODY}
               value={body}
               onChange={(e) => setBody(e.target.value)}
-              placeholder="예) 6/29 컨설팅 결과. HYBE 마케팅 직군 관심. 포트폴리오 보강 권유."
+              placeholder="예) 6/29 컨설팅 결과. 대형 기획사 마케팅 직군 관심. 포트폴리오 보강 권유."
             />
             <p className="text-xs text-[var(--muted-foreground)] text-right">
               {body.length} / {STUDENT_NOTE_MAX_BODY}

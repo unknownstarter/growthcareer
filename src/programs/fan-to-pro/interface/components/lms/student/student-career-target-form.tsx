@@ -210,8 +210,8 @@ export function StudentCareerTargetForm({
                 maxLength={100}
                 placeholder={
                   isEn
-                    ? "e.g. HYBE, SM, JYP"
-                    : "예: HYBE, SM, JYP"
+                    ? "e.g. target company"
+                    : "예: 목표 회사"
                 }
               />
               <Button

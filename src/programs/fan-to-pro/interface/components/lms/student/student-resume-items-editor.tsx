@@ -573,7 +573,7 @@ function placeholderForOrganization(
     case "education":
       return isEn ? "Seoul National University" : "서울대학교";
     case "experience":
-      return isEn ? "HYBE" : "HYBE";
+      return isEn ? "Company or team" : "회사 또는 팀";
     case "certification":
       return isEn ? "Issuing body" : "한국산업인력공단";
     case "award":
