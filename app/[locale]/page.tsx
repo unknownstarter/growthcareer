@@ -155,13 +155,16 @@ const COPY: Record<"ko" | "en", PageCopy> = {
     eduCohortTitle: { pre: "Fan to Pro 엔터 ", hi: "2기" },
     eduCohortCta: "2기 알아보기",
     tracks: [
-      { domain: "A&R 단과반", status: "2기 모집 중", live: true, cta: "아이돌과 공연 실무 보기" },
-      { domain: "음향 감독 단과반", status: "2기 모집 중", live: true, cta: "무대 음향 실무 보기" },
-      { domain: "올인원", status: "2기 모집 중", live: true, cta: "두 과정과 공연 프로젝트" },
+      { domain: "A&R", status: "2기 모집 중", live: true, cta: "아이돌과 공연 실무 보기" },
+      { domain: "음향", status: "2기 모집 중", live: true, cta: "무대 음향 실무 보기" },
+      { domain: "비주얼 디렉팅", status: "준비 중", live: false },
+      { domain: "공연 기획", status: "준비 중", live: false },
+      { domain: "아티스트 매니지먼트", status: "준비 중", live: false },
+      { domain: "퍼포먼스 디렉팅", status: "준비 중", live: false },
     ],
 
     insightLabel: "인사이트",
-    insightTitle: { pre: "한국 생활, 막막하지 않게 ", hi: "공식 자료" },
+    insightTitle: { pre: "한국 생활 ", hi: "꿀팁 모음" },
     insightDesc:
       "비자, TOPIK, 한국어, 금융, 취업. 외교부와 출입국, 국립국제교육원 등 공식 국가기관 자료만 담습니다. 확인되지 않은 정보는 싣지 않습니다.",
     insight: [
@@ -225,13 +228,16 @@ const COPY: Record<"ko" | "en", PageCopy> = {
     eduCohortTitle: { pre: "Fan to Pro Ent ", hi: "Cohort 2" },
     eduCohortCta: "See Cohort 2",
     tracks: [
-      { domain: "A&R course", status: "Cohort 2 open", live: true, cta: "See the idol and live show work" },
-      { domain: "Sound course", status: "Cohort 2 open", live: true, cta: "See live sound work" },
-      { domain: "All-in-one", status: "Cohort 2 open", live: true, cta: "Both courses and the show project" },
+      { domain: "A&R", status: "Cohort 2 open", live: true, cta: "See the idol and live show work" },
+      { domain: "Sound", status: "Cohort 2 open", live: true, cta: "See live sound work" },
+      { domain: "Visual Directing", status: "In the works", live: false },
+      { domain: "Show Production", status: "In the works", live: false },
+      { domain: "Artist Management", status: "In the works", live: false },
+      { domain: "Performance Directing", status: "In the works", live: false },
     ],
 
     insightLabel: "Insights",
-    insightTitle: { pre: "Life in Korea, made clear with ", hi: "official sources" },
+    insightTitle: { pre: "Practical guides for ", hi: "life in Korea" },
     insightDesc:
       "Visas, TOPIK, Korean, banking, jobs. We only cover material from official agencies like the Ministry of Foreign Affairs, immigration, and the National Institute for International Education. Nothing unverified goes in.",
     insight: [
@@ -377,8 +383,8 @@ export default async function GcHomePage({
           </div>
         </Card>
 
-        {/* 트랙 3장 — 비대칭: 라이브(K엔터) 넓고 밝게, 예정은 좁고 dim */}
-        <div className="mt-4 grid gap-4 md:grid-cols-[1.5fr_1fr_1fr]">
+        {/* K엔터 직무 트랙 — 라이브(A&R·음향) 밝게 + cta, 준비 중 직무는 dim(비활성). */}
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
           {t.tracks.map((track) => (
             <Card
               key={track.domain}
