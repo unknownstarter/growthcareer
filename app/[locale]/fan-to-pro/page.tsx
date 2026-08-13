@@ -80,13 +80,13 @@ const COPY: Record<"ko" | "en", PageCopy> = {
     heroEyebrow: "Fan to Pro",
     heroH1: { l1: "좋아하던 무대,", l2: "이제 현장에서 만듭니다" },
     heroSub:
-      "Fan to Pro는 엔터테인먼트 산업의 직무 교육 프로그램입니다. 무대 뒤에서 일이 실제로 어떻게 돌아가는지, 현장에서 뛰는 사람들에게 직접 배웁니다",
+      "Fan to Pro는 K엔터 산업의 직무 교육 프로그램입니다. 지금 무대를 만드는 사람들에게, 공연 하나가 어떻게 올라가는지 무대 뒤에서 직접 배웁니다",
     heroCta: "2기 모집 보기",
     heroAlt: "K팝 콘서트 무대",
     philLabel: "Fan to Pro",
     philTitle: { pre: "좋아하는 마음에서 ", hi: "시작합니다" },
     philBody:
-      "누구나 팬으로 시작합니다. 그 마음이 얼마나 큰 힘인지 압니다. Fan to Pro는 좋아하는 마음을 현장에서 통하는 실력으로 잇습니다. 무대를 즐기던 사람이, 그 무대를 함께 만드는 사람이 되도록.",
+      "누구나 팬으로 시작합니다. 그 마음이 얼마나 큰 힘인지 우리는 압니다. 그래서 Fan to Pro는 좋아하는 마음을 현장에서 통하는 실력으로 잇는 일에 진심입니다. 객석에서 무대를 즐기던 사람이, 무대 뒤에서 그 무대를 함께 만드는 사람이 되도록.",
     diffLabel: "왜 다른가",
     diffTitle: { pre: "현장에서 배우고 ", hi: "현장으로 이어집니다" },
     differentiators: [
@@ -100,7 +100,7 @@ const COPY: Record<"ko" | "en", PageCopy> = {
       {
         label: "02",
         title: "진짜 현장으로 이어집니다",
-        body: "배운 것을 실제 K-pop 공연 프로젝트에서 써봅니다. 현장에 참여한 경험이 포트폴리오로 남고, 유니온 픽처스 참여 확인서로 증명됩니다.",
+        body: "시뮬레이션이 아닙니다. 배운 것을 유니온 픽처스가 만드는 실제 K-pop 공연 프로젝트에서 써봅니다. 무대에 참여한 경험이 포트폴리오로 남고, 유니온 픽처스 참여 확인서로 증명됩니다.",
         img: "/images/stock/concert-stage-from-behind-performer-2.jpg",
         alt: "K팝 공연 무대",
       },
@@ -180,13 +180,13 @@ const COPY: Record<"ko" | "en", PageCopy> = {
     heroEyebrow: "Fan to Pro",
     heroH1: { l1: "You loved the shows,", l2: "now you help make them" },
     heroSub:
-      "Fan to Pro is a job training program for the entertainment industry. You learn how the work really happens backstage, straight from the people who do it.",
+      "Fan to Pro is a job training program for the K-ent industry. The people building shows right now take you backstage and show you how a live show comes together.",
     heroCta: "See Cohort 2",
     heroAlt: "K-pop concert stage",
     philLabel: "Fan to Pro",
     philTitle: { pre: "It starts with ", hi: "what you love" },
     philBody:
-      "Everyone starts as a fan. We know how far that love can carry you. Fan to Pro turns it into skills that hold up on a real set, so the people who enjoyed the shows become the ones who help make them.",
+      "Everyone starts as a fan. We know how far that love can carry you, and turning it into skills that hold up on a real set is the work we care about. So the people who enjoyed the shows from their seats become the ones who help make them from backstage.",
     diffLabel: "Why it is different",
     diffTitle: { pre: "Learn on real sets, ", hi: "then work on them" },
     differentiators: [
@@ -200,7 +200,7 @@ const COPY: Record<"ko" | "en", PageCopy> = {
       {
         label: "02",
         title: "It leads to a real stage",
-        body: "You put what you learn to work on an actual K-pop production. That experience becomes part of your portfolio, backed by a certificate of participation from Union Pictures.",
+        body: "This is not a simulation. You put what you learn to work on an actual K-pop show produced by Union Pictures. That stage experience becomes part of your portfolio, backed by a certificate of participation from Union Pictures.",
         img: "/images/stock/concert-stage-from-behind-performer-2.jpg",
         alt: "K-pop performance stage",
       },
