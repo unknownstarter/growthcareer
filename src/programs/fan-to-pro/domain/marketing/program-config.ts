@@ -37,7 +37,7 @@ export const CAREER_SUPPORT = [
  */
 export const REFUND_POLICY = {
   fullRefundDays: 7,
-  fullRefundLabel: "결제 후 7일 이내 또는 수강 시작 전 100% 환불",
+  fullRefundLabel: "결제 후 7일 이내 100% 환불",
   schedule: [
     { phase: "결제 후 7일 이내", refund: "100%" },
     { phase: "수강 시작 전", refund: "100%" },

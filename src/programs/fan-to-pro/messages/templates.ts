@@ -261,7 +261,7 @@ const paymentConfirmed_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 [다음 안내]
 8월 30일(일) 모집 마감 이후, 강의장 주소 / 준비물 / 수강생 카카오톡 오픈채팅 초대 링크 등 자세한 안내 메일을 별도로 보내드려요.
 
-환불이 필요하면 마감 전(8/30 자정) 까지는 100% 환불 가능합니다. 그 이후 환불 규정은 약관을 참고해주세요.
+환불이 필요하면 결제 후 7일 이내 100% 환불 가능합니다. 그 이후 환불 규정은 약관을 참고해주세요.
 https://growthcareer.xyz/terms
 
 문의사항은 하단의 카카오톡 채널을 이용해주세요.
@@ -280,7 +280,7 @@ Hi {name}, your payment has been confirmed. Your seat is locked in.
 [NEXT GUIDE]
 After the application deadline (Sunday, August 30), we will send a separate guide email with the venue, what to bring, the student KakaoTalk open chat invitation, and more.
 
-If you need a refund, 100% refund is available any time before the deadline (Sun Aug 30 midnight KST). Refund policy after that: https://growthcareer.xyz/terms
+If you need a refund, 100% refund is available within 7 days of payment. Refund policy after that: https://growthcareer.xyz/terms
 
 For any questions, please use the KakaoTalk channel below.
 ${KAKAO}
