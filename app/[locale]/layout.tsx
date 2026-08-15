@@ -15,6 +15,11 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
+// 봇 스캐너가 존재하지 않는 locale (예: /wp-login.php, /.env) 을 긁을 때 Next 가
+// 동적 렌더를 시도하다 next-intl requestLocale + static/dynamic 충돌로 500 을 던지는
+// 문제 방지. generateStaticParams 에 없는 locale (en/ko 외) 은 곧바로 404.
+export const dynamicParams = false;
+
 type Params = { locale: string };
 
 export async function generateMetadata({
