@@ -252,7 +252,10 @@ export function getReminderUrgency(
   return { level: "none", rank: 0 };
 }
 
-export function computeStats(rows: ApplicantRow[]): ApplicantStats {
+export function computeStats(
+  rows: ApplicantRow[],
+  now: Date = new Date(),
+): ApplicantStats {
   const byStatus = Object.fromEntries(
     APPLICANT_STATUSES.map((s) => [s, 0]),
   ) as Record<ApplicantStatus, number>;
@@ -262,7 +265,6 @@ export function computeStats(rows: ApplicantRow[]): ApplicantStats {
   let reminderD1 = 0;
   let commissionBaseKrw = 0;
   let commissionCount = 0;
-  const now = new Date();
 
   for (const row of rows) {
     byStatus[row.status] = (byStatus[row.status] ?? 0) + 1;

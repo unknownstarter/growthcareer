@@ -90,6 +90,7 @@ export function ApplicantsDashboard({
   readOnly = false,
   view = "cohort2",
   canSwitchView = false,
+  serverNow,
 }: {
   initialRows: ApplicantRow[];
   anonymizeEligibility: AnonymizeEligibility;
@@ -99,6 +100,9 @@ export function ApplicantsDashboard({
   // 기수 필터 (옵션 A). server 가 결정한 현재 뷰 + 토글 허용 여부.
   view?: ApplicantView;
   canSwitchView?: boolean;
+  // 서버 렌더 시각 (ms). 시각 기반 정렬/집계/tint 의 첫 페인트를 SSR·클라
+  // 동일하게 맞춰 하이드레이션 mismatch 를 없애는 앵커. 마운트 후엔 라이브 tick.
+  serverNow: number;
 }) {
   return (
     <ToastProvider>
@@ -110,6 +114,7 @@ export function ApplicantsDashboard({
         readOnly={readOnly}
         view={view}
         canSwitchView={canSwitchView}
+        serverNow={serverNow}
       />
     </ToastProvider>
   );
@@ -123,6 +128,7 @@ function DashboardInner({
   readOnly,
   view,
   canSwitchView,
+  serverNow,
 }: {
   initialRows: ApplicantRow[];
   anonymizeEligibility: AnonymizeEligibility;
@@ -131,6 +137,7 @@ function DashboardInner({
   readOnly: boolean;
   view: ApplicantView;
   canSwitchView: boolean;
+  serverNow: number;
 }) {
   const router = useRouter();
   const { show } = useToast();
@@ -143,8 +150,9 @@ function DashboardInner({
   const [eligibility, setEligibility] = useState<AnonymizeEligibility>(
     anonymizeEligibility,
   );
-  const [lastFetchedAt, setLastFetchedAt] = useState<number>(Date.now());
-  const [nowTick, setNowTick] = useState<number>(Date.now());
+  // serverNow 로 seed → SSR·클라 첫 렌더 동일. 마운트 후 effect 가 라이브로 tick.
+  const [lastFetchedAt, setLastFetchedAt] = useState<number>(serverNow);
+  const [nowTick, setNowTick] = useState<number>(serverNow);
 
   // 폴링 결과의 staging 영역. setRows 대신 여기에만 쓴다. diff 가 있으면
   // chip 으로 "N건 변경 / 새로고침" 알림. 사용자가 클릭 → rows 로 commit.
@@ -294,7 +302,16 @@ function DashboardInner({
 
   const [isPending, startTransition] = useTransition();
 
-  const stats = useMemo(() => computeStats(rows), [rows]);
+  // 집계 + 정렬의 시각 기준 = serverNow (페이지 로드 앵커). 초 단위 재계산/재정렬
+  // 없이 첫 페인트가 SSR 과 일치. 개별 row tint 만 nowTick 으로 라이브.
+  const stats = useMemo(
+    () => computeStats(rows, new Date(serverNow)),
+    [rows, serverNow],
+  );
+
+  // 개별 row 긴급도 tint 의 라이브 기준. nowTick 은 serverNow 로 seed 후 1초마다
+  // 갱신 → 첫 페인트는 SSR 과 동일, 이후 실시간. (정렬/집계는 serverNow 고정.)
+  const nowDate = useMemo(() => new Date(nowTick), [nowTick]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -328,7 +345,7 @@ function DashboardInner({
       cancelled: 6,
       next_cohort_interest: 7,
     };
-    const now = new Date();
+    const now = new Date(serverNow);
     return [...items].sort((a, b) => {
       const sa = STATUS_ORDER[a.status] ?? 99;
       const sb = STATUS_ORDER[b.status] ?? 99;
@@ -338,7 +355,7 @@ function DashboardInner({
       if (ua !== ub) return ub - ua;
       return a.createdAt < b.createdAt ? 1 : -1;
     });
-  }, [rows, query, statusFilter]);
+  }, [rows, query, statusFilter, serverNow]);
 
   function refresh() {
     router.refresh();
@@ -930,7 +947,7 @@ function DashboardInner({
                 </tr>
               ) : null}
               {filtered.map((row) => {
-                const urgency = getReminderUrgency(row);
+                const urgency = getReminderUrgency(row, nowDate);
                 const tint = URGENCY_TINT[urgency.level];
                 const checked = selectedIds.has(row.id);
                 return (
@@ -1066,7 +1083,7 @@ function DashboardInner({
             </div>
           ) : null}
           {filtered.map((row) => {
-            const urgency = getReminderUrgency(row);
+            const urgency = getReminderUrgency(row, nowDate);
             const tint = URGENCY_TINT[urgency.level];
             const checked = selectedIds.has(row.id);
             return (
@@ -1562,6 +1579,11 @@ function LastFetchedChip({
     elapsedSec < 60
       ? `${elapsedSec}s`
       : `${Math.floor(elapsedSec / 60)}m ${elapsedSec % 60}s`;
+  // toLocaleTimeString 은 서버(Node ICU, UTC)와 클라(브라우저 ICU, 뷰어 tz)가
+  // 달라 hydration mismatch 를 낸다. 애초에 뷰어 tz 로만 의미 있는 값이라 마운트
+  // 후에만 title 을 렌더 (hover 툴팁이라 시각 변화 없음).
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   return (
     <span
       className={cn(
@@ -1571,7 +1593,11 @@ function LastFetchedChip({
           : "border-border bg-bg text-fg/80",
       )}
       style={{ letterSpacing: "0.15em" }}
-      title={`마지막 갱신: ${new Date(lastFetchedAt).toLocaleTimeString("ko-KR")}`}
+      title={
+        mounted
+          ? `마지막 갱신: ${new Date(lastFetchedAt).toLocaleTimeString("ko-KR")}`
+          : undefined
+      }
       aria-live="polite"
     >
       <span>갱신</span>

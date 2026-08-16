@@ -57,6 +57,7 @@ export default async function AdminApplicantsPage({
         readOnly={isViewer}
         view={view}
         canSwitchView={!isViewer}
+        serverNow={Date.now()}
       />
     </>
   );
