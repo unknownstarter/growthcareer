@@ -985,8 +985,13 @@ function DashboardInner({
                     <td className="px-3 py-2 align-top text-fg whitespace-nowrap">
                       {formatPhoneForDisplay(row.phone, row.nationality)}
                     </td>
-                    <td className="px-3 py-2 align-top text-fg break-all">
-                      {row.email}
+                    <td className="px-3 py-2 align-top text-fg">
+                      <span
+                        className="block max-w-[220px] truncate"
+                        title={row.email}
+                      >
+                        {row.email}
+                      </span>
                     </td>
                     <td className="px-3 py-2 align-top text-fg whitespace-nowrap">
                       {row.nationality ?? "-"}
