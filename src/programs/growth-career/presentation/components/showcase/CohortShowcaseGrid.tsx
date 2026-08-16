@@ -1,5 +1,7 @@
+import { CalendarDays } from "lucide-react";
 import type { CohortShowcase, CohortInstructor } from "@/src/programs/growth-career/application/dto/showcase-view";
 import { CohortShowcaseCard } from "./CohortShowcaseCard";
+import { ShowcaseEmptyState } from "./ShowcaseEmptyState";
 
 /**
  * 기수 showcase grid. 우산 랜딩 = variant="landing" (최대 3개) /
@@ -21,9 +23,11 @@ export function CohortShowcaseGrid({
 
   if (shown.length === 0) {
     return (
-      <div className="rounded-xl border border-border bg-surface p-8 text-center">
-        <p className="text-fg-muted">기수 데이터 준비 중입니다.</p>
-      </div>
+      <ShowcaseEmptyState
+        icon={CalendarDays}
+        title="기수 정보는 준비 중이에요"
+        description="새로운 기수 소식을 곧 이곳에서 전해드릴게요"
+      />
     );
   }
 

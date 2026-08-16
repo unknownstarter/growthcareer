@@ -1,5 +1,7 @@
+import { BookOpen } from "lucide-react";
 import type { Course, CourseInstructor } from "@/src/programs/growth-career/application/dto/showcase-view";
 import { CourseCard } from "./CourseCard";
+import { ShowcaseEmptyState } from "./ShowcaseEmptyState";
 
 /**
  * 단과 코스 grid. /courses + 우산 랜딩 미리보기.
@@ -19,9 +21,11 @@ export function CourseGrid({
 
   if (shown.length === 0) {
     return (
-      <div className="rounded-xl border border-border bg-surface p-8 text-center">
-        <p className="text-fg-muted">단과 코스 준비 중입니다.</p>
-      </div>
+      <ShowcaseEmptyState
+        icon={BookOpen}
+        title="단과 코스는 준비 중이에요"
+        description="지금 열심히 커리큘럼을 다듬고 있어요. 곧 하나씩 열어드릴게요"
+      />
     );
   }
 

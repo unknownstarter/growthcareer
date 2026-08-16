@@ -1,5 +1,7 @@
+import { Package } from "lucide-react";
 import type { Bundle } from "@/src/programs/growth-career/application/dto/showcase-view";
 import { BundleCard } from "./BundleCard";
+import { ShowcaseEmptyState } from "./ShowcaseEmptyState";
 
 /**
  * 번들 grid. /bundles + 코스 상세 관련 번들.
@@ -17,9 +19,11 @@ export function BundleGrid({
 
   if (shown.length === 0) {
     return (
-      <div className="rounded-xl border border-border bg-surface p-8 text-center">
-        <p className="text-fg-muted">번들 상품 준비 중입니다.</p>
-      </div>
+      <ShowcaseEmptyState
+        icon={Package}
+        title="번들 상품은 준비 중이에요"
+        description="여러 코스를 묶은 알찬 구성을 준비하고 있어요. 조금만 기다려주세요"
+      />
     );
   }
 

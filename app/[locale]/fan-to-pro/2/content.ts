@@ -192,6 +192,8 @@ const CONTENT = {
       success: "신청서가 접수됐습니다. 입금 정보를 문자로 보내드릴게요. 결제까지 마치면 수강신청이 최종 확정됩니다",
       errorTitle: "제출 실패",
       error: "제출에 실패했습니다. 잠시 후 다시 시도하거나 카카오톡 채널로 문의해 주세요",
+      checkTitle: "입력을 확인해주세요",
+      checkBody: "아래 항목을 다시 확인해주세요",
     },
     footer: {
       brand: "Growth Career | Fan to Pro",
@@ -378,6 +380,8 @@ const CONTENT = {
       success: "Your application is in. We'll text you the payment details, and your enrollment is confirmed once payment is complete",
       errorTitle: "Submission failed",
       error: "Submission failed. Please try again shortly or reach us via the KakaoTalk channel.",
+      checkTitle: "Please check your entries",
+      checkBody: "Review the fields below",
     },
     footer: {
       brand: "Growth Career | Fan to Pro",

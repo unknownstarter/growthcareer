@@ -14,6 +14,7 @@ export { BundleGrid } from "./BundleGrid";
 export { StoryCard } from "./StoryCard";
 export { StoryGrid } from "./StoryGrid";
 export { EmptyStoriesState } from "./EmptyStoriesState";
+export { ShowcaseEmptyState } from "./ShowcaseEmptyState";
 
 export type {
   HeroUmbrellaStatsData,
