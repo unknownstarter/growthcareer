@@ -427,7 +427,7 @@ export default async function GcHomePage({
           {/* 카테고리 (섹션 상단 = 표준 위치) */}
           <div className="mt-7 flex flex-wrap items-center gap-2">
             {t.insight.map((c) => (
-              <a key={c.key} href={`${prefix}/insight/${c.slug}`} className="rounded-full border border-[#EDEFF2] bg-[#F7F8FA] px-3.5 py-1.5 font-medium text-[#4E5968] text-sm transition-colors duration-150 hover:border-brand-pink hover:text-brand-pink">
+              <a key={c.key} href={`${prefix}/insight/${c.slug}`} className="rounded-full border border-[#EDEFF2] bg-[#F7F8FA] px-3.5 py-1.5 font-medium text-[#4E5968] text-sm transition-all duration-150 hover:border-brand-pink hover:text-brand-pink active:scale-95">
                 {c.label}
               </a>
             ))}
@@ -482,7 +482,7 @@ export default async function GcHomePage({
                 </div>
               ))}
             </div>
-            <CommunityGate triggerClassName="mt-7 inline-flex items-center gap-2 rounded-full bg-[#F2F4F6] px-3.5 py-1.5 font-medium text-[#4E5968] text-sm transition-colors duration-150 hover:bg-[#E8EBED]">
+            <CommunityGate triggerClassName="mt-7 inline-flex items-center gap-2 rounded-full bg-[#F2F4F6] px-3.5 py-1.5 font-medium text-[#4E5968] text-sm transition-all duration-150 hover:bg-[#E8EBED] active:scale-95">
               <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-brand-pink" />
               {t.communityGate}
             </CommunityGate>

@@ -257,7 +257,7 @@ function CohortCard({
   return (
     <Link
       href={href}
-      className="group block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2"
+      className="group block rounded-xl transition-transform duration-150 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2"
       aria-label={`${row.name} 상세 보기`}
     >
       {inner}

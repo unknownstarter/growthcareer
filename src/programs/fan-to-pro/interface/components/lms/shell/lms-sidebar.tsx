@@ -98,7 +98,7 @@ export function LmsSidebar({ role }: { role: LmsRole }) {
       <div className="h-16 shrink-0 flex flex-col justify-center px-6 border-b border-[var(--border)]">
         <Link
           href={homeHref as Route}
-          className="block text-base font-bold tracking-tight text-[var(--foreground)]"
+          className="block text-base font-bold tracking-tight text-[var(--foreground)] transition-opacity duration-150 hover:opacity-70 active:opacity-60"
         >
           Fan to Pro
         </Link>
@@ -127,7 +127,7 @@ export function LmsSidebar({ role }: { role: LmsRole }) {
                 key={item.href}
                 href={item.href as Route}
                 className={cn(
-                  "flex items-center gap-3 rounded-[var(--radius-sm)] px-3 py-2.5 text-sm font-medium transition-colors duration-150",
+                  "flex items-center gap-3 rounded-[var(--radius-sm)] px-3 py-2.5 text-sm font-medium transition-all duration-150 active:scale-[0.98]",
                   active
                     ? "bg-[var(--primary)]/10 text-[var(--primary)]"
                     : "text-[var(--muted-foreground)] hover:bg-[var(--secondary)] hover:text-[var(--foreground)]",

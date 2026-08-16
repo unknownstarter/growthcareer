@@ -39,7 +39,7 @@ export function NavLink({
   return (
     <a
       href={href}
-      className={`transition-colors duration-150 ${isActive ? activeClassName : inactiveClassName}`}
+      className={`transition-colors duration-150 active:opacity-70 ${isActive ? activeClassName : inactiveClassName}`}
       {...(isActive ? { "aria-current": "page" } : {})}
     >
       {label}

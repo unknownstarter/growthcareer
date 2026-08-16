@@ -16,6 +16,13 @@
     0 8px 16px rgba(17, 24, 39, 0.1),
     0 26px 50px -20px rgba(17, 24, 39, 0.26);
 }
+/* 눌렀을 때 촉감 — 링크형(a) 카드에만. figure(후기 인용) 는 press 없음. */
+a.clean:active {
+  transform: translateY(-1px) scale(0.995);
+  box-shadow:
+    0 4px 10px rgba(17, 24, 39, 0.1),
+    0 14px 30px -18px rgba(17, 24, 39, 0.2);
+}
 
 .pixel {
   border: 2px solid var(--color-border-strong);
@@ -38,6 +45,7 @@
     transition: none;
   }
   .clean:hover,
+  a.clean:active,
   .pixel:hover {
     transform: none;
   }

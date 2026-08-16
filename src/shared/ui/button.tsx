@@ -26,11 +26,11 @@ const VARIANT: Record<ButtonVariant, string> = {
   "white-solid":
     "rounded-full bg-white text-[#0A0A0A] transition-all duration-150 hover:bg-white/90 active:scale-[0.98]",
   "indigo-outline":
-    "rounded-xl border border-brand-indigo bg-white text-brand-indigo transition-colors duration-150 hover:bg-brand-indigo/5",
+    "rounded-xl border border-brand-indigo bg-white text-brand-indigo transition-all duration-150 hover:bg-brand-indigo/5 active:scale-[0.98]",
   subtle:
-    "rounded-xl bg-[#F2F4F6] text-[#333D4B] transition-colors duration-150 hover:bg-[#E8EBED]",
+    "rounded-xl bg-[#F2F4F6] text-[#333D4B] transition-all duration-150 hover:bg-[#E8EBED] active:scale-[0.98]",
   ghost:
-    "rounded-xl border border-[#E5E8EB] text-[#333D4B] transition-colors duration-150 hover:border-[#C9CFD6] hover:bg-[#F7F8FA]",
+    "rounded-xl border border-[#E5E8EB] text-[#333D4B] transition-all duration-150 hover:border-[#C9CFD6] hover:bg-[#F7F8FA] active:scale-[0.98]",
   pixel: styles.pixel,
   "pixel-ghost": styles.pixelGhost,
 };

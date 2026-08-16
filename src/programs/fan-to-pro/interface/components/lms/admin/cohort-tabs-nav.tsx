@@ -63,7 +63,7 @@ export function CohortTabsNav({ cohortSlug }: { cohortSlug: string }) {
             aria-selected={active}
             className={cn(
               "inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium",
-              "transition-colors duration-150 border-b-2 -mb-px",
+              "transition-colors duration-150 border-b-2 -mb-px active:opacity-70",
               active
                 ? "border-[var(--primary)] text-[var(--primary)]"
                 : "border-transparent text-[var(--muted-foreground)] hover:text-[var(--foreground)]",

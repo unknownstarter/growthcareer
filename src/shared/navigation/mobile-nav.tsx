@@ -112,7 +112,7 @@ export function MobileNav({
         aria-controls={panelId}
         onClick={() => setOpen(true)}
         className={cn(
-          "-mr-1 inline-flex h-10 w-10 items-center justify-center rounded-lg transition-colors duration-150",
+          "-mr-1 inline-flex h-10 w-10 items-center justify-center rounded-lg transition-all duration-150 active:scale-90",
           t.trigger,
         )}
       >
@@ -147,7 +147,7 @@ export function MobileNav({
                 aria-label="메뉴 닫기"
                 onClick={close}
                 className={cn(
-                  "inline-flex h-10 w-10 items-center justify-center rounded-lg transition-colors duration-150",
+                  "inline-flex h-10 w-10 items-center justify-center rounded-lg transition-all duration-150 active:scale-90",
                   t.trigger,
                 )}
               >

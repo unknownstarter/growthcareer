@@ -177,8 +177,8 @@ function SessionCard({
     <Link
       href={href}
       className={[
-        "group block rounded-xl border bg-[var(--card)] shadow-sm transition-all",
-        "hover:shadow-md hover:border-[var(--primary)]/30",
+        "group block rounded-xl border bg-[var(--card)] shadow-sm transition-all duration-150",
+        "hover:shadow-md hover:border-[var(--primary)]/30 active:scale-[0.99]",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2",
         isCancelled ? "opacity-60 border-[var(--border)]" : "border-[var(--border)]",
       ].join(" ")}
