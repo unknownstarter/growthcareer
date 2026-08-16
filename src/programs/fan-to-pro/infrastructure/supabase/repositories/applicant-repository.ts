@@ -1,4 +1,6 @@
+import { cache } from "react";
 import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
+import { fetchCohortBySlug } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-repository";
 import {
   APPLICANT_STATUSES,
   type AnonymizeEligibility,
@@ -70,9 +72,35 @@ function maskUniversity(raw: string): string {
   return domestic ? "국내 대학" : "해외 대학";
 }
 
+/**
+ * 어드민 신청자 뷰 스코프 (기수 필터, 노아 확정 옵션 A).
+ *   cohort2 = 2기 신청자 (cohort_id=fantopro2) OR 다음 기수 관심 등록자
+ *             (status=next_cohort_interest, 1기 마감 때 waitlist 로 남은 사전 신청).
+ *   cohort1 = 1기 신청자 (cohort_id=b628b909). legacy null 정책은 별도 미포함
+ *             (1기 = 명시적 cohort_id 부여된 26건. null 2건은 next_cohort_interest 라 cohort2 로 귀속).
+ *   all     = 필터 없음 (기존 전체 뷰).
+ */
+export type ApplicantView = "cohort2" | "cohort1" | "all";
+
+// 기수 slug = cohorts 테이블의 안정 business key. fetchCohortBySlug 로 id resolve.
+const COHORT1_SLUG = "b628b909";
+const COHORT2_SLUG = "fantopro2";
+
+/**
+ * slug → cohort id resolve. React cache 로 요청 단위 중복 조회 제거
+ * (page 렌더 중 여러 번 불려도 Supabase 왕복 1회).
+ */
+const resolveCohortId = cache(
+  async (slug: string): Promise<string | null> => {
+    const cohort = await fetchCohortBySlug(slug);
+    return cohort?.id ?? null;
+  },
+);
+
 export async function fetchApplicants(options?: {
   mask?: boolean;
   cohortId?: string | null;
+  view?: ApplicantView;
 }): Promise<{
   rows: ApplicantRow[];
   eligibility: AnonymizeEligibility;
@@ -81,6 +109,7 @@ export async function fetchApplicants(options?: {
 }> {
   const mask = options?.mask ?? false;
   const cohortId = options?.cohortId ?? null;
+  const view = options?.view ?? null;
   const supabase = getSupabaseServer();
   if (!supabase) {
     return {
@@ -141,7 +170,23 @@ export async function fetchApplicants(options?: {
     )
     .order("created_at", { ascending: false });
 
-  if (cohortId) q = q.eq("cohort_id", cohortId);
+  // 뷰 스코핑 (기수 필터). view 가 명시되면 우선, 그다음 저수준 cohortId eq.
+  if (view === "cohort2") {
+    const f2p2Id = await resolveCohortId(COHORT2_SLUG);
+    // fantopro2 cohort_id OR next_cohort_interest (사전 관심 등록 = 2기 뷰 포함).
+    // cohort 미해결 (id null) 이면 OR 의 cohort_id 절 생략하고 status 만.
+    q = f2p2Id
+      ? q.or(`cohort_id.eq.${f2p2Id},status.eq.next_cohort_interest`)
+      : q.eq("status", "next_cohort_interest");
+  } else if (view === "cohort1") {
+    const c1Id = await resolveCohortId(COHORT1_SLUG);
+    // 1기 미해결 시 매칭 0건 (안전) — 존재하지 않는 sentinel 로 eq.
+    q = q.eq("cohort_id", c1Id ?? "00000000-0000-0000-0000-000000000000");
+  } else if (view === "all") {
+    // 필터 없음 (전체).
+  } else if (cohortId) {
+    q = q.eq("cohort_id", cohortId);
+  }
 
   const { data, error } = await q;
 

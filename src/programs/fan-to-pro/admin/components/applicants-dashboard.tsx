@@ -19,6 +19,7 @@ import {
 } from "@/src/programs/fan-to-pro/application/admin-actions";
 import type { BatchEnrollResult } from "@/src/programs/fan-to-pro/domain/application";
 import { pollApplicants } from "@/src/programs/fan-to-pro/application/polling-actions";
+import type { ApplicantView } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/applicant-repository";
 import { resolveReferrersForCodes } from "@/src/programs/fan-to-pro/interface/server-actions/admin/lms-referral-actions";
 import type { Referrer } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/referral-repository";
 import {
@@ -86,12 +87,17 @@ export function ApplicantsDashboard({
   supabaseAvailable,
   fetchError,
   readOnly = false,
+  view = "cohort2",
+  canSwitchView = false,
 }: {
   initialRows: ApplicantRow[];
   anonymizeEligibility: AnonymizeEligibility;
   supabaseAvailable: boolean;
   fetchError: string | null;
   readOnly?: boolean;
+  // 기수 필터 (옵션 A). server 가 결정한 현재 뷰 + 토글 허용 여부.
+  view?: ApplicantView;
+  canSwitchView?: boolean;
 }) {
   return (
     <ToastProvider>
@@ -101,6 +107,8 @@ export function ApplicantsDashboard({
         supabaseAvailable={supabaseAvailable}
         fetchError={fetchError}
         readOnly={readOnly}
+        view={view}
+        canSwitchView={canSwitchView}
       />
     </ToastProvider>
   );
@@ -112,12 +120,16 @@ function DashboardInner({
   supabaseAvailable,
   fetchError,
   readOnly,
+  view,
+  canSwitchView,
 }: {
   initialRows: ApplicantRow[];
   anonymizeEligibility: AnonymizeEligibility;
   supabaseAvailable: boolean;
   fetchError: string | null;
   readOnly: boolean;
+  view: ApplicantView;
+  canSwitchView: boolean;
 }) {
   const router = useRouter();
   const { show } = useToast();
@@ -161,7 +173,8 @@ function DashboardInner({
     let cancelled = false;
     const id = window.setInterval(async () => {
       try {
-        const result = await pollApplicants();
+        // 폴링도 현재 뷰 스코프로 (전체 스냅샷 오염 방지, viewer 는 서버 강제 cohort2).
+        const result = await pollApplicants(view);
         if (cancelled) return;
         if (result.error || !result.supabaseAvailable) return;
         setPendingRows(result.rows);
@@ -175,7 +188,7 @@ function DashboardInner({
       cancelled = true;
       window.clearInterval(id);
     };
-  }, [supabaseAvailable]);
+  }, [supabaseAvailable, view]);
 
   // "갱신 12s ago" chip 의 1 초 카운터. 별도 effect 라 폴링 사이클과 무관.
   useEffect(() => {
@@ -643,6 +656,17 @@ function DashboardInner({
             >
               Fan to Pro 신청자
             </h1>
+            <CohortViewToggle
+              view={view}
+              canSwitch={canSwitchView}
+              onSwitch={(next) => {
+                router.push(
+                  next === "cohort2"
+                    ? "/admin/applicants"
+                    : `/admin/applicants?view=${next}`,
+                );
+              }}
+            />
             {hasPending ? (
               <PendingChangesChip
                 count={pendingDiff.total}
@@ -1512,6 +1536,70 @@ function LastFetchedChip({
       <span>갱신</span>
       <span className="text-fg">{label}</span>
     </span>
+  );
+}
+
+/**
+ * 기수 필터 세그먼트 토글 (옵션 A, 노아 확정).
+ *   admin (canSwitch=true): 2기 / 1기 / 전체 세그먼트. 클릭 시 ?view= 로 navigate.
+ *   viewer (canSwitch=false): "2기" 고정 라벨만. 토글 미표시 — 서버가 이미
+ *     cohort2 강제라 UI 도 스위치 안 노출 (파트너 1기 이력 노출 최소화).
+ * additive — 기존 컬럼/액션/폴링 무변경 (§7.4).
+ */
+const COHORT_VIEW_OPTIONS: { value: ApplicantView; label: string }[] = [
+  { value: "cohort2", label: "2기" },
+  { value: "cohort1", label: "1기" },
+  { value: "all", label: "전체" },
+];
+
+function CohortViewToggle({
+  view,
+  canSwitch,
+  onSwitch,
+}: {
+  view: ApplicantView;
+  canSwitch: boolean;
+  onSwitch: (next: ApplicantView) => void;
+}) {
+  if (!canSwitch) {
+    // viewer 고정 라벨 — 스위치 없음.
+    return (
+      <span
+        className="inline-flex items-center border border-border bg-bg px-2 py-0.5 text-[10px] font-black uppercase whitespace-nowrap text-fg/80"
+        style={{ letterSpacing: "0.15em" }}
+      >
+        2기
+      </span>
+    );
+  }
+  return (
+    <div
+      className="inline-flex items-center border border-border"
+      role="group"
+      aria-label="기수 필터"
+    >
+      {COHORT_VIEW_OPTIONS.map((opt) => {
+        const active = opt.value === view;
+        return (
+          <button
+            key={opt.value}
+            type="button"
+            onClick={() => {
+              if (!active) onSwitch(opt.value);
+            }}
+            aria-pressed={active}
+            className={cn(
+              "px-2.5 py-1 text-[11px] font-black whitespace-nowrap transition-colors duration-150",
+              active
+                ? "bg-brand-pink text-black"
+                : "bg-bg text-fg/70 hover:text-fg hover:bg-fg/5",
+            )}
+          >
+            {opt.label}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
