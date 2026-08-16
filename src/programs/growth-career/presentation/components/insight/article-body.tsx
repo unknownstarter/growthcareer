@@ -23,7 +23,7 @@ import type { ReactNode } from "react";
 export function ArticleBody({ body }: { body: string }) {
   const blocks = parseBlocks(body);
   return (
-    <div className="break-keep text-[17px] text-[#333D4B] leading-[1.85]">
+    <div className="break-keep text-[17px] text-ink-secondary leading-[1.85]">
       {blocks.map((block, i) => renderBlock(block, i))}
     </div>
   );
@@ -165,7 +165,7 @@ function renderBlock(block: Block, key: number): ReactNode {
       return (
         <h2
           key={key}
-          className="mt-14 mb-4 font-black text-[#191F28] text-[24px] leading-snug tracking-[-0.01em] sm:text-[27px]"
+          className="mt-14 mb-4 font-black text-ink text-[24px] leading-snug tracking-[-0.01em] sm:text-[27px]"
         >
           {inline(block.text)}
         </h2>
@@ -174,7 +174,7 @@ function renderBlock(block: Block, key: number): ReactNode {
       return (
         <h3
           key={key}
-          className="mt-10 mb-3 font-bold text-[#191F28] text-[19px] leading-snug sm:text-[20px]"
+          className="mt-10 mb-3 font-bold text-ink text-[19px] leading-snug sm:text-[20px]"
         >
           {inline(block.text)}
         </h3>
@@ -197,7 +197,7 @@ function renderBlock(block: Block, key: number): ReactNode {
       return (
         <aside
           key={key}
-          className="my-7 rounded-r-xl border-brand-pink border-l-[3px] bg-[#F7F8FA] px-5 py-4 text-[16px] text-[#4E5968] leading-[1.75]"
+          className="my-7 rounded-r-xl border-brand-pink border-l-[3px] bg-fill-subtle px-5 py-4 text-[16px] text-ink-muted leading-[1.75]"
         >
           {block.lines.map((l, i) =>
             l.length === 0 ? (
@@ -215,12 +215,12 @@ function renderBlock(block: Block, key: number): ReactNode {
         <div key={key} className="my-7 overflow-x-auto">
           <table className="w-full border-collapse text-[15px] sm:text-[16px]">
             <thead>
-              <tr className="border-[#EDEFF2] border-b-2">
+              <tr className="border-hairline border-b-2">
                 {block.header.map((cell, i) => (
                   <th
                     key={i}
                     scope="col"
-                    className="px-3.5 py-3 text-left font-bold text-[#191F28]"
+                    className="px-3.5 py-3 text-left font-bold text-ink"
                   >
                     {inline(cell)}
                   </th>
@@ -231,14 +231,14 @@ function renderBlock(block: Block, key: number): ReactNode {
               {block.rows.map((row, r) => (
                 <tr
                   key={r}
-                  className={`border-[#F2F4F6] border-b ${
-                    r % 2 === 1 ? "bg-[#FAFBFC]" : ""
+                  className={`border-fill border-b ${
+                    r % 2 === 1 ? "bg-fill-subtlest" : ""
                   }`}
                 >
                   {row.map((cell, c) => (
                     <td
                       key={c}
-                      className="px-3.5 py-2.5 align-top text-[#4E5968]"
+                      className="px-3.5 py-2.5 align-top text-ink-muted"
                     >
                       {inline(cell)}
                     </td>
@@ -272,7 +272,7 @@ function inline(text: string): ReactNode {
   return parts.map((part, i) => {
     if (part.startsWith("**") && part.endsWith("**")) {
       return (
-        <strong key={i} className="font-bold text-[#191F28]">
+        <strong key={i} className="font-bold text-ink">
           {part.slice(2, -2)}
         </strong>
       );

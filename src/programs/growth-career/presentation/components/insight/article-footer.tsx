@@ -22,11 +22,11 @@ export function ArticleFooter({
   locale?: "ko" | "en";
 }) {
   return (
-    <footer className="mt-16 border-[#EDEFF2] border-t pt-10">
+    <footer className="mt-16 border-hairline border-t pt-10">
       {sources.length > 0 ? (
         <div>
           <p
-            className="mb-4 font-bold text-[#8B95A1] text-[13px] uppercase"
+            className="mb-4 font-bold text-ink-faint text-[13px] uppercase"
             style={{ letterSpacing: "0.25em" }}
           >
             {locale === "en" ? "Sources" : "출처"}
@@ -38,14 +38,14 @@ export function ArticleFooter({
                   href={s.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group inline-flex items-baseline gap-2 text-[15px] text-[#4E5968] transition-colors duration-150 hover:text-brand-pink"
+                  className="group inline-flex items-baseline gap-2 text-[15px] text-ink-muted transition-colors duration-150 hover:text-brand-pink"
                 >
-                  <span className="underline decoration-[#DDE1E6] decoration-1 underline-offset-4 transition-colors duration-150 group-hover:decoration-brand-pink">
+                  <span className="underline decoration-hairline-mid decoration-1 underline-offset-4 transition-colors duration-150 group-hover:decoration-brand-pink">
                     {s.label}
                   </span>
                   <span
                     aria-hidden
-                    className="text-[#B0B8C1] transition-transform duration-150 group-hover:translate-x-0.5"
+                    className="text-ink-fainter transition-transform duration-150 group-hover:translate-x-0.5"
                   >
                     ↗
                   </span>
@@ -56,7 +56,7 @@ export function ArticleFooter({
         </div>
       ) : null}
 
-      <p className="mt-8 rounded-xl bg-[#F7F8FA] px-5 py-4 text-[#8B95A1] text-sm leading-relaxed">
+      <p className="mt-8 rounded-xl bg-fill-subtle px-5 py-4 text-ink-faint text-sm leading-relaxed">
         {locale === "en"
           ? `This information is current as of ${formatUpdatedAtEn(updatedAt)}. Always verify the latest details on the official sources.`
           : `본 정보는 ${formatUpdatedAt(updatedAt)} 기준입니다. 최신 내용은 공식 출처에서 확인하세요.`}

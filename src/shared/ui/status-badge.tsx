@@ -19,8 +19,8 @@ const DEFAULT_LABEL: Record<ProgramStatus, string> = {
 const TONE: Record<ProgramStatus, string> = {
   open: "bg-brand-pink/10 text-brand-pink",
   upcoming: "bg-brand-indigo/10 text-brand-indigo",
-  closed: "bg-[#F2F4F6] text-[#8B95A1]",
-  completed: "bg-[#F2F4F6] text-[#8B95A1]",
+  closed: "bg-fill text-ink-faint",
+  completed: "bg-fill text-ink-faint",
 };
 
 export function StatusBadge({

@@ -26,10 +26,10 @@ const FOCUSABLE =
 
 const THEME = {
   "light-clean": {
-    trigger: "text-[#333D4B] hover:text-brand-pink",
-    panel: "bg-white text-[#333D4B]",
-    border: "border-[#EDEFF2]",
-    menu: "text-[#333D4B]",
+    trigger: "text-ink-secondary hover:text-brand-pink",
+    panel: "bg-white text-ink-secondary",
+    border: "border-hairline",
+    menu: "text-ink-secondary",
     menuHover: "hover:text-brand-pink",
     active: "text-brand-pink font-bold",
     localeVariant: "light" as const,

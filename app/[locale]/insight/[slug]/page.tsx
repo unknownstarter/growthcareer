@@ -143,7 +143,7 @@ export default async function InsightDetail({
           {/* 뒤로 */}
           <a
             href={`${prefix}/insight`}
-            className="group flex w-fit items-center gap-1.5 text-[#8B95A1] text-sm transition-colors duration-150 hover:text-brand-pink"
+            className="group flex w-fit items-center gap-1.5 text-ink-faint text-sm transition-colors duration-150 hover:text-brand-pink"
           >
             <span aria-hidden className="transition-transform duration-150 group-hover:-translate-x-0.5">
               ←
@@ -157,18 +157,18 @@ export default async function InsightDetail({
           </span>
 
           {/* 제목 */}
-          <h1 className="mt-4 text-balance break-keep font-black text-[#191F28] text-[32px] leading-[1.25] tracking-[-0.02em] sm:text-[40px]">
+          <h1 className="mt-4 text-balance break-keep font-black text-ink text-[32px] leading-[1.25] tracking-[-0.02em] sm:text-[40px]">
             {frontmatter.title}
           </h1>
 
           {/* 리드 요약 */}
-          <p className="mt-6 break-keep text-[#4E5968] text-lg leading-relaxed sm:text-xl">
+          <p className="mt-6 break-keep text-ink-muted text-lg leading-relaxed sm:text-xl">
             {frontmatter.summary}
           </p>
 
           {/* 히어로 이미지 */}
           {frontmatter.thumbnail ? (
-            <div className="relative mt-8 aspect-[16/9] w-full overflow-hidden rounded-2xl bg-[#F2F4F6]">
+            <div className="relative mt-8 aspect-[16/9] w-full overflow-hidden rounded-2xl bg-fill">
               <Image
                 src={frontmatter.thumbnail}
                 alt=""
@@ -181,7 +181,7 @@ export default async function InsightDetail({
           ) : null}
         </div>
 
-        <hr className="mt-10 border-[#EDEFF2]" />
+        <hr className="mt-10 border-hairline" />
 
         {/* 본문 */}
         <div className="mt-10 motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-500 motion-safe:[animation-delay:120ms]">

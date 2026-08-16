@@ -8,12 +8,12 @@ export default function InsightListLoading() {
   return (
     <div className="min-h-screen bg-white">
       {/* header spacer (실 SiteHeader 높이 h-14 대응) */}
-      <div className="h-14 border-[#EDEFF2] border-b" />
+      <div className="h-14 border-hairline border-b" />
 
       <section className={`${WRAP} pt-16 sm:pt-20`}>
-        <div className="h-5 w-24 animate-pulse rounded bg-[#F2F4F6]" />
-        <div className="mt-4 h-9 w-3/4 animate-pulse rounded bg-[#F2F4F6]" />
-        <div className="mt-3 h-5 w-2/3 animate-pulse rounded bg-[#F2F4F6]" />
+        <div className="h-5 w-24 animate-pulse rounded bg-fill" />
+        <div className="mt-4 h-9 w-3/4 animate-pulse rounded bg-fill" />
+        <div className="mt-3 h-5 w-2/3 animate-pulse rounded bg-fill" />
       </section>
 
       <section className={`${WRAP} pt-10 pb-24`}>
@@ -21,12 +21,12 @@ export default function InsightListLoading() {
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className="flex h-[220px] flex-col rounded-2xl border border-[#EDEFF2] p-6 sm:p-7"
+              className="flex h-[220px] flex-col rounded-2xl border border-hairline p-6 sm:p-7"
             >
-              <div className="h-6 w-16 animate-pulse rounded-full bg-[#F2F4F6]" />
-              <div className="mt-4 h-6 w-4/5 animate-pulse rounded bg-[#F2F4F6]" />
-              <div className="mt-3 h-4 w-full animate-pulse rounded bg-[#F2F4F6]" />
-              <div className="mt-2 h-4 w-2/3 animate-pulse rounded bg-[#F2F4F6]" />
+              <div className="h-6 w-16 animate-pulse rounded-full bg-fill" />
+              <div className="mt-4 h-6 w-4/5 animate-pulse rounded bg-fill" />
+              <div className="mt-3 h-4 w-full animate-pulse rounded bg-fill" />
+              <div className="mt-2 h-4 w-2/3 animate-pulse rounded bg-fill" />
             </div>
           ))}
         </div>

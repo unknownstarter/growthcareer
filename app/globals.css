@@ -20,6 +20,37 @@
   --color-brand-pink: #ec4899;       /* 핑크 */
   --color-brand-fuchsia: #d946ef;
 
+  /* === GC 라이트 서피스 semantic 팔레트 (2026-08-16 토큰화) ===
+     GC 메인, Fan to Pro 리스트, 인사이트, press, 공용 nav/ui 가 흰 배경
+     위에서 쓰던 회색 스케일 (Toss 계열) 을 인라인 [#hex] 로 흩뿌리던 것을
+     named 토큰으로 수렴. 값은 기존과 100% 동일 (렌더 무변화, 참조만 토큰화).
+     ⛔ 위 --color-brand-* @theme 값은 1기, 2기 모집이 의존하므로 변경 금지.
+     이 블록은 "추가" 이며 기존 값을 바꾸지 않는다.
+
+     ink = 흰 배경 위 텍스트 스케일 (진한 것부터 연한 것), fill = 회색 배경
+     서피스, hairline = 경계선. Tailwind v4 @theme 가 text-ink / bg-fill /
+     border-hairline 유틸리티를 자동 생성. */
+  --color-ink: #191F28;              /* 본문 최진 (제목/강조) */
+  --color-ink-secondary: #333D4B;    /* 보조 텍스트 (버튼 라벨 등) */
+  --color-ink-muted: #4E5968;        /* 본문 muted */
+  --color-ink-subtle: #6B7684;       /* subtle 캡션 */
+  --color-ink-faint: #8B95A1;        /* faint (메타/placeholder) */
+  --color-ink-fainter: #B0B8C1;      /* 화살표 등 최연한 글리프 */
+  --color-ink-divider: #D1D6DB;      /* 구분선 글리프 (locale switch 등) */
+
+  --color-fill: #F2F4F6;             /* 기본 회색 서피스 */
+  --color-fill-subtle: #F7F8FA;      /* 살짝 연한 섹션 배경 */
+  --color-fill-subtlest: #FAFBFC;    /* 최연 zebra/hover 배경 */
+  --color-fill-strong: #E8EBED;      /* fill hover 강조 */
+
+  --color-hairline: #EDEFF2;         /* 기본 경계선 */
+  --color-hairline-strong: #E5E8EB;  /* 진한 경계선 */
+  --color-hairline-hover: #C9CFD6;   /* hover 시 경계선 */
+  --color-hairline-mid: #DDE1E6;     /* 중간 경계선 (밑줄 decoration 등) */
+
+  --color-ink-black: #0A0A0A;        /* white 버튼 위 near-black 라벨 */
+  --color-pink-tint: #FDF2F8;        /* 핑크 배경 tint (CTA 카드) */
+
   /* === Typography === */
   --font-sans:
     "Pretendard Variable", "Pretendard", system-ui, -apple-system,

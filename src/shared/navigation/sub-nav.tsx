@@ -36,8 +36,8 @@ const DEFAULT_WRAP = "mx-auto w-full max-w-[1160px] px-5 md:px-8";
 const THEME = {
   "light-clean": {
     // 부모 헤더가 sticky 담당. 이 바는 상단 헤더와 붙는 구분선 border-t 만.
-    bar: "border-[#EDEFF2] border-t bg-white",
-    anchor: "text-[#4E5968] text-sm transition-colors duration-150 hover:text-brand-pink",
+    bar: "border-hairline border-t bg-white",
+    anchor: "text-ink-muted text-sm transition-colors duration-150 hover:text-brand-pink",
     anchorFont: "font-medium",
   },
   "dark-pixel": {

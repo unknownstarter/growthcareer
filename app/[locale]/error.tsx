@@ -34,14 +34,14 @@ export default function LocaleError({
 
   return (
     <main className="flex min-h-screen items-center justify-center break-keep bg-white px-6 py-16">
-      <div className="w-full max-w-md rounded-2xl border border-[#EDEFF2] bg-white p-8 text-center shadow-[0_2px_10px_rgba(17,24,39,0.06)] motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-500">
-        <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-[#F2F4F6]">
-          <AlertTriangle className="h-6 w-6 text-[#8B95A1]" aria-hidden />
+      <div className="w-full max-w-md rounded-2xl border border-hairline bg-white p-8 text-center shadow-[0_2px_10px_rgba(17,24,39,0.06)] motion-safe:animate-in motion-safe:fade-in-0 motion-safe:duration-500">
+        <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-fill">
+          <AlertTriangle className="h-6 w-6 text-ink-faint" aria-hidden />
         </div>
-        <h1 className="text-xl font-bold text-[#191F28]">
+        <h1 className="text-xl font-bold text-ink">
           {isEn ? "Something went wrong" : "잠시 문제가 생겼어요"}
         </h1>
-        <p className="mt-2 text-sm leading-relaxed text-[#4E5968]">
+        <p className="mt-2 text-sm leading-relaxed text-ink-muted">
           {isEn
             ? "This may be temporary. Please try again in a moment."
             : "일시적인 오류일 수 있어요. 잠시 후 다시 시도해주세요."}
@@ -55,7 +55,7 @@ export default function LocaleError({
           {isEn ? "Try again" : "다시 시도"}
         </button>
         {error.digest ? (
-          <p className="mt-4 font-mono text-[10px] text-[#8B95A1]">
+          <p className="mt-4 font-mono text-[10px] text-ink-faint">
             ref: {error.digest}
           </p>
         ) : null}

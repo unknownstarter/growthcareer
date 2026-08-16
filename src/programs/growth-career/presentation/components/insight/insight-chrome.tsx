@@ -38,7 +38,7 @@ export function InsightChrome({
         actions={<GcHeaderCta prefix={prefix} />}
       />
 
-      <main className="min-h-screen break-keep bg-white text-[#191F28]">
+      <main className="min-h-screen break-keep bg-white text-ink">
         {children}
       </main>
 

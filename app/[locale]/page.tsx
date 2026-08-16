@@ -304,7 +304,7 @@ export default async function GcHomePage({
   const cohortBadge = locale === "ko" ? "엔터 1기" : "Ent Cohort 1";
 
   return (
-    <main className="min-h-screen break-keep bg-white text-[#191F28]">
+    <main className="min-h-screen break-keep bg-white text-ink">
       {/* ===== GNB (공통 SiteHeader, 라이트 variant. 언어 스위처 편입) ===== */}
       <SiteHeader
         brand={<GcWordmark variant="light-clean" href={`${prefix}/`} />}
@@ -324,7 +324,7 @@ export default async function GcHomePage({
           <p className={`${styles.reveal} font-bold text-[15px] text-brand-pink lg:col-start-1 lg:row-start-1 lg:self-end`}>
             {t.heroEyebrow}
           </p>
-          <h1 className={`${styles.reveal} text-balance font-black text-[#191F28] lg:col-start-1 lg:row-start-2`} style={{ ...HEAD, fontSize: "clamp(2.1rem, 4.6vw, 3.6rem)", animationDelay: "0.05s" }}>
+          <h1 className={`${styles.reveal} text-balance font-black text-ink lg:col-start-1 lg:row-start-2`} style={{ ...HEAD, fontSize: "clamp(2.1rem, 4.6vw, 3.6rem)", animationDelay: "0.05s" }}>
             {t.heroH1.l1}
             <br />
             <span className="text-brand-pink">{t.heroH1.l2}</span>
@@ -335,7 +335,7 @@ export default async function GcHomePage({
             <img src={`${MEDIA}/cohort-1/IMG_6076.jpg`} alt={t.heroImgAlt} className="absolute inset-0 h-full w-full object-cover" />
             <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
           </div>
-          <p className={`${styles.reveal} max-w-md text-[17px] text-[#4E5968] leading-relaxed lg:col-start-1 lg:row-start-3`} style={{ animationDelay: "0.16s" }}>
+          <p className={`${styles.reveal} max-w-md text-[17px] text-ink-muted leading-relaxed lg:col-start-1 lg:row-start-3`} style={{ animationDelay: "0.16s" }}>
             {t.heroSub}
           </p>
           {/* CTA: primary(전환) 핑크 solid → 교육, secondary(유입) 남보라 outline → 인사이트 */}
@@ -351,7 +351,7 @@ export default async function GcHomePage({
       </section>
 
       {/* ===== 교육 (배경 연회색 — 히어로 흰색과 구분) ===== */}
-      <section id="education" className="scroll-mt-20 bg-[#F7F8FA] py-20">
+      <section id="education" className="scroll-mt-20 bg-fill-subtle py-20">
         <div className={WRAP}>
         <SectionHeader
           label={t.eduLabel}
@@ -370,7 +370,7 @@ export default async function GcHomePage({
               <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-pink/10 px-3 py-1 font-bold text-sm text-brand-pink">
                 <span className="inline-block h-1.5 w-1.5 rounded-full bg-brand-pink" /> {t.eduCohortTag}
               </span>
-              <h3 className="mt-4 text-balance font-black text-[26px] text-[#191F28] sm:text-[32px]" style={HEAD}>
+              <h3 className="mt-4 text-balance font-black text-[26px] text-ink sm:text-[32px]" style={HEAD}>
                 {t.eduCohortTitle.pre}<span className="text-brand-pink">{t.eduCohortTitle.hi}</span>
               </h3>
               <span className="mt-7 inline-flex items-center gap-2 rounded-xl bg-brand-pink px-6 py-3.5 font-bold text-[16px] text-white transition-transform duration-150 group-hover:translate-x-0.5">
@@ -393,12 +393,12 @@ export default async function GcHomePage({
               className={`group flex flex-col justify-between p-6 sm:p-7 ${track.live ? "" : "opacity-55"}`}
             >
               <div>
-                <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-bold text-sm ${track.live ? "bg-brand-pink/10 text-brand-pink" : "bg-[#F2F4F6] text-[#8B95A1]"}`}>
+                <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-bold text-sm ${track.live ? "bg-brand-pink/10 text-brand-pink" : "bg-fill text-ink-faint"}`}>
                   {track.live ? <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-brand-pink" /> : null}
                   {track.status}
                 </span>
-                <h4 className="mt-4 font-black text-[#191F28] text-xl">{track.domain}</h4>
-                <p className="mt-1 text-[#8B95A1] text-sm">Fan to Pro</p>
+                <h4 className="mt-4 font-black text-ink text-xl">{track.domain}</h4>
+                <p className="mt-1 text-ink-faint text-sm">Fan to Pro</p>
               </div>
               {track.live ? (
                 <span className="mt-8 inline-flex items-center gap-1.5 font-bold text-[15px] text-brand-pink transition-transform duration-150 group-hover:translate-x-0.5">
@@ -427,7 +427,7 @@ export default async function GcHomePage({
           {/* 카테고리 (섹션 상단 = 표준 위치) */}
           <div className="mt-7 flex flex-wrap items-center gap-2">
             {t.insight.map((c) => (
-              <a key={c.key} href={`${prefix}/insight/${c.slug}`} className="rounded-full border border-[#EDEFF2] bg-[#F7F8FA] px-3.5 py-1.5 font-medium text-[#4E5968] text-sm transition-all duration-150 hover:border-brand-pink hover:text-brand-pink active:scale-95">
+              <a key={c.key} href={`${prefix}/insight/${c.slug}`} className="rounded-full border border-hairline bg-fill-subtle px-3.5 py-1.5 font-medium text-ink-muted text-sm transition-all duration-150 hover:border-brand-pink hover:text-brand-pink active:scale-95">
                 {c.label}
               </a>
             ))}
@@ -446,7 +446,7 @@ export default async function GcHomePage({
                   <Image src={`/images/insight/${c.key}.jpg`} alt="" fill sizes={feature ? "(min-width: 1024px) 760px, 100vw" : "(min-width: 1024px) 370px, 50vw"} className="object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
                   {/* 단색 검정 딤 (하단 진하게) */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-black/5" />
-                  <span className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 font-bold text-[#191F28] text-sm">
+                  <span className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 font-bold text-ink text-sm">
                     {c.label}
                   </span>
                   <div className="absolute inset-x-0 bottom-0 p-5">
@@ -464,7 +464,7 @@ export default async function GcHomePage({
       </section>
 
       {/* ===== 커뮤니티 티저 (배경 연회색) ===== */}
-      <section id="community" className="scroll-mt-20 bg-[#F7F8FA] py-20">
+      <section id="community" className="scroll-mt-20 bg-fill-subtle py-20">
         <div className={WRAP}>
         <div className="grid gap-10 lg:grid-cols-[1fr_1.05fr] lg:items-center lg:gap-16">
           <div>
@@ -477,12 +477,12 @@ export default async function GcHomePage({
             <div className="mt-7 flex items-center gap-7">
               {t.communityStats.map((s) => (
                 <div key={s.l}>
-                  <p className="font-black text-[#191F28] text-xl">{s.n}</p>
-                  <p className="mt-0.5 text-[#8B95A1] text-sm">{s.l}</p>
+                  <p className="font-black text-ink text-xl">{s.n}</p>
+                  <p className="mt-0.5 text-ink-faint text-sm">{s.l}</p>
                 </div>
               ))}
             </div>
-            <CommunityGate triggerClassName="mt-7 inline-flex items-center gap-2 rounded-full bg-[#F2F4F6] px-3.5 py-1.5 font-medium text-[#4E5968] text-sm transition-all duration-150 hover:bg-[#E8EBED] active:scale-95">
+            <CommunityGate triggerClassName="mt-7 inline-flex items-center gap-2 rounded-full bg-fill px-3.5 py-1.5 font-medium text-ink-muted text-sm transition-all duration-150 hover:bg-fill-strong active:scale-95">
               <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-brand-pink" />
               {t.communityGate}
             </CommunityGate>
@@ -492,10 +492,10 @@ export default async function GcHomePage({
             <div className="space-y-5" aria-hidden>
               {FEED.map((f) => (
                 <div key={f.nick} className="flex gap-3">
-                  <span className="mt-0.5 h-9 w-9 shrink-0 rounded-full bg-[#F2F4F6]" />
+                  <span className="mt-0.5 h-9 w-9 shrink-0 rounded-full bg-fill" />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-[#191F28] text-sm">{f.nick}</span>
+                      <span className="font-bold text-ink text-sm">{f.nick}</span>
                       <span className="rounded-full bg-brand-pink/10 px-2 py-0.5 font-bold text-sm text-brand-pink">{cohortBadge}</span>
                     </div>
                     <div className="mt-2.5 flex flex-col gap-1.5">
@@ -508,7 +508,7 @@ export default async function GcHomePage({
               ))}
             </div>
             <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-center bg-gradient-to-t from-white via-white/85 to-transparent pt-16 pb-6">
-              <span className="inline-flex items-center gap-2 rounded-xl border border-[#EDEFF2] bg-white px-4 py-2.5 font-bold text-[#333D4B] text-sm shadow-[0_4px_16px_-6px_rgba(17,24,39,0.15)]">
+              <span className="inline-flex items-center gap-2 rounded-xl border border-hairline bg-white px-4 py-2.5 font-bold text-ink-secondary text-sm shadow-[0_4px_16px_-6px_rgba(17,24,39,0.15)]">
                 <LockGlyph /> {t.communityLockLabel}
               </span>
             </div>
@@ -533,12 +533,12 @@ export default async function GcHomePage({
           <div className="mt-12 grid gap-4 lg:grid-cols-[1.6fr_1fr]">
             {/* 피처 인용 — 가장 강력한 후기(Martina) 크게 */}
             <Card variant="clean" as="figure" className="flex flex-col justify-center p-8 sm:p-10">
-              <blockquote className="text-[#191F28] text-[19px] leading-relaxed sm:text-[23px]">{t.reviews[1].liked}</blockquote>
+              <blockquote className="text-ink text-[19px] leading-relaxed sm:text-[23px]">{t.reviews[1].liked}</blockquote>
               <figcaption className="mt-6">
-                <span className="font-bold text-[#191F28]">{t.reviews[1].name}</span>
-                <span className="ml-1.5 text-[#8B95A1] text-sm">{t.reviews[1].origin}</span>
-                <p className="mt-2 text-[#8B95A1] text-sm leading-relaxed">
-                  <span className="font-bold text-[#6B7684]">{t.reviewWishLabel}</span>
+                <span className="font-bold text-ink">{t.reviews[1].name}</span>
+                <span className="ml-1.5 text-ink-faint text-sm">{t.reviews[1].origin}</span>
+                <p className="mt-2 text-ink-faint text-sm leading-relaxed">
+                  <span className="font-bold text-ink-subtle">{t.reviewWishLabel}</span>
                   {t.reviews[1].wish}
                 </p>
               </figcaption>
@@ -547,10 +547,10 @@ export default async function GcHomePage({
             <div className="grid gap-4">
               {t.reviews.filter((_, i) => i !== 1).map((r) => (
                 <Card key={r.name} variant="clean" as="figure" className="p-6">
-                  <blockquote className="text-[#191F28] text-sm leading-relaxed">{r.liked}</blockquote>
+                  <blockquote className="text-ink text-sm leading-relaxed">{r.liked}</blockquote>
                   <figcaption className="mt-3 text-sm">
-                    <span className="font-bold text-[#191F28]">{r.name}</span>
-                    <span className="ml-1.5 text-[#8B95A1]">{r.origin}</span>
+                    <span className="font-bold text-ink">{r.name}</span>
+                    <span className="ml-1.5 text-ink-faint">{r.origin}</span>
                   </figcaption>
                 </Card>
               ))}
@@ -570,7 +570,7 @@ export default async function GcHomePage({
             <Button
               variant="subtle"
               href={`${prefix}/fan-to-pro/2`}
-              className="shrink-0 bg-white px-7 py-4 text-[17px] text-brand-pink hover:bg-white/90"
+              className="shrink-0 bg-white px-7 py-4 text-[17px] text-brand-pink! hover:bg-white/90"
             >
               {t.trustCta} <span aria-hidden>→</span>
             </Button>
@@ -580,7 +580,7 @@ export default async function GcHomePage({
 
       {/* ===== 커리어 비전 티저 ===== */}
       <section id="gc-vision" className={`${WRAP} py-24`}>
-        <div className="rounded-3xl bg-[#FDF2F8] px-8 py-12 sm:px-16 sm:py-16">
+        <div className="rounded-3xl bg-pink-tint px-8 py-12 sm:px-16 sm:py-16">
           <SectionHeader
             label={t.visionLabel}
             title={

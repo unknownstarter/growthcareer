@@ -92,7 +92,7 @@ export function Modal({
         aria-modal="true"
         aria-labelledby={title ? titleId : undefined}
         className={cn(
-          "w-full max-w-[420px] break-keep rounded-2xl bg-white p-6 text-[#191F28] shadow-[0_20px_48px_-12px_rgba(0,0,0,0.35)] sm:p-8",
+          "w-full max-w-[420px] break-keep rounded-2xl bg-white p-6 text-ink shadow-[0_20px_48px_-12px_rgba(0,0,0,0.35)] sm:p-8",
           styles.panel,
           className,
         )}
@@ -103,7 +103,7 @@ export function Modal({
           </h2>
         ) : null}
         {children ? (
-          <div className="mt-3 text-[15px] text-[#4E5968] leading-relaxed">{children}</div>
+          <div className="mt-3 text-[15px] text-ink-muted leading-relaxed">{children}</div>
         ) : null}
         {actions ? <div className="mt-6 flex justify-end gap-2">{actions}</div> : null}
       </div>

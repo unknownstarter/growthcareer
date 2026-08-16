@@ -19,8 +19,8 @@ export function LocaleSwitch({ variant = "light" }: { variant?: "light" | "dark"
   const activeLocale = useLocale();
   const pathname = usePathname();
 
-  const rest = variant === "light" ? "text-[#8B95A1]" : "text-fg-subtle";
-  const divider = variant === "light" ? "text-[#D1D6DB]" : "text-fg-subtle/60";
+  const rest = variant === "light" ? "text-ink-faint" : "text-fg-subtle";
+  const divider = variant === "light" ? "text-ink-divider" : "text-fg-subtle/60";
 
   return (
     <nav aria-label="Select language" className="flex items-center gap-2 font-bold text-[13px]">

@@ -122,7 +122,7 @@ export default async function InsightList({
       {/* 카테고리 카드 그리드 */}
       <section className={`${WRAP} pb-24`}>
         {insights.length === 0 ? (
-          <p className="rounded-2xl bg-[#F7F8FA] px-6 py-16 text-center text-[#8B95A1]">
+          <p className="rounded-2xl bg-fill-subtle px-6 py-16 text-center text-ink-faint">
             {isKo ? "준비된 아티클이 없습니다." : "No articles yet."}
           </p>
         ) : (
@@ -135,10 +135,10 @@ export default async function InsightList({
               >
                 <a
                   href={`${prefix}/insight/${a.slug}`}
-                  className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[#EDEFF2] bg-white transition-colors duration-150 hover:border-[#DDE1E6] hover:bg-[#FAFBFC]"
+                  className="group flex h-full flex-col overflow-hidden rounded-2xl border border-hairline bg-white transition-colors duration-150 hover:border-hairline-mid hover:bg-fill-subtlest"
                 >
                   {a.thumbnail ? (
-                    <div className="relative aspect-[16/9] w-full overflow-hidden bg-[#F2F4F6]">
+                    <div className="relative aspect-[16/9] w-full overflow-hidden bg-fill">
                       <Image
                         src={a.thumbnail}
                         alt=""
@@ -152,10 +152,10 @@ export default async function InsightList({
                     <span className="inline-flex w-fit items-center rounded-full bg-brand-pink/10 px-3 py-1 font-bold text-brand-pink text-sm">
                       {a.category}
                     </span>
-                    <h2 className="mt-4 font-black text-[#191F28] text-[20px] leading-snug tracking-[-0.01em]">
+                    <h2 className="mt-4 font-black text-ink text-[20px] leading-snug tracking-[-0.01em]">
                       {a.title}
                     </h2>
-                    <p className="mt-3 line-clamp-3 flex-1 text-[#6B7684] text-sm leading-relaxed">
+                    <p className="mt-3 line-clamp-3 flex-1 text-ink-subtle text-sm leading-relaxed">
                       {a.summary}
                     </p>
                     <span className="mt-5 inline-flex items-center gap-1.5 font-bold text-brand-pink text-sm transition-transform duration-150 group-hover:translate-x-0.5">

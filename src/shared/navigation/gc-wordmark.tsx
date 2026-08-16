@@ -11,7 +11,7 @@
  */
 
 const GROWTH_COLOR = {
-  "light-clean": "text-[#191F28]",
+  "light-clean": "text-ink",
   "dark-pixel": "text-white",
 } as const;
 

@@ -288,7 +288,7 @@ export default async function FanToProPage({
   const prefix = locale === "ko" ? "/ko" : "";
 
   return (
-    <main className="min-h-screen break-keep bg-white text-[#191F28]">
+    <main className="min-h-screen break-keep bg-white text-ink">
       <SiteHeader
         brand={<GcWordmark variant="light-clean" href={`${prefix}/`} />}
         menu={[
@@ -308,7 +308,7 @@ export default async function FanToProPage({
             {t.heroEyebrow}
           </p>
           <h1
-            className={`${gc.reveal} text-balance font-black text-[#191F28] lg:col-start-1 lg:row-start-2`}
+            className={`${gc.reveal} text-balance font-black text-ink lg:col-start-1 lg:row-start-2`}
             style={{ ...HEAD, fontSize: "clamp(2.1rem, 4.6vw, 3.6rem)", animationDelay: "0.05s" }}
           >
             {t.heroH1.l1}
@@ -328,7 +328,7 @@ export default async function FanToProPage({
             <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/25 to-transparent" />
           </div>
           <p
-            className={`${gc.reveal} max-w-md text-[17px] text-[#4E5968] leading-relaxed lg:col-start-1 lg:row-start-3`}
+            className={`${gc.reveal} max-w-md text-[17px] text-ink-muted leading-relaxed lg:col-start-1 lg:row-start-3`}
             style={{ animationDelay: "0.16s" }}
           >
             {t.heroSub}
@@ -345,7 +345,7 @@ export default async function FanToProPage({
       </section>
 
       {/* ===== 철학 (배경 연회색) ===== */}
-      <section className="bg-[#F7F8FA] py-20">
+      <section className="bg-fill-subtle py-20">
         <div className={WRAP}>
           <div className={gc.reveal}>
             <SectionHeader
@@ -392,7 +392,7 @@ export default async function FanToProPage({
       </section>
 
       {/* ===== 1기 흔적 (proof) ===== */}
-      <section className="bg-[#F7F8FA] py-20">
+      <section className="bg-fill-subtle py-20">
         <div className={WRAP}>
           <div className={gc.reveal}>
             <SectionHeader
@@ -432,12 +432,12 @@ export default async function FanToProPage({
                 style={{ animationDelay: `${0.1 + idx * 0.06}s` }}
               >
                 <Card variant="clean" as="figure" className="flex h-full flex-col p-6 sm:p-7">
-                  <blockquote className="text-[#191F28] text-[15px] leading-relaxed">
+                  <blockquote className="text-ink text-[15px] leading-relaxed">
                     {r.quote}
                   </blockquote>
                   <figcaption className="mt-5 flex items-center gap-1.5 text-sm">
-                    <span className="font-bold text-[#191F28]">{r.name}</span>
-                    <span className="text-[#8B95A1]">{r.origin}</span>
+                    <span className="font-bold text-ink">{r.name}</span>
+                    <span className="text-ink-faint">{r.origin}</span>
                   </figcaption>
                 </Card>
               </div>
@@ -497,10 +497,10 @@ function DifferentiatorCard({ item: d }: { item: Differentiator }) {
         </span>
       </div>
       <div className="flex flex-1 flex-col p-7 sm:p-8">
-        <h3 className="font-black text-[#191F28] text-[22px] sm:text-[24px]" style={HEAD}>
+        <h3 className="font-black text-ink text-[22px] sm:text-[24px]" style={HEAD}>
           {d.title}
         </h3>
-        <p className="mt-3 text-[#4E5968] text-[15px] leading-relaxed">{d.body}</p>
+        <p className="mt-3 text-ink-muted text-[15px] leading-relaxed">{d.body}</p>
       </div>
     </Card>
   );
@@ -535,20 +535,20 @@ function CohortCardView({ cohort: c, prefix }: { cohort: CohortCard; prefix: str
       <div className="flex flex-1 flex-col p-6 sm:p-7">
         <div className="flex items-center gap-2">
           <StatusBadge status={c.status} label={c.statusLabel} />
-          <span className="font-bold text-[#8B95A1] text-sm">{c.edition}</span>
+          <span className="font-bold text-ink-faint text-sm">{c.edition}</span>
         </div>
 
-        <h3 className="mt-4 font-black text-[#191F28] text-[22px] sm:text-[24px]" style={HEAD}>
+        <h3 className="mt-4 font-black text-ink text-[22px] sm:text-[24px]" style={HEAD}>
           {c.title}
         </h3>
-        <p className="mt-2 text-[#4E5968] text-sm leading-relaxed">{c.period}</p>
+        <p className="mt-2 text-ink-muted text-sm leading-relaxed">{c.period}</p>
 
-        <div className="mt-5 rounded-xl bg-[#F7F8FA] px-4 py-3.5">
+        <div className="mt-5 rounded-xl bg-fill-subtle px-4 py-3.5">
           <ul className="space-y-1.5">
             {c.curriculumLines.map((line) => (
               <li
                 key={line}
-                className="flex gap-2 text-[#4E5968] text-[14px] leading-relaxed"
+                className="flex gap-2 text-ink-muted text-[14px] leading-relaxed"
               >
                 <span aria-hidden className="mt-2 h-1 w-1 shrink-0 rounded-full bg-brand-pink" />
                 <span className="min-w-0">{line}</span>

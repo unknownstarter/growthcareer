@@ -34,9 +34,9 @@ const DEFAULT_WRAP = "mx-auto w-full max-w-[1160px] px-5 md:px-8";
 
 const THEME = {
   "light-clean": {
-    header: "border-[#EDEFF2] border-b bg-white",
+    header: "border-hairline border-b bg-white",
     nav: "h-14",
-    menu: "text-[#333D4B] text-[15px]",
+    menu: "text-ink-secondary text-[15px]",
     menuHover: "hover:text-brand-pink",
     active: "text-brand-pink font-bold",
     localeVariant: "light" as const,

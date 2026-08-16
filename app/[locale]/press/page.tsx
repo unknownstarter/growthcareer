@@ -70,7 +70,7 @@ export default async function PressRoomPage({
         actions={<GcHeaderCta prefix={prefix} />}
       />
 
-      <main className="min-h-screen break-keep bg-white text-[#191F28]">
+      <main className="min-h-screen break-keep bg-white text-ink">
         <section className={`${WRAP} pt-14 pb-10 sm:pt-20`}>
           <div className={gc.reveal}>
             <SectionHeader
@@ -119,16 +119,16 @@ export default async function PressRoomPage({
                   </div>
 
                   <div className="flex flex-1 flex-col p-6 sm:p-7">
-                    <p className="font-bold text-[#8B95A1] text-sm">
+                    <p className="font-bold text-ink-faint text-sm">
                       {a.outlet} / {a.date}
                     </p>
                     <h3
-                      className="mt-2 text-pretty font-black text-[#191F28] text-[19px] leading-snug sm:text-[22px]"
+                      className="mt-2 text-pretty font-black text-ink text-[19px] leading-snug sm:text-[22px]"
                       style={HEAD}
                     >
                       {pressTitle(a, locale)}
                     </h3>
-                    <p className="mt-3 line-clamp-2 text-[#4E5968] text-sm leading-relaxed sm:text-base">
+                    <p className="mt-3 line-clamp-2 text-ink-muted text-sm leading-relaxed sm:text-base">
                       {pressDesc(a, locale)}
                     </p>
                     <span className="mt-5 inline-flex items-center gap-1.5 font-bold text-[15px] text-brand-pink transition-transform duration-150 group-hover:translate-x-0.5">

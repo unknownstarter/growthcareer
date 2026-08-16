@@ -21,13 +21,13 @@ export function SectionHeader({
     <div className={`break-keep ${className}`}>
       <p className="font-bold text-[17px] text-brand-pink">{label}</p>
       <h2
-        className="mt-3 max-w-2xl text-balance font-black text-[#191F28] leading-[1.22] tracking-[-0.02em]"
+        className="mt-3 max-w-2xl text-balance font-black text-ink leading-[1.22] tracking-[-0.02em]"
         style={{ fontSize: "clamp(1.7rem, 4.2vw, 2.25rem)" }}
       >
         {title}
       </h2>
       {description ? (
-        <p className="mt-4 max-w-2xl text-[#6B7684] text-base leading-relaxed sm:text-lg">
+        <p className="mt-4 max-w-2xl text-ink-subtle text-base leading-relaxed sm:text-lg">
           {description}
         </p>
       ) : null}
