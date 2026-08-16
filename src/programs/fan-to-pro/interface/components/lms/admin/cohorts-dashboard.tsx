@@ -25,17 +25,10 @@ import {
 import { Button } from "@/src/programs/fan-to-pro/interface/components/lms/ui/button";
 import { Badge } from "@/src/programs/fan-to-pro/interface/components/lms/ui/badge";
 import type { ApplicantStatus } from "@/src/programs/fan-to-pro/application/dto/applicant-row";
+import { STATUS_LABEL_KO } from "@/src/programs/fan-to-pro/application/dto/applicant-row";
 
-const FUNNEL_LABEL: Record<ApplicantStatus, string> = {
-  pending: "대기",
-  notified: "안내",
-  paid: "입금",
-  overdue: "연체",
-  cancelled: "취소",
-  enrolled: "등록",
-  refunded: "환불",
-  next_cohort_interest: "다음기수",
-};
+// 라벨은 canonical 단일 소스 (application/dto/applicant-row).
+const FUNNEL_LABEL = STATUS_LABEL_KO;
 
 const FUNNEL_ORDER: ApplicantStatus[] = [
   "pending",
@@ -422,20 +415,19 @@ function StudentRosterCard({
 
 function ApplicantStatusBadge({ status }: { status: string | null }) {
   if (!status) return <span className="text-xs text-[var(--muted-foreground)]">-</span>;
-  const map: Record<
-    string,
-    { variant: "default" | "secondary" | "outline" | "success" | "warning" | "destructive"; label: string }
-  > = {
-    pending: { variant: "outline", label: "대기" },
-    notified: { variant: "warning", label: "안내" },
-    paid: { variant: "success", label: "입금" },
-    overdue: { variant: "destructive", label: "연체" },
-    cancelled: { variant: "secondary", label: "취소" },
-    enrolled: { variant: "success", label: "등록" },
-    refunded: { variant: "secondary", label: "환불" },
+  // 라벨은 canonical 단일 소스. variant(색)만 여기.
+  const variantMap: Record<string, "default" | "secondary" | "outline" | "success" | "warning" | "destructive"> = {
+    pending: "outline",
+    notified: "warning",
+    paid: "success",
+    overdue: "destructive",
+    cancelled: "secondary",
+    enrolled: "success",
+    refunded: "secondary",
   };
-  const cfg = map[status] ?? { variant: "outline", label: status };
-  return <Badge variant={cfg.variant}>{cfg.label}</Badge>;
+  const variant = variantMap[status] ?? "outline";
+  const label = (STATUS_LABEL_KO as Record<string, string>)[status] ?? status;
+  return <Badge variant={variant}>{label}</Badge>;
 }
 
 function CohortStatusBadge({ status }: { status: string }) {

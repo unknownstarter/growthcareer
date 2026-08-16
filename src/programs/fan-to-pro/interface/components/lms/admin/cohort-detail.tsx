@@ -45,6 +45,7 @@ import {
 } from "@/src/programs/fan-to-pro/interface/components/lms/ui/table";
 import { backfillPaidApplicantsAction } from "@/src/programs/fan-to-pro/interface/server-actions/admin/lms-cohort-actions";
 import type { ApplicantRow, ApplicantStatus } from "@/src/programs/fan-to-pro/application/dto/applicant-row";
+import { STATUS_LABEL_KO } from "@/src/programs/fan-to-pro/application/dto/applicant-row";
 import type { Cohort } from "@/src/programs/fan-to-pro/domain/entities/cohort";
 import type { CohortOverview } from "@/src/programs/fan-to-pro/application/queries/cohort/fetch-cohort-overview";
 
@@ -59,16 +60,8 @@ type Props = {
   overview: CohortOverview | null;
 };
 
-const STATUS_LABEL: Record<ApplicantStatus, string> = {
-  pending: "대기",
-  notified: "안내",
-  paid: "입금",
-  overdue: "연체",
-  cancelled: "취소",
-  enrolled: "등록",
-  refunded: "환불",
-  next_cohort_interest: "다음기수",
-};
+// 라벨은 canonical 단일 소스 (application/dto/applicant-row).
+const STATUS_LABEL = STATUS_LABEL_KO;
 
 const STATUS_ORDER: ApplicantStatus[] = [
   "pending",
@@ -824,20 +817,19 @@ function ApplicantStatusBadge({ status }: { status: ApplicantStatus }) {
         | "success"
         | "warning"
         | "destructive";
-      label: string;
     }
   > = {
-    pending: { variant: "outline", label: "대기" },
-    notified: { variant: "warning", label: "안내" },
-    paid: { variant: "success", label: "입금" },
-    overdue: { variant: "destructive", label: "연체" },
-    cancelled: { variant: "secondary", label: "취소" },
-    enrolled: { variant: "success", label: "등록" },
-    refunded: { variant: "secondary", label: "환불" },
-    next_cohort_interest: { variant: "default", label: "다음기수" },
+    pending: { variant: "outline" },
+    notified: { variant: "warning" },
+    paid: { variant: "success" },
+    overdue: { variant: "destructive" },
+    cancelled: { variant: "secondary" },
+    enrolled: { variant: "success" },
+    refunded: { variant: "secondary" },
+    next_cohort_interest: { variant: "default" },
   };
   const cfg = map[status];
-  return <Badge variant={cfg.variant}>{cfg.label}</Badge>;
+  return <Badge variant={cfg.variant}>{STATUS_LABEL_KO[status]}</Badge>;
 }
 
 function CohortStatusBadge({ status }: { status: string }) {

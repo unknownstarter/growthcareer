@@ -23,6 +23,39 @@ export const APPLICANT_STATUSES = [
 
 export type ApplicantStatus = (typeof APPLICANT_STATUSES)[number];
 
+/**
+ * 상태 라벨 단일 소스 (canonical).
+ *
+ * 1기 모집 어드민에서 검증된 표기를 표준으로, 모든 운영자 surface (모집 어드민 +
+ * LMS 어드민) 가 이 맵을 import 한다. 과거엔 status-chip / applicant-detail /
+ * talent-pool-view 가 각자 라벨 맵을 두어 같은 status 가 화면마다 다르게 보였다
+ * (신청만 vs 대기, 입금 확인 vs 입금 …). drift 재발 방지를 위해 여기 한 곳에서만 정의.
+ *
+ * `_EN` = 다크 모집 어드민 chip 의 대문자 뱃지 face. `_KO` = 한글 라벨 (LMS 뱃지
+ * face + 모집 어드민 tooltip). 색/variant 는 surface 별 시각 언어라 각자 유지.
+ */
+export const STATUS_LABEL_KO: Record<ApplicantStatus, string> = {
+  pending: "신청만",
+  notified: "안내 발송",
+  paid: "입금 확인",
+  overdue: "마감 초과",
+  cancelled: "취소",
+  enrolled: "수강 확정",
+  refunded: "환불 완료",
+  next_cohort_interest: "다음 기수 대기",
+};
+
+export const STATUS_LABEL_EN: Record<ApplicantStatus, string> = {
+  pending: "PENDING",
+  notified: "NOTIFIED",
+  paid: "PAID",
+  overdue: "OVERDUE",
+  cancelled: "CANCELLED",
+  enrolled: "ENROLLED",
+  refunded: "REFUNDED",
+  next_cohort_interest: "NEXT COHORT",
+};
+
 export type ApplicantRow = {
   id: string;
   createdAt: string; // ISO

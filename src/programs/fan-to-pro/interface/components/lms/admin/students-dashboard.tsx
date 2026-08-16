@@ -30,6 +30,7 @@ import {
   inviteSingleUserAction,
 } from "@/src/programs/fan-to-pro/interface/server-actions/admin/lms-invite-actions";
 import type { StudentWithProfile } from "@/src/programs/fan-to-pro/application/queries/lms/fetch-students-with-profiles";
+import { STATUS_LABEL_KO } from "@/src/programs/fan-to-pro/application/dto/applicant-row";
 
 type Props = {
   cohort_id: string;
@@ -262,17 +263,21 @@ function PaymentStatusBadge({
   status: string | null;
   refundedAt: string | null;
 }) {
-  if (refundedAt) return <Badge variant="secondary">환불</Badge>;
+  // 라벨은 canonical 단일 소스 (application/dto/applicant-row). variant(색)만 여기.
+  if (refundedAt)
+    return <Badge variant="secondary">{STATUS_LABEL_KO.refunded}</Badge>;
   if (!status) return <span className="text-xs text-[var(--muted-foreground)]">-</span>;
-  const map: Record<string, { variant: "default" | "secondary" | "outline" | "success" | "warning" | "destructive"; label: string }> = {
-    pending: { variant: "outline", label: "대기" },
-    notified: { variant: "warning", label: "안내" },
-    paid: { variant: "success", label: "입금" },
-    overdue: { variant: "destructive", label: "연체" },
-    cancelled: { variant: "secondary", label: "취소" },
-    enrolled: { variant: "success", label: "등록" },
-    refunded: { variant: "secondary", label: "환불" },
+  const variantMap: Record<string, "default" | "secondary" | "outline" | "success" | "warning" | "destructive"> = {
+    pending: "outline",
+    notified: "warning",
+    paid: "success",
+    overdue: "destructive",
+    cancelled: "secondary",
+    enrolled: "success",
+    refunded: "secondary",
   };
-  const cfg = map[status] ?? { variant: "outline" as const, label: status };
-  return <Badge variant={cfg.variant}>{cfg.label}</Badge>;
+  const variant = variantMap[status] ?? "outline";
+  const label =
+    (STATUS_LABEL_KO as Record<string, string>)[status] ?? status;
+  return <Badge variant={variant}>{label}</Badge>;
 }

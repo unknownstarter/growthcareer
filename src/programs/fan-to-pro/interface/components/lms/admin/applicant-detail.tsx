@@ -61,6 +61,7 @@ import type {
   CashReceiptRow,
   MessageLogRow,
 } from "@/src/programs/fan-to-pro/application/dto/applicant-row";
+import { STATUS_LABEL_KO } from "@/src/programs/fan-to-pro/application/dto/applicant-row";
 
 import {
   markAsNotified,
@@ -102,16 +103,8 @@ type Props = {
   locale: string;
 };
 
-const STATUS_LABEL: Record<ApplicantStatus, string> = {
-  pending: "대기",
-  notified: "안내",
-  paid: "입금",
-  overdue: "연체",
-  cancelled: "취소",
-  enrolled: "등록",
-  refunded: "환불",
-  next_cohort_interest: "다음기수",
-};
+// 라벨은 canonical 단일 소스 (application/dto/applicant-row). variant(색)만 여기.
+const STATUS_LABEL = STATUS_LABEL_KO;
 
 const STATUS_VARIANT: Record<
   ApplicantStatus,

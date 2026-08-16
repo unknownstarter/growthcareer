@@ -1,5 +1,9 @@
 import { cn } from "@/src/shared/ui/cn";
 import type { ApplicantStatus } from "../types";
+import {
+  STATUS_LABEL_EN,
+  STATUS_LABEL_KO,
+} from "@/src/programs/fan-to-pro/application/dto/applicant-row";
 
 /**
  * B0018 Wave 1 T3 - PII 파기된 row 의 시각 분기 chip.
@@ -21,28 +25,7 @@ export function RedactedChip({ className }: { className?: string }) {
   );
 }
 
-const STATUS_LABEL: Record<ApplicantStatus, string> = {
-  pending: "PENDING",
-  notified: "NOTIFIED",
-  paid: "PAID",
-  overdue: "OVERDUE",
-  enrolled: "ENROLLED",
-  cancelled: "CANCELLED",
-  refunded: "REFUNDED",
-  next_cohort_interest: "NEXT COHORT",
-};
-
-const STATUS_KO: Record<ApplicantStatus, string> = {
-  pending: "신청만",
-  notified: "안내 발송",
-  paid: "입금 확인",
-  overdue: "마감 초과",
-  enrolled: "수강 확정",
-  cancelled: "취소",
-  refunded: "환불 완료",
-  next_cohort_interest: "다음 기수 인터레스트",
-};
-
+// 라벨은 canonical 단일 소스 (application/dto/applicant-row) 에서. 색만 여기 정의.
 const STATUS_TONE: Record<ApplicantStatus, string> = {
   pending: "border-fg-subtle/40 bg-fg-subtle/10 text-fg",
   notified: "border-blue-400/60 bg-blue-500/15 text-blue-200",
@@ -69,12 +52,12 @@ export function StatusChip({
         className,
       )}
       style={{ letterSpacing: "0.18em" }}
-      title={STATUS_KO[status]}
+      title={STATUS_LABEL_KO[status]}
     >
-      <span aria-hidden>{STATUS_LABEL[status]}</span>
-      <span className="sr-only">{STATUS_KO[status]}</span>
+      <span aria-hidden>{STATUS_LABEL_EN[status]}</span>
+      <span className="sr-only">{STATUS_LABEL_KO[status]}</span>
     </span>
   );
 }
 
-export { STATUS_KO as STATUS_LABEL_KO };
+export { STATUS_LABEL_KO };

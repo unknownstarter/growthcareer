@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import type { ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/src/shared/ui/cn";
 import {
@@ -1271,6 +1272,99 @@ function DashboardInner({
   );
 }
 
+type MenuAction = {
+  label: ReactNode;
+  onClick: () => void;
+  tone?: "default" | "danger";
+  title?: string;
+  active?: boolean;
+};
+
+/**
+ * 경량 액션 드롭다운 (다크 어드민 전용).
+ * 클릭으로 열고 바깥 클릭 / Esc 로 닫힘. 우측 정렬 (마지막 컬럼이라 오른쪽 여백 X).
+ */
+function ActionMenu({
+  trigger,
+  items,
+  busy,
+  ariaLabel,
+}: {
+  trigger: ReactNode;
+  items: MenuAction[];
+  busy: boolean;
+  ariaLabel: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className={compactBtn}
+        style={compactStyle}
+        disabled={busy}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-label={ariaLabel}
+      >
+        {trigger}
+      </button>
+      {open ? (
+        <div
+          role="menu"
+          className="absolute right-0 top-full z-20 mt-1 flex min-w-[150px] flex-col border border-border bg-bg py-1 shadow-lg"
+        >
+          {items.map((it, i) => (
+            <button
+              // eslint-disable-next-line react/no-array-index-key
+              key={i}
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setOpen(false);
+                it.onClick();
+              }}
+              className={cn(
+                "flex items-center justify-between gap-3 px-3 py-2 text-left text-[11px] font-black uppercase text-fg hover:bg-surface disabled:opacity-40",
+                it.tone === "danger" && "text-red-300 hover:text-red-200",
+              )}
+              style={compactStyle}
+              disabled={busy}
+              title={it.title}
+            >
+              <span>{it.label}</span>
+              {it.active ? (
+                <span aria-hidden className="text-emerald-300">
+                  ✓
+                </span>
+              ) : null}
+            </button>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function RowActions({
   row,
   busy,
@@ -1312,8 +1406,75 @@ function RowActions({
   const milestoneEligible =
     !redacted && (row.status === "paid" || row.status === "enrolled");
 
+  // 다음 단계 = 상태 전이 액션 (상태에 맞는 것만). 취소/환불은 danger tone + 마지막.
+  const transitions: MenuAction[] = [];
+  if (row.status === "pending") {
+    transitions.push({ label: "발송 완료", onClick: onNotify });
+  }
+  if (row.status === "notified") {
+    transitions.push({ label: "입금 확인", onClick: onPaid });
+    transitions.push({ label: "마감 초과", onClick: onOverdue });
+  }
+  if (row.status === "paid" || row.status === "cancelled") {
+    transitions.push({ label: "환불 완료", onClick: onRefund });
+  }
+  if (
+    row.status === "pending" ||
+    row.status === "notified" ||
+    row.status === "paid" ||
+    row.status === "overdue"
+  ) {
+    transitions.push({ label: "취소", onClick: onCancel, tone: "danger" });
+  }
+
+  // 부가 액션 = 상태를 바꾸지 않는 반복/기록 액션.
+  const aux: MenuAction[] = [];
+  if (row.status === "notified") {
+    aux.push({ label: "리마인드 +1", onClick: onReminder });
+  }
+  if (receiptEligible) {
+    aux.push({
+      label:
+        row.cashReceiptCount > 0
+          ? `현금영수증 (${row.cashReceiptCount})`
+          : "현금영수증",
+      onClick: onReceipt,
+      title:
+        row.cashReceiptCount > 0
+          ? `현금영수증 발급 ${row.cashReceiptCount}건`
+          : "현금영수증 발급 기록",
+    });
+  }
+  if (milestoneEligible) {
+    aux.push({
+      label: "가이드",
+      active: row.milestones.guideSentAt !== null,
+      onClick: () =>
+        onToggleMilestone("guide_sent", row.milestones.guideSentAt),
+      title: row.milestones.guideSentAt
+        ? `가이드 보냄 ${formatDate(row.milestones.guideSentAt)} (클릭으로 해제)`
+        : "첫 수업 안내 메일 발송 완료 표시",
+    });
+    aux.push({
+      label: "첨삭",
+      active: row.milestones.feedbackDoneAt !== null,
+      onClick: () =>
+        onToggleMilestone("feedback_done", row.milestones.feedbackDoneAt),
+      title: row.milestones.feedbackDoneAt
+        ? `첨삭 완료 ${formatDate(row.milestones.feedbackDoneAt)} (클릭으로 해제)`
+        : "이력서/자소서/포폴 첨삭 완료 표시",
+    });
+  }
+  if (row.messageCount > 0) {
+    aux.push({
+      label: `발송 이력 (${row.messageCount})`,
+      onClick: onHistory,
+      title: `발송 이력 ${row.messageCount}건`,
+    });
+  }
+
   return (
-    <div className="flex flex-wrap gap-1">
+    <div className="flex items-center gap-1">
       {redacted ? null : (
         <button
           type="button"
@@ -1325,149 +1486,24 @@ function RowActions({
           메시지
         </button>
       )}
-      {row.messageCount > 0 ? (
-        <button
-          type="button"
-          onClick={onHistory}
-          className={compactBtn}
-          style={compactStyle}
-          disabled={busy}
-          title={`발송 이력 ${row.messageCount}건`}
-        >
-          발송
-          <span className="ml-1 text-fg">{row.messageCount}</span>
-        </button>
-      ) : null}
-      {receiptEligible ? (
-        <button
-          type="button"
-          onClick={onReceipt}
-          className={compactBtn}
-          style={compactStyle}
-          disabled={busy}
-          title={
-            row.cashReceiptCount > 0
-              ? `현금영수증 발급 ${row.cashReceiptCount}건`
-              : "현금영수증 발급 기록"
+      {transitions.length > 0 ? (
+        <ActionMenu
+          busy={busy}
+          ariaLabel="다음 단계 액션"
+          trigger={
+            <>
+              다음 단계
+              <span aria-hidden className="ml-1 opacity-70">
+                ▾
+              </span>
+            </>
           }
-        >
-          현금영수증
-          {row.cashReceiptCount > 0 ? (
-            <span className="ml-1 text-fg">{row.cashReceiptCount}</span>
-          ) : null}
-        </button>
+          items={transitions}
+        />
       ) : null}
-      {row.status === "pending" ? (
-        <button
-          type="button"
-          onClick={onNotify}
-          className={compactBtn}
-          style={compactStyle}
-          disabled={busy}
-        >
-          발송 완료
-        </button>
+      {aux.length > 0 ? (
+        <ActionMenu busy={busy} ariaLabel="부가 액션" trigger="⋯" items={aux} />
       ) : null}
-      {row.status === "notified" ? (
-        <>
-          <button
-            type="button"
-            onClick={onReminder}
-            className={compactBtn}
-            style={compactStyle}
-            disabled={busy}
-          >
-            리마인드 +1
-          </button>
-          <button
-            type="button"
-            onClick={onPaid}
-            className={compactBtn}
-            style={compactStyle}
-            disabled={busy}
-          >
-            입금 확인
-          </button>
-          <button
-            type="button"
-            onClick={onOverdue}
-            className={compactBtn}
-            style={compactStyle}
-            disabled={busy}
-          >
-            마감 초과
-          </button>
-        </>
-      ) : null}
-      {(row.status === "pending" ||
-        row.status === "notified" ||
-        row.status === "paid" ||
-        row.status === "overdue") && (
-        <button
-          type="button"
-          onClick={onCancel}
-          className={compactBtn}
-          style={compactStyle}
-          disabled={busy}
-        >
-          취소
-        </button>
-      )}
-      {(row.status === "paid" || row.status === "cancelled") && (
-        <button
-          type="button"
-          onClick={onRefund}
-          className={compactBtn}
-          style={compactStyle}
-          disabled={busy}
-        >
-          환불 완료
-        </button>
-      )}
-      {milestoneEligible && (
-        <>
-          <button
-            type="button"
-            onClick={() =>
-              onToggleMilestone("guide_sent", row.milestones.guideSentAt)
-            }
-            className={cn(
-              compactBtn,
-              row.milestones.guideSentAt &&
-                "border-emerald-500/60 bg-emerald-500/15 text-emerald-200",
-            )}
-            style={compactStyle}
-            disabled={busy}
-            title={
-              row.milestones.guideSentAt
-                ? `가이드 보냄 ${formatDate(row.milestones.guideSentAt)} (클릭으로 해제)`
-                : "첫 수업 안내 메일 발송 완료 표시"
-            }
-          >
-            {row.milestones.guideSentAt ? "가이드 ✓" : "가이드"}
-          </button>
-          <button
-            type="button"
-            onClick={() =>
-              onToggleMilestone("feedback_done", row.milestones.feedbackDoneAt)
-            }
-            className={cn(
-              compactBtn,
-              row.milestones.feedbackDoneAt &&
-                "border-sky-500/60 bg-sky-500/15 text-sky-200",
-            )}
-            style={compactStyle}
-            disabled={busy}
-            title={
-              row.milestones.feedbackDoneAt
-                ? `첨삭 완료 ${formatDate(row.milestones.feedbackDoneAt)} (클릭으로 해제)`
-                : "이력서/자소서/포폴 첨삭 완료 표시"
-            }
-          >
-            {row.milestones.feedbackDoneAt ? "첨삭 ✓" : "첨삭"}
-          </button>
-        </>
-      )}
     </div>
   );
 }
