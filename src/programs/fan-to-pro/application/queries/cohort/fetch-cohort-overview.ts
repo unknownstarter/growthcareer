@@ -24,7 +24,11 @@ import { fetchAttendanceByCohort } from "@/src/programs/fan-to-pro/infrastructur
 import { fetchStudentsByCohort } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/student-repository";
 import { fetchLectureMaterialsByCohort } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/lecture-material-repository";
 import { isCountedAsExpense } from "@/src/programs/fan-to-pro/domain/entities/cohort-expense";
-import { getElapsedSessionIds } from "@/src/programs/fan-to-pro/domain/entities/session";
+import {
+  getElapsedSessionIds,
+  getElapsedSessionIdsForCourses,
+} from "@/src/programs/fan-to-pro/domain/entities/session";
+import { fetchStudentCourseIdsMap } from "@/src/programs/fan-to-pro/application/queries/enrollment/fetch-student-course-ids";
 
 export type CohortOverview = {
   /** 학생 invite 진척. */
@@ -103,6 +107,12 @@ export async function fetchCohortOverview(
     countAssignedInstructors(cohortId),
   ]);
 
+  // course 스코핑용 학생별 course 집합 (태스크 #23). students 로드 후에야 id 를 아므로
+  // 별도 배치 로드. 실패 시 빈 Map → 학생마다 cohort-level fallback.
+  const courseIdsMap = await fetchStudentCourseIdsMap(
+    students.map((s) => s.id),
+  ).catch(() => new Map<string, Set<string>>());
+
   // 학생 invite ────────────────────────────────────────────────
   const studentCount = students.length;
 
@@ -113,23 +123,47 @@ export async function fetchCohortOverview(
 
   // 회차 / 출결 ────────────────────────────────────────────────
   const totalSessions = sessions.length;
-  // 진행된 회차 = hasSessionElapsed (status=ended 또는 ends_at<now, cancelled 제외).
-  // status="ended" 수동 전환에 의존하면 종강 후에도 endedSessions=0 → 0% 오표시
-  // (2026-07-23 사고). endedSessions 필드명은 유지(반환 계약), 값만 elapsed 기준.
+  // 진행된 회차 (cohort 전체) = hasSessionElapsed (status=ended 또는 ends_at<now,
+  // cancelled 제외). status="ended" 수동 전환에 의존하면 종강 후에도 endedSessions=0
+  // → 0% 오표시 (2026-07-23 사고). endedSessions 필드는 KPI 카드 표시용 (cohort 전체 회차).
   const elapsedSessionIds = getElapsedSessionIds(sessions);
   const endedSessions = elapsedSessionIds.size;
 
-  // 평균 출석률: present + late / (active student × 진행된 회차)
+  // 평균 출석률 (course 스코핑, 태스크 #23):
+  //   학생별 분모 = 진행된 회차 중 그 학생 수강 course 회차 수. 학생별로 다를 수 있음
+  //   (2기 단과/올인원 혼재). 평균 = Σ 학생별 출석수 / Σ 학생별 분모.
+  //   attendance rows 를 학생 단위로 집계 (attendances 는 present/late 만 row 존재하는
+  //   구조가 아니라 status 컬럼으로 구분 — session_id 만으로 학생 매핑 필요).
+  //   1기(단일 course)는 학생마다 분모 = endedSessions 로 동일 → Σ분모 = endedSessions×studentCount
+  //   → 기존 값과 완전 동일 (무회귀).
   let averageRate = 0;
   if (endedSessions > 0 && studentCount > 0) {
-    const relevant = attendances.filter((a) =>
-      elapsedSessionIds.has(a.session_id),
-    );
-    const presentCount = relevant.filter(
-      (a) => a.status === "present" || a.status === "late",
-    ).length;
-    const denominator = endedSessions * studentCount;
-    averageRate = denominator > 0 ? presentCount / denominator : 0;
+    // 학생별 attendance 인덱싱 (present+late count).
+    const presentBySession = new Map<string, Set<string>>(); // studentId → attended session ids
+    for (const a of attendances) {
+      if (a.status !== "present" && a.status !== "late") continue;
+      let set = presentBySession.get(a.student_id);
+      if (!set) {
+        set = new Set<string>();
+        presentBySession.set(a.student_id, set);
+      }
+      set.add(a.session_id);
+    }
+
+    let numerator = 0;
+    let denominator = 0;
+    for (const student of students) {
+      const myCourseIds = courseIdsMap.get(student.id);
+      const myElapsed = getElapsedSessionIdsForCourses(sessions, myCourseIds);
+      denominator += myElapsed.size;
+      const attended = presentBySession.get(student.id);
+      if (attended) {
+        for (const sid of attended) {
+          if (myElapsed.has(sid)) numerator += 1;
+        }
+      }
+    }
+    averageRate = denominator > 0 ? numerator / denominator : 0;
   }
 
   // 강의 자료 ──────────────────────────────────────────────────

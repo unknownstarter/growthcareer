@@ -109,6 +109,43 @@ export function getElapsedSessionIds(
 }
 
 /**
+ * 출석률 분모용 (course 스코핑) — 진행된 회차 중 학생이 수강하는 course 회차만 (태스크 #23).
+ *
+ * 배경 (Course 정규화 SoT, ADR 0013): 2기부터 한 cohort 에 여러 course 병존
+ * (A&R / sound). 단과생은 자기 course 회차만 출석 분모여야 하는데, cohort-level
+ * 로 세면 남의 과정 회차까지 분모에 들어가 출석률이 왜곡됨.
+ *
+ * 판정:
+ *   1. hasSessionElapsed (진행된 회차) — 기존과 동일.
+ *   2. session.course_id ∈ courseIds — 학생 수강 course 집합에 속하는 회차만.
+ *
+ * 안전 fallback (1기 무회귀 [CRITICAL]):
+ *   - courseIds 가 null 또는 빈 집합 → course 필터 생략 (cohort-level 로 동작).
+ *     학생 course 집합 로드 실패 시 회차를 통째로 떨어뜨려 0% 오표시하지 않기 위함.
+ *   - session.course_id 가 null (미배선 회차) → filter 통과 (분모 포함).
+ *     1기 이전/미backfill 회차가 갑자기 분모에서 빠지는 회귀 방지.
+ *
+ * 1기 검증: 1기 sessions 전부 course_id=fan-to-pro-1, 학생 course=[fan-to-pro-1]
+ *   → 모든 elapsed 회차가 filter 통과 → 분모 = getElapsedSessionIds 와 동일 (불변).
+ */
+export function getElapsedSessionIdsForCourses(
+  sessions: readonly Pick<Session, "id" | "status" | "ends_at" | "course_id">[],
+  courseIds: ReadonlySet<string> | null | undefined,
+  now: Date = new Date(),
+): Set<string> {
+  const noCourseFilter = !courseIds || courseIds.size === 0;
+  return new Set(
+    sessions
+      .filter((s) => hasSessionElapsed(s, now))
+      .filter(
+        (s) =>
+          noCourseFilter || s.course_id == null || courseIds.has(s.course_id),
+      )
+      .map((s) => s.id),
+  );
+}
+
+/**
  * session 의 KST 표시 — UI 가 사용. UTC ISO → KST datetime 문자열.
  * domain 안에 둠 (시간 표시 룰은 비즈니스 룰).
  */

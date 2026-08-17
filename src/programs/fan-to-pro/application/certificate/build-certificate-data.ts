@@ -25,8 +25,9 @@ import { fetchCertificatesByStudent } from "@/src/programs/fan-to-pro/infrastruc
 import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
 import { generateSerialNo } from "./serial-no";
 import type { CertificateData } from "./certificate-template";
-import { hasSessionElapsed } from "@/src/programs/fan-to-pro/domain/entities/session";
+import { getElapsedSessionIdsForCourses } from "@/src/programs/fan-to-pro/domain/entities/session";
 import type { Session } from "@/src/programs/fan-to-pro/domain/entities/session";
+import { fetchStudentCourseIds } from "@/src/programs/fan-to-pro/application/queries/enrollment/fetch-student-course-ids";
 import type { Student } from "@/src/programs/fan-to-pro/domain/entities/student";
 import type { Cohort } from "@/src/programs/fan-to-pro/domain/entities/cohort";
 import type { Certificate } from "@/src/programs/fan-to-pro/domain/entities/certificate";
@@ -89,6 +90,12 @@ async function countCohortSessions(cohortId: string): Promise<number> {
  *
  * "진행된 회차" = hasSessionElapsed (status=ended 또는 ends_at<now 인 비취소 회차).
  * status=ended 명시 전환에 의존하지 않음 — 2026-07-23 출석률 0% 사고 방지.
+ *
+ * course 스코핑 (태스크 #23): 학생이 수강하는 course 회차만 분모 (getElapsedSessionIdsForCourses).
+ *   2기 단과생이 남의 course 회차까지 분모에 넣어 출석률이 왜곡되는 것 방지.
+ *   1기 = fan-to-pro-1 단일 course + sessions 전부 그 course → 분모 불변.
+ *   course 집합 로드 실패 (빈 Set) → 헬퍼가 cohort-level fallback → 회귀 없음.
+ *
  * 진행된 회차 0이면 null (아직 첫 회차 전).
  */
 export async function computeAttendanceRate(
@@ -98,18 +105,20 @@ export async function computeAttendanceRate(
   const supabase = getSupabaseServer();
   if (!supabase) return null;
 
-  const { data: sessions, error: sessErr } = await supabase
-    .from("sessions")
-    .select("id, status, ends_at")
-    .eq("cohort_id", cohortId);
+  const [{ data: sessions, error: sessErr }, courseIds] = await Promise.all([
+    supabase
+      .from("sessions")
+      .select("id, status, ends_at, course_id")
+      .eq("cohort_id", cohortId),
+    fetchStudentCourseIds(studentId),
+  ]);
   if (sessErr) throw new Error(sessErr.message);
 
-  const elapsedIds = new Set(
-    (sessions ?? [])
-      .filter((s) =>
-        hasSessionElapsed(s as Pick<Session, "status" | "ends_at">),
-      )
-      .map((s) => (s as { id: string }).id),
+  const elapsedIds = getElapsedSessionIdsForCourses(
+    (sessions ?? []) as Array<
+      Pick<Session, "id" | "status" | "ends_at" | "course_id">
+    >,
+    courseIds,
   );
   if (elapsedIds.size === 0) return null;
 

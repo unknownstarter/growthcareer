@@ -22,7 +22,8 @@ import {
 } from "@/src/programs/fan-to-pro/domain/entities/attendance";
 import type { Cohort } from "@/src/programs/fan-to-pro/domain/entities/cohort";
 import type { Session } from "@/src/programs/fan-to-pro/domain/entities/session";
-import { getElapsedSessionIds } from "@/src/programs/fan-to-pro/domain/entities/session";
+import { getElapsedSessionIdsForCourses } from "@/src/programs/fan-to-pro/domain/entities/session";
+import { fetchStudentCourseIdsMap } from "@/src/programs/fan-to-pro/application/queries/enrollment/fetch-student-course-ids";
 import type { Student } from "@/src/programs/fan-to-pro/domain/entities/student";
 import type { ApplicantStatus } from "@/src/programs/fan-to-pro/application/dto/applicant-row";
 
@@ -101,19 +102,25 @@ export async function fetchCohortRoster(
     // applicant join — students 가 0명이면 skip.
     const applicantIds = students.map((s) => s.applicant_id);
     const studentIds = students.map((s) => s.id);
-    const [applicantMap, profileMap] = await Promise.all([
+    const [applicantMap, profileMap, courseIdsMap] = await Promise.all([
       fetchApplicantInfoMap(applicantIds),
       fetchStudentProfileMap(studentIds),
+      fetchStudentCourseIdsMap(studentIds),
     ]);
 
     const totalSessions = sessions.length;
-    // 출석률 분모 = 진행된 회차(hasSessionElapsed). sessions.length(미래 포함)로
-    // 세면 진행 중 코호트에서 출석률이 낮게 왜곡됨. cert/개요/학생뷰와 통일
-    // (2026-07-23 사고). totalSessions 필드는 전체 계획 회차로 표시용 유지.
-    const elapsedSessionIds = getElapsedSessionIds(sessions);
-    const elapsedSessionCount = elapsedSessionIds.size;
 
     const studentRows: CohortRosterStudentRow[] = students.map((student) => {
+      // 출석률 분모 = 진행된 회차(hasSessionElapsed) 중 이 학생이 수강하는 course
+      // 회차만 (태스크 #23). cohort-level 로 세면 2기 단과생이 남의 course 회차까지
+      // 분모에 들어가 왜곡됨. course 집합 없으면 cohort-level fallback (헬퍼가 처리).
+      // 1기 = 단일 course + sessions 전부 그 course → 학생별 분모 = cohort elapsed 와 동일.
+      const myCourseIds = courseIdsMap.get(student.id);
+      const elapsedSessionIds = getElapsedSessionIdsForCourses(
+        sessions,
+        myCourseIds,
+      );
+      const elapsedSessionCount = elapsedSessionIds.size;
       const myAttendances = attendances.filter(
         (a) => a.student_id === student.id,
       );

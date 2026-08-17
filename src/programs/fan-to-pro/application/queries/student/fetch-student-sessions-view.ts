@@ -22,7 +22,11 @@
 import { assertCanReadStudentProfile } from "@/src/programs/fan-to-pro/infrastructure/auth/lms-role";
 import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
 import type { AttendanceStatus } from "@/src/programs/fan-to-pro/domain/entities/attendance";
-import { hasSessionElapsed } from "@/src/programs/fan-to-pro/domain/entities/session";
+import {
+  getElapsedSessionIdsForCourses,
+  type Session,
+} from "@/src/programs/fan-to-pro/domain/entities/session";
+import { fetchStudentCourseIds } from "@/src/programs/fan-to-pro/application/queries/enrollment/fetch-student-course-ids";
 
 export type StudentSessionAttendanceStatus = AttendanceStatus | "unmarked";
 
@@ -105,29 +109,31 @@ export async function fetchStudentSessionsView(
     return { status: "error", error: `unknownCohort: ${cohortId}` };
   }
 
-  // 4) sessions (idx asc, starts_at asc 보조), attendance (본인만), materials count
-  // — 3-way 병렬.
-  const [sessionsRes, attendanceRes, materialsRes] = await Promise.all([
-    supabase
-      .from("sessions")
-      .select(
-        "id, idx, starts_at, ends_at, title, topic, status, instructor_id",
-      )
-      .eq("cohort_id", cohortId)
-      .order("idx", { ascending: true, nullsFirst: false })
-      .order("starts_at", { ascending: true }),
-    supabase
-      .from("attendance")
-      .select("session_id, status, late_minutes, notes")
-      .eq("student_id", studentId),
-    supabase
-      .from("lecture_materials")
-      .select("session_id")
-      .eq("cohort_id", cohortId)
-      .or(
-        `visibility.eq.published,and(visibility.eq.scheduled,visible_from.lte.${new Date().toISOString()})`,
-      ),
-  ]);
+  // 4) sessions (idx asc, starts_at asc 보조), attendance (본인만), materials count,
+  //    student course 집합 (course 스코핑 분모) — 4-way 병렬.
+  const [sessionsRes, attendanceRes, materialsRes, studentCourseIds] =
+    await Promise.all([
+      supabase
+        .from("sessions")
+        .select(
+          "id, idx, starts_at, ends_at, title, topic, status, instructor_id, course_id",
+        )
+        .eq("cohort_id", cohortId)
+        .order("idx", { ascending: true, nullsFirst: false })
+        .order("starts_at", { ascending: true }),
+      supabase
+        .from("attendance")
+        .select("session_id, status, late_minutes, notes")
+        .eq("student_id", studentId),
+      supabase
+        .from("lecture_materials")
+        .select("session_id")
+        .eq("cohort_id", cohortId)
+        .or(
+          `visibility.eq.published,and(visibility.eq.scheduled,visible_from.lte.${new Date().toISOString()})`,
+        ),
+      fetchStudentCourseIds(studentId),
+    ]);
 
   if (sessionsRes.error) {
     return { status: "error", error: sessionsRes.error.message };
@@ -148,6 +154,7 @@ export async function fetchStudentSessionsView(
     topic: string | null;
     status: "scheduled" | "in_progress" | "ended" | "cancelled";
     instructor_id: string | null;
+    course_id: string | null;
   }>;
 
   const attendanceRows = (attendanceRes.data ?? []) as Array<{
@@ -259,8 +266,12 @@ export async function fetchStudentSessionsView(
   // 9) 출석률 — 진행된 회차 중 본인 present+late / 진행된 회차 수.
   //    "진행된 회차" = hasSessionElapsed (status=ended 또는 ends_at<now 비취소).
   //    status=ended 명시 전환에 의존 X — 2026-07-23 출석률 0% 사고 방지.
-  const elapsedSessionIds = new Set(
-    sessionRows.filter((s) => hasSessionElapsed(s)).map((s) => s.id),
+  //    course 스코핑 (태스크 #23): 본인 수강 course 회차만 분모. 1기(단일 course)는 불변.
+  const elapsedSessionIds = getElapsedSessionIdsForCourses(
+    sessionRows as Array<
+      Pick<Session, "id" | "status" | "ends_at" | "course_id">
+    >,
+    studentCourseIds,
   );
   let attendedCount = 0;
   for (const a of attendanceRows) {
