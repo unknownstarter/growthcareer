@@ -45,6 +45,27 @@ export const STATUS_LABEL_KO: Record<ApplicantStatus, string> = {
   next_cohort_interest: "다음 기수 대기",
 };
 
+/**
+ * 진행 funnel (전진 경로) - 상태값 ↔ 진행 단계 시각화의 단일 소스.
+ * 신청 → 안내 → 입금 → 확정. 이 4개가 정상 진행 노드. 나머지 상태
+ * (마감 초과 / 취소 / 환불 / 다음 기수 대기) 는 funnel 이탈 (off-funnel).
+ *
+ * per-row "다음 단계" 액션은 이 순서의 다음 노드로 전진시키는 것. 단
+ * paid → enrolled 는 과정별 최소 정원 판정이 필요해 일괄(batch)로만 처리
+ * (markAsEnrolledBatch). per-row 로 못 뗌.
+ */
+export const FUNNEL_STEPS = [
+  { status: "pending", short: "신청" },
+  { status: "notified", short: "안내" },
+  { status: "paid", short: "입금" },
+  { status: "enrolled", short: "확정" },
+] as const satisfies readonly { status: ApplicantStatus; short: string }[];
+
+/** 상태의 funnel 진행 인덱스 (0~3). off-funnel = -1. */
+export function funnelStepIndex(status: ApplicantStatus): number {
+  return FUNNEL_STEPS.findIndex((s) => s.status === status);
+}
+
 export const STATUS_LABEL_EN: Record<ApplicantStatus, string> = {
   pending: "PENDING",
   notified: "NOTIFIED",

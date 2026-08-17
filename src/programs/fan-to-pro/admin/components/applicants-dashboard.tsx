@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { cn } from "@/src/shared/ui/cn";
 import {
@@ -31,6 +32,10 @@ import {
   type ApplicantRow,
   type ApplicantStatus,
 } from "../types";
+import {
+  FUNNEL_STEPS,
+  funnelStepIndex,
+} from "@/src/programs/fan-to-pro/application/dto/applicant-row";
 import { StatusChip, STATUS_LABEL_KO, RedactedChip } from "./status-chip";
 import { ToastProvider, useToast } from "./toast";
 import { MessageDrawer } from "./message-drawer";
@@ -896,8 +901,9 @@ function DashboardInner({
           </div>
         </div>
 
-        {/* Table (desktop) */}
-        <div className="hidden border border-border md:block">
+        {/* Table (desktop). overflow-x-auto = 넓은 컬럼 잘림(튀어나감) 방지 가로
+            스크롤. 행 액션 메뉴는 portal+fixed 라 스크롤 컨테이너에 안 잘림. */}
+        <div className="hidden overflow-x-auto border border-border md:block">
           <table className="w-full border-collapse text-left text-sm">
             <thead className="bg-surface text-[10px] uppercase text-fg">
               <tr style={{ letterSpacing: "0.2em" }}>
@@ -1018,8 +1024,8 @@ function DashboardInner({
                       {row.visa ?? "-"}
                     </td>
                     <td className="px-3 py-2 align-top">
-                      <div className="flex flex-wrap gap-1">
-                        <StatusChip status={row.status} />
+                      <div className="flex flex-wrap items-center gap-1">
+                        <StatusProgress status={row.status} />
                         {row.redactedAt ? <RedactedChip /> : null}
                         {row.messageLastSentByKind.cohortKickoff ? (
                           <span
@@ -1065,6 +1071,7 @@ function DashboardInner({
                           onToggleMilestone={(type, current) =>
                             runToggleMilestone(row.id, type, current)
                           }
+                          onEnrollBatch={() => setEnrollBatchOpen(true)}
                         />
                       </td>
                     )}
@@ -1201,6 +1208,7 @@ function DashboardInner({
                       onToggleMilestone={(type, current) =>
                         runToggleMilestone(row.id, type, current)
                       }
+                      onEnrollBatch={() => setEnrollBatchOpen(true)}
                     />
                   </div>
                 )}
@@ -1297,10 +1305,98 @@ type MenuAction = {
   active?: boolean;
 };
 
+// funnel 전진 액션 (다음 단계 primary) 버튼 스타일 — 메시지(핑크)·부가(중립) 와 구분.
+const forwardBtn =
+  "inline-flex min-h-[32px] shrink-0 items-center justify-center border border-fg-subtle/50 bg-fg/[0.06] px-2.5 py-1.5 text-[10px] font-black uppercase text-fg hover:bg-fg/[0.12] disabled:opacity-40 whitespace-nowrap";
+
 /**
- * 경량 액션 드롭다운 (다크 어드민 전용).
- * 클릭으로 열고 바깥 클릭 / Esc 로 닫힘. 우측 정렬 (마지막 컬럼이라 오른쪽 여백 X).
+ * 고정 위치 팝오버 훅. 테이블이 가로 스크롤(overflow-x-auto)이라 메뉴를 셀 안에
+ * 두면 잘린다 → portal + position:fixed 로 body 에 띄워 clipping 회피.
+ * 바깥 클릭 / Esc / 스크롤 시 닫힘.
  */
+function useFixedPopover() {
+  const [open, setOpen] = useState(false);
+  const [coords, setCoords] = useState<{ top: number; right: number } | null>(
+    null,
+  );
+  const anchorRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  const openAt = () => {
+    const el = anchorRef.current;
+    if (el) {
+      const r = el.getBoundingClientRect();
+      setCoords({ top: r.bottom + 4, right: window.innerWidth - r.right });
+    }
+    setOpen(true);
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (
+        panelRef.current &&
+        !panelRef.current.contains(t) &&
+        anchorRef.current &&
+        !anchorRef.current.contains(t)
+      ) {
+        setOpen(false);
+      }
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    const close = () => setOpen(false);
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onKey);
+    window.addEventListener("scroll", close, true);
+    window.addEventListener("resize", close);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("keydown", onKey);
+      window.removeEventListener("scroll", close, true);
+      window.removeEventListener("resize", close);
+    };
+  }, [open]);
+
+  return { open, setOpen, openAt, coords, anchorRef, panelRef };
+}
+
+function renderMenuItems(
+  items: MenuAction[],
+  busy: boolean,
+  close: () => void,
+) {
+  return items.map((it, i) => (
+    <button
+      // eslint-disable-next-line react/no-array-index-key
+      key={i}
+      type="button"
+      role="menuitem"
+      onClick={() => {
+        close();
+        it.onClick();
+      }}
+      className={cn(
+        "flex items-center justify-between gap-3 px-3 py-2 text-left text-[11px] font-black uppercase text-fg hover:bg-surface disabled:opacity-40",
+        it.tone === "danger" && "text-red-300 hover:text-red-200",
+      )}
+      style={compactStyle}
+      disabled={busy}
+      title={it.title}
+    >
+      <span>{it.label}</span>
+      {it.active ? (
+        <span aria-hidden className="text-emerald-300">
+          ✓
+        </span>
+      ) : null}
+    </button>
+  ));
+}
+
+/** 부가 액션 메뉴 (⋯). */
 function ActionMenu({
   trigger,
   items,
@@ -1312,30 +1408,13 @@ function ActionMenu({
   busy: boolean;
   ariaLabel: string;
 }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const onDoc = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("mousedown", onDoc);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("mousedown", onDoc);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
-
+  const { open, setOpen, openAt, coords, anchorRef, panelRef } =
+    useFixedPopover();
   return (
-    <div className="relative" ref={ref}>
+    <div className="inline-flex" ref={anchorRef}>
       <button
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => (open ? setOpen(false) : openAt())}
         className={compactBtn}
         style={compactStyle}
         disabled={busy}
@@ -1345,39 +1424,129 @@ function ActionMenu({
       >
         {trigger}
       </button>
-      {open ? (
-        <div
-          role="menu"
-          className="absolute right-0 top-full z-20 mt-1 flex min-w-[150px] flex-col border border-border bg-bg py-1 shadow-lg"
-        >
-          {items.map((it, i) => (
-            <button
-              // eslint-disable-next-line react/no-array-index-key
-              key={i}
-              type="button"
-              role="menuitem"
-              onClick={() => {
-                setOpen(false);
-                it.onClick();
-              }}
-              className={cn(
-                "flex items-center justify-between gap-3 px-3 py-2 text-left text-[11px] font-black uppercase text-fg hover:bg-surface disabled:opacity-40",
-                it.tone === "danger" && "text-red-300 hover:text-red-200",
-              )}
-              style={compactStyle}
-              disabled={busy}
-              title={it.title}
+      {open && coords
+        ? createPortal(
+            <div
+              ref={panelRef}
+              role="menu"
+              className="fixed z-[60] flex min-w-[160px] flex-col border border-border bg-bg py-1 shadow-lg"
+              style={{ top: coords.top, right: coords.right }}
             >
-              <span>{it.label}</span>
-              {it.active ? (
-                <span aria-hidden className="text-emerald-300">
-                  ✓
-                </span>
-              ) : null}
-            </button>
-          ))}
-        </div>
+              {renderMenuItems(items, busy, () => setOpen(false))}
+            </div>,
+            document.body,
+          )
+        : null}
+    </div>
+  );
+}
+
+/**
+ * 스플릿 버튼 - 좌: 다음 단계 primary (1클릭 실행), 우: ▾ 로 다른 전이(마감·취소·환불).
+ * 상태값이 곧 다음 단계를 결정 (funnel). primary 라벨 = 전진할 다음 노드 이름.
+ */
+function SplitActionButton({
+  primaryLabel,
+  onPrimary,
+  secondary,
+  busy,
+}: {
+  primaryLabel: string;
+  onPrimary: () => void;
+  secondary: MenuAction[];
+  busy: boolean;
+}) {
+  const { open, setOpen, openAt, coords, anchorRef, panelRef } =
+    useFixedPopover();
+  return (
+    <div className="inline-flex" ref={anchorRef}>
+      <button
+        type="button"
+        onClick={onPrimary}
+        disabled={busy}
+        className={cn(forwardBtn, secondary.length > 0 && "border-r-0")}
+        style={compactStyle}
+        title={`다음 단계: ${primaryLabel}`}
+      >
+        <span aria-hidden className="mr-1 opacity-60">
+          →
+        </span>
+        {primaryLabel}
+      </button>
+      {secondary.length > 0 ? (
+        <button
+          type="button"
+          onClick={() => (open ? setOpen(false) : openAt())}
+          disabled={busy}
+          className={cn(forwardBtn, "px-1.5")}
+          aria-haspopup="menu"
+          aria-expanded={open}
+          aria-label="다른 처리"
+        >
+          ▾
+        </button>
       ) : null}
+      {open && coords
+        ? createPortal(
+            <div
+              ref={panelRef}
+              role="menu"
+              className="fixed z-[60] flex min-w-[150px] flex-col border border-border bg-bg py-1 shadow-lg"
+              style={{ top: coords.top, right: coords.right }}
+            >
+              {renderMenuItems(secondary, busy, () => setOpen(false))}
+            </div>,
+            document.body,
+          )
+        : null}
+    </div>
+  );
+}
+
+/**
+ * 상태 진행 스텝퍼 - funnel 전진 상태(신청·안내·입금·확정) 는 4단계 중 현재 위치를
+ * 시각화 ("어디까지 왔는지"). off-funnel(마감·취소·환불·다음기수) 은 기존 뱃지.
+ */
+function StatusProgress({ status }: { status: ApplicantStatus }) {
+  const idx = funnelStepIndex(status);
+  if (idx < 0) return <StatusChip status={status} />;
+  const title = `${FUNNEL_STEPS.map((s) => s.short).join(" / ")} 중 ${
+    FUNNEL_STEPS[idx].short
+  } 단계 (${idx + 1}/${FUNNEL_STEPS.length})`;
+  return (
+    <div
+      className="inline-flex items-center"
+      title={title}
+      aria-label={title}
+    >
+      {FUNNEL_STEPS.map((s, i) => {
+        const done = i < idx;
+        const cur = i === idx;
+        return (
+          <div key={s.status} className="inline-flex items-center">
+            <span
+              className={cn(
+                "border px-1.5 py-0.5 text-[9px] font-black uppercase whitespace-nowrap",
+                cur && "border-brand-pink bg-brand-pink/20 text-brand-pink",
+                done && "border-emerald-500/40 bg-emerald-500/10 text-emerald-300/90",
+                !cur && !done && "border-border bg-transparent text-fg/30",
+              )}
+              style={{ letterSpacing: "0.06em" }}
+            >
+              {s.short}
+            </span>
+            {i < FUNNEL_STEPS.length - 1 ? (
+              <span
+                aria-hidden
+                className={cn(
+                  "h-px w-1.5",
+                  i < idx ? "bg-emerald-500/40" : "bg-border",
+                )}
+              />
+            ) : null}
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -1395,6 +1564,7 @@ function RowActions({
   onReceipt,
   onHistory,
   onToggleMilestone,
+  onEnrollBatch,
 }: {
   row: ApplicantRow;
   busy: boolean;
@@ -1411,6 +1581,7 @@ function RowActions({
     milestoneType: "guide_sent" | "feedback_done",
     currentValue: string | null,
   ) => void;
+  onEnrollBatch: () => void;
 }) {
   // PII 파기된 row 는 발송/연락 액션이 무의미 → 메시지 버튼 숨김.
   // 거래 처리 액션 (취소/환불/현금영수증 기록) 은 회계 무결성 위해 유지.
@@ -1423,29 +1594,32 @@ function RowActions({
   const milestoneEligible =
     !redacted && (row.status === "paid" || row.status === "enrolled");
 
-  // 다음 단계 = 상태 전이 액션 (상태에 맞는 것만). 취소/환불은 danger tone + 마지막.
-  const transitions: MenuAction[] = [];
+  // 다음 단계 (funnel 전진) = 좌측 상태값이 결정. primary = 전진할 다음 노드 이름
+  // (1클릭), secondary(▾) = 다른 전이(마감·취소·환불). paid → 수강 확정 은 정원
+  // 판정 때문에 일괄 다이얼로그로 라우팅 (per-row 불가).
+  let primary: { label: string; onClick: () => void } | null = null;
+  const secondary: MenuAction[] = [];
   if (row.status === "pending") {
-    transitions.push({ label: "발송 완료", onClick: onNotify });
-  }
-  if (row.status === "notified") {
-    transitions.push({ label: "입금 확인", onClick: onPaid });
-    transitions.push({ label: "마감 초과", onClick: onOverdue });
-  }
-  if (row.status === "paid" || row.status === "cancelled") {
-    transitions.push({ label: "환불 완료", onClick: onRefund });
-  }
-  if (
-    row.status === "pending" ||
-    row.status === "notified" ||
-    row.status === "paid" ||
-    row.status === "overdue"
-  ) {
-    transitions.push({ label: "취소", onClick: onCancel, tone: "danger" });
+    primary = { label: "안내 발송", onClick: onNotify };
+    secondary.push({ label: "취소", onClick: onCancel, tone: "danger" });
+  } else if (row.status === "notified") {
+    primary = { label: "입금 확인", onClick: onPaid };
+    secondary.push({ label: "마감 초과", onClick: onOverdue });
+    secondary.push({ label: "취소", onClick: onCancel, tone: "danger" });
+  } else if (row.status === "paid") {
+    primary = { label: "수강 확정", onClick: onEnrollBatch };
+    secondary.push({ label: "환불 완료", onClick: onRefund });
+    secondary.push({ label: "취소", onClick: onCancel, tone: "danger" });
   }
 
-  // 부가 액션 = 상태를 바꾸지 않는 반복/기록 액션.
+  // 부가 액션 (⋯) = 상태를 바꾸지 않는 반복/기록 + off-funnel 이탈 상태의 처리.
   const aux: MenuAction[] = [];
+  if (row.status === "overdue") {
+    aux.push({ label: "취소", onClick: onCancel, tone: "danger" });
+  }
+  if (row.status === "cancelled") {
+    aux.push({ label: "환불 완료", onClick: onRefund });
+  }
   if (row.status === "notified") {
     aux.push({ label: "리마인드 +1", onClick: onReminder });
   }
@@ -1503,19 +1677,12 @@ function RowActions({
           메시지
         </button>
       )}
-      {transitions.length > 0 ? (
-        <ActionMenu
+      {primary ? (
+        <SplitActionButton
           busy={busy}
-          ariaLabel="다음 단계 액션"
-          trigger={
-            <>
-              다음 단계
-              <span aria-hidden className="ml-1 opacity-70">
-                ▾
-              </span>
-            </>
-          }
-          items={transitions}
+          primaryLabel={primary.label}
+          onPrimary={primary.onClick}
+          secondary={secondary}
         />
       ) : null}
       {aux.length > 0 ? (
