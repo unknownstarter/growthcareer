@@ -289,14 +289,20 @@ export type AdminActionResult =
  *
  * 하위호환: 기존 대시보드가 참조하던 outcome / counts.{affected,threshold} 도
  * 유지한다. outcome = 하나라도 열리면 'enrolled', 아무 과정도 안 열리면 'cancelled'.
+ *
+ * Phase 2a 제네릭화: runs / courseCounts 는 slug 키 제네릭 맵(Record<string, ...>).
+ * 기존 대시보드/다이얼로그의 result.runs["a-r"] / result.courseCounts.sound 접근은
+ * 그대로 유효 (widening). 3번째 과정 추가 시 새 slug 가 맵에 자동 등장.
+ * courseTitles: slug → 표시 title 매핑 (제네릭 렌더용. 없으면 slug 자체 표시).
  */
 export type BatchEnrollResult =
   | {
       status: "ok";
       outcome: "enrolled" | "cancelled";
       counts: { affected: number; threshold: number };
-      runs: { "a-r": boolean; sound: boolean };
-      courseCounts: { "a-r": number; sound: number };
+      runs: Record<string, boolean>;
+      courseCounts: Record<string, number>;
+      courseTitles: Record<string, string>;
       enrolledCount: number;
       cancelledCount: number;
       partialRefundDue: { id: string; droppedCourses: string[] }[];

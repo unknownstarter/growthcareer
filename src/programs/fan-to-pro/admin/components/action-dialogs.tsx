@@ -6,12 +6,6 @@ import { cn } from "@/src/shared/ui/cn";
 import type { ApplicantRow } from "../types";
 import type { BatchEnrollResult } from "@/src/programs/fan-to-pro/domain/application";
 
-// 2기 단과 slug → 표시 이름 (per-course 정원 판정 결과 표시용).
-const ENROLL_COURSE_LABEL: Record<string, string> = {
-  "a-r": "A&R",
-  sound: "음향",
-};
-
 const fieldClass =
   "w-full border border-border bg-bg px-3 py-2 text-sm text-fg outline-none focus:border-brand-pink";
 
@@ -353,7 +347,8 @@ export function EnrollBatchDialog({
     onSubmit();
   };
 
-  const courseLabel = (slug: string) => ENROLL_COURSE_LABEL[slug] ?? slug;
+  // slug → 표시 이름. courseTitles(과정 title_ko) 우선, 없으면 slug 자체.
+  const courseLabel = (slug: string) => result?.courseTitles?.[slug] ?? slug;
 
   return (
     <Modal
@@ -367,17 +362,19 @@ export function EnrollBatchDialog({
         <div className="flex flex-col gap-4">
           <div className="border border-border bg-bg p-3 text-xs leading-relaxed text-fg">
             <p className="mb-2 font-black uppercase" style={btnStyle}>
-              과정별 개강 판정 (최소 10명)
+              과정별 개강 판정
             </p>
             <ul className="space-y-1">
-              <li>
-                A&amp;R: <strong>{result.courseCounts["a-r"]}명</strong>{" "}
-                {result.runs["a-r"] ? "→ 개강" : "→ 미달 (취소)"}
-              </li>
-              <li>
-                음향: <strong>{result.courseCounts.sound}명</strong>{" "}
-                {result.runs.sound ? "→ 개강" : "→ 미달 (취소)"}
-              </li>
+              {Object.keys(result.courseCounts).length === 0 ? (
+                <li className="text-fg/80">판정 대상 과정 없음</li>
+              ) : (
+                Object.entries(result.courseCounts).map(([slug, count]) => (
+                  <li key={slug}>
+                    {courseLabel(slug)}: <strong>{count}명</strong>{" "}
+                    {result.runs[slug] ? "→ 개강" : "→ 미달 (취소)"}
+                  </li>
+                ))
+              )}
             </ul>
             <p className="mt-3">
               enrolled 전환: <strong>{result.enrolledCount}건</strong>
@@ -426,10 +423,10 @@ export function EnrollBatchDialog({
               현재 status=paid 인원: <strong>{paidCount}명</strong>
             </p>
             <p className="mt-2 text-fg">
-              과정별 (A&amp;R / 음향) 각각 <strong>최소 10명</strong> 충족 시 그
-              과정만 개강해요. 개강 과정 신청자는 enrolled, 미달 과정만 신청한
-              분은 cancelled (환불 대상) 로 전환돼요. 올인원 신청자 중 일부 과정만
-              열리면 열린 과정만 등록되고 나머지는 부분환불 목록으로 안내돼요.
+              과정별 최소 정원 충족 시 그 과정만 개강해요. 개강 과정 신청자는
+              enrolled, 미달 과정만 신청한 분은 cancelled (환불 대상) 로 전환돼요.
+              올인원 신청자 중 일부 과정만 열리면 열린 과정만 등록되고 나머지는
+              부분환불 목록으로 안내돼요.
             </p>
           </div>
 

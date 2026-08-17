@@ -494,10 +494,16 @@ function DashboardInner({
       const result = await markAsEnrolledBatch();
       if (result.status === "ok") {
         setEnrollBatchResult(result);
-        const arLabel = result.runs["a-r"] ? "A&R 개강" : "A&R 미달";
-        const soundLabel = result.runs.sound ? "음향 개강" : "음향 미달";
+        // 과정별 개강/미달 요약 (제네릭 — courseTitles 로 표시, slug fallback).
+        const courseSummary = Object.entries(result.runs)
+          .map(([slug, open]) => {
+            const label = result.courseTitles?.[slug] ?? slug;
+            return `${label} ${open ? "개강" : "미달"}`;
+          })
+          .join(" / ");
+        const summary = courseSummary || "판정 대상 과정 없음";
         show(
-          `${arLabel} / ${soundLabel} / enrolled ${result.enrolledCount} / cancelled ${result.cancelledCount}`,
+          `${summary} / enrolled ${result.enrolledCount} / cancelled ${result.cancelledCount}`,
           "success",
         );
         refresh();

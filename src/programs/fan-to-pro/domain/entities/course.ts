@@ -17,6 +17,9 @@ import { z } from "zod";
 
 export const COURSE_STATUSES = ["draft", "open", "archived"] as const;
 
+/** courses.min_headcount DB default. row 에 값 없을 때 fallback. */
+export const MIN_HEADCOUNT_DEFAULT = 10;
+
 export const CourseStatusSchema = z.enum(COURSE_STATUSES);
 export type CourseStatus = z.infer<typeof CourseStatusSchema>;
 
@@ -31,6 +34,8 @@ export const CourseSchema = z.object({
   status: CourseStatusSchema,
   price_krw: z.number().int().nonnegative().nullish(),
   session_count: z.number().int().positive().nullish(),
+  /** Phase 1a: 개설 최소 정원. DB default 10. 제네릭 정원 판정이 로드. */
+  min_headcount: z.number().int().positive().default(MIN_HEADCOUNT_DEFAULT),
   created_at: z.string(),
   updated_at: z.string().nullish(),
 });

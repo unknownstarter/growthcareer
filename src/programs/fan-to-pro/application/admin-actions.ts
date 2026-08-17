@@ -40,7 +40,9 @@ import {
 import {
   MIN_PER_COURSE,
   resolveBatchOutcome,
+  type CourseDef,
 } from "@/src/programs/fan-to-pro/domain/services/batch-enroll";
+import { MIN_HEADCOUNT_DEFAULT } from "@/src/programs/fan-to-pro/domain/entities/course";
 import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
 import { assertAdmin } from "@/src/programs/fan-to-pro/admin/role";
 import {
@@ -356,8 +358,43 @@ export async function markAsEnrolledBatch(): Promise<BatchEnrollResult> {
     // 여러 기수의 paid 가 섞임 → 기수별 개별 처리 필요. 자동 batch 중단.
     return { status: "error", error: "multipleCohorts" };
   }
+  const cohortId = cohortIds[0] ?? null;
 
-  // 순수 판정 (DB 무관).
+  // 이 기수의 program 에 속한 course 목록 로드 (제네릭 정원 판정 + slug→course_id 변환).
+  //   cohort → program_id → courses. cohort 없으면 (paid 0 또는 legacy) 빈 목록.
+  //   status draft/open 만 (archived 는 과거 기수 과정 — 2기 개강 판정 대상 아님).
+  const courseDefs: CourseDef[] = [];
+  const slugToCourseId = new Map<string, string>();
+  const slugToTitle = new Map<string, string>();
+  if (cohortId) {
+    const { data: cohort, error: cohortErr } = await supabase
+      .from("cohorts")
+      .select("program_id")
+      .eq("id", cohortId)
+      .single();
+    if (cohortErr) return { status: "error", error: cohortErr.message };
+    const programId = cohort?.program_id as string | undefined;
+    if (programId) {
+      const { data: courseRows, error: courseErr } = await supabase
+        .from("courses")
+        .select("id, slug, title_ko, min_headcount, status")
+        .eq("program_id", programId)
+        .in("status", ["draft", "open"]);
+      if (courseErr) return { status: "error", error: courseErr.message };
+      for (const c of courseRows ?? []) {
+        const slug = String(c.slug);
+        const min =
+          typeof c.min_headcount === "number" && c.min_headcount > 0
+            ? c.min_headcount
+            : MIN_HEADCOUNT_DEFAULT;
+        courseDefs.push({ slug, minHeadcount: min });
+        slugToCourseId.set(slug, String(c.id));
+        slugToTitle.set(slug, String(c.title_ko ?? slug));
+      }
+    }
+  }
+
+  // 순수 판정 (DB 무관). courses 목록을 주입 (하드코딩 slug 없음).
   const outcome = resolveBatchOutcome(
     rows.map((r) => ({
       id: String(r.id),
@@ -366,7 +403,7 @@ export async function markAsEnrolledBatch(): Promise<BatchEnrollResult> {
         : null,
       selectionMode: r.selection_mode ? String(r.selection_mode) : null,
     })),
-    MIN_PER_COURSE,
+    courseDefs,
   );
 
   const nowIso = new Date().toISOString();
@@ -406,19 +443,92 @@ export async function markAsEnrolledBatch(): Promise<BatchEnrollResult> {
     if (error) return { status: "error", error: error.message };
   }
 
+  // enrollment 실 SoT 생성 (Phase 2b + fix2/3/5) — enrolled 각 applicant 에 대해
+  //   enrollments 1 row + enrollment_courses (kept course 별 1 row).
+  //   Recruitment BC(applicants.selected_course_slugs=신청 의도) → LMS BC(실 수강)
+  //   변환 시점 = 여기. slug → course_id 는 위에서 로드한 courseDefs 기준.
+  //
+  //   kept slug = resolver 결과를 단일 SoT 로 사용 (fix5). full/partial 모두 resolver 가
+  //   정규화한 kept 를 그대로 씀 — 원본 selected_course_slugs 재필터링 안 함 (divergence 예방).
+  //
+  //   멱등 (fix2/3): enrollment 은 (applicant_id, cohort_id) upsert. 재실행/동시 이중호출 시
+  //   기존 row id 반환 (M2.5 partial unique index 가 onConflict 타겟). enrollment_courses 도
+  //   (enrollment_id, course_id) upsert (ignoreDuplicates). pre-check 없이 항상 upsert 하므로
+  //   부분실패 후 재호출 시 header 만 있고 course row 0 인 orphan 도 자기치유.
+  //   (Supabase JS 는 다중 문 트랜잭션 미지원 — 멱등 upsert 로 대체.)
+  const enrolledMap = new Map<string, string[]>(); // applicantId → kept slugs (resolver SoT).
+  for (const e of outcome.enrolledFull) enrolledMap.set(e.id, e.kept);
+  for (const p of outcome.enrolledPartial) enrolledMap.set(p.id, p.kept);
+
+  const enrolledIds = [...enrolledMap.keys()];
+  if (enrolledIds.length > 0 && cohortId) {
+    for (const applicantId of enrolledIds) {
+      const keptSlugs = enrolledMap.get(applicantId) ?? [];
+      if (keptSlugs.length === 0) continue; // 매핑 가능한 course 없음 → enrollment 없음.
+
+      // enrollment header — 없을 때만 insert (ignoreDuplicates). 재실행/이중호출 시
+      //   기존 row 를 건드리지 않아 최초 purchased_at / status 를 보존한다
+      //   (upsert update 로 하면 재호출마다 purchased_at 이 nowIso 로 덮어써짐).
+      //   onConflict = (applicant_id, cohort_id) — M2.5 partial unique index.
+      const { error: insErr } = await supabase.from("enrollments").upsert(
+        {
+          applicant_id: applicantId,
+          student_id: null, // 승격 시 attachStudentToEnrollment 로 채움.
+          cohort_id: cohortId,
+          bundle_id: null, // bundle 매핑은 후속 (지금은 course-level 만).
+          status: "paid", // 이미 입금 확인된 applicant → paid enrollment.
+          purchased_at: nowIso,
+        },
+        { onConflict: "applicant_id,cohort_id", ignoreDuplicates: true },
+      );
+      if (insErr) return { status: "error", error: insErr.message };
+
+      // id 확보 (신규/기존 모두). ignoreDuplicates 라 upsert 가 기존 row 를 안 돌려주므로 조회.
+      const { data: enrollment, error: selErr } = await supabase
+        .from("enrollments")
+        .select("id")
+        .eq("applicant_id", applicantId)
+        .eq("cohort_id", cohortId)
+        .single();
+      if (selErr || !enrollment) {
+        return { status: "error", error: selErr?.message ?? "enrollmentLookupFailed" };
+      }
+
+      // enrollment_courses upsert (ignoreDuplicates) — 항상 실행해 orphan(course row 0) 봉합.
+      const ecRows = keptSlugs
+        .map((slug) => slugToCourseId.get(slug))
+        .filter((cid): cid is string => Boolean(cid))
+        .map((courseId) => ({
+          enrollment_id: String(enrollment.id),
+          course_id: courseId,
+          completed_at: null,
+        }));
+      if (ecRows.length > 0) {
+        const { error: ecErr } = await supabase
+          .from("enrollment_courses")
+          .upsert(ecRows, {
+            onConflict: "enrollment_id,course_id",
+            ignoreDuplicates: true,
+          });
+        if (ecErr) return { status: "error", error: ecErr.message };
+      }
+    }
+  }
+
   const enrolledCount =
     outcome.enrolledFullIds.length + outcome.enrolledPartial.length;
   const cancelledCount = outcome.cancelledIds.length;
-  const anyRuns = outcome.runs["a-r"] || outcome.runs.sound;
+  const anyRuns = Object.values(outcome.runs).some(Boolean);
 
   return {
     status: "ok",
     // 하위호환 필드.
     outcome: anyRuns ? "enrolled" : "cancelled",
     counts: { affected: enrolledCount + cancelledCount, threshold: MIN_PER_COURSE },
-    // per-course 필드.
+    // per-course 필드 (제네릭 slug 맵).
     runs: outcome.runs,
     courseCounts: outcome.counts,
+    courseTitles: Object.fromEntries(slugToTitle),
     enrolledCount,
     cancelledCount,
     partialRefundDue: outcome.partialRefundDue,
