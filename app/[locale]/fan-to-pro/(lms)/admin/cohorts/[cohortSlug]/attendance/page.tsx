@@ -56,7 +56,7 @@ export default async function FanToProAdminCohortAttendancePage({
     );
   }
 
-  const { sessions, students } = rosterResult.data;
+  const { sessions, students, courseTitles } = rosterResult.data;
 
   if (students.length === 0 || sessions.length === 0) {
     return (
@@ -91,6 +91,7 @@ export default async function FanToProAdminCohortAttendancePage({
         cohortName={cohort.name}
         sessions={sessions}
         students={students}
+        courseTitles={courseTitles}
       />
     </PageContainer>
   );

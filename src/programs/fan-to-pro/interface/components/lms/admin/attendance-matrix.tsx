@@ -82,6 +82,7 @@ function errorMessage(code: string): string {
 }
 import type { Session } from "@/src/programs/fan-to-pro/domain/entities/session";
 import type { CohortRosterStudentRow } from "@/src/programs/fan-to-pro/application/queries/cohort/fetch-cohort-roster";
+import { groupSessionsByCourse } from "@/src/programs/fan-to-pro/domain/services/session-course-grouping";
 
 type CellStatus = AttendanceStatus | "unmarked";
 
@@ -160,9 +161,56 @@ type Props = {
   cohortName: string;
   sessions: Session[];
   students: CohortRosterStudentRow[];
+  /**
+   * course_id → title_ko (태스크 #24 Phase 4). 1기 = 단일 course → 그룹 헤더
+   * 생략 (기존 렌더 불변). 2기부터 A&R / 음향 등 course 별 회차 구획.
+   * 미전달 시 빈 배열 = 단일 취급.
+   */
+  courseTitles?: Array<{ courseId: string; title: string }>;
 };
 
-export function AttendanceMatrix({ sessions, students }: Props) {
+/**
+ * course 그룹 헤더 배지 색 — solid 블록 (§6.8 그라데이션/글로우 금지).
+ * course 순서대로 순환. accent = solid 단색.
+ */
+const COURSE_TAG_CLASSES = [
+  "bg-[#eef2ff] text-[#3538cd] border-[#c7d2fe]",
+  "bg-[#f0fdf9] text-[#0f766e] border-[#99f6e4]",
+  "bg-[#fef6ee] text-[#b93815] border-[#f9dbaf]",
+  "bg-[#fdf2fa] text-[#c11574] border-[#fccee8]",
+];
+
+export function AttendanceMatrix({ sessions, students, courseTitles }: Props) {
+  const courseTitleById = React.useMemo(() => {
+    const m = new Map<string, string>();
+    for (const c of courseTitles ?? []) m.set(c.courseId, c.title);
+    return m;
+  }, [courseTitles]);
+
+  const grouping = React.useMemo(
+    () => groupSessionsByCourse(sessions, courseTitleById),
+    [sessions, courseTitleById],
+  );
+
+  // course_id → 순환 tag class (멀티 course 일 때만 사용).
+  const courseTagClassById = React.useMemo(() => {
+    const m = new Map<string, string>();
+    let i = 0;
+    for (const g of grouping.groups) {
+      if (g.courseId != null) {
+        m.set(g.courseId, COURSE_TAG_CLASSES[i % COURSE_TAG_CLASSES.length]);
+        i += 1;
+      }
+    }
+    return m;
+  }, [grouping]);
+
+  // 컬럼 렌더 순서 = course 그룹 순서로 flatten (그룹 헤더 colSpan 과 정렬 일치).
+  // 단일 course (1기) 면 결과가 입력 sessions 와 동일 순서 → 무회귀.
+  const orderedSessions = React.useMemo(
+    () => grouping.groups.flatMap((g) => g.sessions),
+    [grouping],
+  );
   // local state — student × session → CellStatus
   // server roundtrip 동안 optimistic update.
   const [matrix, setMatrix] = React.useState<Record<MatrixCellKey, CellStatus>>(
@@ -509,6 +557,44 @@ export function AttendanceMatrix({ sessions, students }: Props) {
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-sm">
               <thead className="sticky top-0 z-20 bg-[var(--card)]">
+                {/* course 그룹 헤더 — 멀티 course (2기+) 일 때만. 1기 단일 course 는 미표시 (무회귀). */}
+                {grouping.isMultiCourse ? (
+                  <tr className="border-b border-[var(--border)]">
+                    <th
+                      scope="col"
+                      className="sticky left-0 z-30 min-w-[160px] bg-[var(--card)] px-4 py-2 text-left text-[11px] font-semibold text-[var(--muted-foreground)] border-r border-[var(--border)]"
+                    >
+                      과정
+                    </th>
+                    {grouping.groups.map((group) => {
+                      const tagClass = group.courseId
+                        ? courseTagClassById.get(group.courseId)
+                        : "bg-[var(--muted)] text-[var(--muted-foreground)] border-[var(--border)]";
+                      return (
+                        <th
+                          key={group.key}
+                          scope="colgroup"
+                          colSpan={group.sessions.length}
+                          className="px-2 py-2 text-center border-r border-[var(--border)] last:border-r-0"
+                        >
+                          <span
+                            className={cn(
+                              "inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-semibold",
+                              tagClass,
+                            )}
+                          >
+                            {group.title ?? "과정 미지정"}
+                          </span>
+                        </th>
+                      );
+                    })}
+                    <th
+                      scope="col"
+                      aria-hidden="true"
+                      className="min-w-[100px] bg-[var(--card)] border-l border-[var(--border)]"
+                    />
+                  </tr>
+                ) : null}
                 <tr className="border-b border-[var(--border)]">
                   <th
                     scope="col"
@@ -516,7 +602,7 @@ export function AttendanceMatrix({ sessions, students }: Props) {
                   >
                     학생
                   </th>
-                  {sessions.map((session) => {
+                  {orderedSessions.map((session) => {
                     const started = isSessionStarted(session);
                     const { present, total, rate } = sessionRate(session.id);
                     return (
@@ -620,7 +706,7 @@ export function AttendanceMatrix({ sessions, students }: Props) {
                           ) : null}
                         </Link>
                       </th>
-                      {sessions.map((session) => {
+                      {orderedSessions.map((session) => {
                         const k = cellKey(row.student.id, session.id);
                         const status = matrix[k] ?? "unmarked";
                         const pending = pendingCells.has(k);

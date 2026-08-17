@@ -78,6 +78,32 @@ export async function fetchOpenCoursesByProgram(
   return (data ?? []).map((row) => CourseSchema.parse(row));
 }
 
+/**
+ * course_id 집합 → title_ko 맵 (태스크 #24 Phase 4, UI course-aware 라벨용).
+ *
+ * 회차 그룹핑 UI 가 course 이름만 필요할 때 사용 (전체 entity parse 불필요).
+ * 조회 실패 / supabase 없음 / 빈 입력 → 빈 Map. UI 는 title 없으면 라벨 생략 →
+ * 1기(단일 course) 무회귀 유지.
+ */
+export async function fetchCourseTitlesByIds(
+  courseIds: readonly string[],
+): Promise<Map<string, string>> {
+  const map = new Map<string, string>();
+  const unique = Array.from(new Set(courseIds.filter(Boolean)));
+  if (unique.length === 0) return map;
+  const supabase = getSupabaseServer();
+  if (!supabase) return map;
+  const { data, error } = await supabase
+    .from(TABLE)
+    .select("id, title_ko")
+    .in("id", unique);
+  if (error || !data) return map;
+  for (const row of data as Array<{ id: string; title_ko: string | null }>) {
+    if (row.id && row.title_ko) map.set(row.id, row.title_ko);
+  }
+  return map;
+}
+
 export type InsertCourseInput = {
   program_id: string;
   slug: string;

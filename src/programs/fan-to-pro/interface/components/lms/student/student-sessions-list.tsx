@@ -66,6 +66,15 @@ export function StudentSessionsList({
 }: Props) {
   const isEn = locale === "en";
 
+  // 태스크 #24 Phase 4 — 여러 course 회차가 섞였을 때만 course 라벨 표시.
+  // 1기 = 단일 course → distinct 1개 → 라벨 생략 (무회귀).
+  const showCourseLabel = React.useMemo(() => {
+    const distinct = new Set(
+      rows.map((r) => r.course_id).filter((v): v is string => v != null),
+    );
+    return distinct.size > 1;
+  }, [rows]);
+
   return (
     <div className="space-y-6">
       {/* 요약 카드 — 기수 + 출석률 */}
@@ -119,6 +128,7 @@ export function StudentSessionsList({
                 cohortSlug={cohortSlug}
                 locale={locale}
                 isEn={isEn}
+                showCourseLabel={showCourseLabel}
               />
             </li>
           ))}
@@ -158,11 +168,13 @@ function SessionCard({
   cohortSlug,
   locale,
   isEn,
+  showCourseLabel,
 }: {
   row: StudentSessionRow;
   cohortSlug: string;
   locale: string;
   isEn: boolean;
+  showCourseLabel: boolean;
 }) {
   const href =
     `/${locale}/fan-to-pro/${cohortSlug}/student/sessions/${row.session_id}` as Route;
@@ -205,6 +217,11 @@ function SessionCard({
               <Clock className="h-3.5 w-3.5" aria-hidden />
               {formatSessionTime(row.starts_at)}
             </span>
+            {showCourseLabel && row.course_title ? (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-[#eef2ff] text-[#3538cd] text-[10px] font-bold">
+                {row.course_title}
+              </span>
+            ) : null}
             {isInProgress ? (
               <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-[#dcfae6] text-[#067647] text-[10px] font-bold uppercase">
                 {isEn ? "Live" : "진행 중"}

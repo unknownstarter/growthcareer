@@ -27,6 +27,7 @@ import {
   type Session,
 } from "@/src/programs/fan-to-pro/domain/entities/session";
 import { fetchStudentCourseIds } from "@/src/programs/fan-to-pro/application/queries/enrollment/fetch-student-course-ids";
+import { fetchCourseTitlesByIds } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/course-repository";
 
 export type StudentSessionAttendanceStatus = AttendanceStatus | "unmarked";
 
@@ -44,6 +45,9 @@ export type StudentSessionRow = {
   late_minutes: number | null;
   attendance_notes: string | null;
   materials_count: number;
+  /** 태스크 #24 Phase 4 — 회차 course. 1기 단일 course 는 UI 라벨 생략. */
+  course_id: string | null;
+  course_title: string | null;
 };
 
 export type StudentSessionsView = {
@@ -240,6 +244,12 @@ export async function fetchStudentSessionsView(
     );
   }
 
+  // 7b) 회차 course_id → title_ko (UI course 라벨). 실패 시 빈 Map → 라벨 생략.
+  const sessionCourseIds = sessionRows
+    .map((s) => s.course_id)
+    .filter((v): v is string => v != null);
+  const courseTitleById = await fetchCourseTitlesByIds(sessionCourseIds);
+
   // 8) row 빌드.
   const rows: StudentSessionRow[] = sessionRows.map((s) => {
     const instructor = s.instructor_id
@@ -260,6 +270,10 @@ export async function fetchStudentSessionsView(
       late_minutes: att?.late_minutes ?? null,
       attendance_notes: att?.notes ?? null,
       materials_count: materialsCountBySession.get(s.id) ?? 0,
+      course_id: s.course_id,
+      course_title: s.course_id
+        ? (courseTitleById.get(s.course_id) ?? null)
+        : null,
     };
   });
 

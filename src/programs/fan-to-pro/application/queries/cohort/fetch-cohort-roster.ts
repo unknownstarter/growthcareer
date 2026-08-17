@@ -24,6 +24,7 @@ import type { Cohort } from "@/src/programs/fan-to-pro/domain/entities/cohort";
 import type { Session } from "@/src/programs/fan-to-pro/domain/entities/session";
 import { getElapsedSessionIdsForCourses } from "@/src/programs/fan-to-pro/domain/entities/session";
 import { fetchStudentCourseIdsMap } from "@/src/programs/fan-to-pro/application/queries/enrollment/fetch-student-course-ids";
+import { fetchCourseTitlesByIds } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/course-repository";
 import type { Student } from "@/src/programs/fan-to-pro/domain/entities/student";
 import type { ApplicantStatus } from "@/src/programs/fan-to-pro/application/dto/applicant-row";
 
@@ -71,6 +72,12 @@ export type CohortRoster = {
   cohort: Cohort;
   sessions: Session[];
   students: CohortRosterStudentRow[];
+  /**
+   * 회차 course_id → title_ko (태스크 #24 Phase 4, UI course-aware 라벨).
+   * 1기 = 단일 course 1개 항목. 2기부터 A&R / 음향 등 여러 항목.
+   * 조회 실패 시 빈 배열 — UI 는 라벨 생략 (무회귀).
+   */
+  courseTitles: Array<{ courseId: string; title: string }>;
 };
 
 export type CohortRosterResult =
@@ -102,11 +109,17 @@ export async function fetchCohortRoster(
     // applicant join — students 가 0명이면 skip.
     const applicantIds = students.map((s) => s.applicant_id);
     const studentIds = students.map((s) => s.id);
-    const [applicantMap, profileMap, courseIdsMap] = await Promise.all([
-      fetchApplicantInfoMap(applicantIds),
-      fetchStudentProfileMap(studentIds),
-      fetchStudentCourseIdsMap(studentIds),
-    ]);
+    // 회차에 배선된 course_id 집합 → title_ko (UI course-aware 라벨).
+    const sessionCourseIds = sessions
+      .map((s) => s.course_id)
+      .filter((v): v is string => v != null);
+    const [applicantMap, profileMap, courseIdsMap, courseTitleMap] =
+      await Promise.all([
+        fetchApplicantInfoMap(applicantIds),
+        fetchStudentProfileMap(studentIds),
+        fetchStudentCourseIdsMap(studentIds),
+        fetchCourseTitlesByIds(sessionCourseIds),
+      ]);
 
     const totalSessions = sessions.length;
 
@@ -158,6 +171,9 @@ export async function fetchCohortRoster(
         cohort,
         sessions,
         students: studentRows,
+        courseTitles: Array.from(courseTitleMap.entries()).map(
+          ([courseId, title]) => ({ courseId, title }),
+        ),
       },
     };
   } catch (err) {
