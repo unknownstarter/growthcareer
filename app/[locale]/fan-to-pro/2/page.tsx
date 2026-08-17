@@ -604,18 +604,16 @@ export default async function FanToProPage({
         </div>
       </section>
 
-      {/* ===== 신청 (과정 선택) ===== */}
+      {/* ===== 신청 (과정 선택) =====
+          섹션 헤더(cmd / h1 / desc)는 ApplyFlow 내부에서 렌더 → 신청 완료 시 헤딩까지
+          완료 뷰로 대체돼 "과정 고르세요" 가 화면에 남지 않음 (혼란 방지). */}
       <section id="apply" className={`${WRAP} scroll-mt-[136px] py-24`}>
-        <p className={`${styles.mono} mb-5 text-xs`} style={{ letterSpacing: "0.04em" }}>
-          <span className="text-brand-pink">$</span> {c.apply.cmd}
-          <span className={styles.blink} aria-hidden>_</span>
-          <span className="ml-2 text-fg-subtle">// {c.apply.label}</span>
-        </p>
-        <h2 className={`${styles.pixelFont} text-3xl sm:text-4xl`} style={LEAD_PIXEL}>{c.apply.h1}</h2>
-        <p className="mt-5 max-w-xl text-fg-muted text-base leading-relaxed sm:text-lg">{c.apply.desc}</p>
-        <div className="mt-10">
-          <ApplyFlow courses={c.apply.courses} t={c.apply} formT={c.applyForm} />
-        </div>
+        <ApplyFlow
+          courses={c.apply.courses}
+          t={c.apply}
+          formT={c.applyForm}
+          head={{ cmd: c.apply.cmd, label: c.apply.label, h1: c.apply.h1, desc: c.apply.desc }}
+        />
       </section>
 
       {/* ===== Footer (공통 라이트 SiteFooter. 푸터 nav = GC 사이트 구조 절대경로) ===== */}
