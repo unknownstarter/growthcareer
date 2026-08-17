@@ -85,6 +85,99 @@ export const VISA_OPTIONS = [
   "기타/없음",
 ] as const;
 
+// 국적 드롭다운 선택지 (2기 신청 폼). 자유 텍스트 대신 표준 목록으로 수집해
+// 운영자 통계/비자 매칭이 일관되게 관리되도록 함. 값은 영문 국명 (기존 1기
+// 데이터가 영문: Bangladesh / Portugal / India / South Africa 등).
+// 타겟 = 한국 거주 외국인. 동남아 / 남아시아 / 동아시아 / 중앙아시아 / 중동 /
+// 아프리카 / 유럽 / 미주 / 오세아니아를 폭넓게 포함. 목록에 없으면 "Other".
+// 스키마(nationality)는 여전히 자유 텍스트 min2 라 값이 그대로 통과 (1기 회귀 X).
+export const COUNTRY_OPTIONS = [
+  "Vietnam",
+  "Thailand",
+  "Indonesia",
+  "Philippines",
+  "Malaysia",
+  "Singapore",
+  "Myanmar",
+  "Cambodia",
+  "Laos",
+  "Brunei",
+  "India",
+  "Bangladesh",
+  "Pakistan",
+  "Sri Lanka",
+  "Nepal",
+  "Bhutan",
+  "Maldives",
+  "China",
+  "Taiwan",
+  "Hong Kong",
+  "Japan",
+  "Mongolia",
+  "Kazakhstan",
+  "Uzbekistan",
+  "Kyrgyzstan",
+  "Tajikistan",
+  "Turkmenistan",
+  "Turkey",
+  "Iran",
+  "Iraq",
+  "Saudi Arabia",
+  "United Arab Emirates",
+  "Qatar",
+  "Kuwait",
+  "Israel",
+  "Jordan",
+  "Lebanon",
+  "Egypt",
+  "Morocco",
+  "Algeria",
+  "Tunisia",
+  "Nigeria",
+  "Ghana",
+  "Kenya",
+  "Ethiopia",
+  "Tanzania",
+  "Uganda",
+  "South Africa",
+  "Cameroon",
+  "United Kingdom",
+  "Ireland",
+  "France",
+  "Germany",
+  "Netherlands",
+  "Belgium",
+  "Spain",
+  "Portugal",
+  "Italy",
+  "Switzerland",
+  "Austria",
+  "Sweden",
+  "Norway",
+  "Denmark",
+  "Finland",
+  "Poland",
+  "Czech Republic",
+  "Hungary",
+  "Romania",
+  "Greece",
+  "Ukraine",
+  "Russia",
+  "Belarus",
+  "United States",
+  "Canada",
+  "Mexico",
+  "Brazil",
+  "Argentina",
+  "Chile",
+  "Colombia",
+  "Peru",
+  "Venezuela",
+  "Australia",
+  "New Zealand",
+  "Other",
+] as const;
+
 const checkboxBool = z
   .union([z.literal("on"), z.literal("true"), z.boolean(), z.literal("")])
   .transform((v) => v === "on" || v === "true" || v === true);
@@ -104,11 +197,14 @@ export const Step2Schema = z.object({
     .optional()
     .transform((v) => (v && v.length > 0 ? v : null)),
   visa: z.enum(VISA_OPTIONS, { message: ERROR_KEYS.visaRequired }),
+  // address 는 2기부터 선택값 (거주 지역 도시/구 수준). 1기는 항상 값이 채워져
+  // 전송되므로 relax 해도 회귀 없음. university 와 동일 패턴 (빈 값 → null).
   address: z
     .string()
     .trim()
-    .min(2, ERROR_KEYS.addressMin)
-    .max(200),
+    .max(200)
+    .optional()
+    .transform((v) => (v && v.length > 0 ? v : null)),
   consent: checkboxBool.refine(
     (v) => v === true,
     ERROR_KEYS.consentRequired,

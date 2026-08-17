@@ -5,7 +5,7 @@
    프리뷰 전용. 픽셀/터미널 스타일. */
 import { useActionState, useEffect, useRef, useState } from "react";
 import { submitApplication } from "@/src/programs/fan-to-pro/application/submit-application";
-import { VISA_OPTIONS } from "@/src/programs/fan-to-pro/domain/application";
+import { COUNTRY_OPTIONS, VISA_OPTIONS } from "@/src/programs/fan-to-pro/domain/application";
 import styles from "./glass.module.css";
 import { CourseSelector } from "./pixel-fx";
 
@@ -91,14 +91,16 @@ export function ApplyFlow({
         .filter(Boolean)
     : [];
 
+  // nationality 는 select (COUNTRY_OPTIONS) 로 분리 렌더 → textFields 에서 제외.
+  // address = 선택값 (거주 지역 도시/구), university = 필수 (스키마는 optional 이나
+  // 2기 UI 레벨에서만 required 강제. 1기 폼은 미변경).
   const textFields = [
     { name: "name", label: formT.name, ph: formT.namePh, type: "text" },
     { name: "email", label: formT.email, ph: formT.emailPh, type: "email" },
     { name: "phone", label: formT.phone, ph: formT.phonePh, type: "tel" },
-    { name: "nationality", label: formT.nationality, ph: formT.nationalityPh, type: "text" },
     { name: "birthdate", label: formT.birthdate, ph: "", type: "date" },
-    { name: "address", label: formT.address, ph: formT.addressPh, type: "text", wide: true },
-    { name: "university", label: formT.university, ph: formT.universityPh, type: "text", optional: true },
+    { name: "university", label: formT.university, ph: formT.universityPh, type: "text" },
+    { name: "address", label: formT.address, ph: formT.addressPh, type: "text", optional: true, wide: true },
     { name: "referred_by_code", label: formT.referral, ph: formT.referralPh, type: "text", optional: true, wide: true, uppercase: true },
   ] as const;
 
@@ -168,6 +170,27 @@ export function ApplyFlow({
                 />
               </label>
             ))}
+            <label className="block">
+              <span className="mb-1.5 block text-fg-muted text-xs">
+                {formT.nationality}
+                <span className="ml-1 text-brand-pink">*</span>
+              </span>
+              <select
+                name="nationality"
+                required
+                defaultValue=""
+                className={`${styles.pixelBorder} ${inputCls} ${errs.nationality ? "border-brand-pink" : ""}`}
+              >
+                <option value="" disabled>
+                  {formT.nationalityPh}
+                </option>
+                {COUNTRY_OPTIONS.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </label>
             <label className="block">
               <span className="mb-1.5 block text-fg-muted text-xs">
                 {formT.visa}
