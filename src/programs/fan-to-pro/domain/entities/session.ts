@@ -31,6 +31,8 @@ export const SessionSchema = z
   .object({
     id: z.string().uuid(),
     cohort_id: z.string().uuid(),
+    // Phase 1a: session 단위 course grain. 이번엔 nullable (backfill 검증 후 M2 NOT NULL 승격).
+    course_id: z.string().uuid().nullable(),
     instructor_id: z.string().uuid().nullable(),
     title: z.string().min(1),
     location: z.string().nullable(),
