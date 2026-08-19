@@ -31,6 +31,7 @@ type ApplyT = {
   tbd: string;
   allInOnePrice: number;
   nudge: string;
+  allCoursesApplied: string;
   pickedAll: string;
   pickedN: string;
   submit: string;
@@ -54,7 +55,12 @@ export function CourseSelector({
 }) {
   const pickedCourses = courses.filter((c) => picked.includes(c.slug));
   const allPriced = pickedCourses.length > 0 && pickedCourses.every((c) => c.price != null);
-  const total = allPriced ? pickedCourses.reduce((s, c) => s + (c.price ?? 0), 0) : null;
+  const sumTotal = allPriced ? pickedCourses.reduce((s, c) => s + (c.price ?? 0), 0) : null;
+
+  // 단과에서 전 과정을 다 고르면 올인원과 동일 = 올인원가 적용 (노아 스펙, apply-flow
+  // 의 effectiveMode 와 동일 판정). 합산가(110만) 대신 올인원가(99만)를 요약에 표시.
+  const isAllCourses = picked.length === courses.length && picked.length > 0;
+  const total = isAllCourses ? t.allInOnePrice : sumTotal;
 
   const RadioPill = ({ v, label, hint }: { v: "all" | "pick"; label: string; hint: string }) => {
     const active = mode === v;
@@ -146,7 +152,11 @@ export function CourseSelector({
                 </button>
               );
             })}
-            {total != null && total > t.allInOnePrice ? (
+            {isAllCourses ? (
+              <p className={`${styles.mono} pt-1 text-brand-pink text-xs`}>
+                {`// ${t.allCoursesApplied}`}
+              </p>
+            ) : sumTotal != null && sumTotal > t.allInOnePrice ? (
               <p className={`${styles.mono} pt-1 text-brand-pink text-xs`}>
                 {t.nudge}
               </p>
@@ -154,14 +164,19 @@ export function CourseSelector({
           </div>
         )}
 
-        {/* 요약 (제출은 아래 신청서 폼에서) */}
+        {/* 요약 (제출은 아래 신청서 폼에서). 단과에서 전 과정 선택 = 올인원 취급. */}
         <div className="mt-6 border-border border-t pt-5">
           <p className={`${styles.mono} text-fg-subtle text-xs`}>
-            {mode === "all" ? t.pickedAll : t.pickedN.replace("{n}", String(picked.length))}
+            {mode === "all" || isAllCourses
+              ? t.pickedAll
+              : t.pickedN.replace("{n}", String(picked.length))}
           </p>
           <p className={`${styles.pixelFont} mt-1 text-2xl text-fg`}>
             {mode === "all" ? krw(t.allInOnePrice) : total != null ? krw(total) : t.tbd}
           </p>
+          {mode === "pick" && isAllCourses ? (
+            <p className="mt-1.5 text-brand-pink text-xs">{t.allCoursesApplied}</p>
+          ) : null}
         </div>
 
         {/* 안내문 */}

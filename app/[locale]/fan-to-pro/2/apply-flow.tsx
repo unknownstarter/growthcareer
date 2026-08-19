@@ -5,6 +5,7 @@
    프리뷰 전용. 픽셀/터미널 스타일. */
 import { useActionState, useEffect, useRef, useState } from "react";
 import { submitApplication } from "@/src/programs/fan-to-pro/application/submit-application";
+import { trackEvent } from "@/src/lib/analytics/gtag";
 import { COUNTRY_OPTIONS, VISA_OPTIONS } from "@/src/programs/fan-to-pro/domain/application";
 import type { Content } from "./content";
 import styles from "./glass.module.css";
@@ -54,6 +55,23 @@ export function ApplyFlow({
     window.setTimeout(() => doneRef.current?.focus({ preventScroll: true }), 350);
   }, [done]);
 
+  // GA4 전환 이벤트 — 실 신청 완료(status="ok")에만 1회. dev mock(ok_local) 제외.
+  // UTM 파라미터는 GA4 세션에 자동 귀속되므로 채널별 신청 수가 자동 집계된다
+  // (결제는 오프라인 입금이라 client 이벤트로 못 잡음 = 별도 서버 처리 필요).
+  useEffect(() => {
+    if (state.status !== "ok") return;
+    trackEvent({
+      event_name: "generate_lead",
+      parameters: {
+        campaign: "f2p_2gi",
+        selection_mode: effectiveMode,
+        courses: slugs.join(","),
+        course_count: slugs.length,
+      },
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.status]);
+
   // 검증 에러 시 상단 요약 배너로 스크롤 + 첫 에러 필드 focus.
   // 긴 폼에서 하단 버튼만 보고 있으면 상단 필드 에러를 놓치므로.
   useEffect(() => {
@@ -73,6 +91,13 @@ export function ApplyFlow({
     setPicked((p) => (p.includes(slug) ? p.filter((s) => s !== slug) : [...p, slug]));
   const slugs = mode === "all" ? courses.map((c) => c.slug) : picked;
   const invalidPick = mode === "pick" && picked.length === 0;
+
+  // 단과 모드에서 모든 과정을 다 고르면 올인원과 동일 = 올인원가 적용 (노아 스펙).
+  // 실 신청자 케이스(Sataish): 단과에서 a-r + sound 둘 다 체크 → single + 110만
+  // 으로 잘못 처리됨. picked 가 courses 전체를 덮으면 all_in_one 으로 승격한다.
+  const isAllCourses = picked.length === courses.length && picked.length > 0;
+  const effectiveMode: "all_in_one" | "single" =
+    mode === "all" || isAllCourses ? "all_in_one" : "single";
 
   if (done) {
     const steps = formT.successSteps;
@@ -228,7 +253,7 @@ export function ApplyFlow({
               </p>
             </div>
           ) : null}
-          <input type="hidden" name="selection_mode" value={mode === "all" ? "all_in_one" : "single"} />
+          <input type="hidden" name="selection_mode" value={effectiveMode} />
           <input type="hidden" name="selected_course_slugs" value={slugs.join(",")} />
 
           <div className="grid gap-4 sm:grid-cols-2">

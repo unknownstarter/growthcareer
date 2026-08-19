@@ -383,6 +383,7 @@ export function CohortDetail({ cohort, applicants, studentCount, overview }: Pro
                       dir={sortDir}
                       onClick={toggleSort}
                     />
+                    <TableHead>과정</TableHead>
                     <TableHead>이메일</TableHead>
                     <TableHead>전화</TableHead>
                     <TableHead>국적</TableHead>
@@ -414,6 +415,9 @@ export function CohortDetail({ cohort, applicants, studentCount, overview }: Pro
                       <TableCell className="font-semibold text-[var(--foreground)]">
                         {r.name}
                       </TableCell>
+                      <TableCell>
+                        <CourseLabelBadge row={r} />
+                      </TableCell>
                       <TableCell className="text-xs text-[var(--muted-foreground)]">
                         {r.email}
                       </TableCell>
@@ -442,7 +446,7 @@ export function CohortDetail({ cohort, applicants, studentCount, overview }: Pro
                   {filtered.length === 0 ? (
                     <TableRow>
                       <TableCell
-                        colSpan={9}
+                        colSpan={10}
                         className="py-8 text-center text-sm text-[var(--muted-foreground)]"
                       >
                         조건에 맞는 신청자가 없습니다.
@@ -830,6 +834,57 @@ function ApplicantStatusBadge({ status }: { status: ApplicantStatus }) {
   };
   const cfg = map[status];
   return <Badge variant={cfg.variant}>{STATUS_LABEL_KO[status]}</Badge>;
+}
+
+/**
+ * 신청 시점 과정 선택 뱃지. (모집 어드민 formatCourseLabel 을 LMS 라이트 톤으로 포팅.)
+ *   - B0068 단과/올인원 (course_id/bundle_id 해결됨) → courseTitleKo / bundleTitleKo
+ *   - ADR 0019 2기 멀티 단과 (간이 정책 B) → selection_mode + slug 배열
+ *   - 둘 다 없으면 1기 legacy = "-"
+ *
+ * 올인원 = success(초록), 단과 = outline. 운영자가 지원자별로 무엇을 신청했는지
+ * (올인원 / 단과 A&R / 단과 음향 / 단과 A&R+음향) 한눈에 구분하기 위함.
+ */
+const COURSE_SLUG_LABEL_KO: Record<string, string> = {
+  "a-r": "A&R",
+  sound: "음향 감독",
+};
+
+function courseSelection(row: ApplicantRow): {
+  kind: "all_in_one" | "single";
+  names: string | null;
+} | null {
+  if (row.bundleTitleKo) return { kind: "all_in_one", names: row.bundleTitleKo };
+  if (row.courseTitleKo) return { kind: "single", names: row.courseTitleKo };
+  if (row.selectionMode && row.selectedCourseSlugs?.length) {
+    const names = row.selectedCourseSlugs
+      .map((s) => COURSE_SLUG_LABEL_KO[s] ?? s)
+      .join(", ");
+    return {
+      kind: row.selectionMode === "all_in_one" ? "all_in_one" : "single",
+      names,
+    };
+  }
+  return null;
+}
+
+function CourseLabelBadge({ row }: { row: ApplicantRow }) {
+  const sel = courseSelection(row);
+  if (!sel) {
+    return <span className="text-xs text-[var(--muted-foreground)]">-</span>;
+  }
+  if (sel.kind === "all_in_one") {
+    return (
+      <Badge variant="success">
+        올인원{sel.names ? ` / ${sel.names}` : ""}
+      </Badge>
+    );
+  }
+  return (
+    <Badge variant="outline">
+      단과{sel.names ? ` ${sel.names}` : ""}
+    </Badge>
+  );
 }
 
 function CohortStatusBadge({ status }: { status: string }) {
