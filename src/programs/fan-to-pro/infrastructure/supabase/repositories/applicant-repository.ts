@@ -324,6 +324,7 @@ export async function fetchApplicants(options?: {
         reminderD1: bucket.reminderD1 ?? null,
         referralInvite: bucket.referralInvite ?? null,
         cohortKickoff: bucket.cohortKickoff ?? null,
+        nextCohortOpen: bucket.nextCohortOpen ?? null,
       },
       milestones: {
         guideSentAt: msBucket.guide_sent ?? null,
@@ -564,6 +565,7 @@ export async function fetchApplicantById(
       reminderD1: lastSent.reminderD1 ?? null,
       referralInvite: lastSent.referralInvite ?? null,
       cohortKickoff: lastSent.cohortKickoff ?? null,
+      nextCohortOpen: lastSent.nextCohortOpen ?? null,
     },
     milestones: {
       guideSentAt: msBucket.guide_sent ?? null,

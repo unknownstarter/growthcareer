@@ -52,6 +52,21 @@ export function MessageDrawer({
   const [editedBody, setEditedBody] = useState<string | null>(null);
   const [editedSubject, setEditedSubject] = useState<string | null>(null);
 
+  // 드로어가 새 신청자로 열릴 때 상태에 맞는 기본 메시지 종류를 선택 (재사용 규칙):
+  //   next_cohort_interest → 다음 기수 오픈 안내, confirmation_notice → 사전 확인 안내,
+  //   그 외 → 입금 안내. 운영자가 수동으로 바꾸면(같은 applicant) 덮어쓰지 않음.
+  useEffect(() => {
+    if (!applicant) return;
+    setKind(
+      applicant.status === "next_cohort_interest"
+        ? "nextCohortOpen"
+        : applicant.status === "confirmation_notice"
+          ? "confirmationNotice"
+          : "paymentGuide",
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [applicant?.id]);
+
   const resolvedLocale: MessageLocale = useMemo(() => {
     if (localeMode === "auto") {
       return guessLocaleFromPhone(applicant?.phone ?? null);

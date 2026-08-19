@@ -1000,6 +1000,16 @@ function DashboardInner({
                       <div className="flex flex-wrap items-center gap-1">
                         <StatusProgress status={row.status} />
                         {row.redactedAt ? <RedactedChip /> : null}
+                        {row.status === "next_cohort_interest" &&
+                        row.messageLastSentByKind.nextCohortOpen ? (
+                          <span
+                            className="inline-flex items-center gap-1 border border-sky-500/60 bg-sky-500/15 px-2 py-0.5 text-[10px] font-black uppercase text-sky-200 whitespace-nowrap"
+                            style={{ letterSpacing: "0.18em" }}
+                            title={`다음 기수 오픈 안내 발송 ${formatDate(row.messageLastSentByKind.nextCohortOpen)}`}
+                          >
+                            안내 보냄 ✓
+                          </span>
+                        ) : null}
                         {row.messageLastSentByKind.cohortKickoff ? (
                           <span
                             className="inline-flex items-center gap-1 border border-emerald-500/60 bg-emerald-500/15 px-2 py-0.5 text-[10px] font-black uppercase text-emerald-200 whitespace-nowrap"
@@ -1105,6 +1115,16 @@ function DashboardInner({
                   <div className="flex shrink-0 flex-col items-end gap-1">
                     <StatusChip status={row.status} />
                     {row.redactedAt ? <RedactedChip /> : null}
+                    {row.status === "next_cohort_interest" &&
+                    row.messageLastSentByKind.nextCohortOpen ? (
+                      <span
+                        className="inline-flex items-center gap-1 border border-sky-500/60 bg-sky-500/15 px-2 py-0.5 text-[10px] font-black uppercase text-sky-200 whitespace-nowrap"
+                        style={{ letterSpacing: "0.18em" }}
+                        title={`다음 기수 오픈 안내 발송 ${formatDate(row.messageLastSentByKind.nextCohortOpen)}`}
+                      >
+                        안내 보냄 ✓
+                      </span>
+                    ) : null}
                     {row.messageLastSentByKind.cohortKickoff ? (
                       <span
                         className="inline-flex items-center gap-1 border border-emerald-500/60 bg-emerald-500/15 px-2 py-0.5 text-[10px] font-black uppercase text-emerald-200 whitespace-nowrap"

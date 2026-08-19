@@ -195,6 +195,7 @@ export type ApplicantRow = {
     reminderD1: string | null;
     referralInvite: string | null;
     cohortKickoff: string | null;
+    nextCohortOpen: string | null;
   };
 
   // B0042 - 운영 milestone 토글. row 별 marked_at (없으면 null = 미체크).
