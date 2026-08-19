@@ -33,6 +33,11 @@ export type MessageChannel = "sms" | "email";
  */
 export type MessageOptions = {
   hasVisa?: boolean;
+  /**
+   * ADR 0019 — 신청 과정별 수강료. 이미 포맷된 문자열 (예 "990,000원" / "KRW 990,000").
+   * 미지정 시 1기 기본값 (TUITION_KO / TUITION_EN) 으로 채움 (기존 메시지 불변).
+   */
+  tuition?: string;
 };
 
 const KAKAO = "https://pf.kakao.com/_nxhDGX/chat";
@@ -40,13 +45,29 @@ const ACCOUNT = "토스뱅크 1002-4759-1521";
 const ACCOUNT_EN = "Toss Bank 1002-4759-1521";
 const HOLDER_KO = "드롭다운";
 const HOLDER_EN = "Dropdown";
+/**
+ * 1기 기본 수강료 (selection 개념 도입 전). options.tuition 미지정 시 fallback.
+ * 2기부터는 호출부가 resolveTuitionForApplicant 로 계산한 금액을 tuition 으로 주입.
+ */
 const TUITION_KO = "880,000원";
 const TUITION_EN = "KRW 880,000";
 const DEADLINE_KO = "8/30(일) 자정";
 const DEADLINE_EN = "Sun Aug 30 midnight (KST)";
 
-function fill(template: string, name: string): string {
-  return template.replaceAll("{name}", name);
+/**
+ * {name} 은 항상, {tuition} 은 tuition 인자로 치환.
+ * tuition 미지정 시 locale 기본값 (1기 880,000) 으로 채워 기존 메시지 불변 보장.
+ */
+function fill(
+  template: string,
+  name: string,
+  locale: MessageLocale,
+  tuition?: string,
+): string {
+  const tuitionValue = tuition ?? (locale === "ko" ? TUITION_KO : TUITION_EN);
+  return template
+    .replaceAll("{name}", name)
+    .replaceAll("{tuition}", tuitionValue);
 }
 
 /* ---------------------------------------------------------------------------
@@ -70,7 +91,7 @@ const paymentGuide_sms_ko = `[Fan to Pro] {name} 님 신청 감사드려요 :)
 확인해주세요.
 
 [입금 안내]
-수강료 ${TUITION_KO}
+수강료 {tuition}
 계좌 ${ACCOUNT}
 예금주 ${HOLDER_KO}
 입금자명 {name}
@@ -86,7 +107,7 @@ const paymentGuide_sms_en = `[Fan to Pro] Hi {name}, thanks for applying.
 Please review your payment details below.
 
 [PAYMENT]
-Tuition ${TUITION_EN}
+Tuition {tuition}
 Account ${ACCOUNT_EN}
 Holder ${HOLDER_EN}
 Depositor {name}
@@ -107,7 +128,7 @@ const paymentGuide_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 (입금 완료가 되어야 수강신청이 완료되고, 선착순이니 참고 부탁드려요. 또한 비자 보유, 한국 오프라인 강의에 참석 가능하신지 꼭 다시 확인해주세요.)
 
 [입금 정보]
-- 수강료: ${TUITION_KO} (원가 1,100,000원에서 20% 할인)
+- 수강료: {tuition}
 - 입금 계좌: ${ACCOUNT}
 - 예금주: ${HOLDER_KO}
 - 입금자명: {name} 으로 입금 부탁드려요
@@ -129,7 +150,7 @@ Please review your payment details below.
 A quick note before you transfer: your seat is only locked in once we receive payment, and seats are filling on a first-come, first-served basis. Please also reconfirm that you (a) hold a valid Korean residence visa and (b) can attend in person in Seoul every Saturday and Sunday for the full 4-week program.
 
 [PAYMENT]
-- Tuition: ${TUITION_EN} (20% off from the regular KRW 1,100,000)
+- Tuition: {tuition}
 - Account: ${ACCOUNT_EN}
 - Holder: ${HOLDER_EN}
 - Depositor name: ${"{name}"}
@@ -181,7 +202,7 @@ const paymentGuide_email_ko_noVisa = `안녕하세요, Fan to Pro 입니다 :)
 위 두 가지 모두 확인하셨고 그래도 수강을 원하시면, 이 메일에 "확인했습니다" 라고 짧게 답장 부탁드려요. 답장이 확인되면 아래 입금 정보로 안내드려요.
 
 [입금 정보 - 확인 답장 후 적용]
-- 수강료: ${TUITION_KO}
+- 수강료: {tuition}
 - 입금 계좌: ${ACCOUNT}
 - 예금주: ${HOLDER_KO}
 - 입금자명: {name}
@@ -206,7 +227,7 @@ Thank you for applying, {name}. Before we send you the payment details, please c
 If you have confirmed both points and still want to proceed, please reply to this email with "confirmed" and we will send the payment details. If your visa status has changed or was filled in incorrectly, please let us know in your reply.
 
 [PAYMENT - sent after your confirmation reply]
-- Tuition: ${TUITION_EN}
+- Tuition: {tuition}
 - Account: ${ACCOUNT_EN}
 - Holder: ${HOLDER_EN}
 - Depositor name: ${"{name}"}
@@ -304,7 +325,7 @@ const reminderT1_sms_ko = `[Fan to Pro] {name} 님, 혹시 신청 후 입금을 
 [입금 정보]
 계좌 ${ACCOUNT}
 예금주 ${HOLDER_KO}
-금액 ${TUITION_KO}
+금액 {tuition}
 마감 ${DEADLINE_KO}
 
 문의사항은 하단의 카카오톡 채널을 이용해주세요.
@@ -317,7 +338,7 @@ Seats are locked in payment order.
 [PAYMENT]
 Account ${ACCOUNT_EN}
 Holder ${HOLDER_EN}
-Amount ${TUITION_EN}
+Amount {tuition}
 Deadline ${DEADLINE_EN}
 
 For any questions, please use the KakaoTalk channel below.
@@ -330,7 +351,7 @@ const reminderT1_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 자리는 입금 확인 순으로 확정되니, 아직 입금 전이시라면 아래 정보로 부탁드려요.
 
 [입금 정보]
-- 수강료: ${TUITION_KO}
+- 수강료: {tuition}
 - 계좌: ${ACCOUNT} (예금주 ${HOLDER_KO})
 - 입금자명: {name}
 - 마감: 2026년 8월 30일(일) 자정
@@ -350,7 +371,7 @@ Hi {name}, just a friendly reminder in case you might have forgotten about your 
 Seats are locked in payment order. If you have not paid yet, here is the info again.
 
 [PAYMENT]
-- Tuition: ${TUITION_EN}
+- Tuition: {tuition}
 - Account: ${ACCOUNT_EN} (Holder: ${HOLDER_EN})
 - Depositor name: your full name from the form
 - Deadline: Sunday, August 30, midnight (KST)
@@ -377,7 +398,7 @@ const reminderD3_sms_ko = `[Fan to Pro] {name} 님, 혹시 신청 후 입금을 
 [입금 정보]
 계좌 ${ACCOUNT}
 예금주 ${HOLDER_KO}
-금액 ${TUITION_KO}
+금액 {tuition}
 마감 ${DEADLINE_KO}
 
 문의사항은 하단의 카카오톡 채널을 이용해주세요.
@@ -390,7 +411,7 @@ The application deadline is approaching. Your seat is locked in once payment is 
 [PAYMENT]
 Account ${ACCOUNT_EN}
 Holder ${HOLDER_EN}
-Amount ${TUITION_EN}
+Amount {tuition}
 Deadline ${DEADLINE_EN}
 
 For any questions, please use the KakaoTalk channel below.
@@ -403,7 +424,7 @@ const reminderD3_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 신청 마감일이 다가오고 있어요. 입금이 확인되면 자리가 확정되니, 아직 입금 전이시라면 아래 정보로 부탁드려요.
 
 [입금 정보]
-- 수강료: ${TUITION_KO}
+- 수강료: {tuition}
 - 계좌: ${ACCOUNT} (예금주 ${HOLDER_KO})
 - 입금자명: {name}
 - 마감: 2026년 8월 30일(일) 자정
@@ -423,7 +444,7 @@ Hi {name}, just a friendly reminder in case you might have forgotten about your 
 The application deadline is approaching. Your seat is locked in once payment is confirmed.
 
 [PAYMENT]
-- Tuition: ${TUITION_EN}
+- Tuition: {tuition}
 - Account: ${ACCOUNT_EN} (Holder: ${HOLDER_EN})
 - Depositor name: your full name
 - Deadline: Sunday, August 30, midnight (KST)
@@ -450,7 +471,7 @@ const reminderD1_sms_ko = `[Fan to Pro] {name} 님, 혹시 신청 후 입금을 
 [입금 정보]
 계좌 ${ACCOUNT}
 예금주 ${HOLDER_KO}
-금액 ${TUITION_KO}
+금액 {tuition}
 
 문의사항은 하단의 카카오톡 채널을 이용해주세요.
 ${KAKAO}`;
@@ -462,7 +483,7 @@ The application deadline is tomorrow (Sun Aug 30) at midnight (KST). If you woul
 [PAYMENT]
 Account ${ACCOUNT_EN}
 Holder ${HOLDER_EN}
-Amount ${TUITION_EN}
+Amount {tuition}
 
 For any questions, please use the KakaoTalk channel below.
 ${KAKAO}`;
@@ -474,7 +495,7 @@ const reminderD1_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 신청 마감이 내일(8/30 일) 자정이에요. 자리 확정을 원하시면 마감 전에 입금 부탁드려요.
 
 [입금 정보]
-- 수강료: ${TUITION_KO}
+- 수강료: {tuition}
 - 계좌: ${ACCOUNT} (예금주 ${HOLDER_KO})
 - 입금자명: {name}
 - 마감: 2026년 8월 30일(일) 자정
@@ -494,7 +515,7 @@ Hi {name}, just a friendly reminder in case you might have forgotten about your 
 The application deadline is tomorrow (Sun Aug 30) at midnight (KST). If you would like to lock in your seat, please send payment before then.
 
 [PAYMENT]
-- Tuition: ${TUITION_EN}
+- Tuition: {tuition}
 - Account: ${ACCOUNT_EN} (Holder: ${HOLDER_EN})
 - Depositor name: your full name
 - Deadline: Sun Aug 30 midnight (KST)
@@ -1075,9 +1096,9 @@ export function getSmsBody(
   options?: MessageOptions,
 ): string {
   if (kind === "paymentGuide" && options?.hasVisa === false) {
-    return fill(PAYMENT_GUIDE_NO_VISA.sms[locale], name);
+    return fill(PAYMENT_GUIDE_NO_VISA.sms[locale], name, locale, options?.tuition);
   }
-  return fill(TEMPLATES[kind].sms[locale], name);
+  return fill(TEMPLATES[kind].sms[locale], name, locale, options?.tuition);
 }
 
 /** 이메일 제목. */
@@ -1088,9 +1109,19 @@ export function getEmailSubject(
   options?: MessageOptions,
 ): string {
   if (kind === "paymentGuide" && options?.hasVisa === false) {
-    return fill(PAYMENT_GUIDE_NO_VISA.email.subject[locale], name);
+    return fill(
+      PAYMENT_GUIDE_NO_VISA.email.subject[locale],
+      name,
+      locale,
+      options?.tuition,
+    );
   }
-  return fill(TEMPLATES[kind].email.subject[locale], name);
+  return fill(
+    TEMPLATES[kind].email.subject[locale],
+    name,
+    locale,
+    options?.tuition,
+  );
 }
 
 /** 이메일 본문. */
@@ -1101,9 +1132,14 @@ export function getEmailBody(
   options?: MessageOptions,
 ): string {
   if (kind === "paymentGuide" && options?.hasVisa === false) {
-    return fill(PAYMENT_GUIDE_NO_VISA.email.body[locale], name);
+    return fill(
+      PAYMENT_GUIDE_NO_VISA.email.body[locale],
+      name,
+      locale,
+      options?.tuition,
+    );
   }
-  return fill(TEMPLATES[kind].email.body[locale], name);
+  return fill(TEMPLATES[kind].email.body[locale], name, locale, options?.tuition);
 }
 
 /**

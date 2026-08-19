@@ -17,6 +17,7 @@ import {
   type MessageKind,
   type MessageLocale,
 } from "@/src/programs/fan-to-pro/messages/templates";
+import { resolveTuitionForApplicant } from "@/src/programs/fan-to-pro/domain/pricing";
 import type { ApplicantRow } from "../types";
 
 type LocaleMode = "auto" | "ko" | "en";
@@ -58,20 +59,39 @@ export function MessageDrawer({
     return localeMode;
   }, [localeMode, applicant?.phone]);
 
+  // 신청 과정별 수강료 (ADR 0019). 1기(selection null) = 880,000 fallback.
+  const tuition = useMemo(() => {
+    if (!applicant) return undefined;
+    return resolveTuitionForApplicant(
+      applicant.selectionMode,
+      applicant.selectedCourseSlugs,
+      resolvedLocale,
+    ).tuition;
+  }, [applicant, resolvedLocale]);
+
   const generatedBody = useMemo(() => {
     if (!applicant) return "";
     const hasVisa = hasEligibleVisa(applicant.visa);
     if (channel === "sms") {
-      return getSmsBody(kind, resolvedLocale, applicant.name, { hasVisa });
+      return getSmsBody(kind, resolvedLocale, applicant.name, {
+        hasVisa,
+        tuition,
+      });
     }
-    return getEmailBody(kind, resolvedLocale, applicant.name, { hasVisa });
-  }, [applicant, channel, kind, resolvedLocale]);
+    return getEmailBody(kind, resolvedLocale, applicant.name, {
+      hasVisa,
+      tuition,
+    });
+  }, [applicant, channel, kind, resolvedLocale, tuition]);
 
   const generatedSubject = useMemo(() => {
     if (!applicant || channel !== "email") return "";
     const hasVisa = hasEligibleVisa(applicant.visa);
-    return getEmailSubject(kind, resolvedLocale, applicant.name, { hasVisa });
-  }, [applicant, channel, kind, resolvedLocale]);
+    return getEmailSubject(kind, resolvedLocale, applicant.name, {
+      hasVisa,
+      tuition,
+    });
+  }, [applicant, channel, kind, resolvedLocale, tuition]);
 
   // 옵션이 바뀌면 사용자 편집 초기화.
   useEffect(() => {

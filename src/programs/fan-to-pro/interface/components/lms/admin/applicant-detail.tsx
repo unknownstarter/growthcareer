@@ -86,6 +86,7 @@ import {
   guessLocaleFromPhone,
   type MessageKind,
 } from "@/src/programs/fan-to-pro/messages/templates";
+import { resolveTuitionForApplicant } from "@/src/programs/fan-to-pro/domain/pricing";
 
 // -------------------------------------------------------------------------
 // Types
@@ -782,7 +783,13 @@ function MessageSendModal({
   const [locale, setLocale] = React.useState<"ko" | "en">(guessedLocale);
 
   const visaOk = hasEligibleVisa(applicant.visa);
-  const options = { hasVisa: visaOk };
+  // 신청 과정별 수강료 (ADR 0019). 1기(selection null) = 880,000 fallback.
+  const tuition = resolveTuitionForApplicant(
+    applicant.selectionMode,
+    applicant.selectedCourseSlugs,
+    locale,
+  ).tuition;
+  const options = { hasVisa: visaOk, tuition };
 
   const subject =
     channel === "email"

@@ -107,3 +107,92 @@ export function resolveBundlePriceKrw(
   }
   return PRICING_PHASES.bundleKrw;
 }
+
+/**
+ * 2기 단과 slug → 읽기 쉬운 이름.
+ * 어드민 뱃지 (applicants-dashboard / cohort-detail) 의 COURSE_SLUG_LABEL 과 동일.
+ */
+export const COURSE_SLUG_LABEL_KO: Record<string, string> = {
+  "a-r": "A&R",
+  sound: "음향 감독",
+};
+
+/**
+ * 2기 확정 단과 판매가 (courses.price_krw, ADR 0019). 안내 메시지 fallback.
+ * DB price_krw 가 주입되면 그 값이 우선.
+ */
+export const SINGLE_COURSE_KRW = 550_000;
+
+/**
+ * 신청자 선택 → 메시지 안내용 수강료 + 과정 라벨 계산 (ADR 0019).
+ *
+ * 우선순위: 넘어온 DB price_krw (coursePriceKrw / bundlePriceKrw) 있으면 그 값,
+ * 없으면 phase / bundle 상수 fallback (resolve*PriceKrw 재사용).
+ *
+ * 케이스:
+ *   - all_in_one                → 990,000원, 라벨 "올인원 (전 과정)"
+ *   - single + [a-r]            → 550,000원, 라벨 "A&R 단과반"
+ *   - single + [sound]          → 550,000원, 라벨 "음향 감독 단과반"
+ *   - single + 2슬러그 (방어)   → 올인원 취급 (990,000, "올인원 (전 과정)")
+ *     (폼에서 단과 2개 선택은 올인원으로 승격되지만, 잔여/legacy 데이터 방어)
+ *   - null / 미선택 (1기)       → 880,000원, courseLabel null (기존 메시지 불변)
+ *
+ * @param selectionMode applicants.selection_mode ('all_in_one'|'single'|null)
+ * @param selectedCourseSlugs applicants.selected_course_slugs (예 ["a-r"]) | null
+ * @param locale "ko" | "en" — 금액 포맷 + 라벨 언어
+ * @param priceHints DB 오버라이드 (선택). courseId/bundleId 해결된 경우 price 주입.
+ */
+export function resolveTuitionForApplicant(
+  selectionMode: string | null,
+  selectedCourseSlugs: string[] | null,
+  locale: "ko" | "en" = "ko",
+  priceHints?: {
+    coursePriceKrw?: number | null;
+    bundlePriceKrw?: number | null;
+  },
+): { krw: number; tuition: string; courseLabel: string | null } {
+  const slugs = selectedCourseSlugs ?? [];
+
+  // 메시지 템플릿 스타일 (TUITION_KO/EN) 과 일치: ko "990,000원", en "KRW 990,000".
+  // formatKRW 는 en 을 접미사 ("990,000 KRW") 로 내므로 여기선 별도 포맷.
+  const fmt = (krw: number): string =>
+    locale === "ko"
+      ? `${krw.toLocaleString("ko-KR")}원`
+      : `KRW ${krw.toLocaleString("en-US")}`;
+
+  // 1기 legacy — selection 개념 없음. 880,000 고정, 라벨 없음 (기존 메시지 불변).
+  if (!selectionMode) {
+    const krw = PRICING.discounted; // 880,000
+    return { krw, tuition: fmt(krw), courseLabel: null };
+  }
+
+  // 올인원 — 또는 방어적으로 단과 2개 이상 선택 = 올인원 취급.
+  if (selectionMode === "all_in_one" || slugs.length >= 2) {
+    const krw = resolveBundlePriceKrw(priceHints?.bundlePriceKrw);
+    return {
+      krw,
+      tuition: fmt(krw),
+      courseLabel: locale === "ko" ? "올인원 (전 과정)" : "All-in-one (all courses)",
+    };
+  }
+
+  // 단과 — slug 1개. DB price_krw 있으면 우선, 없으면 확정 단과가 550,000
+  // (courses.price_krw = 550,000, ADR 0019). phase 상수(660k)는 안내 메시지엔
+  // 부적합 (실제 판매가와 다름) 이라 사용 안 함.
+  const krw =
+    typeof priceHints?.coursePriceKrw === "number" && priceHints.coursePriceKrw > 0
+      ? priceHints.coursePriceKrw
+      : SINGLE_COURSE_KRW;
+  const slug = slugs[0];
+  const courseName =
+    slug === "sound"
+      ? locale === "ko"
+        ? "음향 감독"
+        : "Sound Director"
+      : locale === "ko"
+        ? "A&R"
+        : "A&R";
+  const courseLabel =
+    locale === "ko" ? `${courseName} 단과반` : `${courseName} (single course)`;
+  return { krw, tuition: fmt(krw), courseLabel };
+}
