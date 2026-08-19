@@ -936,6 +936,7 @@ function DashboardInner({
                 <th className="px-3 py-2 font-black">이름</th>
                 <th className="px-3 py-2 font-black">과정</th>
                 <th className="px-3 py-2 font-black">이력</th>
+                <th className="px-3 py-2 font-black">추천</th>
                 <th className="px-3 py-2 font-black">연락처</th>
                 <th className="px-3 py-2 font-black">이메일</th>
                 <th className="px-3 py-2 font-black">국적</th>
@@ -951,7 +952,7 @@ function DashboardInner({
               {filtered.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={readOnly ? 12 : 14}
+                    colSpan={readOnly ? 13 : 15}
                     className="px-3 py-12 text-center text-xs text-fg/80"
                   >
                     표시할 신청자가 없어요.
@@ -993,24 +994,18 @@ function DashboardInner({
                     </td>
                     <td className="px-3 py-2 align-top text-fg font-bold">
                       {row.name}
-                      {tint.label ? (
-                        <span
-                          className="ml-1.5 inline-block border border-current px-1 py-0.5 text-[9px] font-black"
-                          style={{ letterSpacing: "0.15em" }}
-                        >
-                          {tint.label}
-                        </span>
-                      ) : null}
-                      <ReferralNote
-                        code={row.referredByCode}
-                        referrers={referrers}
-                      />
                     </td>
                     <td className="px-3 py-2 align-top text-fg whitespace-nowrap">
                       {formatCourseLabel(row)}
                     </td>
                     <td className="px-3 py-2 align-top whitespace-nowrap">
                       <HistoryBadge row={row} />
+                    </td>
+                    <td className="px-3 py-2 align-top whitespace-nowrap">
+                      <ReferralNote
+                        code={row.referredByCode}
+                        referrers={referrers}
+                      />
                     </td>
                     <td className="px-3 py-2 align-top text-fg whitespace-nowrap">
                       {formatPhoneForDisplay(row.phone, row.nationality)}
@@ -1128,19 +1123,6 @@ function DashboardInner({
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-1.5">
                         <span className="text-sm font-bold text-fg">{row.name}</span>
-                        {tint.label ? (
-                          <span
-                            className={cn(
-                              "border border-current px-1 py-0.5 text-[9px] font-black",
-                              urgency.level === "d1" && "text-red-300",
-                              urgency.level === "d3" && "text-orange-300",
-                              urgency.level === "t1" && "text-amber-300",
-                            )}
-                            style={{ letterSpacing: "0.15em" }}
-                          >
-                            {tint.label}
-                          </span>
-                        ) : null}
                         {row.previousApplicantId ? <HistoryBadge row={row} /> : null}
                       </div>
                       <div className="mt-0.5 break-all text-fg/90">{row.email}</div>
