@@ -59,27 +59,6 @@ import {
   type MessageKind,
 } from "@/src/programs/fan-to-pro/messages/templates";
 
-const URGENCY_TINT: Record<
-  "none" | "t1" | "d3" | "d1",
-  { border: string; bg: string; label?: string }
-> = {
-  none: { border: "border-l-transparent", bg: "" },
-  t1: {
-    border: "border-l-amber-400",
-    bg: "bg-amber-500/[0.04]",
-    label: "T+1",
-  },
-  d3: {
-    border: "border-l-orange-500",
-    bg: "bg-orange-500/[0.06]",
-    label: "D-3",
-  },
-  d1: {
-    border: "border-l-red-500",
-    bg: "bg-red-500/[0.08]",
-    label: "D-1",
-  },
-};
 
 const compactBtn =
   "inline-flex min-h-[32px] shrink-0 items-center justify-center border border-border bg-bg px-2.5 py-1.5 text-[10px] font-black uppercase text-fg hover:text-fg hover:border-fg-subtle disabled:opacity-40 whitespace-nowrap";
@@ -315,10 +294,6 @@ function DashboardInner({
     () => computeStats(rows, new Date(serverNow)),
     [rows, serverNow],
   );
-
-  // 개별 row 긴급도 tint 의 라이브 기준. nowTick 은 serverNow 로 seed 후 1초마다
-  // 갱신 → 첫 페인트는 SSR 과 동일, 이후 실시간. (정렬/집계는 serverNow 고정.)
-  const nowDate = useMemo(() => new Date(nowTick), [nowTick]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -729,15 +704,6 @@ function DashboardInner({
             <StatPill label="ENROLLED" value={stats.byStatus.enrolled} tone="enrolled" />
             <StatPill label="CANCELLED" value={stats.byStatus.cancelled} tone="cancelled" />
             <StatPill label="REFUNDED" value={stats.byStatus.refunded} tone="refunded" />
-            {stats.reminderD1 > 0 ? (
-              <StatPill label="D-1 리마인드" value={stats.reminderD1} tone="d1" pulse />
-            ) : null}
-            {stats.reminderD3 > 0 ? (
-              <StatPill label="D-3 리마인드" value={stats.reminderD3} tone="d3" />
-            ) : null}
-            {stats.reminderT1 > 0 ? (
-              <StatPill label="T+1 리마인드" value={stats.reminderT1} tone="t1" />
-            ) : null}
             {/* B0018 T3 - 종강 6개월 경과 PII 파기 버튼 */}
             {!readOnly && (
               <button
@@ -970,16 +936,12 @@ function DashboardInner({
                 </tr>
               ) : null}
               {filtered.map((row) => {
-                const urgency = getReminderUrgency(row, nowDate);
-                const tint = URGENCY_TINT[urgency.level];
                 const checked = selectedIds.has(row.id);
                 return (
                   <tr
                     key={row.id}
                     className={cn(
-                      "border-t border-border border-l-4 text-xs hover:bg-surface-elevated/40",
-                      tint.border,
-                      tint.bg,
+                      "border-t border-border text-xs hover:bg-surface-elevated/40",
                       checked && "bg-brand-pink/[0.05]",
                     )}
                   >
@@ -1104,16 +1066,12 @@ function DashboardInner({
             </div>
           ) : null}
           {filtered.map((row) => {
-            const urgency = getReminderUrgency(row, nowDate);
-            const tint = URGENCY_TINT[urgency.level];
             const checked = selectedIds.has(row.id);
             return (
               <article
                 key={row.id}
                 className={cn(
-                  "border border-border border-l-4 bg-surface/60 p-3 text-xs",
-                  tint.border,
-                  tint.bg,
+                  "border border-border bg-surface/60 p-3 text-xs",
                   checked && "bg-brand-pink/[0.05]",
                 )}
               >
