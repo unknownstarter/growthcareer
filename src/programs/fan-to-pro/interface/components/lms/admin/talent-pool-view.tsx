@@ -270,6 +270,7 @@ function ApplicantStatusBadge({ status }: { status: ApplicantStatus }) {
     }
   > = {
     pending: { variant: "outline" },
+    confirmation_notice: { variant: "warning" },
     notified: { variant: "warning" },
     paid: { variant: "success" },
     overdue: { variant: "destructive" },

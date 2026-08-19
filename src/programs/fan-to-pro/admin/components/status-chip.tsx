@@ -28,6 +28,7 @@ export function RedactedChip({ className }: { className?: string }) {
 // 라벨은 canonical 단일 소스 (application/dto/applicant-row) 에서. 색만 여기 정의.
 const STATUS_TONE: Record<ApplicantStatus, string> = {
   pending: "border-fg-subtle/40 bg-fg-subtle/10 text-fg",
+  confirmation_notice: "border-amber-400/60 bg-amber-500/15 text-amber-200",
   notified: "border-blue-400/60 bg-blue-500/15 text-blue-200",
   paid: "border-emerald-500/60 bg-emerald-500/15 text-emerald-200",
   overdue: "border-red-500/70 bg-red-500/20 text-red-200",

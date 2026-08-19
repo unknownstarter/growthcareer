@@ -112,6 +112,7 @@ const STATUS_VARIANT: Record<
   "default" | "secondary" | "outline" | "success" | "warning" | "destructive"
 > = {
   pending: "outline",
+  confirmation_notice: "warning",
   notified: "warning",
   paid: "success",
   overdue: "destructive",
@@ -122,6 +123,7 @@ const STATUS_VARIANT: Record<
 };
 
 const MESSAGE_KINDS: MessageKind[] = [
+  "confirmationNotice",
   "paymentGuide",
   "paymentConfirmed",
   "reminderT1",
@@ -131,6 +133,7 @@ const MESSAGE_KINDS: MessageKind[] = [
   "cohortKickoff",
   "week1Materials",
   "stageOpsGuide",
+  "nextCohortOpen",
 ];
 
 // -------------------------------------------------------------------------

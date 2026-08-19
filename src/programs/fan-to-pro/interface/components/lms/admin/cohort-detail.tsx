@@ -65,6 +65,7 @@ const STATUS_LABEL = STATUS_LABEL_KO;
 
 const STATUS_ORDER: ApplicantStatus[] = [
   "pending",
+  "confirmation_notice",
   "notified",
   "paid",
   "overdue",
@@ -801,6 +802,7 @@ function FunnelChip({
 
 const STATUS_COLOR: Record<ApplicantStatus, string> = {
   pending: "text-[var(--muted-foreground)]",
+  confirmation_notice: "text-amber-700",
   notified: "text-amber-700",
   paid: "text-emerald-700",
   overdue: "text-red-700",
@@ -824,6 +826,7 @@ function ApplicantStatusBadge({ status }: { status: ApplicantStatus }) {
     }
   > = {
     pending: { variant: "outline" },
+    confirmation_notice: { variant: "warning" },
     notified: { variant: "warning" },
     paid: { variant: "success" },
     overdue: { variant: "destructive" },

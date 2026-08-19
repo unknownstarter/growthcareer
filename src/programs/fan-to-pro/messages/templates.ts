@@ -12,6 +12,8 @@
 
 export type MessageLocale = "ko" | "en";
 export type MessageKind =
+  | "confirmationNotice"
+  | "nextCohortOpen"
   | "paymentGuide"
   | "paymentConfirmed"
   | "reminderT1"
@@ -53,6 +55,8 @@ const TUITION_KO = "880,000원";
 const TUITION_EN = "KRW 880,000";
 const DEADLINE_KO = "8/30(일) 자정";
 const DEADLINE_EN = "Sun Aug 30 midnight (KST)";
+// 2기 모집 페이지 (nextCohortOpen 안내용).
+const NEXT_COHORT_URL = "https://growthcareer.xyz/fan-to-pro/2";
 
 /**
  * {name} 은 항상, {tuition} 은 tuition 인자로 치환.
@@ -972,6 +976,154 @@ const stageOpsGuide_email_subject_ko = "[Fan to Pro] 공연 현장 실무 가이
 const stageOpsGuide_email_subject_en = "[Fan to Pro] K-pop concert field operations guide";
 
 /* ---------------------------------------------------------------------------
+ * 10. confirmationNotice — 사전 확인 안내 (비자 미보유 / 외국 전화번호 신청자)
+ *
+ * payment guide 전에 오프라인 출석 가능 + 공연 프로젝트 유급참여 불가 두 가지를
+ * 확인 요청. 결제/금액 정보는 넣지 않음 (입금 안내는 확인 회신 후 다음 단계).
+ * paymentGuide_noVisa 문구 참고하되 결제 블록 제외.
+ * ------------------------------------------------------------------------- */
+
+const confirmationNotice_sms_ko = `[Fan to Pro] {name} 님 신청 감사드려요 :)
+
+입금 안내 전에 두 가지만 먼저 확인 부탁드려요.
+
+(1) 마포구 오프라인 강의 4주 토/일 출석 가능 여부
+(2) 수료 후 K팝 공연 유급 참여는 비자 보유자만 가능 (비자 없으면 강의는 OK 지만 공연 단계는 불가)
+
+두 가지 확인하셨고 그래도 수강 원하시면 "확인" 답장 부탁드려요.
+답장 후 입금 정보 안내드려요.
+
+문의사항은 하단의 카카오톡 채널을 이용해주세요.
+${KAKAO}`;
+
+const confirmationNotice_sms_en = `[Fan to Pro] Hi {name}, thanks for applying.
+
+Before we send payment details, please confirm two things.
+
+(1) Can you attend offline in Mapo-gu, Seoul every Sat/Sun for 4 weeks?
+(2) The paid K-pop concert role after the program requires a Korean visa that allows paid work. Without one, you can attend class but not the concert role.
+
+If both confirmed, reply "confirmed" and we will send the payment details.
+
+For any questions, please use the KakaoTalk channel below.
+${KAKAO}`;
+
+const confirmationNotice_email_ko = `안녕하세요, Fan to Pro 입니다 :)
+
+{name} 님의 수강 신청에 감사드려요. 입금 안내 전에 두 가지 꼭 확인 부탁드릴 게 있어요.
+
+(1) Fan to Pro 는 한국 오프라인 강의만 제공하고 있어요. 4주 동안 마포구 강의실에 매주 토/일 직접 오실 수 있는 상태인지 확인 부탁드려요.
+
+(2) 수료 후 이어지는 K팝 공연 프로젝트 유급 참여 기회는 한국에서 합법적으로 영리 활동이 가능한 비자 보유자만 참여 가능해요. 비자가 없거나 관광/단기 비자라면 수강은 가능하지만, 공연 프로젝트 단계에는 참석이 어려운 점 미리 안내드려요.
+
+위 두 가지 모두 확인하셨고 그래도 수강을 원하시면, 이 메일에 "확인했습니다" 라고 짧게 답장 부탁드려요. 답장이 확인되면 입금 정보를 안내드려요.
+
+비자 상태가 바뀌었거나 다른 비자를 보유하고 계셨다면 그것도 함께 알려주세요.
+
+문의사항은 하단의 카카오톡 채널을 이용해주세요.
+${KAKAO}
+
+감사합니다.
+Fan to Pro 운영진 드림`;
+
+const confirmationNotice_email_en = `Hello, this is Fan to Pro.
+
+Thank you for applying, {name}. Before we send you the payment details, please confirm two things.
+
+(1) Fan to Pro is taught fully offline in Mapo-gu, Seoul. Please confirm you can attend in person every Saturday and Sunday for the full 4-week program.
+
+(2) The paid K-pop concert project after the program is only available to those who hold a Korean visa that allows paid side work. If you do not currently hold an eligible visa, you may still attend the class, but you will not be able to take part in the paid concert role.
+
+If you have confirmed both points and still want to proceed, please reply to this email with "confirmed" and we will send the payment details. If your visa status has changed or was filled in incorrectly, please let us know in your reply.
+
+For any questions, please use the KakaoTalk channel below.
+${KAKAO}
+
+Thank you,
+Fan to Pro Team`;
+
+const confirmationNotice_email_subject_ko =
+  "[Fan to Pro] 신청 확인 부탁드려요 (오프라인 강의 / 공연 참여)";
+const confirmationNotice_email_subject_en =
+  "[Fan to Pro] Quick confirmation needed before payment details";
+
+/* ---------------------------------------------------------------------------
+ * 11. nextCohortOpen — 2기 오픈 안내 (사전 신청자 = next_cohort_interest 전용)
+ *
+ * 1기 마감 후 사전 신청한 분께 "2기 오픈했어요" + 모집 페이지 링크. 결제/금액은
+ * 신청 페이지에서 확인하므로 링크 + 마감일 + 카톡 문의만.
+ * ------------------------------------------------------------------------- */
+
+const nextCohortOpen_sms_ko = `[Fan to Pro] {name} 님, 기다려주셔서 감사해요 :)
+
+사전 신청해주셨던 2기 모집이 오픈됐어요. 아래 링크에서 커리큘럼과 일정 확인하시고 신청 부탁드려요.
+
+[2기 모집]
+${NEXT_COHORT_URL}
+마감 ${DEADLINE_KO}
+
+자리는 입금 확인 순으로 확정돼요 (선착순).
+
+문의사항은 하단의 카카오톡 채널을 이용해주세요.
+${KAKAO}`;
+
+const nextCohortOpen_sms_en = `[Fan to Pro] Hi {name}, thank you for waiting.
+
+The Cohort 2 you pre-registered for is now open. Please check the curriculum and schedule at the link below and apply.
+
+[COHORT 2]
+${NEXT_COHORT_URL}
+Deadline ${DEADLINE_EN}
+
+Seats lock in payment order.
+
+For any questions, please use the KakaoTalk channel below.
+${KAKAO}`;
+
+const nextCohortOpen_email_ko = `안녕하세요, Fan to Pro 입니다 :)
+
+{name} 님, 사전 신청해주셔서 감사해요. 기다려주셨던 2기 모집이 오픈됐어요.
+
+아래 모집 페이지에서 커리큘럼 / 강사 / 회차별 일정을 확인하시고, 마음에 드시면 그대로 신청까지 진행하실 수 있어요.
+
+[2기 모집 페이지]
+${NEXT_COHORT_URL}
+
+[모집 마감]
+2026년 8월 30일(일) 자정
+
+자리는 입금 확인 순으로 확정되니 (선착순), 관심 있으시면 마감 전에 서둘러 신청 부탁드려요.
+
+문의사항은 하단의 카카오톡 채널을 이용해주세요.
+${KAKAO}
+
+감사합니다.
+Fan to Pro 운영진 드림`;
+
+const nextCohortOpen_email_en = `Hello, this is Fan to Pro.
+
+Hi {name}, thank you for pre-registering. The Cohort 2 you have been waiting for is now open.
+
+At the page below you can review the curriculum, instructors, and session schedule, and apply directly if it looks like a fit.
+
+[COHORT 2 PAGE]
+${NEXT_COHORT_URL}
+
+[DEADLINE]
+Sunday, August 30, 2026, midnight (KST)
+
+Seats lock in payment order, so if you are interested, please apply before the deadline.
+
+For any questions, please use the KakaoTalk channel below.
+${KAKAO}
+
+Thank you,
+Fan to Pro Team`;
+
+const nextCohortOpen_email_subject_ko = "[Fan to Pro] 2기 모집이 오픈됐어요";
+const nextCohortOpen_email_subject_en = "[Fan to Pro] Cohort 2 is now open";
+
+/* ---------------------------------------------------------------------------
  * 통합 매핑
  * ------------------------------------------------------------------------- */
 
@@ -984,6 +1136,29 @@ type Template = {
 };
 
 const TEMPLATES: Record<MessageKind, Template> = {
+  confirmationNotice: {
+    sms: { ko: confirmationNotice_sms_ko, en: confirmationNotice_sms_en },
+    email: {
+      subject: {
+        ko: confirmationNotice_email_subject_ko,
+        en: confirmationNotice_email_subject_en,
+      },
+      body: {
+        ko: confirmationNotice_email_ko,
+        en: confirmationNotice_email_en,
+      },
+    },
+  },
+  nextCohortOpen: {
+    sms: { ko: nextCohortOpen_sms_ko, en: nextCohortOpen_sms_en },
+    email: {
+      subject: {
+        ko: nextCohortOpen_email_subject_ko,
+        en: nextCohortOpen_email_subject_en,
+      },
+      body: { ko: nextCohortOpen_email_ko, en: nextCohortOpen_email_en },
+    },
+  },
   paymentGuide: {
     sms: { ko: paymentGuide_sms_ko, en: paymentGuide_sms_en },
     email: {
@@ -1476,6 +1651,8 @@ export const BROADCAST_LIMITS = {
 } as const;
 
 export const MESSAGE_KIND_LABELS: Record<MessageKind, string> = {
+  confirmationNotice: "사전 확인 안내",
+  nextCohortOpen: "2기 오픈 안내",
   paymentGuide: "입금 안내",
   paymentConfirmed: "입금 확인 완료",
   reminderT1: "리마인드 T+1",

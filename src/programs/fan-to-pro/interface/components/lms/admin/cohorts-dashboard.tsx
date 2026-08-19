@@ -32,6 +32,7 @@ const FUNNEL_LABEL = STATUS_LABEL_KO;
 
 const FUNNEL_ORDER: ApplicantStatus[] = [
   "pending",
+  "confirmation_notice",
   "notified",
   "paid",
   "overdue",
@@ -418,6 +419,7 @@ function ApplicantStatusBadge({ status }: { status: string | null }) {
   // 라벨은 canonical 단일 소스. variant(색)만 여기.
   const variantMap: Record<string, "default" | "secondary" | "outline" | "success" | "warning" | "destructive"> = {
     pending: "outline",
+    confirmation_notice: "warning",
     notified: "warning",
     paid: "success",
     overdue: "destructive",

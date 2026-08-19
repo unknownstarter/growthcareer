@@ -9,6 +9,7 @@ import {
   logBroadcastSend,
   logIndividualSend,
   markAsCancelled,
+  markAsConfirmationNotice,
   markAsEnrolledBatch,
   markAsNotified,
   markAsOverdue,
@@ -28,6 +29,7 @@ import {
   APPLICANT_STATUSES,
   computeStats,
   getReminderUrgency,
+  needsConfirmation,
   type AnonymizeEligibility,
   type ApplicantRow,
   type ApplicantStatus,
@@ -342,13 +344,14 @@ function DashboardInner({
     //  cancelled (취소, 시야에서 가장 멀리).
     const STATUS_ORDER: Record<ApplicantStatus, number> = {
       pending: 0,
-      notified: 1,
-      overdue: 2,
-      paid: 3,
-      enrolled: 4,
-      refunded: 5,
-      cancelled: 6,
-      next_cohort_interest: 7,
+      confirmation_notice: 1,
+      notified: 2,
+      overdue: 3,
+      paid: 4,
+      enrolled: 5,
+      refunded: 6,
+      cancelled: 7,
+      next_cohort_interest: 8,
     };
     const now = new Date(serverNow);
     return [...items].sort((a, b) => {
@@ -388,6 +391,13 @@ function DashboardInner({
     startTransition(async () => {
       const result = await markAsNotified({ id: row.id });
       handleResult(result, "발송 완료로 표시했어요.");
+    });
+  }
+
+  function runConfirmationNotice(row: ApplicantRow) {
+    startTransition(async () => {
+      const result = await markAsConfirmationNotice({ id: row.id });
+      handleResult(result, "확인 안내 단계로 표시했어요.");
     });
   }
 
@@ -1059,6 +1069,9 @@ function DashboardInner({
                           busy={isPending}
                           onMessage={() => setDrawerApplicant(row)}
                           onNotify={() => runNotify(row)}
+                          onConfirmationNotice={() =>
+                            runConfirmationNotice(row)
+                          }
                           onReminder={() => runReminder(row)}
                           onOverdue={() => runOverdue(row)}
                           onPaid={() => setPaidTarget(row)}
@@ -1183,6 +1196,7 @@ function DashboardInner({
                       busy={isPending}
                       onMessage={() => setDrawerApplicant(row)}
                       onNotify={() => runNotify(row)}
+                      onConfirmationNotice={() => runConfirmationNotice(row)}
                       onReminder={() => runReminder(row)}
                       onOverdue={() => runOverdue(row)}
                       onPaid={() => setPaidTarget(row)}
@@ -1544,6 +1558,7 @@ function RowActions({
   busy,
   onMessage,
   onNotify,
+  onConfirmationNotice,
   onReminder,
   onOverdue,
   onPaid,
@@ -1558,6 +1573,7 @@ function RowActions({
   busy: boolean;
   onMessage: () => void;
   onNotify: () => void;
+  onConfirmationNotice: () => void;
   onReminder: () => void;
   onOverdue: () => void;
   onPaid: () => void;
@@ -1588,6 +1604,15 @@ function RowActions({
   let primary: { label: string; onClick: () => void } | null = null;
   const secondary: MenuAction[] = [];
   if (row.status === "pending") {
+    // 비자 미보유 / 외국 전화번호 = payment guide 전 사전 확인 안내가 먼저.
+    if (needsConfirmation(row)) {
+      primary = { label: "확인 안내", onClick: onConfirmationNotice };
+      secondary.push({ label: "안내 발송", onClick: onNotify });
+    } else {
+      primary = { label: "안내 발송", onClick: onNotify };
+    }
+    secondary.push({ label: "취소", onClick: onCancel, tone: "danger" });
+  } else if (row.status === "confirmation_notice") {
     primary = { label: "안내 발송", onClick: onNotify };
     secondary.push({ label: "취소", onClick: onCancel, tone: "danger" });
   } else if (row.status === "notified") {

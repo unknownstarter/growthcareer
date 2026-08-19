@@ -10,8 +10,11 @@
  * 와 구분.
  */
 
+import { hasEligibleVisa } from "@/src/programs/fan-to-pro/messages/templates";
+
 export const APPLICANT_STATUSES = [
   "pending",
+  "confirmation_notice",
   "notified",
   "paid",
   "overdue",
@@ -36,6 +39,7 @@ export type ApplicantStatus = (typeof APPLICANT_STATUSES)[number];
  */
 export const STATUS_LABEL_KO: Record<ApplicantStatus, string> = {
   pending: "신청만",
+  confirmation_notice: "확인 안내",
   notified: "안내 발송",
   paid: "입금 확인",
   overdue: "마감 초과",
@@ -68,6 +72,7 @@ export function funnelStepIndex(status: ApplicantStatus): number {
 
 export const STATUS_LABEL_EN: Record<ApplicantStatus, string> = {
   pending: "PENDING",
+  confirmation_notice: "CONFIRM",
   notified: "NOTIFIED",
   paid: "PAID",
   overdue: "OVERDUE",
@@ -76,6 +81,41 @@ export const STATUS_LABEL_EN: Record<ApplicantStatus, string> = {
   refunded: "REFUNDED",
   next_cohort_interest: "NEXT COHORT",
 };
+
+/**
+ * 전화번호가 한국 번호인지 판정 (도메인 순수 헬퍼).
+ *
+ * guessLocaleFromPhone / normalizePhone 과 동일한 정규화 (공백·하이픈·괄호 제거)
+ * 후 +82 / 82 / 010 prefix 면 한국 번호로 본다. null / 빈 문자열은 판정 불가라
+ * false (= 확인 안내 대상으로 안전하게 분류).
+ */
+export function isKoreanPhone(phone: string | null): boolean {
+  if (!phone) return false;
+  const normalized = phone.replace(/[\s\-()]/g, "");
+  return (
+    normalized.startsWith("+82") ||
+    normalized.startsWith("82") ||
+    normalized.startsWith("010")
+  );
+}
+
+/**
+ * 사전 확인 안내 대상 판정 (도메인 순수 헬퍼).
+ *
+ * 비자 미보유 (기타/없음) 또는 외국 전화번호면 payment guide 전에 "사전 확인 안내"
+ * (오프라인 출석 가능 + 공연 프로젝트 유급참여 불가 확인) 를 먼저 보내야 한다.
+ * 둘 중 하나라도 해당하면 true.
+ *
+ * hasEligibleVisa 는 messages 모듈의 canonical 판정을 재사용 (여기서 재정의 X).
+ */
+export function needsConfirmation(applicant: {
+  visa: string | null;
+  phone: string | null;
+}): boolean {
+  return (
+    !hasEligibleVisa(applicant.visa) || !isKoreanPhone(applicant.phone)
+  );
+}
 
 export type ApplicantRow = {
   id: string;

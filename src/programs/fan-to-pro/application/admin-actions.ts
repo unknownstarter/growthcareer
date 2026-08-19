@@ -12,7 +12,9 @@
  *   - throw 하지 않고 { status: 'ok' | 'stale' | 'error' } 반환.
  *
  * 상태 전이 표 (가드):
+ *   pending     -> confirmation_notice (markAsConfirmationNotice)
  *   pending     -> notified     (markAsNotified)
+ *   confirmation_notice -> notified (markAsNotified)
  *   notified    -> notified     (sendReminder, count++)
  *   notified    -> paid         (markAsPaid)
  *   notified    -> overdue      (markAsOverdue)
@@ -101,9 +103,12 @@ function toResult(
 
 /* ---------------------------------------------------------------------------
  * 1. markAsNotified
- *   pending -> notified
+ *   pending | confirmation_notice -> notified
  *   notified_at = now()
  *   payment_due_at = least(now() + 3d, enrollment_deadline)
+ *
+ *   confirmation_notice 신청자 (비자/외국번호 사전 확인 대상) 가 "확인" 회신하면
+ *   운영자가 여기로 전진시킨다. 기존 pending -> notified 경로는 그대로.
  * ------------------------------------------------------------------------- */
 export async function markAsNotified(
   input: unknown,
@@ -132,6 +137,32 @@ export async function markAsNotified(
       },
       { count: "exact" },
     )
+    .eq("id", parsed.data.id)
+    .in("status", ["pending", "confirmation_notice"]);
+
+  return toResult(count ?? 0, error);
+}
+
+/* ---------------------------------------------------------------------------
+ * 1.5 markAsConfirmationNotice
+ *   pending -> confirmation_notice
+ *   비자 미보유 / 외국 전화번호 신청자에게 payment guide 전 "사전 확인 안내"
+ *   (오프라인 출석 가능 + 공연 프로젝트 유급참여 불가 확인) 를 먼저 보낼 때 사용.
+ *   추가 컬럼 변경 없음 (안내 발송 audit 은 별도 messages_log 로 기록).
+ * ------------------------------------------------------------------------- */
+export async function markAsConfirmationNotice(
+  input: unknown,
+): Promise<AdminActionResult> {
+  const parsed = ApplicantIdSchema.safeParse(input);
+  if (!parsed.success) {
+    return { status: "error", error: "invalidInput" };
+  }
+  const supabase = await requireSupabase();
+  if (!supabase) return { status: "error", error: "supabaseUnavailable" };
+
+  const { error, count } = await supabase
+    .from(TABLE)
+    .update({ status: "confirmation_notice" }, { count: "exact" })
     .eq("id", parsed.data.id)
     .eq("status", "pending");
 
