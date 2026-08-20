@@ -37,8 +37,19 @@ const ADMIN_PREFIX = "/admin";
 const ADMIN_LOGOUT_PATH = "/admin/logout";
 const ADMIN_ROLE_HEADER = "x-admin-role";
 
-// 종강 = 7/19 24:00 KST = 7/19 15:00 UTC.
-const VIEWER_ACCESS_END_UTC = Date.parse("2026-07-19T15:00:00.000Z");
+// viewer(코워크) 접근 마감 시각. 이 시각 이후 viewer 자격은 401 로 차단.
+// 기본값 = 2기 운영 + 정산 여유 (2026-11-01 00:00 KST = 2026-10-31 15:00 UTC).
+// Vercel env `VIEWER_ACCESS_END` (ISO8601) 로 override 가능 → 코드 배포 없이
+// 노아가 재개통/연장/조기마감 조절. (1기 종강 7/19 로 한 번 닫혔다가 2기 재개통.)
+const VIEWER_ACCESS_END_DEFAULT = "2026-10-31T15:00:00.000Z";
+const VIEWER_ACCESS_END_PARSED = Date.parse(
+  process.env.VIEWER_ACCESS_END ?? VIEWER_ACCESS_END_DEFAULT,
+);
+// env 가 잘못된 형식이면 NaN → 비교가 항상 false 라 viewer 무제한 개방(fail-open)
+// 위험. NaN 이면 안전하게 기본값으로 회귀 (fail-safe).
+const VIEWER_ACCESS_END_UTC = Number.isNaN(VIEWER_ACCESS_END_PARSED)
+  ? Date.parse(VIEWER_ACCESS_END_DEFAULT)
+  : VIEWER_ACCESS_END_PARSED;
 
 const ADMIN_ONLY_PREFIXES = ["/admin/instructors", "/admin/finance"];
 
