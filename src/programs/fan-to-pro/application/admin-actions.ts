@@ -194,10 +194,41 @@ export async function setApplicantStatus(
   const supabase = await requireSupabase();
   if (!supabase) return { status: "error", error: "supabaseUnavailable" };
 
+  const { id, status } = parsed.data;
+
+  // XOR 제약(applicants_status_cohort_xor): next_cohort_interest ↔ cohort_id NULL,
+  // 그 외 ↔ cohort_id NOT NULL. 상태를 바꿀 때 cohort_id 도 함께 맞춰야 위반 안 됨.
+  const patch: { status: string; cohort_id?: string | null } = { status };
+  if (status === "next_cohort_interest") {
+    // 사전신청(대기)으로 되돌림 → cohort 귀속 해제.
+    patch.cohort_id = null;
+  } else {
+    // cohort 귀속 상태로 전환 → cohort_id 필요. 현재 없으면(사전신청자) 현재
+    // 모집 중인 cohort(status=open, 최신) 로 편입. 이미 있으면 그대로 둠.
+    const { data: appl } = await supabase
+      .from(TABLE)
+      .select("cohort_id")
+      .eq("id", id)
+      .single();
+    if (!appl?.cohort_id) {
+      const { data: openCohort } = await supabase
+        .from("cohorts")
+        .select("id")
+        .eq("status", "open")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (!openCohort?.id) {
+        return { status: "error", error: "noOpenCohortToAssign" };
+      }
+      patch.cohort_id = openCohort.id;
+    }
+  }
+
   const { error, count } = await supabase
     .from(TABLE)
-    .update({ status: parsed.data.status }, { count: "exact" })
-    .eq("id", parsed.data.id);
+    .update(patch, { count: "exact" })
+    .eq("id", id);
 
   return toResult(count ?? 0, error);
 }
