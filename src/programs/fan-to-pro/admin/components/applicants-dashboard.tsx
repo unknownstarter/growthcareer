@@ -10,6 +10,7 @@ import {
   logIndividualSend,
   markAsCancelled,
   markAsConfirmationNotice,
+  setApplicantStatus,
   markAsEnrolledBatch,
   markAsNotified,
   markAsOverdue,
@@ -373,6 +374,16 @@ function DashboardInner({
     startTransition(async () => {
       const result = await markAsConfirmationNotice({ id: row.id });
       handleResult(result, "확인 안내 단계로 표시했어요.");
+    });
+  }
+
+  // 운영자 수동 상태 변경 (any -> any). viewer(readOnly) 는 UI 미노출 + 서버
+  // assertAdmin 로 2중 차단.
+  function runSetStatus(row: ApplicantRow, status: ApplicantStatus) {
+    if (status === row.status) return;
+    startTransition(async () => {
+      const result = await setApplicantStatus({ id: row.id, status });
+      handleResult(result, `상태를 "${STATUS_LABEL_KO[status]}"로 바꿨어요.`);
     });
   }
 
@@ -998,7 +1009,17 @@ function DashboardInner({
                     </td>
                     <td className="px-3 py-2 align-top">
                       <div className="flex flex-wrap items-center gap-1">
-                        <StatusProgress status={row.status} />
+                        {readOnly ? (
+                          <StatusProgress status={row.status} />
+                        ) : (
+                          <StatusEditMenu
+                            row={row}
+                            busy={isPending}
+                            onSetStatus={(s) => runSetStatus(row, s)}
+                          >
+                            <StatusProgress status={row.status} />
+                          </StatusEditMenu>
+                        )}
                         {row.redactedAt ? <RedactedChip /> : null}
                         {row.status === "next_cohort_interest" &&
                         row.messageLastSentByKind.nextCohortOpen ? (
@@ -1113,7 +1134,17 @@ function DashboardInner({
                     </div>
                   </div>
                   <div className="flex shrink-0 flex-col items-end gap-1">
-                    <StatusChip status={row.status} />
+                    {readOnly ? (
+                      <StatusChip status={row.status} />
+                    ) : (
+                      <StatusEditMenu
+                        row={row}
+                        busy={isPending}
+                        onSetStatus={(s) => runSetStatus(row, s)}
+                      >
+                        <StatusChip status={row.status} />
+                      </StatusEditMenu>
+                    )}
                     {row.redactedAt ? <RedactedChip /> : null}
                     {row.status === "next_cohort_interest" &&
                     row.messageLastSentByKind.nextCohortOpen ? (
@@ -1527,6 +1558,80 @@ function StatusProgress({ status }: { status: ApplicantStatus }) {
           </div>
         );
       })}
+    </div>
+  );
+}
+
+/**
+ * 운영자 수동 상태 변경 - StatusProgress 를 클릭하면 전 상태 목록 메뉴. any -> any.
+ * readOnly(viewer) 는 이 컴포넌트를 렌더하지 않음 (호출부 분기) + 서버 assertAdmin.
+ */
+function StatusEditMenu({
+  row,
+  onSetStatus,
+  busy,
+  children,
+}: {
+  row: ApplicantRow;
+  onSetStatus: (status: ApplicantStatus) => void;
+  busy: boolean;
+  children: ReactNode;
+}) {
+  const { open, setOpen, openAt, coords, anchorRef, panelRef } =
+    useFixedPopover();
+  return (
+    <div className="inline-flex" ref={anchorRef}>
+      <button
+        type="button"
+        onClick={() => (open ? setOpen(false) : openAt())}
+        disabled={busy}
+        className="inline-flex items-center gap-1 rounded-sm hover:bg-surface disabled:opacity-40"
+        title="클릭해서 상태 변경"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-label="상태 변경"
+      >
+        {children}
+        <span aria-hidden className="text-[9px] text-fg-subtle">
+          ▾
+        </span>
+      </button>
+      {open && coords
+        ? createPortal(
+            <div
+              ref={panelRef}
+              role="menu"
+              className="fixed z-[60] flex min-w-[160px] flex-col border border-border bg-bg py-1 shadow-lg"
+              style={{ top: coords.top, right: coords.right }}
+            >
+              {APPLICANT_STATUSES.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  role="menuitem"
+                  disabled={busy}
+                  onClick={() => {
+                    setOpen(false);
+                    onSetStatus(s);
+                  }}
+                  className={cn(
+                    "flex items-center justify-between gap-3 px-3 py-2 text-left text-[11px] font-black uppercase text-fg hover:bg-surface disabled:opacity-40",
+                    s === row.status && "text-brand-pink",
+                  )}
+                  style={compactStyle}
+                >
+                  <span>{STATUS_LABEL_KO[s]}</span>
+                  {s === row.status ? (
+                    <span aria-hidden className="text-brand-pink">
+                      ●
+                    </span>
+                  ) : null}
+                </button>
+              ))}
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }

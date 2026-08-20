@@ -23,6 +23,8 @@
  *   paid (N개)  -> enrolled|cancelled (markAsEnrolledBatch, per-course 정원 가드)
  */
 
+import { z } from "zod";
+import { APPLICANT_STATUSES } from "@/src/programs/fan-to-pro/application/dto/applicant-row";
 import {
   ApplicantIdSchema,
   BroadcastSendSchema,
@@ -165,6 +167,37 @@ export async function markAsConfirmationNotice(
     .update({ status: "confirmation_notice" }, { count: "exact" })
     .eq("id", parsed.data.id)
     .eq("status", "pending");
+
+  return toResult(count ?? 0, error);
+}
+
+/* ---------------------------------------------------------------------------
+ * 1.6 setApplicantStatus - 운영자 수동 상태 오버라이드 (any -> any)
+ *   funnel 버튼(markAsNotified 등) 이 커버 못 하는 케이스를 운영자가 직접 클릭으로
+ *   교정. from-status 가드 없음 (수동 override 의도). status enum 만 검증.
+ *   주의: paid/enrolled 를 여기로 set 하면 payment_confirmed_at / enrollment_courses
+ *   같은 부수 데이터는 안 생김 (그건 markAsPaid / 일괄 강좌 확정 이 담당). 이 액션은
+ *   상태 라벨만 바꾼다. assertAdmin (requireSupabase) 로 viewer 차단.
+ * ------------------------------------------------------------------------- */
+const SetApplicantStatusSchema = z.object({
+  id: z.string().uuid("invalidApplicantId"),
+  status: z.enum(APPLICANT_STATUSES),
+});
+
+export async function setApplicantStatus(
+  input: unknown,
+): Promise<AdminActionResult> {
+  const parsed = SetApplicantStatusSchema.safeParse(input);
+  if (!parsed.success) {
+    return { status: "error", error: "invalidInput" };
+  }
+  const supabase = await requireSupabase();
+  if (!supabase) return { status: "error", error: "supabaseUnavailable" };
+
+  const { error, count } = await supabase
+    .from(TABLE)
+    .update({ status: parsed.data.status }, { count: "exact" })
+    .eq("id", parsed.data.id);
 
   return toResult(count ?? 0, error);
 }
