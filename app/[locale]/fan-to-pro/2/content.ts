@@ -212,10 +212,10 @@ const CONTENT = {
   },
 
   en: {
-    nav: { instructors: "Instructors", program: "Program", courses: "Courses", press: "Press Room", archive: "Cohort 1", apply: "Apply now", stickyLead: "From fan to pro, starting now" },
+    nav: { instructors: "Instructors", program: "Program", courses: "Courses", press: "Press Room", archive: "Cohort 1", apply: "Apply now", stickyLead: "Fan to Pro, starting now" },
     hero: {
       status: "> NOW_CASTING --cohort=02 --track=k_ent",
-      line1a: "From fan to ", line1b: "pro", line1c: ".",
+      line1a: "Fan to ", line1b: "Pro", line1c: ".",
       line2: "A career behind the stage.",
       desc: "Learn directly from an A&R director who has shaped Korea's largest idol audition programs and globally debuted groups. It doesn't end in the classroom. You join a real live production project and walk away with portfolio-worthy experience.",
       ctaApply: "Apply for Cohort 2", ctaInstructors: "Meet the instructors",
