@@ -6,6 +6,7 @@ import {
 } from "@/src/programs/fan-to-pro/domain/application";
 import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
 import { fetchSignupOpenCohort } from "@/src/programs/fan-to-pro/infrastructure/supabase/repositories/cohort-repository";
+import { APP_ERROR, logAppError } from "@/src/shared/errors/codes";
 
 const TABLE = "applicants";
 const FAN_TO_PRO_PROGRAM_SLUG = "fan-to-pro";
@@ -195,7 +196,7 @@ export async function submitApplication(
     .single();
 
   if (error) {
-    console.error("[applicants] insert error", error);
+    logAppError(APP_ERROR.APPLY_INSERT_FAILED, error.message);
     return {
       status: "error",
       errors: { _form: [FORM_ERROR_KEY] },

@@ -16,6 +16,8 @@
 import { useEffect } from "react";
 import { useParams } from "next/navigation";
 import { RotateCcw, AlertTriangle } from "lucide-react";
+import { APP_ERROR, isSkewError } from "@/src/shared/errors/codes";
+import { trackEvent } from "@/src/lib/analytics/gtag";
 
 export default function LocaleError({
   error,
@@ -29,7 +31,36 @@ export default function LocaleError({
   const isEn = locale === "en";
 
   useEffect(() => {
+    // 배포 스큐(UnrecognizedActionError): 클라 번들이 이전 배포라 서버 액션 ID 가
+    // 새 배포에 없어 조용히 실패한 케이스. 죽은 화면 대신 1회 자동 새로고침 →
+    // 최신 번들로 자가치유. sessionStorage 스로틀로 무한 reload 루프 방지.
+    if (isSkewError(error)) {
+      trackEvent({
+        event_name: "client_error",
+        parameters: { code: APP_ERROR.SKEW_ACTION_MISSING, where: "locale_error_boundary" },
+      });
+      try {
+        const KEY = "gc-skew-reloaded";
+        const last = Number(window.sessionStorage.getItem(KEY) ?? "0");
+        if (Date.now() - last > 10000) {
+          window.sessionStorage.setItem(KEY, String(Date.now()));
+          window.location.reload();
+          return;
+        }
+      } catch {
+        // sessionStorage 불가 환경 — 조용히 통과 (아래 에러 UI 노출).
+      }
+      return;
+    }
     console.error("[locale error boundary]", error);
+    trackEvent({
+      event_name: "client_error",
+      parameters: {
+        code: APP_ERROR.UNKNOWN,
+        where: "locale_error_boundary",
+        digest: error?.digest ?? "",
+      },
+    });
   }, [error]);
 
   return (

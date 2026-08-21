@@ -49,6 +49,7 @@ import {
 import { MIN_HEADCOUNT_DEFAULT } from "@/src/programs/fan-to-pro/domain/entities/course";
 import { getSupabaseServer } from "@/src/programs/fan-to-pro/infrastructure/supabase/server";
 import { assertAdmin } from "@/src/programs/fan-to-pro/admin/role";
+import { APP_ERROR, logAppError } from "@/src/shared/errors/codes";
 import {
   fetchCashReceipts as fetchCashReceiptsImpl,
   fetchMessagesForApplicant as fetchMessagesForApplicantImpl,
@@ -95,6 +96,7 @@ function toResult(
   error: { message: string } | null,
 ): AdminActionResult {
   if (error) {
+    logAppError(APP_ERROR.ADMIN_MUTATION_FAILED, error.message);
     return { status: "error", error: error.message };
   }
   if (affectedRows === 0) {

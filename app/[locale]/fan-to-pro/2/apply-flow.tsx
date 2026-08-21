@@ -77,6 +77,16 @@ export function ApplyFlow({
   useEffect(() => {
     if (state.status !== "error") return;
     const fieldErrs = (state.errors ?? {}) as Record<string, unknown>;
+    // GA4 관측 — 신청 실패를 채널/원인별로 집계. _form = 서버(INSERT) 실패,
+    // 그 외 = 필드 검증 실패. 실패 스파이크를 GA4 에서 바로 볼 수 있게.
+    trackEvent({
+      event_name: "form_error",
+      parameters: {
+        where: "apply_submit",
+        campaign: "f2p_2gi",
+        code: "_form" in fieldErrs ? "APPLY_INSERT_FAILED" : "APPLY_VALIDATION_FAILED",
+      },
+    });
     bannerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     const first = Object.keys(fieldErrs)[0];
     if (first && formRef.current) {
