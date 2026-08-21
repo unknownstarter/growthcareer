@@ -184,6 +184,22 @@ const SetApplicantStatusSchema = z.object({
   status: z.enum(APPLICANT_STATUSES),
 });
 
+// 이 status 로 수동 전환 = "안내(발송)를 이미 보냈다"는 의미 → notified_at(발송 시간)
+// 을 이 시점으로 찍는다. markAsNotified 는 notified_at 을 찍지만 수동 클릭 경로
+// (setApplicantStatus) 는 안 찍어서 [발송] 컬럼이 "-" 로 남던 버그 교정.
+//   - notified~refunded: payment guide 발송 뒤 단계
+//   - next_cohort_interest: 다음 기수 오픈 안내 발송 대상 (사전신청 안내)
+// pending / confirmation_notice / cancelled 는 제외 (아직 안내 전이거나 발송 무의미).
+// 이미 notified_at 이 있으면 최초 발송 시각을 보존 (덮어쓰지 않음).
+const STAMPS_NOTIFIED_AT: ReadonlySet<string> = new Set([
+  "notified",
+  "paid",
+  "overdue",
+  "enrolled",
+  "refunded",
+  "next_cohort_interest",
+]);
+
 export async function setApplicantStatus(
   input: unknown,
 ): Promise<AdminActionResult> {
@@ -198,31 +214,41 @@ export async function setApplicantStatus(
 
   // XOR 제약(applicants_status_cohort_xor): next_cohort_interest ↔ cohort_id NULL,
   // 그 외 ↔ cohort_id NOT NULL. 상태를 바꿀 때 cohort_id 도 함께 맞춰야 위반 안 됨.
-  const patch: { status: string; cohort_id?: string | null } = { status };
+  const patch: {
+    status: string;
+    cohort_id?: string | null;
+    notified_at?: string;
+  } = { status };
+
+  // 현재 값 조회 (cohort 편입 판단 + notified_at 보존 판단).
+  const { data: appl } = await supabase
+    .from(TABLE)
+    .select("cohort_id, notified_at")
+    .eq("id", id)
+    .single();
+
   if (status === "next_cohort_interest") {
     // 사전신청(대기)으로 되돌림 → cohort 귀속 해제.
     patch.cohort_id = null;
-  } else {
+  } else if (!appl?.cohort_id) {
     // cohort 귀속 상태로 전환 → cohort_id 필요. 현재 없으면(사전신청자) 현재
     // 모집 중인 cohort(status=open, 최신) 로 편입. 이미 있으면 그대로 둠.
-    const { data: appl } = await supabase
-      .from(TABLE)
-      .select("cohort_id")
-      .eq("id", id)
-      .single();
-    if (!appl?.cohort_id) {
-      const { data: openCohort } = await supabase
-        .from("cohorts")
-        .select("id")
-        .eq("status", "open")
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      if (!openCohort?.id) {
-        return { status: "error", error: "noOpenCohortToAssign" };
-      }
-      patch.cohort_id = openCohort.id;
+    const { data: openCohort } = await supabase
+      .from("cohorts")
+      .select("id")
+      .eq("status", "open")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (!openCohort?.id) {
+      return { status: "error", error: "noOpenCohortToAssign" };
     }
+    patch.cohort_id = openCohort.id;
+  }
+
+  // 안내 발송 상태로 수동 전환 시 발송 시간을 이 시점으로 기록 (최초만).
+  if (STAMPS_NOTIFIED_AT.has(status) && !appl?.notified_at) {
+    patch.notified_at = new Date().toISOString();
   }
 
   const { error, count } = await supabase
