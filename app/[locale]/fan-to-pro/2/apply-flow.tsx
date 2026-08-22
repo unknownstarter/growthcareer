@@ -38,6 +38,27 @@ export function ApplyFlow({
 }) {
   const [mode, setMode] = useState<"all" | "pick">("all");
   const [picked, setPicked] = useState<string[]>([]);
+  // 입력값 controlled — React 19 는 form action 제출 후 uncontrolled 폼을 자동
+  // reset 한다. 검증 에러(예: 전화번호 형식) 반환 시 uncontrolled 면 입력이 전부
+  // 날아가 재작성 부담에 이탈한다. controlled 로 두면 에러 후에도 값이 유지된다.
+  const [fields, setFields] = useState<Record<string, string>>({
+    name: "",
+    email: "",
+    phone: "",
+    birthdate: "",
+    university: "",
+    address: "",
+    referred_by_code: "",
+    nationality: "",
+    visa: "",
+  });
+  const setField = (k: string, v: string) =>
+    setFields((f) => ({ ...f, [k]: v }));
+  const [checks, setChecks] = useState<Record<string, boolean>>({
+    consent: false,
+    consent_operations: false,
+    consent_marketing: false,
+  });
   const [state, action, pending] = useActionState(submitApplication, {
     status: "idle" as const,
   });
@@ -283,6 +304,8 @@ export function ApplyFlow({
                   type={f.type}
                   placeholder={f.ph}
                   required={!("optional" in f && f.optional)}
+                  value={fields[f.name] ?? ""}
+                  onChange={(e) => setField(f.name, e.target.value)}
                   maxLength={"uppercase" in f && f.uppercase ? 20 : undefined}
                   autoCapitalize={"uppercase" in f && f.uppercase ? "characters" : undefined}
                   className={`${styles.pixelBorder} ${inputCls} ${errs[f.name] ? "border-brand-pink" : ""}`}
@@ -298,7 +321,8 @@ export function ApplyFlow({
               <select
                 name="nationality"
                 required
-                defaultValue=""
+                value={fields.nationality}
+                onChange={(e) => setField("nationality", e.target.value)}
                 className={`${styles.pixelBorder} ${inputCls} ${errs.nationality ? "border-brand-pink" : ""}`}
               >
                 <option value="" disabled>
@@ -319,7 +343,8 @@ export function ApplyFlow({
               <select
                 name="visa"
                 required
-                defaultValue=""
+                value={fields.visa}
+                onChange={(e) => setField("visa", e.target.value)}
                 className={`${styles.pixelBorder} ${inputCls} ${errs.visa ? "border-brand-pink" : ""}`}
               >
                 <option value="" disabled>
@@ -346,6 +371,10 @@ export function ApplyFlow({
                   type="checkbox"
                   name={cc.name}
                   required={cc.req}
+                  checked={checks[cc.name] ?? false}
+                  onChange={(e) =>
+                    setChecks((c) => ({ ...c, [cc.name]: e.target.checked }))
+                  }
                   className="mt-0.5 accent-brand-pink"
                 />
                 <span className="text-fg-muted">{cc.label}</span>
