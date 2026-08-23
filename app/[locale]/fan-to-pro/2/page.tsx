@@ -155,6 +155,21 @@ export default async function FanToProPage({
   // GC 공통 GNB 링크는 locale-aware (ko = "/ko", en = "").
   const prefix = locale === routing.defaultLocale ? "" : `/${locale}`;
 
+  // 모집 마감 D-N. force-dynamic 이라 request 시각 반영 (§7 SSG 금지 대상).
+  // 마감일 = 8월 30일(KST). "D-N" 은 달력 일수 기준 (8/30 - 오늘KST). 타임스탬프
+  // ceil 은 시각 때문에 하루 밀리므로 KST 날짜끼리 뺀다. 8/30 당일 = 0(오늘 마감), 이후 음수.
+  const KST = 9 * 60 * 60 * 1000;
+  const nowKst = new Date(Date.now() + KST);
+  const todayKst = Date.UTC(nowKst.getUTCFullYear(), nowKst.getUTCMonth(), nowKst.getUTCDate());
+  const deadlineKst = Date.UTC(2026, 7, 30); // 8월 30일 (월 index 7)
+  const daysLeft = Math.round((deadlineKst - todayKst) / 86_400_000);
+  const deadlineChip =
+    daysLeft > 0
+      ? `${c.reassure.deadlineLabel} D-${daysLeft}`
+      : daysLeft === 0
+        ? c.reassure.today
+        : null;
+
   return (
     <main className={`${pixelMono.variable} ${styles.canvas} min-h-screen bg-bg text-fg`}>
       {/* 분석 트래커 — view/scroll/click(data-track) 을 GA4+자체DB 로. 렌더 없음(null). */}
@@ -229,7 +244,17 @@ export default async function FanToProPage({
               <p className={`${styles.reveal} mt-7 max-w-xl text-fg-muted text-lg leading-relaxed`} style={{ animationDelay: "0.14s" }}>
                 {c.hero.desc}
               </p>
-              <div className={`${styles.reveal} mt-10 flex flex-col gap-4 sm:flex-row sm:items-center`} style={{ animationDelay: "0.22s" }}>
+              {deadlineChip ? (
+                <div className={`${styles.reveal} mt-8 flex flex-wrap items-center gap-2`} style={{ animationDelay: "0.18s" }}>
+                  <span className="inline-flex items-center rounded-sm bg-brand-pink px-3 py-1.5 font-bold text-white text-xs" style={{ letterSpacing: "0.04em" }}>
+                    {deadlineChip}
+                  </span>
+                  <span className="inline-flex items-center rounded-sm border border-border px-3 py-1.5 font-semibold text-fg-muted text-xs">
+                    {c.reassure.refund}
+                  </span>
+                </div>
+              ) : null}
+              <div className={`${styles.reveal} mt-6 flex flex-col gap-4 sm:flex-row sm:items-center`} style={{ animationDelay: "0.22s" }}>
                 <Button variant="pixel" href="#apply" dataTrack="apply_cta_hero" className="px-8 py-4 text-base">{c.hero.ctaApply}</Button>
                 <Button variant="pixel-ghost" href="#instructors" dataTrack="instructors_cta_hero" className="px-8 py-4 text-base">{c.hero.ctaInstructors}</Button>
               </div>
@@ -430,6 +455,31 @@ export default async function FanToProPage({
               </div>
             </article>
           ))}
+        </div>
+        {/* 위험 역전 안심 배지 — 가격 바로 밑 (P2). 가격 쇼크 옆에 환불 보장 */}
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-2">
+          {[c.reassure.refund, c.reassure.guard].map((r) => (
+            <span key={r} className="inline-flex items-center gap-2 font-semibold text-fg-muted text-sm">
+              <span className="text-brand-pink" aria-hidden>✓</span>
+              {r}
+            </span>
+          ))}
+        </div>
+      </section>
+
+      {/* ===== 중간 전환 CTA — 가격 확인 직후 신청 유도 (P4) ===== */}
+      <section className={`${WRAP} py-8`}>
+        <div className={`${styles.pixelBorder} flex flex-col items-center gap-5 bg-surface p-8 text-center sm:flex-row sm:justify-between sm:text-left`}>
+          <div className="min-w-0">
+            {deadlineChip ? (
+              <p className="mb-1.5 font-bold text-brand-pink text-xs" style={{ letterSpacing: "0.04em" }}>{deadlineChip}</p>
+            ) : null}
+            <p className={`${styles.pixelFont} text-lg text-fg`}>{c.reassure.ctaMid}</p>
+            <p className="mt-1.5 text-fg-muted text-sm">{c.reassure.ctaMidNote}</p>
+          </div>
+          <Button variant="pixel" href="#apply" dataTrack="apply_cta_mid" className="w-full shrink-0 px-8 py-4 text-base sm:w-auto">
+            {c.nav.apply}
+          </Button>
         </div>
       </section>
 

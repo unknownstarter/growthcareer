@@ -7,7 +7,13 @@
 
 ## 📅 Last updated: 2026-08-23 (분석 이벤트 트래킹 GA4+자체DB + 유입 진단)
 
-> 🔎 **8/23 추가**: 모집 페이지에 view/scroll/click/start_apply/completed_apply 이벤트를 GA4+자체DB(`analytics_events`) 양쪽 적재. `tools/analytics-summary.mjs` 로 방문/신청 퍼널 집계. Sage GO(Origin체크·meta정규화·referrer절단). 진단 결론: **"27→0" = 유입 문제(주) + 8/21~22 폼버그(부, 수정됨)**. 1기 27명은 6월 푸시 버스트, 2기 4명(8/18~20 실제 유학생) 후 유입원(인스타카드·Kowork) 미가동. 후속 백로그: WAF rate-limit, 처리방침에 분석수집 명시, session_id 만료, analytics_events TTL cron.
+> 🔎 **8/23 추가**: 모집 페이지에 view/scroll/click/start_apply/completed_apply 이벤트를 GA4+자체DB(`analytics_events`) 양쪽 적재. `tools/analytics-summary.mjs`(자체) + `tools/ga4-report.mjs`(GA4 Data API, property 538220690, `.env.local` GA4_KEY_FILE/GA4_PROPERTY_ID) 로 퍼널 집계. Sage GO(Origin체크·meta정규화·referrer절단).
+>
+> ⚠️ **진단 정정 (GA4 실측)**: "27→0"은 유입 문제 **아님**. GA4 30일 = **431 세션/310명** (8/18 172 스파이크, Kowork cowork+kowork ~112 유입). **문제 = 전환**. 퍼널: 431 세션 → 250 깊은스크롤 → **form_start 18** → 완료 ~4. 절벽은 "읽기→폼시작"(95% 이탈, 폼 건드리기도 전). 8/21~22 폼버그는 부차(form_error 1건). **핵심 = 페이지가 신청까지 전환 못 시킴**(카피·신뢰·CTA·가격설득·폼마찰). DB 타임라인만 본 8/23 초기 진단(유입문제)은 GA4로 뒤집힘.
+>
+> ✅ **전환 개선 1차 배포(8/23)**: P1 폼 마찰 축소(birthdate DB NOT NULL 제거 마이그레이션 `20260823010000` + 스키마/UI optional, 학교도 optional → 필수는 이름·이메일·연락처·국적·비자+동의2만). P2 위험역전/긴급성(hero "마감 D-N"+"7일내 100% 환불" 칩, 가격 밑 안심 배지, force-dynamic 자동 갱신). P4 중간 전환 CTA(가격 직후). 인스타 인앱웹뷰 영문 최소정보 신청 E2E 18/18(모바일+웹) `tools/en-minimal-apply-e2e.mjs`.
+>
+> 후속 백로그: 전환 개선 2차(신뢰요소 P3·폼 2-step·결제마찰 P6), WAF rate-limit, 처리방침에 분석수집 명시, session_id 만료, analytics_events TTL cron.
 
 ## 📅 (이전) 2026-08-22 (신청폼 긴급수정 + 관측성 Tier 1 + 2차 카드뉴스)
 

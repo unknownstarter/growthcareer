@@ -238,8 +238,8 @@ export function ApplyFlow({
     { name: "name", label: formT.name, ph: formT.namePh, type: "text" },
     { name: "email", label: formT.email, ph: formT.emailPh, type: "email" },
     { name: "phone", label: formT.phone, ph: formT.phonePh, type: "tel" },
-    { name: "birthdate", label: formT.birthdate, ph: "", type: "date" },
-    { name: "university", label: formT.university, ph: formT.universityPh, type: "text" },
+    { name: "birthdate", label: formT.birthdate, ph: "", type: "date", optional: true },
+    { name: "university", label: formT.university, ph: formT.universityPh, type: "text", optional: true },
     { name: "address", label: formT.address, ph: formT.addressPh, type: "text", optional: true, wide: true },
     { name: "referred_by_code", label: formT.referral, ph: formT.referralPh, type: "text", optional: true, wide: true, uppercase: true },
   ] as const;

@@ -187,9 +187,14 @@ const optionalCheckboxBool = z
   .transform((v) => v === "on" || v === "true" || v === true);
 
 export const Step2Schema = z.object({
+  // birthdate 는 선택값 (2기부터). 수료증/나이게이트 등 필수 용도 없이 어드민 표시용
+  // 뿐이라 required 를 걷어냄. 값이 있으면 형식만 검증, 없으면 null.
   birthdate: z
     .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, ERROR_KEYS.birthdateFormat),
+    .trim()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, ERROR_KEYS.birthdateFormat)
+    .optional()
+    .or(z.literal("").transform(() => null)),
   university: z
     .string()
     .trim()
