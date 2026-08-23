@@ -66,3 +66,8 @@ docs/private/
 
 # 내부 전용 문서 (외부 공유 금지 — git 추적 제외)
 docs/internal/
+
+# GA4 서비스계정 키 (절대 커밋 금지)
+ga4-sa.json
+*-sa.json
+*.ga4.json
