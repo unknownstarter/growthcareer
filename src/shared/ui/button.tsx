@@ -42,6 +42,7 @@ export function Button({
   onClick,
   type = "button",
   children,
+  dataTrack,
 }: {
   variant?: ButtonVariant;
   href?: string;
@@ -49,17 +50,19 @@ export function Button({
   onClick?: () => void;
   type?: "button" | "submit" | "reset";
   children: ReactNode;
+  // 분석용 위임 클릭 훅 — 렌더 요소에 data-track 속성만 부여. 동작 무영향.
+  dataTrack?: string;
 }) {
   const cls = `${BASE} ${VARIANT[variant]} ${className}`.trim();
   if (href) {
     return (
-      <a href={href} className={cls} onClick={onClick}>
+      <a href={href} className={cls} onClick={onClick} data-track={dataTrack}>
         {children}
       </a>
     );
   }
   return (
-    <button type={type} className={cls} onClick={onClick}>
+    <button type={type} className={cls} onClick={onClick} data-track={dataTrack}>
       {children}
     </button>
   );

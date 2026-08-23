@@ -32,6 +32,7 @@ import {
   StatCountUp,
 } from "./pixel-fx";
 import { ApplyFlow } from "./apply-flow";
+import { AnalyticsScreen } from "@/src/lib/analytics/AnalyticsScreen";
 
 /* =============================================================================
    Fan to Pro (K-ent) 2기 모집 — 에버그린 슬롯 (/fan-to-pro = 현재 열린 기수).
@@ -156,6 +157,8 @@ export default async function FanToProPage({
 
   return (
     <main className={`${pixelMono.variable} ${styles.canvas} min-h-screen bg-bg text-fg`}>
+      {/* 분석 트래커 — view/scroll/click(data-track) 을 GA4+자체DB 로. 렌더 없음(null). */}
+      <AnalyticsScreen screen="recruit_2gi" />
       {/* ===== 공용 GC GNB (단일바) =====
           서브 GNB 제거 → 다른 GC 페이지와 구조 동일한 단일 헤더. 페이지 내 앵커 이동은
           하단 플로팅 "수강 신청하기" 바(StickyCtaBar)로 대체. below 슬롯엔 진행바만.
@@ -227,8 +230,8 @@ export default async function FanToProPage({
                 {c.hero.desc}
               </p>
               <div className={`${styles.reveal} mt-10 flex flex-col gap-4 sm:flex-row sm:items-center`} style={{ animationDelay: "0.22s" }}>
-                <Button variant="pixel" href="#apply" className="px-8 py-4 text-base">{c.hero.ctaApply}</Button>
-                <Button variant="pixel-ghost" href="#instructors" className="px-8 py-4 text-base">{c.hero.ctaInstructors}</Button>
+                <Button variant="pixel" href="#apply" dataTrack="apply_cta_hero" className="px-8 py-4 text-base">{c.hero.ctaApply}</Button>
+                <Button variant="pixel-ghost" href="#instructors" dataTrack="instructors_cta_hero" className="px-8 py-4 text-base">{c.hero.ctaInstructors}</Button>
               </div>
             </div>
 
@@ -423,7 +426,7 @@ export default async function FanToProPage({
                     <span className={`${styles.pixelFont} text-fg text-lg`}>₩{opt.price.toLocaleString("en-US")}</span>
                   </p>
                 </div>
-                <a href="#apply" className="font-bold text-brand-pink text-sm transition-colors hover:text-brand-fuchsia">{c.courses.inquiry}</a>
+                <a href="#apply" data-track="apply_inquiry_courses" className="font-bold text-brand-pink text-sm transition-colors hover:text-brand-fuchsia">{c.courses.inquiry}</a>
               </div>
             </article>
           ))}
@@ -517,7 +520,7 @@ export default async function FanToProPage({
                 {c.cohort1.h2}
               </h2>
               <p className="mt-6 max-w-lg text-fg-muted text-base leading-relaxed sm:text-lg">{c.cohort1.desc}</p>
-              <Button variant="pixel-ghost" href={`${prefix}/fan-to-pro/1`} className="mt-9 px-6 py-3 text-sm">
+              <Button variant="pixel-ghost" href={`${prefix}/fan-to-pro/1`} dataTrack="archive_1gi" className="mt-9 px-6 py-3 text-sm">
                 {c.cohort1.archive}
               </Button>
             </div>
@@ -590,6 +593,7 @@ export default async function FanToProPage({
               href={a.url}
               target="_blank"
               rel="noopener noreferrer"
+              data-track="press_link"
               className={`${styles.pixelBorder} ${styles.pixelShadowLift} group flex items-center gap-4 bg-surface p-4 sm:gap-5 sm:p-5`}
             >
               <PixelImage src={a.thumb} alt="" sizes="112px" className="aspect-square w-20 shrink-0 border border-border sm:w-28" />
@@ -641,6 +645,7 @@ export default async function FanToProPage({
           <Button
             variant="pink-solid"
             href="#apply"
+            dataTrack="apply_cta_sticky"
             className="w-full rounded-full py-3.5 md:w-auto md:px-8"
           >
             {c.nav.apply}

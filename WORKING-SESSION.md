@@ -5,14 +5,23 @@
 
 ---
 
-## 📅 Last updated: 2026-08-11 (GC 플랫폼 + Fan to Pro IA 재구성 + 2기 모집 배선 배포)
+## 📅 Last updated: 2026-08-23 (분석 이벤트 트래킹 GA4+자체DB + 유입 진단)
 
-> ▶ **2기 모집 라이브.** `growthcareer.xyz/fan-to-pro/2` (마감 2026-08-30 자정=8/31 00:00 KST, 첫수업 9/5 토). 지원 → `applicants` status=pending + cohort_id=fantopro2 → 어드민 → 결제 → LMS. 1기와 시각 기반 마감으로 완전 디커플.
+> 🔎 **8/23 추가**: 모집 페이지에 view/scroll/click/start_apply/completed_apply 이벤트를 GA4+자체DB(`analytics_events`) 양쪽 적재. `tools/analytics-summary.mjs` 로 방문/신청 퍼널 집계. Sage GO(Origin체크·meta정규화·referrer절단). 진단 결론: **"27→0" = 유입 문제(주) + 8/21~22 폼버그(부, 수정됨)**. 1기 27명은 6월 푸시 버스트, 2기 4명(8/18~20 실제 유학생) 후 유입원(인스타카드·Kowork) 미가동. 후속 백로그: WAF rate-limit, 처리방침에 분석수집 명시, session_id 만료, analytics_events TTL cron.
 
-## 🎯 현재 상태
-- **1기**: 종강(7/19)+수료(7/25) 완료. `/fan-to-pro/1` 아카이브.
-- **2기**: **모집 오픈(라이브)**. cohort `fantopro2`(DB 시드), 단과 A&R(일 14~16시)/음향(토 10~12시) 각 55만원, 올인원 99만원, 최소 10명, 장소 강남/마포(결제 후 안내).
-- **GC 플랫폼 라이브**: 메인/Fan to Pro 리스트/인사이트/Press Room/커뮤니티 게이트. 전면 이중언어(ko/en).
+## 📅 (이전) 2026-08-22 (신청폼 긴급수정 + 관측성 Tier 1 + 2차 카드뉴스)
+
+> ▶ **2기 모집 라이브.** `growthcareer.xyz/fan-to-pro/2` (마감 2026-08-30 자정, 첫수업 9/5 토). 지원 → `applicants` status=pending + cohort_id=fantopro2 → 어드민 → 결제 → LMS.
+
+> 🔎 **오늘(8/21~22) 상세 기록**: `docs/internal/SESSION-2026-08-22-apply-fix-observability.md` + `SESSION-2026-08-21-2gi-admin-ops.md` (gitignored). 아래는 요약.
+
+## 🎯 현재 상태 (2026-08-22)
+- **2기 신청 퍼널 정상화 완료**: React 19 form auto-reset 로 검증 에러 시 입력값 소실 → **폼 controlled 화**로 수정(`1ff8b10`). playwright 로 값유지+완료뷰 검증. (라이브 사고: "신청이 아예 없었음")
+- **관측성 Tier 1 배포**(`8d0270a`): 에러코드 taxonomy(`src/shared/errors/codes.ts`) + GA4 `form_error`/`client_error` + 스큐 자가치유(error.tsx auto reload). Tier 2(Sentry) 미도입.
+- **배포 원칙**: 라이브 중 연속배포 금지 → 변경 모아 1회. 스큐(`UnrecognizedActionError`) 재발 시 하드새로고침/자가치유.
+- **협력사 이름 = Kowork**(K, cowork 오타 금지). 코워크 인스타 = kowork UTM 링크.
+- **인스타 2차 카드뉴스** 완성(`docs/marketing/2gi-cards-2/`, 커밋 금지). 게시 대기.
+- **1기**: 아카이브(`/fan-to-pro/1`). **2기**: 모집 라이브(cohort `fantopro2`, 단과 55만/올인원 99만, 최소 10명).
 
 ---
 

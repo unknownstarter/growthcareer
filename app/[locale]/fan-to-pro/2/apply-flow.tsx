@@ -6,6 +6,7 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { submitApplication } from "@/src/programs/fan-to-pro/application/submit-application";
 import { trackEvent } from "@/src/lib/analytics/gtag";
+import { track } from "@/src/lib/analytics/track";
 import { COUNTRY_OPTIONS, VISA_OPTIONS } from "@/src/programs/fan-to-pro/domain/application";
 import type { Content } from "./content";
 import styles from "./glass.module.css";
@@ -65,6 +66,14 @@ export function ApplyFlow({
   const formRef = useRef<HTMLFormElement>(null);
   const bannerRef = useRef<HTMLDivElement>(null);
   const doneRef = useRef<HTMLDivElement>(null);
+  const startedRef = useRef(false);
+
+  // start_apply — 폼에 처음 상호작용(포커스)한 순간 1회. 퍼널 시작 지점.
+  const handleFirstFocus = () => {
+    if (startedRef.current) return;
+    startedRef.current = true;
+    track("start_apply", { screen: "recruit_2gi" });
+  };
 
   const done = state.status === "ok" || state.status === "ok_local";
 
@@ -89,6 +98,12 @@ export function ApplyFlow({
         courses: slugs.join(","),
         course_count: slugs.length,
       },
+    });
+    // completed_apply — 자체 DB 퍼널 완료 이벤트 (PII 없이 사실만). GA4 에도 전송.
+    track("completed_apply", {
+      screen: "recruit_2gi",
+      selection_mode: effectiveMode,
+      course_count: slugs.length,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.status]);
@@ -265,7 +280,7 @@ export function ApplyFlow({
           <span className={styles.winDot} style={{ background: "#6366f1" }} />
           <span className="ml-2 text-fg-muted">{formT.cmd}</span>
         </div>
-        <form ref={formRef} action={action} className="space-y-6 p-6 sm:p-8">
+        <form ref={formRef} action={action} onFocus={handleFirstFocus} className="space-y-6 p-6 sm:p-8">
           {/* 검증 에러 요약 배너 — 첫 에러 필드로 스크롤/focus 되는 앵커 */}
           {errored ? (
             <div
