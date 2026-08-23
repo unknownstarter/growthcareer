@@ -397,8 +397,8 @@ export default async function FanToProPage({
         <h2 className={`${styles.pixelFont} text-3xl sm:text-4xl`} style={LEAD_PIXEL}>{c.curriculum.h1}</h2>
         <p className="mt-5 max-w-2xl text-fg-muted text-base leading-relaxed sm:text-lg">{c.curriculum.desc}</p>
         <div className="mt-12 space-y-3">
-          {c.curriculum.courses.map((course, idx) => (
-            <details key={course.slug} open={idx === 0} className={`${styles.tree} ${styles.pixelBorder} ${styles.pixelShadowLift} bg-surface`}>
+          {c.curriculum.courses.map((course) => (
+            <details key={course.slug} open className={`${styles.tree} ${styles.pixelBorder} ${styles.pixelShadowLift} bg-surface`}>
               <summary className="flex flex-wrap items-center gap-3 p-5">
                 <span className={`${styles.mono} ${styles.treeCaret} text-brand-pink`}>▸</span>
                 <span className={`${styles.mono} text-brand-pink text-sm`}>{course.slug}/</span>
@@ -655,6 +655,91 @@ export default async function FanToProPage({
               <span aria-hidden className={`${styles.mono} shrink-0 self-center text-brand-pink text-lg transition-transform group-hover:translate-x-0.5`}>→</span>
             </a>
           ))}
+        </div>
+      </section>
+
+      {/* ===== FAQ (반론 격파) + 법인 신뢰 띠 — 신청 直前 배치 ===== */}
+      <section id="faq" className={`${WRAP} scroll-mt-[136px] py-24`}>
+        <CmdHead cmd={c.faq.cmd} label={c.faq.label} />
+        <h2 className={`${styles.pixelFont} text-3xl sm:text-4xl`} style={LEAD_PIXEL}>{c.faq.h1}</h2>
+        <div className="mt-10 space-y-3">
+          {c.faq.items.map((it) => (
+            <details key={it.q} className={`${styles.tree} ${styles.pixelBorder} bg-surface`}>
+              <summary className="flex cursor-pointer list-none items-center gap-3 p-5">
+                <span className={`${styles.mono} ${styles.treeCaret} text-brand-pink`}>▸</span>
+                <span className="font-bold text-fg text-sm sm:text-base">{it.q}</span>
+              </summary>
+              <p className="border-border border-t px-5 pt-4 pb-5 text-fg-muted text-sm leading-relaxed sm:text-base">
+                {it.a}
+              </p>
+            </details>
+          ))}
+        </div>
+
+        {/* 법인·발급주체 신뢰 띠 — "등록된 실체가 발급한다" */}
+        <div className="mt-16">
+          <p className={`${styles.mono} mb-5 text-xs`} style={{ letterSpacing: "0.04em" }}>
+            <span className="text-brand-pink">$</span> {c.trust.cmd}
+            <span className="ml-2 text-fg-subtle">// {c.trust.label}</span>
+          </p>
+          <h3 className={`${styles.pixelFont} text-2xl text-fg`}>{c.trust.h1}</h3>
+          <div className="mt-8 grid gap-3 sm:grid-cols-3">
+            {c.trust.items.map((t) => (
+              <div key={t.k} className={`${styles.pixelBorder} ${styles.pixelShadowLift} bg-surface p-6`}>
+                <p className="text-fg-subtle text-xs">{t.k}</p>
+                <p className={`${styles.pixelFont} mt-2 text-fg text-lg`}>{t.v}</p>
+                <p className="mt-1.5 text-fg-muted text-xs leading-relaxed">{t.note}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-5 text-fg-subtle text-xs">{c.trust.pressNote}</p>
+
+          {/* 수료증 실물 샘플 — 중간 블러(개인정보/위조 방지) + SAMPLE 워터마크 */}
+          <div className="mt-12">
+            <p className="mb-4 font-bold text-fg text-sm sm:text-base">{c.trust.certSampleLabel}</p>
+            <figure className="relative w-full max-w-[340px] overflow-hidden border border-border-strong">
+              <Image
+                src="/images/cert-sample.png"
+                alt={c.trust.certSampleLabel}
+                width={397}
+                height={562}
+                sizes="340px"
+                className="block w-full"
+              />
+              {/* 개인정보(이름/증명문) 블러 밴드 */}
+              <div
+                aria-hidden
+                className="absolute inset-x-0 top-[27%] h-[45%] bg-white/5 backdrop-blur-md"
+              />
+              {/* 위조 방지 SAMPLE 워터마크 */}
+              <span
+                aria-hidden
+                className={`${styles.mono} absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-sm bg-brand-pink px-3 py-1.5 font-bold text-white text-xs`}
+                style={{ letterSpacing: "0.25em" }}
+              >
+                SAMPLE
+              </span>
+            </figure>
+            <p className="mt-3 text-fg-subtle text-xs">{c.trust.certSampleNote}</p>
+          </div>
+
+          {/* 프로세스 투명성 — 신청 후 단계 (불확실성 제거) */}
+          <div className="mt-16">
+            <p className="mb-5 font-bold text-fg text-sm sm:text-base">{c.trust.processLabel}</p>
+            <ol className="grid gap-3 sm:grid-cols-4">
+              {c.trust.steps.map((s, i) => (
+                <li key={s.t} className={`${styles.pixelBorder} bg-surface p-4`}>
+                  <span className={`${styles.mono} font-bold text-brand-pink text-xs`}>0{i + 1}</span>
+                  <p className="mt-2 font-bold text-fg text-sm">{s.t}</p>
+                  <p className="mt-1 text-fg-muted text-xs leading-relaxed">{s.d}</p>
+                </li>
+              ))}
+            </ol>
+            <p className="mt-5 inline-flex items-center gap-2 font-semibold text-fg-muted text-sm">
+              <span className="text-brand-pink" aria-hidden>✓</span>
+              {c.trust.processGuard}
+            </p>
+          </div>
         </div>
       </section>
 

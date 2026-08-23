@@ -13,7 +13,10 @@
 >
 > ✅ **전환 개선 1차 배포(8/23)**: P1 폼 마찰 축소(birthdate DB NOT NULL 제거 마이그레이션 `20260823010000` + 스키마/UI optional, 학교도 optional → 필수는 이름·이메일·연락처·국적·비자+동의2만). P2 위험역전/긴급성(hero "마감 D-N"+"7일내 100% 환불" 칩, 가격 밑 안심 배지, force-dynamic 자동 갱신). P4 중간 전환 CTA(가격 직후). 인스타 인앱웹뷰 영문 최소정보 신청 E2E 18/18(모바일+웹) `tools/en-minimal-apply-e2e.mjs`.
 >
-> 후속 백로그: 전환 개선 2차(신뢰요소 P3·폼 2-step·결제마찰 P6), WAF rate-limit, 처리방침에 분석수집 명시, session_id 만료, analytics_events TTL cron.
+> ✅ **멱등성(8/23)**: 같은 email+cohort 재신청 → 중복 INSERT 대신 프로필만 UPDATE(status/notified_at 보존). E2E 9/9. `tools/idempotency-apply-e2e.mjs`.
+> ✅ **신뢰 요소(8/23)**: 커리큘럼 음향 아코디언 기본 펼침 · FAQ 8문항(1기 기반, 룰맞게 수정: 비자가이드 제거·계좌 제거·2기값) · 법인 신뢰 띠(Dropdown 사업자 154-28-02110/유니온픽처스/DEEPI) · 수료증 실물 샘플(`public/images/cert-sample.png`, 중간 블러+SAMPLE) · 프로세스 투명성 4step. **2-step폼·P6 계좌노출은 노아 지시로 스킵**(무지성 입금 위험).
+>
+> 후속 백로그: WAF rate-limit, 처리방침에 분석수집 명시, session_id 만료, analytics_events TTL cron, 1기 중복 applicant 2건 정리 후 email+cohort DB UNIQUE 인덱스.
 
 ## 📅 (이전) 2026-08-22 (신청폼 긴급수정 + 관측성 Tier 1 + 2차 카드뉴스)
 
