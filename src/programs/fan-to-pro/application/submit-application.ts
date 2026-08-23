@@ -165,32 +165,76 @@ export async function submitApplication(
     ? referredByCodeRaw.replace(/\s+/g, "").toUpperCase() || null
     : null;
 
+  // 멱등성 — 같은 email 이 "같은 cohort" 에 이미 신청했으면 중복 INSERT 대신 그 행을
+  // 갱신한다. 더블탭 / 네트워크 재시도 / 스큐 리로드로 인한 중복 신청 행 방지.
+  // (다른 기수 재신청은 새 행으로 허용 = previous_applicant_id 로 이력 링크.)
+  // 마감 후(waitlist)면 email + cohort_id NULL + next_cohort_interest 로 판정.
+  let sameCohortId: string | null = null;
+  try {
+    let q = supabase.from(TABLE).select("id").ilike("email", parsed.data.email);
+    q = cohortId
+      ? q.eq("cohort_id", cohortId)
+      : q.is("cohort_id", null).eq("status", "next_cohort_interest");
+    const { data: dup } = await q
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (dup?.id) sameCohortId = String(dup.id);
+  } catch (e) {
+    // 조회 실패해도 신청은 계속 (insert 로 폴백). 신청 접수 우선.
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("[applicants] dedup lookup failed", e);
+    }
+  }
+
+  // 갱신 가능한 프로필/선택 필드만. status / cohort_id / notified_at / payment_* /
+  // previous_applicant_id 는 절대 덮어쓰지 않는다 — 운영자가 이미 상태를 진행시킨
+  // 신청(notified/paid 등)을 재제출이 pending 으로 되돌리거나 발송시각을 지우면 안 됨.
+  const profileFields = {
+    name: parsed.data.name,
+    phone: parsed.data.phone,
+    nationality: parsed.data.nationality,
+    birthdate: parsed.data.birthdate,
+    university: parsed.data.university,
+    visa: parsed.data.visa,
+    address: parsed.data.address,
+    consent: parsed.data.consent,
+    consent_operations: parsed.data.consent_operations,
+    consent_marketing: parsed.data.consent_marketing,
+    course_id: courseId,
+    bundle_id: bundleId,
+    selection_mode: selectionMode,
+    selected_course_slugs: selectedCourseSlugs,
+    referred_by_code: referredByCode,
+  };
+
+  if (sameCohortId) {
+    // 멱등 UPDATE — 새 행 만들지 않고 기존 행의 프로필/선택만 갱신.
+    const { data, error } = await supabase
+      .from(TABLE)
+      .update(profileFields)
+      .eq("id", sameCohortId)
+      .select("id")
+      .single();
+    if (error) {
+      logAppError(APP_ERROR.APPLY_INSERT_FAILED, error.message);
+      return { status: "error", errors: { _form: [FORM_ERROR_KEY] } };
+    }
+    return { status: "ok", id: String(data.id) };
+  }
+
   const { data, error } = await supabase
     .from(TABLE)
     .insert({
-      name: parsed.data.name,
+      ...profileFields,
       email: parsed.data.email,
-      phone: parsed.data.phone,
-      nationality: parsed.data.nationality,
-      birthdate: parsed.data.birthdate,
-      university: parsed.data.university,
-      visa: parsed.data.visa,
-      address: parsed.data.address,
-      consent: parsed.data.consent,
-      consent_operations: parsed.data.consent_operations,
-      consent_marketing: parsed.data.consent_marketing,
       consent_content_use: true,
       source: enrollmentClosed
         ? "fan-to-pro-landing-next-cohort"
         : "fan-to-pro-landing",
       status: enrollmentClosed ? "next_cohort_interest" : "pending",
       cohort_id: cohortId,
-      course_id: courseId,
-      bundle_id: bundleId,
       previous_applicant_id: previousApplicantId,
-      selection_mode: selectionMode,
-      selected_course_slugs: selectedCourseSlugs,
-      referred_by_code: referredByCode,
     })
     .select("id")
     .single();
