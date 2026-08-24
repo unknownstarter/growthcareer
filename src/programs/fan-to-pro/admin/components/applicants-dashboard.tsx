@@ -289,6 +289,33 @@ function DashboardInner({
 
   const [isPending, startTransition] = useTransition();
 
+  // 라이브 자동 반영 (노아 요청) — 폴링 결과(pendingRows)가 도착하면 "N건 변경" 칩
+  // 클릭 없이 자동으로 목록에 commit 한다. 단 "작업 중"엔 미뤄 화면이 안 흔들리게:
+  //  - isPending: 방금 만든 수동 변경을 in-flight stale 폴링이 덮어쓰는 클로버 방지.
+  //  - selectedIds: 일괄 발송/확정 대상을 고르는 중 목록이 바뀌면 선택이 꼬임.
+  //  - broadcastOpen / historyApplicant: 발송 모달·이력 드로어 열린 동안 뒤 목록 고정.
+  // 미룬 경우 pendingRows 는 유지 → 기존 칩이 폴백으로 뜨고, busy 가 풀리면 이 effect
+  // 가 다시 돌아 자동 반영한다. (칩 수동 클릭 경로도 그대로 살아있음)
+  useEffect(() => {
+    if (!pendingRows || !pendingEligibility || pendingFetchedAt === null) return;
+    if (isPending || selectedIds.size > 0 || broadcastOpen || historyApplicant)
+      return;
+    setRows(pendingRows);
+    setEligibility(pendingEligibility);
+    setLastFetchedAt(pendingFetchedAt);
+    setPendingRows(null);
+    setPendingEligibility(null);
+    setPendingFetchedAt(null);
+  }, [
+    pendingRows,
+    pendingEligibility,
+    pendingFetchedAt,
+    isPending,
+    selectedIds,
+    broadcastOpen,
+    historyApplicant,
+  ]);
+
   // 집계 + 정렬의 시각 기준 = serverNow (페이지 로드 앵커). 초 단위 재계산/재정렬
   // 없이 첫 페인트가 SSR 과 일치. 개별 row tint 만 nowTick 으로 라이브.
   const stats = useMemo(
