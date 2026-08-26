@@ -56,7 +56,7 @@ export function ApplyFlow({
   const setField = (k: string, v: string) =>
     setFields((f) => ({ ...f, [k]: v }));
   const [checks, setChecks] = useState<Record<string, boolean>>({
-    resides_in_korea: false,
+    can_attend_offline: false,
     consent: false,
     consent_operations: false,
     consent_marketing: false,
@@ -375,24 +375,25 @@ export function ApplyFlow({
             </label>
           </div>
 
-          {/* 거주 확인 게이트 (필수) — 서울 오프라인 강의라 한국 거주자만 신청 가능.
-              HTML required 로 미체크 시 브라우저가 제출 차단. 스키마엔 없는 키라
-              (zod unknown key strip) 서버는 무시 = 순수 클라 게이트, DB 무변경. */}
+          {/* 오프라인 참여 가능 게이트 (필수) — 서울 현장 수업에 올 수 있는지 확인.
+              (서울 거주가 아니라 '참여 가능' 이 조건 — 지방 거주도 주말 참석 가능하면 OK.
+              해외 유입 필터.) HTML required 로 미체크 시 브라우저가 제출 차단. 스키마엔
+              없는 키라(zod unknown key strip) 서버는 무시 = 순수 클라 게이트, DB 무변경. */}
           <label className={`${styles.pixelBorder} mt-1 flex items-start gap-2.5 border-brand-pink bg-brand-pink/5 p-4 text-sm`}>
             <input
               type="checkbox"
-              name="resides_in_korea"
+              name="can_attend_offline"
               required
-              checked={checks.resides_in_korea ?? false}
+              checked={checks.can_attend_offline ?? false}
               onChange={(e) =>
-                setChecks((c) => ({ ...c, resides_in_korea: e.target.checked }))
+                setChecks((c) => ({ ...c, can_attend_offline: e.target.checked }))
               }
               className="mt-0.5 accent-brand-pink"
             />
             <span className="min-w-0">
-              <span className="font-bold text-fg">{formT.residesInKorea}</span>
+              <span className="font-bold text-fg">{formT.canAttend}</span>
               <span className="mt-1 block text-fg-muted text-xs leading-relaxed">
-                {formT.residesInKoreaNote}
+                {formT.canAttendNote}
               </span>
             </span>
           </label>
