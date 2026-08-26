@@ -244,6 +244,17 @@ export default async function FanToProPage({
               <p className={`${styles.reveal} mt-7 max-w-xl text-fg-muted text-lg leading-relaxed`} style={{ animationDelay: "0.14s" }}>
                 {c.hero.desc}
               </p>
+              {/* 한국 현장 오프라인 못박기 — 해외 글로벌 팬 유입 필터 (스크롤 전 노출) */}
+              <div
+                className={`${styles.reveal} ${styles.pixelBorder} mt-7 flex max-w-xl items-start gap-3 border-brand-pink bg-brand-pink/5 p-4`}
+                style={{ animationDelay: "0.16s" }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ec4899" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden className="mt-0.5 shrink-0">
+                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                <p className="font-bold text-fg text-sm sm:text-base">{c.hero.location}</p>
+              </div>
               {deadlineChip ? (
                 <div className={`${styles.reveal} mt-8 flex flex-wrap items-center gap-2`} style={{ animationDelay: "0.18s" }}>
                   <span className="inline-flex items-center rounded-sm bg-brand-pink px-3 py-1.5 font-bold text-white text-xs" style={{ letterSpacing: "0.04em" }}>
