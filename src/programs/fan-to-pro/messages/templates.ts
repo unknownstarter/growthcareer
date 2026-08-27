@@ -987,8 +987,9 @@ const confirmationNotice_sms_ko = `[Fan to Pro] {name} 님 신청 감사드려�
 
 입금 안내 전에 두 가지만 먼저 확인 부탁드려요.
 
-(1) 마포구 오프라인 강의 4주 토/일 출석 가능 여부
-(2) 수료 후 K팝 공연 유급 참여는 비자 보유자만 가능 (비자 없으면 강의는 OK 지만 공연 단계는 불가)
+(1) 서울에서 오프라인 강의 4주 토/일 출석 가능 여부
+(2) 수료 후 K팝 공연 유급 참여는 비자 보유자만 가능 (비자 없어도 강의는 OK 지만 공연 단계는 불가)
+*취업이 보장된 상품이 아닙니다.
 
 두 가지 확인하셨고 그래도 수강 원하시면 "확인" 답장 부탁드려요.
 답장 후 입금 정보 안내드려요.
@@ -1000,8 +1001,9 @@ const confirmationNotice_sms_en = `[Fan to Pro] Hi {name}, thanks for applying.
 
 Before we send payment details, please confirm two things.
 
-(1) Can you attend offline in Mapo-gu, Seoul every Sat/Sun for 4 weeks?
-(2) The paid K-pop concert role after the program requires a Korean visa that allows paid work. Without one, you can attend class but not the concert role.
+(1) Can you attend the offline classes in Seoul every Sat/Sun for 4 weeks?
+(2) The paid K-pop concert role after the program is for visa holders only (without a visa you can still take the classes, but not the concert stage).
+*This is not a guaranteed-employment product.
 
 If both confirmed, reply "confirmed" and we will send the payment details.
 
@@ -1012,9 +1014,11 @@ const confirmationNotice_email_ko = `안녕하세요, Fan to Pro 입니다 :)
 
 {name} 님의 수강 신청에 감사드려요. 입금 안내 전에 두 가지 꼭 확인 부탁드릴 게 있어요.
 
-(1) Fan to Pro 는 한국 오프라인 강의만 제공하고 있어요. 4주 동안 마포구 강의실에 매주 토/일 직접 오실 수 있는 상태인지 확인 부탁드려요.
+(1) Fan to Pro 는 서울에서 진행하는 오프라인 강의예요. 4주 동안 매주 토/일 서울 강의실에 직접 오실 수 있는 상태인지 확인 부탁드려요.
 
-(2) 수료 후 이어지는 K팝 공연 프로젝트 유급 참여 기회는 한국에서 합법적으로 영리 활동이 가능한 비자 보유자만 참여 가능해요. 비자가 없거나 관광/단기 비자라면 수강은 가능하지만, 공연 프로젝트 단계에는 참석이 어려운 점 미리 안내드려요.
+(2) 수료 후 이어지는 K팝 공연 프로젝트 유급 참여 기회는 한국에서 합법적으로 영리 활동이 가능한 비자 보유자만 참여 가능해요. 비자가 없어도 수강은 가능하지만, 공연 프로젝트 단계에는 참석이 어려운 점 미리 안내드려요.
+
+* Fan to Pro 는 취업이 보장된 상품이 아닙니다.
 
 위 두 가지 모두 확인하셨고 그래도 수강을 원하시면, 이 메일에 "확인했습니다" 라고 짧게 답장 부탁드려요. 답장이 확인되면 입금 정보를 안내드려요.
 
@@ -1030,9 +1034,11 @@ const confirmationNotice_email_en = `Hello, this is Fan to Pro.
 
 Thank you for applying, {name}. Before we send you the payment details, please confirm two things.
 
-(1) Fan to Pro is taught fully offline in Mapo-gu, Seoul. Please confirm you can attend in person every Saturday and Sunday for the full 4-week program.
+(1) Fan to Pro is taught offline in Seoul. Please confirm you can attend in person every Saturday and Sunday for the full 4-week program.
 
-(2) The paid K-pop concert project after the program is only available to those who hold a Korean visa that allows paid side work. If you do not currently hold an eligible visa, you may still attend the class, but you will not be able to take part in the paid concert role.
+(2) The paid K-pop concert project after the program is only available to those who hold a Korean visa that allows paid side work. Even without an eligible visa you may still attend the class, but you will not be able to take part in the paid concert role.
+
+* Fan to Pro is not a guaranteed-employment product.
 
 If you have confirmed both points and still want to proceed, please reply to this email with "confirmed" and we will send the payment details. If your visa status has changed or was filled in incorrectly, please let us know in your reply.
 
