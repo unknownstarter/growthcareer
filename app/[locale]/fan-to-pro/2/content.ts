@@ -102,6 +102,13 @@ const CONTENT = {
       ctaMid: "지금 2기 신청하기",
       ctaMidNote: "1분이면 접수 - 결제는 안내 후 진행",
     },
+    closed: {
+      badge: "CLOSED",
+      title: "2기 모집이 마감되었습니다",
+      desc: "관심 가져주셔서 감사합니다. 2기는 재모집 예정이며, 모집 일정과 수강 일정은 추후 공지될 예정이에요. 문의는 아래 카카오톡 채널로 남겨주세요.",
+      cta: "모집 마감",
+      reannounce: "추후 재공지",
+    },
     faq: {
       cmd: "cat faq.md", label: "자주 묻는 질문", h1: "궁금한 걸 먼저 풀어드려요",
       items: [
@@ -341,6 +348,13 @@ const CONTENT = {
       today: "Closes today",
       ctaMid: "Apply to Cohort 2 now",
       ctaMidNote: "About a minute - payment comes later, after we guide you",
+    },
+    closed: {
+      badge: "CLOSED",
+      title: "Cohort 2 applications are closed",
+      desc: "Thank you for your interest. Cohort 2 will reopen, and the recruitment and class schedule will be announced soon. For questions, reach us on the KakaoTalk channel below.",
+      cta: "Closed",
+      reannounce: "To be announced",
     },
     faq: {
       cmd: "cat faq.md", label: "FAQ", h1: "Answers before you ask",

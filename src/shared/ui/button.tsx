@@ -43,6 +43,7 @@ export function Button({
   type = "button",
   children,
   dataTrack,
+  disabled = false,
 }: {
   variant?: ButtonVariant;
   href?: string;
@@ -52,8 +53,23 @@ export function Button({
   children: ReactNode;
   // 분석용 위임 클릭 훅 — 렌더 요소에 data-track 속성만 부여. 동작 무영향.
   dataTrack?: string;
+  // 비활성화 — href 여도 <button disabled> 로 렌더(네비게이션 차단) + 흐리게.
+  disabled?: boolean;
 }) {
   const cls = `${BASE} ${VARIANT[variant]} ${className}`.trim();
+  if (disabled) {
+    return (
+      <button
+        type="button"
+        disabled
+        aria-disabled
+        className={`${cls} cursor-not-allowed opacity-50`}
+        data-track={dataTrack}
+      >
+        {children}
+      </button>
+    );
+  }
   if (href) {
     return (
       <a href={href} className={cls} onClick={onClick} data-track={dataTrack}>

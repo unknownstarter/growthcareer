@@ -163,8 +163,16 @@ export default async function FanToProPage({
   const todayKst = Date.UTC(nowKst.getUTCFullYear(), nowKst.getUTCMonth(), nowKst.getUTCDate());
   const deadlineKst = Date.UTC(2026, 7, 30); // 8월 30일 (월 index 7)
   const daysLeft = Math.round((deadlineKst - todayKst) / 86_400_000);
-  const deadlineChip =
-    daysLeft > 0
+
+  // 모집 마감 — 자정(KST) 지나면 자동 마감. force-dynamic 이라 request 시각에 평가되어
+  // 별도 cron 없이 8/31 00:00 KST 에 수강신청 버튼 비활성화 + 일정 "추후 재공지" 로 전환.
+  // 마감 시각 = cohort enrollment_closes_at 과 동일 (2026-08-30T15:00Z = 8/31 00:00 KST).
+  const CLOSE_MS = Date.parse("2026-08-30T15:00:00Z");
+  const enrollmentClosed = Date.now() >= CLOSE_MS;
+
+  const deadlineChip = enrollmentClosed
+    ? null
+    : daysLeft > 0
       ? `${c.reassure.deadlineLabel} D-${daysLeft}`
       : daysLeft === 0
         ? c.reassure.today
@@ -266,7 +274,11 @@ export default async function FanToProPage({
                 </div>
               ) : null}
               <div className={`${styles.reveal} mt-6 flex flex-col gap-4 sm:flex-row sm:items-center`} style={{ animationDelay: "0.22s" }}>
-                <Button variant="pixel" href="#apply" dataTrack="apply_cta_hero" className="px-8 py-4 text-base">{c.hero.ctaApply}</Button>
+                {enrollmentClosed ? (
+                  <Button variant="pixel" disabled className="px-8 py-4 text-base">{c.closed.cta}</Button>
+                ) : (
+                  <Button variant="pixel" href="#apply" dataTrack="apply_cta_hero" className="px-8 py-4 text-base">{c.hero.ctaApply}</Button>
+                )}
                 <Button variant="pixel-ghost" href="#instructors" dataTrack="instructors_cta_hero" className="px-8 py-4 text-base">{c.hero.ctaInstructors}</Button>
               </div>
             </div>
@@ -478,21 +490,23 @@ export default async function FanToProPage({
         </div>
       </section>
 
-      {/* ===== 중간 전환 CTA — 가격 확인 직후 신청 유도 (P4) ===== */}
-      <section className={`${WRAP} py-8`}>
-        <div className={`${styles.pixelBorder} flex flex-col items-center gap-5 bg-surface p-8 text-center sm:flex-row sm:justify-between sm:text-left`}>
-          <div className="min-w-0">
-            {deadlineChip ? (
-              <p className="mb-1.5 font-bold text-brand-pink text-xs" style={{ letterSpacing: "0.04em" }}>{deadlineChip}</p>
-            ) : null}
-            <p className={`${styles.pixelFont} text-lg text-fg`}>{c.reassure.ctaMid}</p>
-            <p className="mt-1.5 text-fg-muted text-sm">{c.reassure.ctaMidNote}</p>
+      {/* ===== 중간 전환 CTA — 가격 확인 직후 신청 유도 (P4). 마감 시 숨김 ===== */}
+      {enrollmentClosed ? null : (
+        <section className={`${WRAP} py-8`}>
+          <div className={`${styles.pixelBorder} flex flex-col items-center gap-5 bg-surface p-8 text-center sm:flex-row sm:justify-between sm:text-left`}>
+            <div className="min-w-0">
+              {deadlineChip ? (
+                <p className="mb-1.5 font-bold text-brand-pink text-xs" style={{ letterSpacing: "0.04em" }}>{deadlineChip}</p>
+              ) : null}
+              <p className={`${styles.pixelFont} text-lg text-fg`}>{c.reassure.ctaMid}</p>
+              <p className="mt-1.5 text-fg-muted text-sm">{c.reassure.ctaMidNote}</p>
+            </div>
+            <Button variant="pixel" href="#apply" dataTrack="apply_cta_mid" className="w-full shrink-0 px-8 py-4 text-base sm:w-auto">
+              {c.nav.apply}
+            </Button>
           </div>
-          <Button variant="pixel" href="#apply" dataTrack="apply_cta_mid" className="w-full shrink-0 px-8 py-4 text-base sm:w-auto">
-            {c.nav.apply}
-          </Button>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ===== 지원 자격 (체크리스트) ===== */}
       <section className="relative overflow-hidden border-border border-y bg-surface">
@@ -524,15 +538,19 @@ export default async function FanToProPage({
             <div className="flex flex-col gap-1 border-border border-b pb-5 sm:flex-row sm:items-baseline sm:justify-between">
               <dt className={`${styles.mono} text-fg-subtle`}>"start"</dt>
               <dd className="text-right">
-                <span className="font-bold text-brand-pink text-lg">{c.schedule.start}</span>
-                <span className="mt-1 block text-fg-subtle text-xs">{c.schedule.startNote}</span>
+                <span className="font-bold text-brand-pink text-lg">{enrollmentClosed ? c.closed.reannounce : c.schedule.start}</span>
+                {enrollmentClosed ? null : (
+                  <span className="mt-1 block text-fg-subtle text-xs">{c.schedule.startNote}</span>
+                )}
               </dd>
             </div>
             <div className="flex flex-col gap-1 border-border border-b pb-5 sm:flex-row sm:items-baseline sm:justify-between">
               <dt className={`${styles.mono} text-fg-subtle`}>"place"</dt>
               <dd className="text-right">
-                <span className="font-bold text-fg text-lg">{c.schedule.place}</span>
-                <span className="mt-1 block text-fg-subtle text-xs">{c.schedule.placeNote}</span>
+                <span className="font-bold text-fg text-lg">{enrollmentClosed ? c.closed.reannounce : c.schedule.place}</span>
+                {enrollmentClosed ? null : (
+                  <span className="mt-1 block text-fg-subtle text-xs">{c.schedule.placeNote}</span>
+                )}
               </dd>
             </div>
             <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
@@ -758,12 +776,34 @@ export default async function FanToProPage({
           섹션 헤더(cmd / h1 / desc)는 ApplyFlow 내부에서 렌더 → 신청 완료 시 헤딩까지
           완료 뷰로 대체돼 "과정 고르세요" 가 화면에 남지 않음 (혼란 방지). */}
       <section id="apply" className={`${WRAP} scroll-mt-[136px] py-24`}>
-        <ApplyFlow
-          courses={c.apply.courses}
-          t={c.apply}
-          formT={c.applyForm}
-          head={{ cmd: c.apply.cmd, label: c.apply.label, h1: c.apply.h1, desc: c.apply.desc }}
-        />
+        {enrollmentClosed ? (
+          <div className={`${styles.pixelBorder} bg-surface p-10 text-center sm:p-14`}>
+            <p className={`${styles.mono} font-bold text-brand-pink text-xs`} style={{ letterSpacing: "0.1em" }}>
+              [ {c.closed.badge} ]
+            </p>
+            <h2 className={`${styles.pixelFont} mt-4 text-2xl text-fg sm:text-3xl`} style={{ lineHeight: 1.35 }}>
+              {c.closed.title}
+            </h2>
+            <p className="mx-auto mt-5 max-w-xl text-fg-muted text-sm leading-relaxed sm:text-base">
+              {c.closed.desc}
+            </p>
+            <a
+              href="https://pf.kakao.com/_nxhDGX/chat"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${styles.pixelBtn} mt-8 inline-flex px-8 py-4 text-base`}
+            >
+              KakaoTalk
+            </a>
+          </div>
+        ) : (
+          <ApplyFlow
+            courses={c.apply.courses}
+            t={c.apply}
+            formT={c.applyForm}
+            head={{ cmd: c.apply.cmd, label: c.apply.label, h1: c.apply.h1, desc: c.apply.desc }}
+          />
+        )}
       </section>
 
       {/* ===== Footer (공통 라이트 SiteFooter. 푸터 nav = GC 사이트 구조 절대경로) ===== */}
@@ -771,7 +811,8 @@ export default async function FanToProPage({
 
       {/* 하단 고정 신청 바 (공용 StickyCtaBar, 데스크탑+모바일 노출 = 서브 GNB 대체).
           어두운 픽셀 톤 불투명 바(border-t + bg-bg). 좌측 문구(데스크탑) + 우측 버튼.
-          모바일은 풀폭 버튼. #apply 진입 시 숨김. */}
+          모바일은 풀폭 버튼. #apply 진입 시 숨김. 마감 시 전체 숨김. */}
+      {enrollmentClosed ? null : (
       <StickyCtaBar hideAtId="apply" showOnDesktop maxWidthClassName="max-w-[1120px]">
         <div className="flex items-center gap-4 rounded-full bg-white px-5 py-2.5 shadow-[0_8px_28px_rgba(0,0,0,0.45)] md:pl-6">
           <div className="hidden min-w-0 flex-1 items-center gap-3 md:flex">
@@ -798,6 +839,7 @@ export default async function FanToProPage({
           </Button>
         </div>
       </StickyCtaBar>
+      )}
     </main>
   );
 }
