@@ -55,7 +55,8 @@ async function scenario(label, deviceOpts, ua, email) {
   await fill("phone", "010-7777-8888");
   await page.locator('select[name="nationality"]').selectOption({ index: 1 });
   await page.locator('select[name="visa"]').selectOption({ index: 1 });
-  for (const c of ["consent", "consent_operations"]) { const cb = page.locator(`input[name="${c}"]`); await cb.scrollIntoViewIfNeeded(); await cb.check(); }
+  // 참여 가능 게이트(필수) + 동의 2개
+  for (const c of ["can_attend_offline", "consent", "consent_operations"]) { const cb = page.locator(`input[name="${c}"]`); await cb.scrollIntoViewIfNeeded(); await cb.check(); }
 
   const submit = page.locator('button[type="submit"]');
   await submit.scrollIntoViewIfNeeded();
