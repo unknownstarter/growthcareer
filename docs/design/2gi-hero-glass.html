@@ -1,0 +1,86 @@
+<title>2기 유리 히어로</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&family=Space+Mono:wght@400;700&display=swap">
+<style>
+  :root {
+    --bg: #010102; --surface: #14141b; --border: #262a31; --border-strong: #3a3f48;
+    --fg: #fafafa; --fg-muted: #a1a1aa; --fg-subtle: #71717a; --pink: #ec4899; --pink-press: #db2777;
+    --sans: "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+    --mono: "Space Mono", ui-monospace, Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--fg); -webkit-font-smoothing: antialiased; letter-spacing: -0.01em; line-height: 1.6; }
+
+  .sq { width: 8px; height: 8px; background: var(--pink); display: inline-block; flex: 0 0 auto; }
+  .caret { width: 8px; height: 15px; background: var(--pink); display: inline-block; margin-left: 2px; }
+  @media (prefers-reduced-motion: no-preference) { .caret { animation: blink 1.3s steps(1) infinite; } }
+  @keyframes blink { 0%,55%{opacity:1} 56%,100%{opacity:0} }
+
+  .hero { position: relative; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 90px 24px 150px; text-align: center; overflow: hidden; }
+
+  .eyebrow { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg-muted); }
+
+  /* baked glass wordmark image (Fan to Pro) */
+  .wordmark { display: block; width: min(920px, 96vw); height: auto; margin: 10px 0 4px; user-select: none; }
+
+  .sub { font-weight: 800; font-size: clamp(22px, 3.4vw, 34px); letter-spacing: -0.02em; margin-top: 2px; }
+  .promise { color: var(--fg-muted); font-size: clamp(15px, 1.7vw, 18px); line-height: 1.7; max-width: 52ch; margin: 18px auto 0; }
+  .promise b { color: var(--fg); font-weight: 700; }
+
+  .chips { margin-top: 24px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .chip { display: inline-flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 11.5px; font-weight: 700; letter-spacing: 0.03em; color: var(--fg-muted); border: 1px solid var(--border-strong); border-radius: 8px; padding: 7px 13px; text-transform: uppercase; }
+  .chip .sq { width: 6px; height: 6px; }
+
+  .cta { margin-top: 28px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 9px; font-weight: 700; font-size: 15px; border-radius: 999px; padding: 15px 28px; text-decoration: none; border: 1px solid transparent; cursor: pointer; transition: transform .12s, background .15s; letter-spacing: -0.01em; }
+  .btn:active { transform: scale(.98); }
+  .btn-pink { background: var(--pink); color: #fff; } .btn-pink:hover { background: var(--pink-press); }
+  .btn-pink .sq { width: 7px; height: 7px; background: #fff; }
+  .btn-ghost { border-color: var(--border-strong); color: var(--fg); } .btn-ghost:hover { border-color: var(--fg-muted); background: rgba(255,255,255,0.05); }
+  .btn:focus-visible { outline: 2px solid var(--pink); outline-offset: 2px; }
+
+  .fine { margin-top: 16px; font-family: var(--mono); font-size: 12px; color: var(--fg-subtle); letter-spacing: 0.02em; }
+
+  /* sticky bar */
+  .sticky { position: absolute; left: 24px; right: 24px; bottom: 22px; max-width: 1000px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    background: rgba(18,20,26,0.82); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--border-strong); border-radius: 20px; padding: 14px 16px 14px 22px; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+  .sticky .m { min-width: 0; text-align: left; }
+  .sticky .t { font-size: 14px; font-weight: 700; }
+  .sticky .d { font-family: var(--mono); font-size: 12px; color: var(--fg-subtle); margin-top: 2px; }
+
+  .note { max-width: 720px; margin: 0 auto; padding: 40px 24px 80px; color: var(--fg-subtle); font-size: 13px; line-height: 1.7; border-top: 1px solid var(--border); text-align: center; }
+  @media (max-width: 640px) { .sticky { flex-direction: column; align-items: stretch; } .hero { padding: 70px 18px 170px; } }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="hero">
+  <span class="eyebrow"><span class="sq"></span> Cohort 02 - K-entertainment track <span class="caret"></span></span>
+
+  <img class="wordmark" src="__GLASSIMG__" alt="Fan to Pro">
+
+  <div class="sub">A career behind the stage</div>
+  <p class="promise">Learn from working practitioners. Join a <b>real live production</b>, and leave with proof, not just a certificate.</p>
+
+  <div class="chips">
+    <span class="chip"><span class="sq"></span> Seoul offline</span>
+    <span class="chip"><span class="sq"></span> Students in Korea</span>
+  </div>
+
+  <div class="cta">
+    <a href="#" class="btn btn-pink"><span class="sq"></span> Apply now</a>
+    <a href="#" class="btn btn-ghost">Meet the instructors</a>
+  </div>
+  <p class="fine">Seoul offline / 4 weeks / real concert project</p>
+
+  <div class="sticky">
+    <div class="m"><div class="t">Fan to Pro / Cohort 02</div><div class="d">Seoul offline / re-opening soon</div></div>
+    <a href="#" class="btn btn-pink" style="flex:0 0 auto"><span class="sq"></span> Apply now</a>
+  </div>
+</div>
+
+<div class="note">
+  프리뷰 - 유리 히어로(Three.js 베이킹 PNG)를 2기 히어로에 통합. "Fan to Pro" 워드마크는 이미지에 구워져 있고, eyebrow / 서브헤드 / 정직한 약속 / CTA는 라이브 텍스트. 프로덕션 무반영.
+</div>

@@ -21,6 +21,8 @@
 | 2026-07-04 | [Feature Intent Gating 부재로 UX·데이터 사고 8건](./2026-07-04-feature-intent-gating.md) | CLAUDE.md §2.5 gating 룰 신설 + 자체 점검 마커 의무 + 메모리 `feedback_feature_intent_gating` | ✅ |
 | 2026-07-12 | [PDF 가이드북 파이프라인 시행착오 (사전 박제)](./2026-07-12-pdf-guidebook-pitfalls.md) | CLAUDE.md §7.6 PDF 표준 파이프라인 + `tools/check-pdf-copy.mjs` 부호 스캔 + Playwright 폰트 대기 룰 | ✅ |
 | 2026-07-23 | [출석률 전원 0% (수료증 발급 차단)](./2026-07-23-attendance-rate-ended-status-gap.md) | `hasSessionElapsed` 도메인 헬퍼 (ends_at<now 기준) + CLAUDE.md §7.4 집계 룰 (수동 상태 전환 비의존) | ✅ |
+| 2026-09-21 | [시각 효과 재현 - 레퍼런스 실제 구현부터 검사](./2026-09-21-replicate-reference-inspect-first.md) | CLAUDE.md §6 "재현 전 실제 구현 검사" 룰 + 기법 문서 `docs/design/webgl-glass-hero-technique.md` | ✅ |
+| 2026-09-24 | [서브에이전트 리서치 결과가 대화에만 남아 유실](./2026-09-24-research-output-lost-in-chat.md) | CLAUDE.md §1 리서치 산출물 파일 저장 룰 + §7.5 미완결 약속 기록 트리거 | ✅ |
 
 ## 다음 사고 발생 시
 

@@ -1,0 +1,528 @@
+<title>Fan to Pro 디자인 시스템</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap">
+<style>
+  :root {
+    /* surfaces (near-black, faint cool bias toward indigo) */
+    --bg: #0E0E12;
+    --surface: #16161C;
+    --surface-2: #1D1D25;
+    --surface-3: #26262F;
+    --light-bg: #F5F4F7;
+    --light-surface: #FFFFFF;
+    --light-ink: #1A1A20;
+    --light-muted: #6B6B76;
+    /* action vs accent (split, like Wanted's #0066FF vs #89C8EA) */
+    --pink: #EC4899;
+    --pink-press: #DB2777;
+    --pink-soft: rgba(236, 72, 153, 0.12);
+    --indigo: #818CF8;
+    --indigo-deep: #6366F1;
+    --indigo-soft: rgba(129, 140, 248, 0.14);
+    /* text */
+    --ink: #F4F3F7;
+    --ink-muted: #9C9CA8;
+    --ink-subtle: #67677352;
+    --ink-subtle-solid: #676773;
+    /* lines */
+    --line: rgba(255, 255, 255, 0.09);
+    --line-strong: rgba(255, 255, 255, 0.16);
+    /* semantic (separate from accent) */
+    --good: #34D399;
+    --warn: #FBBF24;
+    --bad: #F87171;
+    /* radius */
+    --r-card: 24px;
+    --r-md: 16px;
+    --r-sm: 10px;
+    --r-pill: 999px;
+    /* type */
+    --sans: "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+      "Noto Sans KR", system-ui, sans-serif;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+    --maxw: 1080px;
+    /* theme-flex helpers */
+    --hover: rgba(255, 255, 255, 0.05);
+    --glass: rgba(20, 20, 26, 0.82);
+    --subtle-hover: #2f2f3a;
+    --glass-shadow: 0 6px 30px rgba(0, 0, 0, 0.35);
+  }
+
+  :root[data-theme="light"] {
+    --bg: #F5F5F9;
+    --surface: #FFFFFF;
+    --surface-2: #F0F0F5;
+    --surface-3: #E7E7EE;
+    --ink: #18181F;
+    --ink-muted: #585866;
+    --ink-subtle-solid: #8C8C98;
+    --line: rgba(0, 0, 0, 0.08);
+    --line-strong: rgba(0, 0, 0, 0.14);
+    --pink: #EC4899;
+    --pink-press: #DB2777;
+    --pink-soft: rgba(236, 72, 153, 0.10);
+    --indigo: #6366F1;
+    --indigo-deep: #4F46E5;
+    --indigo-soft: rgba(99, 102, 241, 0.10);
+    --hover: rgba(0, 0, 0, 0.045);
+    --glass: rgba(255, 255, 255, 0.88);
+    --subtle-hover: #DADAE4;
+    --glass-shadow: 0 6px 24px rgba(20, 20, 40, 0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.01em;
+  }
+
+  .theme-toggle { position: fixed; top: 16px; right: 16px; z-index: 50; font-family: var(--mono); font-size: 12px; font-weight: 600; padding: 8px 14px; border-radius: var(--r-pill); border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); cursor: pointer; box-shadow: var(--glass-shadow); }
+  .theme-toggle:hover { background: var(--surface-2); }
+  .theme-toggle:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+
+  /* ---- type scale ---- */
+  .display { font-size: clamp(40px, 8vw, 68px); font-weight: 500; line-height: 1.05; letter-spacing: -0.025em; text-wrap: balance; }
+  .h1 { font-size: clamp(28px, 4vw, 36px); font-weight: 600; line-height: 1.3; letter-spacing: -0.02em; text-wrap: balance; }
+  .h2 { font-size: 24px; font-weight: 600; line-height: 1.35; letter-spacing: -0.02em; }
+  .subhead { font-size: 20px; font-weight: 700; line-height: 1.5; letter-spacing: -0.01em; }
+  .body-l { font-size: 17px; font-weight: 400; line-height: 1.7; color: var(--ink-muted); }
+  .body { font-size: 15px; font-weight: 400; line-height: 1.7; color: var(--ink-muted); }
+  .label { font-size: 13px; font-weight: 600; line-height: 1.4; letter-spacing: 0.06em; text-transform: uppercase; }
+  .caption { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-subtle-solid); }
+
+  /* eyebrow with a solid pink tick (signature, no gradient/glow) */
+  .eyebrow { display: inline-flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; color: var(--indigo); }
+  .eyebrow::before { content: ""; width: 18px; height: 2px; background: var(--pink); border-radius: 2px; }
+
+  /* ---- masthead ---- */
+  .masthead { border-bottom: 1px solid var(--line); padding: 72px 0 40px; }
+  .masthead .kicker { color: var(--ink-subtle-solid); margin-bottom: 18px; }
+  .masthead h1 { font-size: clamp(34px, 6vw, 52px); font-weight: 600; letter-spacing: -0.03em; line-height: 1.05; }
+  .masthead .sub { margin-top: 16px; font-size: 16px; color: var(--ink-muted); max-width: 46ch; }
+  .brand-dots { display: inline-flex; gap: 7px; vertical-align: middle; margin-left: 4px; }
+  .brand-dots i { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+
+  /* ---- section rhythm ---- */
+  section.block { padding: 64px 0; border-bottom: 1px solid var(--line); }
+  .sec-head { margin-bottom: 36px; }
+  .sec-head .h2 { margin-top: 12px; }
+  .sec-head .body { margin-top: 8px; max-width: 54ch; }
+
+  /* ---- generic panel (component demo container) ---- */
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-card); padding: 28px; }
+  .panel + .panel { margin-top: 20px; }
+  .spec { font-family: var(--mono); font-size: 11.5px; color: var(--ink-subtle-solid); letter-spacing: 0; text-transform: none; }
+  .demo-label { font-family: var(--mono); font-size: 11px; color: var(--ink-subtle-solid); text-transform: none; letter-spacing: 0; margin-bottom: 16px; display: block; }
+
+  .grid { display: grid; gap: 20px; }
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-4 { grid-template-columns: repeat(4, 1fr); }
+  @media (max-width: 760px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } .grid-4 { grid-template-columns: repeat(2, 1fr); } }
+
+  /* ================= HERO composition demo ================= */
+  .hero-demo { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-card); overflow: hidden; }
+  .hero-inner { padding: 56px 44px 120px; }
+  .hero-demo .eyebrow { margin-bottom: 22px; }
+  .hero-demo .display { max-width: 12ch; }
+  .hero-demo .hero-sub { margin-top: 20px; font-size: 17px; color: var(--ink-muted); max-width: 40ch; }
+  .hero-cta-row { margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .hero-fineprint { margin-top: 18px; font-size: 13px; color: var(--ink-subtle-solid); }
+  /* sticky bar mock pinned to bottom of the demo */
+  .sticky-mock { position: absolute; left: 24px; right: 24px; bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    background: var(--glass); box-shadow: var(--glass-shadow); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--line-strong); border-radius: var(--r-card); padding: 14px 16px 14px 22px; }
+  .sticky-mock .sm-meta { min-width: 0; }
+  .sticky-mock .sm-title { font-size: 14px; font-weight: 700; }
+  .sticky-mock .sm-date { font-size: 12px; color: var(--ink-subtle-solid); margin-top: 2px; }
+  @media (max-width: 620px) { .hero-inner { padding: 40px 24px 130px; } .sticky-mock { flex-direction: column; align-items: stretch; } }
+
+  /* ================= buttons ================= */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--sans); font-weight: 700; font-size: 15px; letter-spacing: -0.01em;
+    border: 1px solid transparent; cursor: pointer; padding: 13px 22px; border-radius: var(--r-pill); transition: transform .12s ease, background .15s ease, border-color .15s ease; text-decoration: none; }
+  .btn:active { transform: scale(0.98); }
+  .btn:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+  .btn-pink { background: var(--pink); color: #fff; }
+  .btn-pink:hover { background: var(--pink-press); }
+  .btn-ghost { background: transparent; color: var(--ink); border-color: var(--line-strong); }
+  .btn-ghost:hover { border-color: var(--ink-muted); background: var(--hover); }
+  .btn-subtle { background: var(--surface-3); color: var(--ink); }
+  .btn-subtle:hover { background: var(--subtle-hover); }
+  .btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+
+  /* ================= swatches ================= */
+  .swatch { border: 1px solid var(--line); border-radius: var(--r-md); overflow: hidden; }
+  .swatch .chip { height: 76px; }
+  .swatch .meta { padding: 10px 12px; background: var(--surface-2); }
+  .swatch .nm { font-size: 13px; font-weight: 600; }
+  .swatch .hex { font-family: var(--mono); font-size: 11px; color: var(--ink-subtle-solid); margin-top: 2px; }
+
+  /* ================= type specimens ================= */
+  .type-row { display: flex; align-items: baseline; justify-content: space-between; gap: 24px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .type-row:last-child { border-bottom: 0; }
+  .type-row .sp { flex: 0 0 auto; }
+
+  /* ================= stat cards ================= */
+  .stat { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-card); padding: 28px 24px; }
+  .stat .num { font-size: 46px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; font-variant-numeric: tabular-nums; display: flex; align-items: baseline; }
+  .stat .num .u { font-size: 18px; font-weight: 600; color: var(--ink-muted); margin-left: 5px; letter-spacing: 0; }
+  .stat .cap { margin-top: 14px; font-size: 14px; color: var(--ink-muted); letter-spacing: 0; }
+  .stat.accent .num { color: var(--pink); }
+
+  /* ================= testimonial (speech-bubble corner, bottom-aligned attribution) ================= */
+  .quote { background: var(--surface-2); border: 1px solid var(--line); padding: 24px; border-radius: 20px 20px 20px 4px; display: flex; flex-direction: column; height: 100%; }
+  .quote p { font-size: 15.5px; color: var(--ink); line-height: 1.72; flex: 1 0 auto; }
+  .quote .who { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 3px; }
+  .quote .nm { font-size: 13px; font-weight: 700; color: var(--ink); }
+  .quote .role { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-subtle-solid); }
+
+  /* ================= curriculum overview (icon columns) ================= */
+  .ov { text-align: left; padding-top: 18px; border-top: 1px solid var(--line-strong); }
+  .ov .st { font-family: var(--mono); font-size: 12px; color: var(--ink-subtle-solid); letter-spacing: 0; }
+  .ov .ic { margin: 18px 0 14px; }
+  .ov .ic svg { width: 30px; height: 30px; stroke: var(--indigo); fill: none; stroke-width: 1.5; }
+  .ov .tt { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+  .ov .ds { font-size: 13px; color: var(--ink-muted); margin-top: 6px; }
+
+  /* ================= curriculum roadmap (rail + panel) ================= */
+  .road { display: grid; grid-template-columns: 200px 1fr; gap: 0; border: 1px solid var(--line); border-radius: var(--r-card); overflow: hidden; }
+  @media (max-width: 700px) { .road { grid-template-columns: 1fr; } }
+  .rail { background: var(--surface-2); border-right: 1px solid var(--line); padding: 8px; }
+  @media (max-width: 700px) { .rail { border-right: 0; border-bottom: 1px solid var(--line); display: flex; overflow-x: auto; } }
+  .rail button { position: relative; display: block; width: 100%; text-align: left; background: transparent; border: 0; color: var(--ink-muted); font-family: var(--sans); font-size: 14px; font-weight: 600; padding: 14px 16px 14px 18px; border-radius: var(--r-sm); cursor: pointer; white-space: nowrap; letter-spacing: -0.01em; }
+  .rail button .rn { font-family: var(--mono); font-size: 11px; color: var(--ink-subtle-solid); display: block; text-transform: none; letter-spacing: 0; }
+  .rail button[aria-selected="true"] { background: transparent; color: var(--ink); }
+  .rail button[aria-selected="true"]::before { content: ""; position: absolute; left: 4px; top: 10px; bottom: 10px; width: 3px; border-radius: 3px; background: var(--pink); }
+  .rail button[aria-selected="true"] .rn { color: var(--pink); }
+  .rail button:hover:not([aria-selected="true"]) { background: var(--hover); }
+  .rail button:focus-visible { outline: 2px solid var(--indigo); outline-offset: -2px; }
+  .road-panel { padding: 30px 32px; background: var(--surface); }
+  .road-panel .time { font-family: var(--mono); font-size: 12px; color: var(--indigo); }
+  .road-panel .pt { font-size: 20px; font-weight: 700; margin-top: 6px; letter-spacing: -0.01em; }
+  .road-panel .pd { font-size: 15px; color: var(--ink-muted); margin-top: 10px; max-width: 52ch; }
+  .road-panel .out { margin-top: 18px; }
+  .road-panel .out .ol { font-size: 12px; color: var(--ink-subtle-solid); font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+  .road-panel .out ul { list-style: none; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .road-panel .out li { font-size: 14px; color: var(--ink); display: flex; gap: 10px; align-items: flex-start; }
+  .road-panel .out li::before { content: ""; flex: 0 0 auto; width: 6px; height: 6px; margin-top: 8px; border-radius: 50%; background: var(--pink); }
+
+  /* ================= light relief section (FAQ) ================= */
+  .light { background: var(--light-bg); color: var(--light-ink); border-radius: var(--r-card); padding: 44px; }
+  .light .eyebrow { color: var(--indigo-deep); }
+  .light .h2 { color: var(--light-ink); }
+  .light .fq { border-top: 1px solid rgba(0,0,0,0.09); }
+  .light details { border-bottom: 1px solid rgba(0,0,0,0.09); }
+  .light summary { list-style: none; cursor: pointer; padding: 18px 4px; font-size: 16px; font-weight: 600; color: var(--light-ink); display: flex; justify-content: space-between; align-items: center; gap: 16px; letter-spacing: -0.01em; }
+  .light summary::-webkit-details-marker { display: none; }
+  .light summary .pm { flex: 0 0 auto; width: 20px; height: 20px; position: relative; }
+  .light summary .pm::before, .light summary .pm::after { content: ""; position: absolute; background: var(--light-muted); border-radius: 2px; }
+  .light summary .pm::before { left: 3px; right: 3px; top: 9px; height: 2px; }
+  .light summary .pm::after { top: 3px; bottom: 3px; left: 9px; width: 2px; transition: opacity .15s; }
+  .light details[open] summary .pm::after { opacity: 0; }
+  .light details[open] summary { color: var(--indigo-deep); }
+  .light .ans { padding: 0 4px 20px; font-size: 15px; line-height: 1.7; color: var(--light-muted); max-width: 62ch; }
+  /* in light theme the "relief" block becomes a clean bordered card (relief is a dark-theme device) */
+  :root[data-theme="light"] .light { background: var(--surface); border: 1px solid var(--line); }
+
+  /* ================= guardrails ================= */
+  .guard { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 680px) { .guard { grid-template-columns: 1fr; } }
+  .g-item { display: flex; gap: 12px; align-items: flex-start; padding: 16px 18px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); }
+  .g-item .gi { flex: 0 0 auto; width: 16px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; margin-top: 2px; }
+  .g-no .gi { color: var(--bad); }
+  .g-yes .gi { color: var(--good); }
+  .g-item .gt { font-size: 14px; font-weight: 600; }
+  .g-item .gd { font-size: 13px; color: var(--ink-muted); margin-top: 2px; }
+
+  footer.foot { padding: 48px 0 80px; color: var(--ink-subtle-solid); font-size: 13px; }
+  footer.foot a { color: var(--ink-muted); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<button id="themeToggle" class="theme-toggle" aria-label="테마 전환">Light</button>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="kicker caption">Fan to Pro / Design System v0.1</div>
+    <h1>디자인 시스템 미리보기
+      <span class="brand-dots"><i style="background:var(--bg);border:1px solid var(--line-strong)"></i><i style="background:#EC4899"></i><i style="background:#6366F1"></i></span>
+    </h1>
+    <p class="sub">원티드 커리어 캠프 레퍼런스에서 뽑은 원칙을 Fan to Pro 브랜드(검정 + 핑크 + 남보라)로 옮긴 토큰과 컴포넌트. 구현 전 방향을 눈으로 먼저 확인하는 용도</p>
+  </header>
+
+  <!-- ============ HERO COMPOSITION ============ -->
+  <section class="block">
+    <div class="sec-head">
+      <span class="eyebrow">조립 예시</span>
+      <div class="h2">토큰이 합쳐지면 이런 느낌</div>
+      <p class="body">다크 베이스, 숫자 eyebrow(하이픈 구분), 크되 미디엄인 디스플레이, 핑크 솔리드 CTA, 하단 스티키 바. 원티드의 절제를 우리 색으로.</p>
+    </div>
+
+    <div class="hero-demo">
+      <div class="hero-inner">
+        <span class="eyebrow">무료 체험 - 현직 DJ 1대1 - 서울 오프라인</span>
+        <div class="display">Fan to Pro</div>
+        <p class="hero-sub">팬으로 보던 무대, 이번엔 부스 안에서. 진짜 현장에서 진짜를 배우는 하루</p>
+        <div class="hero-cta-row">
+          <a href="#" class="btn btn-pink">원데이 클래스 예약</a>
+          <a href="#" class="btn btn-ghost">커리큘럼 보기</a>
+        </div>
+        <p class="hero-fineprint">서울 강남 / 소요 3시간 / 장비 무료 대여</p>
+      </div>
+      <div class="sticky-mock">
+        <div class="sm-meta">
+          <div class="sm-title">DJ 원데이 클래스 9월</div>
+          <div class="sm-date">잔여 4석 / 마감 9월 30일</div>
+        </div>
+        <a href="#" class="btn btn-pink" style="flex:0 0 auto">예약하기</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COLOR ============ -->
+  <section class="block">
+    <div class="sec-head">
+      <span class="eyebrow">Foundations</span>
+      <div class="h2">컬러</div>
+      <p class="body">행동색(핑크)과 강조색(남보라)을 분리한다. CTA만 핑크 솔리드, 강조와 아이콘은 남보라. 그래서 "지금 눌러야 할 것"이 안 묻힌다.</p>
+    </div>
+
+    <span class="demo-label">// surface (near-black, faint cool bias)</span>
+    <div class="grid grid-4" style="margin-bottom:24px">
+      <div class="swatch"><div class="chip" style="background:var(--bg)"></div><div class="meta"><div class="nm">bg</div><div class="hex">D #0E0E12 / L #F5F5F9</div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--surface)"></div><div class="meta"><div class="nm">surface</div><div class="hex">D #16161C / L #FFFFFF</div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--surface-2)"></div><div class="meta"><div class="nm">surface-2</div><div class="hex">D #1D1D25 / L #F0F0F5</div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--surface-3)"></div><div class="meta"><div class="nm">surface-3</div><div class="hex">D #26262F / L #E7E7EE</div></div></div>
+    </div>
+
+    <span class="demo-label">// action vs accent + text</span>
+    <div class="grid grid-4">
+      <div class="swatch"><div class="chip" style="background:var(--pink)"></div><div class="meta"><div class="nm">action / pink</div><div class="hex">#EC4899 (CTA 공통)</div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--indigo)"></div><div class="meta"><div class="nm">accent / indigo</div><div class="hex">D #818CF8 / L #6366F1</div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--ink)"></div><div class="meta"><div class="nm">text primary</div><div class="hex">D #F4F3F7 / L #18181F</div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--ink-muted)"></div><div class="meta"><div class="nm">text muted</div><div class="hex">D #9C9CA8 / L #585866</div></div></div>
+    </div>
+  </section>
+
+  <!-- ============ TYPE ============ -->
+  <section class="block">
+    <div class="sec-head">
+      <span class="eyebrow">Foundations</span>
+      <div class="h2">타이포그래피</div>
+      <p class="body">단일 패밀리(Pretendard 계열), 웨이트로 위계. 큰 글자는 미디엄(500) + 음수 자간, 작은 라벨은 대문자 + 양수 자간. 본문 행간 1.7로 넉넉하게.</p>
+    </div>
+    <div class="panel">
+      <div class="type-row"><span class="display" style="font-size:44px">Fan to Pro</span><span class="sp spec">Display / 56 / w500 / -0.015em</span></div>
+      <div class="type-row"><span class="h1">무대 뒤로 들어가는 하루</span><span class="sp spec">H1 / 36 / w600 / -0.01em</span></div>
+      <div class="type-row"><span class="h2">커리큘럼 한눈에 보기</span><span class="sp spec">H2 / 24 / w600</span></div>
+      <div class="type-row"><span class="subhead">진짜 현장에서 배웁니다</span><span class="sp spec">Subhead / 20 / w700</span></div>
+      <div class="type-row"><span class="body-l" style="color:var(--ink)">본문 라지. 관광객도 3분 안에 무엇을 하는지 이해하도록.</span><span class="sp spec">Body L / 17 / w400 / lh1.7</span></div>
+      <div class="type-row"><span class="body" style="color:var(--ink)">본문. 정보가 많아도 숨 쉴 틈을 준다.</span><span class="sp spec">Body / 15 / w400 / lh1.7</span></div>
+      <div class="type-row"><span class="label" style="color:var(--indigo)">CURRICULUM</span><span class="sp spec">Label / 13 / w600 / +0.06em</span></div>
+      <div class="type-row"><span class="caption">SEOUL OFFLINE</span><span class="sp spec">Caption / 11 / w500 / +0.08em</span></div>
+    </div>
+  </section>
+
+  <!-- ============ RADIUS / BUTTONS ============ -->
+  <section class="block">
+    <div class="sec-head">
+      <span class="eyebrow">Components</span>
+      <div class="h2">버튼 / 라운드</div>
+    </div>
+    <div class="grid grid-2">
+      <div class="panel">
+        <span class="demo-label">// buttons - action은 핑크 pill 하나만</span>
+        <div class="btn-row" style="margin-bottom:16px">
+          <button class="btn btn-pink">예약하기</button>
+          <button class="btn btn-ghost">커리큘럼</button>
+          <button class="btn btn-subtle">더 보기</button>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-pink" disabled>모집 마감</button>
+          <span class="spec">disabled = opacity 0.45</span>
+        </div>
+      </div>
+      <div class="panel">
+        <span class="demo-label">// radius scale</span>
+        <div class="btn-row" style="gap:16px;align-items:flex-end">
+          <div style="text-align:center"><div style="width:64px;height:64px;background:var(--surface-3);border-radius:24px;margin-bottom:8px"></div><span class="spec">card 24</span></div>
+          <div style="text-align:center"><div style="width:64px;height:64px;background:var(--surface-3);border-radius:16px;margin-bottom:8px"></div><span class="spec">md 16</span></div>
+          <div style="text-align:center"><div style="width:64px;height:64px;background:var(--surface-3);border-radius:10px;margin-bottom:8px"></div><span class="spec">sm 10</span></div>
+          <div style="text-align:center"><div style="width:64px;height:40px;background:var(--surface-3);border-radius:999px;margin-bottom:8px"></div><span class="spec">pill</span></div>
+          <div style="text-align:center"><div style="width:64px;height:64px;background:var(--surface-3);border-radius:22px 22px 22px 4px;margin-bottom:8px"></div><span class="spec">quote</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STAT + TESTIMONIAL ============ -->
+  <section class="block">
+    <div class="sec-head">
+      <span class="eyebrow">Components</span>
+      <div class="h2">스탯 / 후기 카드</div>
+      <p class="body">숫자는 대문짝으로 신뢰를 준다. 후기 카드는 한 모서리만 각지게(말풍선) 해서 "누가 말하는 느낌".</p>
+    </div>
+    <div class="grid grid-3" style="margin-bottom:20px">
+      <div class="stat accent"><div class="num">8<span class="u">회</span></div><div class="cap">현장 실무 세션</div></div>
+      <div class="stat"><div class="num">6<span class="u">인</span></div><div class="cap">현직 강사진</div></div>
+      <div class="stat"><div class="num">100<span class="u">%</span></div><div class="cap">1기 수료율</div></div>
+    </div>
+    <div class="grid grid-2">
+      <div class="quote">
+        <p>"팬으로만 보던 무대를 부스 안에서 직접 만져봤어요. 여행에서 이런 걸 할 줄은 정말 몰랐어요. 사진도 잔뜩 남겨서 친구들한테 자랑했어요."</p>
+        <div class="who"><span class="nm">관광객 A</span><span class="role">원데이 참여</span></div>
+      </div>
+      <div class="quote">
+        <p>"강의가 아니라 현장이었어요. 진짜 하는 분들한테 배우니까 확실히 달라요."</p>
+        <div class="who"><span class="nm">수강생 S</span><span class="role">1기 수료</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CURRICULUM OVERVIEW ============ -->
+  <section class="block">
+    <div class="sec-head">
+      <span class="eyebrow">Components / Curriculum</span>
+      <div class="h2">커리큘럼 개요 (아이콘 컬럼)</div>
+      <p class="body">저해상도 큰 그림. 스크롤 빠른 사람도 "이런 하루구나" 한눈에.</p>
+    </div>
+    <div class="grid grid-4">
+      <div class="ov">
+        <div class="st">01</div>
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 13a8 8 0 0 1 16 0"/><rect x="3" y="13" width="4" height="7" rx="2"/><rect x="17" y="13" width="4" height="7" rx="2"/></svg></div>
+        <div class="tt">환영 + 부스 소개</div><div class="ds">장비와 공간을 눈에 익힌다</div>
+      </div>
+      <div class="ov">
+        <div class="st">02</div>
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M6 4v16M12 4v16M18 4v16"/><circle cx="6" cy="9" r="2"/><circle cx="12" cy="14" r="2"/><circle cx="18" cy="8" r="2"/></svg></div>
+        <div class="tt">1대1 기초</div><div class="ds">현직 DJ와 손으로 익힌다</div>
+      </div>
+      <div class="ov">
+        <div class="st">03</div>
+        <div class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="12" cy="12" r="3.4"/><circle cx="12" cy="12" r="0.6" fill="currentColor" stroke="none"/></svg></div>
+        <div class="tt">믹싱 실습</div><div class="ds">내 취향으로 한 곡을 잇는다</div>
+      </div>
+      <div class="ov">
+        <div class="st">04</div>
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg></div>
+        <div class="tt">무대 + 사진</div><div class="ds">진짜 무대에서 내 셋을 남긴다</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CURRICULUM ROADMAP ============ -->
+  <section class="block">
+    <div class="sec-head">
+      <span class="eyebrow">Components / Curriculum</span>
+      <div class="h2">하루 로드맵 (레일 + 패널)</div>
+      <p class="body">고해상도 상세. 각 단계에 시간대 + 얻는 것(결과물)을 박아 "배우는 게 아니라 만든다"를 증명. 원티드의 주차+산출물을 시간대+경험으로 변주.</p>
+    </div>
+    <div class="road">
+      <div class="rail" role="tablist" aria-label="하루 흐름">
+        <button role="tab" aria-selected="true" data-i="0"><span class="rn">14:00</span>도착 + 환영</button>
+        <button role="tab" aria-selected="false" data-i="1"><span class="rn">14:20</span>부스 + 장비</button>
+        <button role="tab" aria-selected="false" data-i="2"><span class="rn">14:50</span>1대1 기초</button>
+        <button role="tab" aria-selected="false" data-i="3"><span class="rn">15:40</span>믹싱 실습</button>
+        <button role="tab" aria-selected="false" data-i="4"><span class="rn">16:30</span>무대 + 촬영</button>
+      </div>
+      <div class="road-panel" id="roadPanel">
+        <!-- filled by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LIGHT RELIEF / FAQ ============ -->
+  <section class="block">
+    <div class="light">
+      <span class="eyebrow">Light relief</span>
+      <div class="h2" style="margin-top:12px;margin-bottom:24px">자주 묻는 질문</div>
+      <div class="fq">
+        <details open>
+          <summary>DJ가 처음이어도 되나요<span class="pm"></span></summary>
+          <div class="ans">네. 장비를 처음 만지는 분 기준으로 진행하고, 현직 DJ가 1대1로 옆에서 잡아드립니다. 준비물은 없습니다.</div>
+        </details>
+        <details>
+          <summary>한국어를 못해도 참여할 수 있나요<span class="pm"></span></summary>
+          <div class="ans">영어로 진행 가능합니다. 관광객 참여를 기준으로 안내와 실습을 준비합니다.</div>
+        </details>
+        <details>
+          <summary>결과물은 무엇을 가져가나요<span class="pm"></span></summary>
+          <div class="ans">무대에서 플레이한 짧은 셋 영상과 현장 사진을 받아 갑니다. 믹싱한 음원도 함께 드립니다.</div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GUARDRAILS ============ -->
+  <section class="block">
+    <div class="sec-head">
+      <span class="eyebrow">Guardrails</span>
+      <div class="h2">우리가 일부러 안 하는 것</div>
+      <p class="body">원티드에서 가져오되 우리 하우스 룰(CLAUDE.md 6.5 / 6.8)과 충돌하는 요소는 버린다.</p>
+    </div>
+    <div class="guard">
+      <div class="g-item g-no"><span class="gi">×</span><div><div class="gt">컬러값 그라데이션</div><div class="gd">솔리드 블록만. 입체는 표면 대비로</div></div></div>
+      <div class="g-item g-no"><span class="gi">×</span><div><div class="gt">글로우 / 색수차</div><div class="gd">blur glow 금지. 딤(단색 alpha)만</div></div></div>
+      <div class="g-item g-no"><span class="gi">×</span><div><div class="gt">중간점 구분자</div><div class="gd">가운뎃점 대신 하이픈 또는 슬래시</div></div></div>
+      <div class="g-item g-no"><span class="gi">×</span><div><div class="gt">짧은 문구 끝 마침표</div><div class="gd">타이틀 / 라벨 / CTA는 마침표 없이</div></div></div>
+      <div class="g-item g-yes"><span class="gi">✓</span><div><div class="gt">행동색 / 강조색 분리</div><div class="gd">CTA는 핑크, 강조는 남보라</div></div></div>
+      <div class="g-item g-yes"><span class="gi">✓</span><div><div class="gt">넉넉한 여백 + 미디엄 디스플레이</div><div class="gd">크되 안 시끄럽게</div></div></div>
+    </div>
+  </section>
+
+  <footer class="foot wrap">
+    Fan to Pro 디자인 시스템 미리보기 v0.1 / 원티드 레퍼런스 기반 (docs/design/fantopro-design-reference.md) / 구현 전 방향 확인용
+  </footer>
+
+</div>
+
+<script>
+  // roadmap panel interaction
+  var ROAD = [
+    { t: "14:00 - 14:20", title: "도착 + 환영", desc: "짐을 내려놓고 오늘의 흐름을 가볍게 훑는다. 긴장 풀기.", out: ["오늘 할 것 한눈에", "함께할 사람들과 인사"] },
+    { t: "14:20 - 14:50", title: "부스 + 장비 소개", desc: "진짜 부스 앞에서 믹서와 CDJ를 눈과 손에 익힌다.", out: ["장비 이름과 역할 이해", "겁 없이 만져보기"] },
+    { t: "14:50 - 15:40", title: "1대1 기초", desc: "현직 DJ가 옆에서 비트 매칭과 기본기를 잡아준다.", out: ["첫 비트 매칭 성공", "기본 트랜지션 감각"] },
+    { t: "15:40 - 16:30", title: "믹싱 실습", desc: "내 취향의 K-pop 트랙으로 짧은 셋을 직접 잇는다.", out: ["나만의 2곡 믹스", "믹싱 음원 파일"] },
+    { t: "16:30 - 17:00", title: "무대 + 촬영", desc: "불 켜진 진짜 무대에서 내 셋을 짧게 플레이하고 남긴다.", out: ["무대 플레이 영상", "현장 사진"] },
+  ];
+  var panel = document.getElementById("roadPanel");
+  function renderRoad(i) {
+    var r = ROAD[i];
+    panel.innerHTML =
+      '<div class="time">' + r.t + '</div>' +
+      '<div class="pt">' + r.title + '</div>' +
+      '<div class="pd">' + r.desc + '</div>' +
+      '<div class="out"><div class="ol">얻는 것</div><ul>' +
+      r.out.map(function (o) { return "<li>" + o + "</li>"; }).join("") +
+      '</ul></div>';
+  }
+  var tabs = document.querySelectorAll('.rail button');
+  tabs.forEach(function (b) {
+    b.addEventListener("click", function () {
+      tabs.forEach(function (x) { x.setAttribute("aria-selected", "false"); });
+      b.setAttribute("aria-selected", "true");
+      renderRoad(Number(b.dataset.i));
+    });
+  });
+  renderRoad(0);
+
+  // theme toggle (brand default = dark)
+  var _root = document.documentElement;
+  var _tbtn = document.getElementById("themeToggle");
+  function _setTheme(t) { _root.setAttribute("data-theme", t); _tbtn.textContent = t === "light" ? "Dark" : "Light"; }
+  _setTheme("dark");
+  _tbtn.addEventListener("click", function () {
+    _setTheme(_root.getAttribute("data-theme") === "light" ? "dark" : "light");
+  });
+</script>

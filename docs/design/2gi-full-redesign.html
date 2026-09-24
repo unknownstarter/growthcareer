@@ -1,0 +1,367 @@
+<title>2기 전체 리디자인</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&family=Space+Mono:wght@400;700&display=swap">
+<style>
+  :root {
+    --bg: #0a0a0f; --surface: #14141b; --surface-2: #1c1c26; --surface-3: #24242f;
+    --border: #27272f; --border-strong: #3f3f48;
+    --fg: #fafafa; --fg-muted: #a1a1aa; --fg-subtle: #71717a;
+    --pink: #ec4899; --pink-press: #db2777;
+    --sans: "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+    --mono: "Space Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--fg); line-height: 1.65; -webkit-font-smoothing: antialiased; letter-spacing: -0.01em; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+
+  /* pixel motifs */
+  .sq { width: 8px; height: 8px; background: var(--pink); display: inline-block; flex: 0 0 auto; }
+  .caret { width: 8px; height: 15px; background: var(--pink); display: inline-block; margin-left: 2px; }
+  @media (prefers-reduced-motion: no-preference) { .caret { animation: blink 1.3s steps(1) infinite; } }
+  @keyframes blink { 0%,55%{opacity:1} 56%,100%{opacity:0} }
+  .pm { position: absolute; width: 9px; height: 9px; background: var(--pink); z-index: 3; }
+  .pm.tl{top:14px;left:14px} .pm.tr{top:14px;right:14px} .pm.bl{bottom:14px;left:14px} .pm.br{bottom:14px;right:14px}
+  .pxgrid { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='7'%3E%3Crect width='1' height='1' fill='%23ffffff' fill-opacity='0.13'/%3E%3C/svg%3E"); background-size: 7px 7px; }
+
+  /* eyebrow + heads */
+  .eyebrow { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-muted); }
+  .h2 { font-weight: 900; font-size: clamp(28px, 4.4vw, 42px); line-height: 1.05; letter-spacing: -0.03em; margin-top: 18px; text-wrap: balance; }
+  .h2 .pk { color: var(--pink); }
+  .lead { color: var(--fg-muted); font-size: 16px; line-height: 1.7; margin-top: 14px; max-width: 56ch; }
+
+  section { padding: 76px 0; border-top: 1px solid var(--border); }
+  .sec-head { margin-bottom: 40px; }
+
+  .grid { display: grid; gap: 18px; }
+  .g2 { grid-template-columns: 1fr 1fr; } .g3 { grid-template-columns: repeat(3,1fr); } .g4 { grid-template-columns: repeat(4,1fr); }
+  @media (max-width: 820px){ .g2,.g3,.g4{grid-template-columns:1fr} .g4{grid-template-columns:1fr 1fr} }
+
+  .card { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 26px; }
+  .chip { display: inline-flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.03em; color: var(--fg-muted); border: 1px solid var(--border-strong); border-radius: 7px; padding: 6px 11px; text-transform: uppercase; }
+  .chip .sq { width: 6px; height: 6px; }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 9px; font-weight: 700; font-size: 15px; border-radius: 999px; padding: 14px 26px; text-decoration: none; border: 1px solid transparent; cursor: pointer; transition: transform .12s, background .15s; letter-spacing: -0.01em; }
+  .btn:active { transform: scale(.98); }
+  .btn-pink { background: var(--pink); color: #fff; } .btn-pink:hover { background: var(--pink-press); }
+  .btn-pink .sq { width: 7px; height: 7px; background: #fff; }
+  .btn-ghost { border-color: var(--border-strong); color: var(--fg); } .btn-ghost:hover { border-color: var(--fg-muted); background: rgba(255,255,255,0.04); }
+  .btn[disabled] { opacity: .5; cursor: not-allowed; }
+
+  /* ===== HERO ===== */
+  .hero { display: flex; min-height: 520px; border-bottom: 1px solid var(--border); }
+  .hero .ht { width: 58%; padding: 66px 0 66px; display: flex; flex-direction: column; justify-content: center; }
+  .hero .hp { width: 42%; position: relative; border-left: 1px solid var(--border); background: #0c0c12; overflow: hidden; }
+  .hero .hp .sil { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; }
+  .hero .hp .sil svg { width: 78%; height: 86%; opacity: .2; }
+  .hero .hp .lab { position: absolute; top: 14px; left: 14px; z-index: 3; font-family: var(--mono); font-size: 10px; color: var(--fg-subtle); text-transform: uppercase; letter-spacing: .08em; border: 1px solid var(--border); padding: 4px 8px; background: rgba(0,0,0,.45); }
+  .title { margin-top: 22px; font-weight: 900; font-size: clamp(40px, 6vw, 62px); line-height: 1.0; letter-spacing: -0.035em; }
+  .title .pk { color: var(--pink); }
+  .pxdot { display: inline-block; width: .32em; height: .32em; background: var(--pink); margin-left: .04em; }
+  .hsub { margin-top: 15px; font-weight: 800; font-size: clamp(19px,2.5vw,26px); letter-spacing: -0.02em; }
+  .hbody { margin-top: 20px; color: var(--fg-muted); font-size: 16px; line-height: 1.7; max-width: 42ch; }
+  .hbody b { color: var(--fg); font-weight: 700; }
+  @media (max-width: 820px){ .hero{flex-direction:column-reverse} .hero .ht,.hero .hp{width:100%} .hero .hp{height:220px;border-left:0;border-bottom:1px solid var(--border)} .hero .ht{padding:44px 0} }
+
+  /* instructor */
+  .inst { display: flex; gap: 18px; align-items: flex-start; }
+  .inst .ava { flex: 0 0 auto; width: 72px; height: 72px; border-radius: 12px; background: var(--surface-3); position: relative; overflow: hidden; display: flex; align-items: flex-end; justify-content: center; }
+  .inst .ava svg { width: 76%; height: 84%; opacity: .55; fill: #cbd5e1; }
+  .inst .nm { font-size: 20px; font-weight: 800; letter-spacing: -0.01em; }
+  .inst .ro { font-family: var(--mono); font-size: 12px; color: var(--pink); margin-top: 2px; text-transform: uppercase; letter-spacing: .04em; }
+  .inst .tags { margin-top: 14px; display: flex; gap: 7px; flex-wrap: wrap; }
+
+  /* value prop */
+  .vp { font-weight: 900; font-size: clamp(30px, 5vw, 52px); line-height: 1.06; letter-spacing: -0.03em; }
+  .vp .mut { color: var(--fg-subtle); }
+
+  /* curriculum accordion */
+  details.cur { border: 1px solid var(--border); border-radius: 14px; background: var(--surface); margin-bottom: 12px; overflow: hidden; }
+  details.cur summary { list-style: none; cursor: pointer; padding: 20px 22px; display: flex; align-items: center; gap: 14px; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; }
+  details.cur summary::-webkit-details-marker { display: none; }
+  details.cur summary .ix { font-family: var(--mono); font-size: 13px; color: var(--pink); }
+  details.cur summary .pm-s { margin-left: auto; width: 16px; height: 16px; position: relative; }
+  details.cur summary .pm-s::before, details.cur summary .pm-s::after { content:""; position:absolute; background: var(--fg-muted); }
+  details.cur summary .pm-s::before { left:2px; right:2px; top:7px; height:2px; }
+  details.cur summary .pm-s::after { top:2px; bottom:2px; left:7px; width:2px; transition: opacity .15s; }
+  details.cur[open] summary .pm-s::after { opacity: 0; }
+  details.cur .cbody { padding: 0 22px 22px 22px; color: var(--fg-muted); font-size: 15px; line-height: 1.7; }
+  details.cur .cbody ul { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+  details.cur .cbody li { display: flex; gap: 10px; } .cbody li .sq { margin-top: 7px; }
+
+  /* pricing */
+  .price { position: relative; display: flex; flex-direction: column; }
+  .price.feat { border-color: var(--pink); }
+  .price .pt { font-size: 12px; font-family: var(--mono); text-transform: uppercase; letter-spacing: .04em; color: var(--fg-muted); }
+  .price .pn { font-size: 20px; font-weight: 800; margin-top: 8px; letter-spacing: -0.01em; }
+  .price .amt { font-size: 30px; font-weight: 900; margin-top: 14px; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .price .amt .u { font-size: 15px; font-weight: 700; color: var(--fg-muted); }
+  .price ul { list-style: none; margin-top: 16px; display: flex; flex-direction: column; gap: 9px; flex: 1 0 auto; }
+  .price li { font-size: 14px; color: var(--fg-muted); display: flex; gap: 10px; } .price li .sq { margin-top: 6px; width: 6px; height: 6px; }
+  .price .btn { margin-top: 20px; }
+
+  /* eligibility */
+  .elig { display: flex; gap: 14px; align-items: flex-start; }
+  .elig .n { font-family: var(--mono); font-size: 13px; color: var(--pink); font-weight: 700; flex: 0 0 auto; }
+  .elig .t { font-size: 16px; font-weight: 700; } .elig .d { font-size: 14px; color: var(--fg-muted); margin-top: 3px; }
+
+  /* schedule */
+  .sched { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+  .sched .row { display: flex; gap: 14px; align-items: baseline; }
+  .sched .k { font-family: var(--mono); font-size: 12px; color: var(--fg-subtle); text-transform: uppercase; letter-spacing: .06em; min-width: 90px; }
+  .sched .v { font-size: 17px; font-weight: 700; }
+  .sched .v .tba { color: var(--pink); }
+
+  /* stats */
+  .statband { position: relative; overflow: hidden; }
+  .stat .num { font-size: clamp(40px,6vw,56px); font-weight: 900; letter-spacing: -0.03em; line-height: 1; display: flex; align-items: baseline; gap: 4px; }
+  .stat .num .u { font-size: 18px; font-weight: 700; color: var(--fg-muted); }
+  .stat.pk .num { color: var(--pink); }
+  .stat .cap { margin-top: 12px; font-size: 14px; color: var(--fg-muted); }
+
+  .quote { background: var(--surface-2); border: 1px solid var(--border); border-radius: 16px 16px 16px 4px; padding: 22px; display: flex; flex-direction: column; height: 100%; }
+  .quote p { font-size: 15px; line-height: 1.7; flex: 1 0 auto; }
+  .quote .who { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .quote .nm { font-size: 13px; font-weight: 700; } .quote .ro { font-family: var(--mono); font-size: 11px; color: var(--fg-subtle); text-transform: uppercase; letter-spacing: .04em; margin-top: 2px; }
+
+  /* faq */
+  details.faq { border-bottom: 1px solid var(--border); }
+  details.faq summary { list-style: none; cursor: pointer; padding: 18px 2px; font-size: 16px; font-weight: 700; display: flex; justify-content: space-between; gap: 14px; letter-spacing: -0.01em; }
+  details.faq summary::-webkit-details-marker { display: none; }
+  details.faq summary .pm-s { flex: 0 0 auto; width: 16px; height: 16px; position: relative; margin-top: 3px; }
+  details.faq summary .pm-s::before,details.faq summary .pm-s::after { content:""; position:absolute; background: var(--fg-muted); }
+  details.faq summary .pm-s::before { left:2px; right:2px; top:7px; height:2px; }
+  details.faq summary .pm-s::after { top:2px; bottom:2px; left:7px; width:2px; transition: opacity .15s; }
+  details.faq[open] summary .pm-s::after { opacity: 0; }
+  details.faq[open] summary { color: var(--pink); }
+  details.faq .ans { padding: 0 2px 18px; font-size: 15px; color: var(--fg-muted); line-height: 1.7; max-width: 64ch; }
+
+  /* issuers */
+  .iss { text-align: left; }
+  .iss .role { font-family: var(--mono); font-size: 11px; color: var(--pink); text-transform: uppercase; letter-spacing: .04em; }
+  .iss .name { font-size: 17px; font-weight: 800; margin-top: 8px; }
+  .iss .meta { font-size: 13px; color: var(--fg-muted); margin-top: 6px; line-height: 1.6; }
+
+  /* closed cta */
+  .closed { position: relative; text-align: center; border: 1px solid var(--border-strong); border-radius: 20px; padding: 56px 32px; background: var(--surface); overflow: hidden; }
+  .closed .h2 { margin-top: 14px; }
+  .closed .lead { margin: 14px auto 0; }
+  .closed .cta { margin-top: 26px; }
+
+  footer { padding: 44px 0 80px; color: var(--fg-subtle); font-size: 13px; border-top: 1px solid var(--border); }
+  @media (prefers-reduced-motion: reduce){ *{animation:none!important;transition:none!important} }
+
+  .svg-person { fill: #cbd5e1; }
+</style>
+
+<div class="wrap">
+
+  <!-- ============ HERO ============ -->
+  <div class="hero">
+    <div class="ht">
+      <span class="eyebrow"><span class="sq"></span> Cohort_02 / K-entertainment <span class="caret"></span></span>
+      <div class="title">Fan to <span class="pk">Pro</span></div>
+      <div class="hsub">A career behind the stage</div>
+      <p class="hbody">Learn directly from an A&amp;R director who has shaped Korea's largest idol audition programs. It doesn't end in the classroom. You join a <b>real live production project</b> and walk away with portfolio-worthy experience.</p>
+      <div class="grid" style="grid-auto-flow:column;justify-content:start;gap:8px;margin-top:22px">
+        <span class="chip"><span class="sq"></span> Seoul offline</span>
+        <span class="chip"><span class="sq"></span> Students in Korea</span>
+      </div>
+      <div style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap">
+        <a href="#" class="btn btn-pink"><span class="sq"></span> Apply now</a>
+        <a href="#" class="btn btn-ghost">Meet the instructors</a>
+      </div>
+    </div>
+    <div class="hp pxgrid">
+      <span class="lab">Real stage photo</span>
+      <div class="sil"><svg viewBox="0 0 200 240" preserveAspectRatio="xMidYMax meet" class="svg-person"><g><circle cx="100" cy="58" r="30"/><path d="M62 92 q38 -18 76 0 q14 8 16 30 l6 118 h-120 l6 -118 q2 -22 16 -30z"/><path d="M150 96 q26 6 30 46 l-18 6 q-6 -30 -20 -38z"/></g><g fill="none" stroke="#cbd5e1" stroke-width="7"><path d="M74 56 a26 26 0 0 1 52 0"/></g><rect x="66" y="52" width="12" height="20" rx="5"/><rect x="122" y="52" width="12" height="20" rx="5"/></svg></div>
+      
+    </div>
+  </div>
+
+  <!-- ============ INSTRUCTORS ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow"><span class="sq"></span> Instructors</span>
+      <div class="h2">Taught by people <span class="pk">who do it</span></div>
+      <p class="lead">현업에서 실제로 무대를 만드는 사람들이 가르쳐요. 이력으로 증명된 강사진.</p>
+    </div>
+    <div class="grid g2">
+      <div class="card inst">
+        <div class="ava"><svg viewBox="0 0 100 120" class="svg-person"><circle cx="50" cy="34" r="20"/><path d="M18 62 q32 -16 64 0 q8 6 9 22 l3 40 h-88 l3 -40 q1 -16 9 -22z"/></svg></div>
+        <div>
+          <div class="nm">Nino</div>
+          <div class="ro">A&amp;R Director</div>
+          <div class="tags">
+            <span class="chip"><span class="sq"></span> Live production</span>
+            <span class="chip"><span class="sq"></span> Artist development</span>
+          </div>
+        </div>
+      </div>
+      <div class="card inst">
+        <div class="ava"><svg viewBox="0 0 100 120" class="svg-person"><circle cx="50" cy="34" r="20"/><path d="M18 62 q32 -16 64 0 q8 6 9 22 l3 40 h-88 l3 -40 q1 -16 9 -22z"/></svg></div>
+        <div>
+          <div class="nm">Choi Chan-yong</div>
+          <div class="ro">Sound Director, E.K Ent</div>
+          <div class="tags">
+            <span class="chip"><span class="sq"></span> Live sound</span>
+            <span class="chip"><span class="sq"></span> Concert mixing</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ VALUE PROP ============ -->
+  <section>
+    <span class="eyebrow"><span class="sq"></span> Why here</span>
+    <div class="vp" style="margin-top:22px">Not just learning<br><span class="mut">Working, from</span> <span class="pk">day one</span></div>
+    <p class="lead" style="margin-top:22px">강의로 끝나지 않아요. 실제 라이브 공연 프로젝트에 참여해서, 포트폴리오가 되는 경험을 들고 나가요. 유니온 픽처스 공연에 참여한 분께는 참여 확인서도 발급돼요.</p>
+  </section>
+
+  <!-- ============ CURRICULUM ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow"><span class="sq"></span> Curriculum</span>
+      <div class="h2">What you <span class="pk">learn</span></div>
+      <p class="lead">4주 8회 실무. 전 과정이 기본으로 펼쳐져 있어요.</p>
+    </div>
+    <details class="cur" open>
+      <summary><span class="ix">01</span> A&amp;R / 기획 기초 </summary>
+      <div class="cbody"><ul><li><span class="sq"></span> K-엔터 산업 구조와 직무 이해</li><li><span class="sq"></span> 기획부터 데뷔까지의 실제 흐름</li></ul></div>
+    </details>
+    <details class="cur" open>
+      <summary><span class="ix">02</span> 라이브 사운드 실무 </summary>
+      <div class="cbody"><ul><li><span class="sq"></span> 공연 음향 세팅과 믹싱 기본</li><li><span class="sq"></span> 무대 엔지니어링 현장 워크플로</li></ul></div>
+    </details>
+    <details class="cur" open>
+      <summary><span class="ix">03</span> 실전 프로덕션 참여 </summary>
+      <div class="cbody"><ul><li><span class="sq"></span> 실제 공연 프로젝트에 팀으로 투입</li><li><span class="sq"></span> 산출물 = 포트폴리오 + 참여 확인서</li></ul></div>
+    </details>
+  </section>
+
+  <!-- ============ PRICING ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow"><span class="sq"></span> Enroll</span>
+      <div class="h2">Only what you need, <span class="pk">or all of it</span></div>
+      <p class="lead">필요한 과정만, 또는 전체 패키지로. 아래는 샘플 가격 (실제 미확정)</p>
+    </div>
+    <div class="grid g3">
+      <div class="card price">
+        <div class="pt">Course 01</div>
+        <div class="pn">A&amp;R Course</div>
+        <div class="amt">1,200,000<span class="u">원</span></div>
+        <ul><li><span class="sq"></span> A&amp;R / 기획 트랙</li><li><span class="sq"></span> 4주 실무 세션</li></ul>
+        <a href="#" class="btn btn-ghost">Choose</a>
+      </div>
+      <div class="card price">
+        <div class="pt">Course 02</div>
+        <div class="pn">Sound Director Course</div>
+        <div class="amt">1,200,000<span class="u">원</span></div>
+        <ul><li><span class="sq"></span> 라이브 사운드 트랙</li><li><span class="sq"></span> 4주 실무 세션</li></ul>
+        <a href="#" class="btn btn-ghost">Choose</a>
+      </div>
+      <div class="card price feat">
+        
+        <div class="pt" style="color:var(--pink)">Full package</div>
+        <div class="pn">All of it</div>
+        <div class="amt">2,000,000<span class="u">원</span></div>
+        <ul><li><span class="sq"></span> 두 트랙 전부</li><li><span class="sq"></span> 실전 프로덕션 우선 참여</li></ul>
+        <a href="#" class="btn btn-pink"><span class="sq"></span> Choose</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ELIGIBILITY ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow"><span class="sq"></span> Who can join</span>
+      <div class="h2">Meet all four, and <span class="pk">you're in</span></div>
+    </div>
+    <div class="grid g2">
+      <div class="card elig"><span class="n">01</span><div><div class="t">International student in Korea</div><div class="d">한국 체류 자격 보유</div></div></div>
+      <div class="card elig"><span class="n">02</span><div><div class="t">Can attend Seoul offline</div><div class="d">서울 오프라인 수업 참여 가능</div></div></div>
+      <div class="card elig"><span class="n">03</span><div><div class="t">Committed for 4 weeks</div><div class="d">4주 8회 과정 완주 의지</div></div></div>
+      <div class="card elig"><span class="n">04</span><div><div class="t">Serious about K-entertainment</div><div class="d">현장 실무로 들어가려는 진심</div></div></div>
+    </div>
+  </section>
+
+  <!-- ============ SCHEDULE ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow"><span class="sq"></span> When and where</span>
+      <div class="h2">일정 <span class="pk">추후 재공지</span></div>
+    </div>
+    <div class="card sched">
+      <div class="row"><span class="k">Cohort</span><span class="v">02</span></div>
+      <div class="row"><span class="k">Schedule</span><span class="v"><span class="tba">추후 재공지</span></span></div>
+      <div class="row"><span class="k">Place</span><span class="v">Seoul offline</span></div>
+      <div class="row"><span class="k">Format</span><span class="v">4주 8회</span></div>
+    </div>
+  </section>
+
+  <!-- ============ STATS + TESTIMONIALS ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow"><span class="sq"></span> Cohort 01</span>
+      <div class="h2">8 countries, one cohort, <span class="pk">finished together</span></div>
+    </div>
+    <div class="card statband pxgrid" style="padding:36px 28px;margin-bottom:20px">
+      
+      <div class="grid g4" style="gap:28px">
+        <div class="stat pk"><div class="num">8<span class="u">countries</span></div><div class="cap">참여 국적</div></div>
+        <div class="stat"><div class="num">8<span class="u">회</span></div><div class="cap">실무 세션</div></div>
+        <div class="stat"><div class="num">4<span class="u">주</span></div><div class="cap">과정 기간</div></div>
+        <div class="stat"><div class="num">100<span class="u">%</span></div><div class="cap">수료율</div></div>
+      </div>
+    </div>
+    <div class="grid g2">
+      <div class="quote"><p>"강의가 아니라 현장이었어요. 진짜 하는 분들한테 배우니까 확실히 달라요. 공연에 직접 참여한 게 제일 커요."</p><div class="who"><div class="nm">수강생 S</div><div class="ro">Cohort 01</div></div></div>
+      <div class="quote"><p>"외국인이라 걱정했는데 서울에서 오프라인으로 팀을 이뤄 끝까지 갔어요."</p><div class="who"><div class="nm">수강생 J</div><div class="ro">Cohort 01</div></div></div>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow"><span class="sq"></span> FAQ</span>
+      <div class="h2">Answers before <span class="pk">you ask</span></div>
+    </div>
+    <div>
+      <details class="faq" open><summary>비자가 없어도 참여할 수 있나요</summary><div class="ans">한국 체류 자격만 있으면 참여할 수 있어요. 별도의 비자 지원은 제공하지 않습니다.</div></details>
+      <details class="faq"><summary>수업은 무슨 언어로 진행되나요</summary><div class="ans">재한 외국인 유학생을 기준으로 안내하며 영어로 참여할 수 있어요.</div></details>
+      <details class="faq"><summary>수료하면 무엇을 받나요</summary><div class="ans">드롭다운 명의의 수료증을 받고, 실제 공연에 참여한 분께는 유니온 픽처스의 참여 확인서가 발급돼요.</div></details>
+    </div>
+  </section>
+
+  <!-- ============ ISSUERS / TRUST ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow"><span class="sq"></span> Trust</span>
+      <div class="h2">Issued by <span class="pk">registered entities</span></div>
+    </div>
+    <div class="grid g3">
+      <div class="card iss"><div class="role">수료증 발급</div><div class="name">Dropdown</div><div class="meta">사업자등록번호 154-28-02110<br>4주 과정 수료증 발급</div></div>
+      <div class="card iss"><div class="role">참여 확인서</div><div class="name">유니온 픽처스</div><div class="meta">실제 공연 참여자에게<br>프로젝트 참여 확인서 발급</div></div>
+      <div class="card iss"><div class="role">운영 협력</div><div class="name">DEEPI</div><div class="meta">강사 섭외 등<br>프로그램 운영 지원</div></div>
+    </div>
+  </section>
+
+  <!-- ============ CLOSED CTA ============ -->
+  <section style="border-top:0">
+    <div class="closed pxgrid">
+      
+      <span class="eyebrow" style="justify-content:center"><span class="sq"></span> Cohort 02</span>
+      <div class="h2">Applications are <span class="pk">closed</span></div>
+      <p class="lead">2기 모집은 마감됐어요. 재모집 일정은 강사님들과 논의 후 다시 안내드릴게요.</p>
+      <div class="cta" style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
+        <a href="#" class="btn btn-pink"><span class="sq"></span> Notify me for the next cohort</a>
+        <a href="#" class="btn btn-ghost">Meet the instructors</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>Fan to Pro / Cohort 2 full redesign preview / 픽셀 프리미엄 원칙 적용 / 카피는 방향 예시 (실제 확정 아님)</footer>
+
+</div>

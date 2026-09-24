@@ -1,0 +1,73 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#14191e}canvas{display:block}</style>
+<script type="importmap">{"imports":{
+"three":"https://unpkg.com/three@0.160.0/build/three.module.js",
+"three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
+</head><body>
+<canvas id="c"></canvas>
+<script type="module">
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+
+try {
+const W=1800,H=1125;
+const canvas=document.getElementById('c');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,preserveDrawingBuffer:true});
+renderer.setSize(W,H,false);
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.NoToneMapping;
+
+const scene=new THREE.Scene();
+scene.background=new THREE.Color('#0c0f14');
+const pmrem=new THREE.PMREMGenerator(renderer);
+scene.environment=pmrem.fromScene(new RoomEnvironment(),0.03).texture;
+
+const camera=new THREE.PerspectiveCamera(35,W/H,0.1,100);
+camera.position.set(0,0,7);
+
+// FRONTIERS backdrop
+const tc=document.createElement('canvas'); tc.width=2400; tc.height=1500;
+const g=tc.getContext('2d');
+g.fillStyle='#0c0f14'; g.fillRect(0,0,2400,1500);
+g.fillStyle='#fafafa'; g.textAlign='center'; g.textBaseline='middle';
+g.font='900 380px Arial, "Arial Black", sans-serif'; g.letterSpacing='-8px';
+g.fillText('Fan to Pro',1200,780);
+const ttex=new THREE.CanvasTexture(tc); ttex.colorSpace=THREE.SRGBColorSpace; ttex.anisotropy=8;
+const fitH=2*Math.tan(THREE.MathUtils.degToRad(35)/1)*7*0.5*2; // full view height at z0
+const ph=2*7*Math.tan(THREE.MathUtils.degToRad(35)/2);
+const pw=ph*(W/H);
+const plane=new THREE.Mesh(new THREE.PlaneGeometry(pw,pw*(1500/2400)),
+  new THREE.MeshBasicMaterial({map:ttex}));
+plane.position.z=0; scene.add(plane);
+
+// glass keycap
+const mat=new THREE.MeshPhysicalMaterial({
+  color:new THREE.Color('#e4e9ef'), metalness:0, roughness:0.04,
+  transmission:1, thickness:0.62, ior:1.38, clearcoat:1, clearcoatRoughness:0.04,
+  envMapIntensity:1.8, transparent:true,
+  attenuationColor:new THREE.Color('#94a0af'), attenuationDistance:26.0});
+const key=new THREE.Mesh(new RoundedBoxGeometry(1.9,1.2,0.4,12,0.18), mat);
+key.position.set(0.26,-0.05,1.7);
+key.rotation.set(0.40,0.32,0.30);
+scene.add(key);
+
+const dir=new THREE.DirectionalLight(0xffffff,2.2); dir.position.set(-4,5,6); scene.add(dir);
+const dir2=new THREE.DirectionalLight(0xffffff,1.0); dir2.position.set(5,-2,3); scene.add(dir2);
+
+// post: radial chromatic aberration
+const composer=new EffectComposer(renderer); composer.setSize(W,H);
+composer.addPass(new RenderPass(scene,camera));
+composer.addPass(new ShaderPass({
+  uniforms:{tDiffuse:{value:null},uAmt:{value:0.0022}},
+  vertexShader:'varying vec2 vUv; void main(){vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+  fragmentShader:'uniform sampler2D tDiffuse; uniform float uAmt; varying vec2 vUv; void main(){ vec2 d=(vUv-0.5); float r=texture2D(tDiffuse,vUv+d*uAmt).r; float gc=texture2D(tDiffuse,vUv).g; float b=texture2D(tDiffuse,vUv-d*uAmt).b; gl_FragColor=vec4(r,gc,b,1.0);}'
+}));
+
+composer.render();
+requestAnimationFrame(()=>{ composer.render(); window.__ready=true; });
+} catch(e){ window.__err=String(e&&e.stack||e); }
+</script></body></html>

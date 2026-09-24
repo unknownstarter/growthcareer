@@ -71,3 +71,20 @@ docs/internal/
 ga4-sa.json
 *-sa.json
 *.ga4.json
+
+# 디자인 프리뷰 캡처 (재생성 가능, 20MB+ - 로컬 보관)
+docs/design/captures/
+
+# 1기 현장 원본 사진/영상 (수강생 얼굴 = PII, 78MB - 가공본만 public/ 에 커밋)
+src/programs/fan-to-pro/assets/
+
+# 설문 원본 응답 + 외부 제공 교육자료 (응답자 PII / 저작권)
+docs/*.csv
+docs/*.pdf
+
+# 카드뉴스 렌더 소스 (인스타 게시용 - 커밋 금지)
+docs/marketing/
+
+# 설치형 스킬 본문 (skills-lock.json 만 추적)
+.agents/skills/
+.claude/skills/

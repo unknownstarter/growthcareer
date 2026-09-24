@@ -1,0 +1,156 @@
+<title>Liquid Glass 효과</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@700;800;900&family=Space+Mono:wght@400;700&display=swap">
+<style>
+  :root {
+    --bg: #0a0a0f; --surface: #14141b; --border: #27272f; --border-strong: #3f3f48;
+    --fg: #fafafa; --fg-muted: #a1a1aa; --fg-subtle: #71717a; --pink: #ec4899;
+    --good: #34d399; --bad: #f87171;
+    --sans: "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+    --mono: "Space Mono", ui-monospace, Menlo, monospace;
+    --ab: 4px;      /* chromatic aberration offset */
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: #060609; color: var(--fg); -webkit-font-smoothing: antialiased; letter-spacing: -0.01em; line-height: 1.6; }
+  .page { max-width: 1000px; margin: 0 auto; padding: 48px 24px 80px; }
+  .intro .eb { font-family: var(--mono); font-size: 12px; color: var(--fg-subtle); text-transform: uppercase; letter-spacing: 0.06em; }
+  .intro h1 { font-size: clamp(24px, 4vw, 32px); font-weight: 800; margin-top: 12px; letter-spacing: -0.02em; }
+  .intro h1 span { color: var(--pink); }
+  .intro p { color: var(--fg-muted); margin-top: 10px; max-width: 60ch; font-size: 15px; }
+
+  /* ==== effect stage ==== */
+  .stage { position: relative; margin-top: 32px; height: 420px; border: 1px solid var(--border); border-radius: 20px; background: var(--bg); overflow: hidden; display: flex; align-items: center; justify-content: center; }
+
+  .word { position: relative; display: inline-block; font-weight: 900; font-size: clamp(56px, 13vw, 150px); line-height: 0.9; letter-spacing: -0.04em; white-space: nowrap; }
+  .word .base { color: transparent; }
+  .word .ch { position: absolute; top: 0; left: 0; filter: url(#liquid); }
+  .word .ch.r { color: #ff0000; mix-blend-mode: screen; transform: translateX(calc(var(--ab) * -1)); }
+  .word .ch.g { color: #00ff00; mix-blend-mode: screen; }
+  .word .ch.b { color: #0000ff; mix-blend-mode: screen; transform: translateX(var(--ab)); }
+
+  /* frosted ice shard crossing the word */
+  .ice { position: absolute; top: -10%; left: 50%; width: 300px; height: 130%;
+    transform: translateX(-50%) rotate(14deg);
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(7px) brightness(1.12) saturate(0.85);
+    -webkit-backdrop-filter: blur(7px) brightness(1.12) saturate(0.85);
+    border-left: 1px solid rgba(255,255,255,0.22); border-right: 1px solid rgba(255,255,255,0.10);
+    clip-path: polygon(28% 0, 72% 0, 60% 100%, 16% 100%);
+    pointer-events: none; }
+  @media (prefers-reduced-motion: no-preference) { .ice { animation: drift 9s ease-in-out infinite alternate; } }
+  @keyframes drift { from { transform: translateX(-58%) rotate(14deg); } to { transform: translateX(-42%) rotate(11deg); } }
+
+  /* ==== controls ==== */
+  .panel { margin-top: 22px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); padding: 22px 24px; }
+  .presets { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 22px; }
+  .preset { font-family: var(--sans); font-weight: 700; font-size: 14px; padding: 10px 18px; border-radius: 999px; border: 1px solid var(--border-strong); background: transparent; color: var(--fg); cursor: pointer; transition: background .15s, border-color .15s; }
+  .preset:hover { border-color: var(--fg-muted); background: rgba(255,255,255,0.04); }
+  .preset.on { background: var(--pink); border-color: var(--pink); color: #fff; }
+  .preset:focus-visible { outline: 2px solid var(--pink); outline-offset: 2px; }
+
+  .ctl { display: grid; grid-template-columns: 130px 1fr 56px; align-items: center; gap: 16px; padding: 12px 0; }
+  .ctl label { font-size: 14px; font-weight: 600; }
+  .ctl label small { display: block; font-family: var(--mono); font-size: 11px; color: var(--fg-subtle); font-weight: 400; text-transform: none; letter-spacing: 0; margin-top: 2px; }
+  .ctl input[type=range] { width: 100%; accent-color: var(--pink); height: 4px; }
+  .ctl .val { font-family: var(--mono); font-size: 13px; color: var(--fg-muted); text-align: right; }
+
+  .status { margin-top: 18px; display: flex; align-items: center; gap: 10px; font-size: 13px; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border); }
+  .status .dot { width: 9px; height: 9px; flex: 0 0 auto; }
+  .status.ok { color: var(--good); } .status.ok .dot { background: var(--good); }
+  .status.warn { color: var(--bad); } .status.warn .dot { background: var(--bad); }
+
+  .note { margin-top: 22px; font-size: 13px; color: var(--fg-subtle); line-height: 1.7; }
+  .note b { color: var(--fg-muted); }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<!-- SVG filter: refraction (feTurbulence -> feDisplacementMap) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <filter id="liquid" x="-25%" y="-25%" width="150%" height="150%">
+    <feTurbulence id="turb" type="fractalNoise" baseFrequency="0.011 0.017" numOctaves="2" seed="6" result="noise"/>
+    <feDisplacementMap id="disp" in="SourceGraphic" in2="noise" scale="22" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</defs></svg>
+
+<div class="page">
+
+  <header class="intro">
+    <div class="eb">Fan to Pro / Hero effect</div>
+    <h1>Liquid Glass <span>얼음 굴절 + 색분산</span></h1>
+    <p>원티드 히어로의 그 효과예요. 글자가 얼음/유리를 통과하며 굴절되고(refraction), 가장자리가 무지개로 갈라져요(chromatic dispersion). GPT 이미지가 아니라 SVG 필터 코드예요. 슬라이더로 강도를 직접 맞춰봐요.</p>
+  </header>
+
+  <div class="stage">
+    <div class="word">
+      <span class="base">FAN TO PRO</span>
+      <span class="ch r">FAN TO PRO</span>
+      <span class="ch g">FAN TO PRO</span>
+      <span class="ch b">FAN TO PRO</span>
+    </div>
+    <div class="ice"></div>
+  </div>
+
+  <div class="panel">
+    <div class="presets">
+      <button class="preset" data-preset="full">가 - 풀 효과</button>
+      <button class="preset" data-preset="soft">나 - 절제</button>
+      <button class="preset" data-preset="off">효과 끄기</button>
+    </div>
+
+    <div class="ctl">
+      <label>굴절 <small>refraction / 얼음 왜곡</small></label>
+      <input type="range" id="sRefract" min="0" max="42" value="22" step="1">
+      <span class="val" id="vRefract">22</span>
+    </div>
+    <div class="ctl">
+      <label>색분산 <small>chromatic aberration</small></label>
+      <input type="range" id="sAberr" min="0" max="10" value="4" step="0.5">
+      <span class="val" id="vAberr">4.0px</span>
+    </div>
+
+    <div class="status ok" id="status"><span class="dot"></span><span id="statusText"></span></div>
+  </div>
+
+  <p class="note">
+    <b>§6.8 참고</b> - 색분산(chromatic aberration)은 우리 하우스 룰이 금지한 색번짐 계열이에요. 위 상태 표시가 빨강이면 룰 위반 구간. <b>(나) 절제</b>는 얼음 굴절만 살리고 색분산을 거의 0으로 둬서 룰을 지켜요. <b>(가) 풀</b>은 히어로 한정으로 예외를 인정할 때만.<br>
+    가운데 흐릿한 띠 = 얼음 조각(frosted glass)이 지나가는 부분, 뒤 글자가 서리처럼 번져요.
+  </p>
+
+</div>
+
+<script>
+  var disp = document.getElementById("disp");
+  var root = document.documentElement;
+  var sRefract = document.getElementById("sRefract"), vRefract = document.getElementById("vRefract");
+  var sAberr = document.getElementById("sAberr"), vAberr = document.getElementById("vAberr");
+  var statusEl = document.getElementById("status"), statusText = document.getElementById("statusText");
+  var presets = document.querySelectorAll(".preset");
+
+  function apply() {
+    var r = Number(sRefract.value), a = Number(sAberr.value);
+    disp.setAttribute("scale", String(r));
+    root.style.setProperty("--ab", a + "px");
+    vRefract.textContent = String(r);
+    vAberr.textContent = a.toFixed(1) + "px";
+    if (a > 1) {
+      statusEl.className = "status warn";
+      statusText.textContent = "§6.8 위반 구간 - 색분산 " + a.toFixed(1) + "px (히어로 예외로만 허용)";
+    } else {
+      statusEl.className = "status ok";
+      statusText.textContent = "§6.8 준수 - 색분산 " + a.toFixed(1) + "px (굴절만, 색번짐 거의 없음)";
+    }
+  }
+  function setPreset(p) {
+    if (p === "full") { sRefract.value = 26; sAberr.value = 5; }
+    else if (p === "soft") { sRefract.value = 17; sAberr.value = 0.5; }
+    else { sRefract.value = 0; sAberr.value = 0; }
+    presets.forEach(function (b) { b.classList.toggle("on", b.dataset.preset === p); });
+    apply();
+  }
+  sRefract.addEventListener("input", function () { presets.forEach(function (b) { b.classList.remove("on"); }); apply(); });
+  sAberr.addEventListener("input", function () { presets.forEach(function (b) { b.classList.remove("on"); }); apply(); });
+  presets.forEach(function (b) { b.addEventListener("click", function () { setPreset(b.dataset.preset); }); });
+
+  setPreset("full");
+</script>

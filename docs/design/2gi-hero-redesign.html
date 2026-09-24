@@ -1,0 +1,174 @@
+<title>2기 히어로 리디자인</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&family=Silkscreen:wght@400;700&family=VT323&display=swap">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #14141b;
+    --surface-2: #1c1c26;
+    --border: #27272f;
+    --border-strong: #3f3f48;
+    --fg: #fafafa;
+    --fg-muted: #a1a1aa;
+    --fg-subtle: #71717a;
+    --pink: #ec4899;
+    --pink-press: #db2777;
+    --indigo: #818cf8;
+    --sans: "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: #060609; color: var(--fg); line-height: 1.6; -webkit-font-smoothing: antialiased; letter-spacing: -0.01em; }
+  .page { max-width: 1120px; margin: 0 auto; padding: 56px 24px 96px; }
+
+  .intro { margin-bottom: 40px; }
+  .intro .eb { font-family: var(--mono); font-size: 12px; color: var(--fg-subtle); text-transform: uppercase; letter-spacing: 0.08em; }
+  .intro h1 { font-size: clamp(26px, 4vw, 34px); font-weight: 800; letter-spacing: -0.02em; margin-top: 12px; }
+  .intro h1 span { color: var(--pink); }
+  .intro p { color: var(--fg-muted); margin-top: 10px; max-width: 60ch; font-size: 15px; }
+
+  .stage { margin-top: 40px; }
+  .stage-label { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--fg-subtle); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .stage-label::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--border-strong); }
+  .stage-label.after::before { background: var(--pink); }
+
+  /* shared hero shell */
+  .hero { position: relative; border: 1px solid var(--border); border-radius: 20px; overflow: hidden; min-height: 540px; display: flex; }
+
+  /* ---------------- BEFORE (pixel/terminal recreation) ---------------- */
+  .hero-before { background: #0b0b12; align-items: center; }
+  .hero-before::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(255,255,255,0.035) 0px, rgba(255,255,255,0.035) 1px, transparent 1px, transparent 4px); }
+  .hb-inner { position: relative; z-index: 1; padding: 48px 40px; max-width: 640px; }
+  .hb-eb { font-family: "VT323", var(--mono); font-size: 22px; color: var(--pink); letter-spacing: 0.02em; }
+  .hb-title { font-family: "Silkscreen", monospace; font-weight: 700; font-size: clamp(22px, 3.4vw, 34px); line-height: 1.5; margin-top: 18px; color: #fff; }
+  .hb-title .pk { color: var(--pink); }
+  .hb-body { color: var(--fg-muted); font-size: 15px; margin-top: 20px; max-width: 46ch; line-height: 1.7; }
+  .hb-chip { display: inline-block; margin-top: 22px; font-size: 12px; font-weight: 700; color: var(--pink); background: rgba(236,72,153,0.15); border-radius: 3px; padding: 6px 12px; letter-spacing: 0.04em; }
+  .hb-cta { margin-top: 24px; }
+  .hb-btn { display: inline-block; font-family: "Silkscreen", monospace; font-size: 13px; color: #fff; background: var(--pink); border: 2px solid #fff3; padding: 14px 26px; box-shadow: 4px 4px 0 rgba(0,0,0,0.5); }
+
+  /* ---------------- AFTER (clean bold + real photo) ---------------- */
+  .hero-after { background: var(--bg); }
+  .ha-text { position: relative; z-index: 2; padding: 60px 48px; width: 58%; display: flex; flex-direction: column; justify-content: center; }
+  .ha-photo { position: relative; width: 42%; border-left: 1px solid var(--border); background: #0d0d13; overflow: hidden; }
+  .ha-photo .ph-label { position: absolute; top: 14px; left: 14px; z-index: 2; font-family: var(--mono); font-size: 10px; color: var(--fg-subtle); text-transform: uppercase; letter-spacing: 0.08em; border: 1px solid var(--border); border-radius: 4px; padding: 4px 8px; background: rgba(0,0,0,0.4); }
+  .ha-photo .sil { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; }
+  .ha-photo .sil svg { width: 80%; height: 88%; opacity: 0.22; }
+  .ha-photo .dim { position: absolute; inset: 0; background: rgba(10,10,15,0.35); }
+
+  .ha-eb { display: inline-flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-muted); }
+  .ha-eb::before { content: ""; width: 22px; height: 2px; background: var(--pink); border-radius: 2px; }
+  .ha-title { margin-top: 22px; font-weight: 900; font-size: clamp(40px, 6vw, 62px); line-height: 1.0; letter-spacing: -0.03em; }
+  .ha-title .pk { color: var(--pink); }
+  .ha-sub { margin-top: 14px; font-weight: 800; font-size: clamp(20px, 2.6vw, 27px); line-height: 1.15; letter-spacing: -0.02em; color: var(--fg); }
+  .ha-body { margin-top: 20px; color: var(--fg-muted); font-size: 16px; line-height: 1.7; max-width: 42ch; }
+  .ha-body b { color: var(--fg); font-weight: 700; }
+  .ha-chips { margin-top: 22px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .ha-chip { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 700; letter-spacing: 0.02em; color: var(--fg-muted); border: 1px solid var(--border-strong); border-radius: 999px; padding: 7px 13px; }
+  .ha-chip svg { width: 13px; height: 13px; stroke: var(--pink); fill: none; stroke-width: 2; }
+  .ha-cta { margin-top: 28px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; font-size: 15px; border-radius: 999px; padding: 14px 26px; text-decoration: none; border: 1px solid transparent; cursor: pointer; transition: transform .12s ease, background .15s ease; letter-spacing: -0.01em; }
+  .btn:active { transform: scale(0.98); }
+  .btn-pink { background: var(--pink); color: #fff; }
+  .btn-pink:hover { background: var(--pink-press); }
+  .btn-ghost { border-color: var(--border-strong); color: var(--fg); }
+  .btn-ghost:hover { border-color: var(--fg-muted); background: rgba(255,255,255,0.04); }
+  .ha-fine { margin-top: 16px; font-size: 13px; color: var(--fg-subtle); }
+
+  @media (max-width: 760px) {
+    .hero-after { flex-direction: column-reverse; }
+    .ha-text, .ha-photo { width: 100%; }
+    .ha-photo { height: 240px; border-left: 0; border-bottom: 1px solid var(--border); }
+    .ha-text { padding: 40px 26px; }
+    .hb-inner { padding: 40px 24px; }
+  }
+
+  /* changes list */
+  .changes { margin-top: 48px; border-top: 1px solid var(--border); padding-top: 32px; }
+  .changes h3 { font-size: 18px; font-weight: 800; letter-spacing: -0.01em; }
+  .changes ul { list-style: none; margin-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 680px) { .changes ul { grid-template-columns: 1fr; } }
+  .changes li { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; color: var(--fg-muted); }
+  .changes li .k { flex: 0 0 auto; color: var(--pink); font-weight: 800; }
+  .changes li b { color: var(--fg); font-weight: 700; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="page">
+
+  <header class="intro">
+    <div class="eb">Fan to Pro / Cohort 2 Hero Redesign</div>
+    <h1>히어로 리디자인 <span>픽셀 → 클린 볼드</span></h1>
+    <p>1기를 성공시킨 "클린 볼드 + 진짜 사진" 방향으로. 다크 / 핑크 / 임팩트는 유지하고, 픽셀 폰트 / 터미널 eyebrow / 스캔라인 글리치만 걷어냈어요. 카피는 동일 (디자인만 비교).</p>
+  </header>
+
+  <!-- ===================== BEFORE ===================== -->
+  <div class="stage">
+    <div class="stage-label">Before / 픽셀 + 터미널 컨셉 (현재)</div>
+    <div class="hero hero-before">
+      <div class="hb-inner">
+        <div class="hb-eb">&gt; NOW_CASTING --cohort=02 --track=k_ent</div>
+        <div class="hb-title">Fan to <span class="pk">Pro</span><br>A career behind the stage</div>
+        <p class="hb-body">Learn directly from an A&amp;R director who has shaped Korea's largest idol audition programs and globally debuted groups.</p>
+        <span class="hb-chip">COHORT 02 / K-ENT</span>
+        <div class="hb-cta"><span class="hb-btn">Apply</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== AFTER ===================== -->
+  <div class="stage">
+    <div class="stage-label after">After / 클린 볼드 + 진짜 사진</div>
+    <div class="hero hero-after">
+      <div class="ha-text">
+        <span class="ha-eb">Cohort 02 - K-entertainment track</span>
+        <div class="ha-title">Fan to <span class="pk">Pro</span></div>
+        <div class="ha-sub">A career behind the stage</div>
+        <p class="ha-body">Learn directly from an A&amp;R director who has shaped Korea's largest idol audition programs. It doesn't end in the classroom. You join a <b>real live production project</b> and walk away with portfolio-worthy experience.</p>
+        <div class="ha-chips">
+          <span class="ha-chip"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Seoul offline</span>
+          <span class="ha-chip">International students in Korea</span>
+        </div>
+        <div class="ha-cta">
+          <a href="#" class="btn btn-pink">Apply now</a>
+          <a href="#" class="btn btn-ghost">Meet the instructors</a>
+        </div>
+        <p class="ha-fine">In-person classes in Seoul / 4 weeks / real concert project</p>
+      </div>
+      <div class="ha-photo">
+        <span class="ph-label">Real stage photo</span>
+        <div class="sil">
+          <svg viewBox="0 0 200 240" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+            <g fill="#e5e7eb">
+              <circle cx="100" cy="58" r="30"/>
+              <path d="M62 92 q38 -18 76 0 q14 8 16 30 l6 118 h-120 l6 -118 q2 -22 16 -30z"/>
+              <path d="M150 96 q26 6 30 46 l-18 6 q-6 -30 -20 -38z"/>
+            </g>
+            <g fill="none" stroke="#e5e7eb" stroke-width="7">
+              <path d="M74 56 a26 26 0 0 1 52 0"/>
+            </g>
+            <rect x="66" y="52" width="12" height="20" rx="5" fill="#e5e7eb"/>
+            <rect x="122" y="52" width="12" height="20" rx="5" fill="#e5e7eb"/>
+          </svg>
+        </div>
+        <div class="dim"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== CHANGES ===================== -->
+  <div class="changes">
+    <h3>무엇이 바뀌었나</h3>
+    <ul>
+      <li><span class="k">1</span><span><b>픽셀 폰트 → 클린 볼드 산세리프</b> - 가독성 / 프리미엄 회복 (1기 방식)</span></li>
+      <li><span class="k">2</span><span><b>터미널 eyebrow → spaced-caps</b> - "&gt; NOW_CASTING" 걷어냄</span></li>
+      <li><span class="k">3</span><span><b>스캔라인 글리치 제거</b> - 진짜 사진이 주인공</span></li>
+      <li><span class="k">4</span><span><b>틴트 칩 → 아웃라인 칩</b> - 1기가 이미 하던 에디토리얼</span></li>
+      <li><span class="k">5</span><span><b>진짜 무대/부스 사진 전면화</b> - 우측 존 (지금은 실루엣 placeholder)</span></li>
+      <li><span class="k">6</span><span><b>여백 / 위계 정리</b> - 크되 미디엄, 넉넉한 간격</span></li>
+    </ul>
+  </div>
+
+</div>

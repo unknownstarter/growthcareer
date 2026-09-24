@@ -1,0 +1,160 @@
+<title>2기 히어로 픽셀 프리미엄</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&family=Space+Mono:wght@400;700&display=swap">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #14141b;
+    --surface-2: #1c1c26;
+    --border: #27272f;
+    --border-strong: #3f3f48;
+    --fg: #fafafa;
+    --fg-muted: #a1a1aa;
+    --fg-subtle: #71717a;
+    --pink: #ec4899;
+    --pink-press: #db2777;
+    --sans: "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+    --mono: "Space Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: #060609; color: var(--fg); line-height: 1.6; -webkit-font-smoothing: antialiased; letter-spacing: -0.01em; }
+  .page { max-width: 1120px; margin: 0 auto; padding: 56px 24px 96px; }
+
+  .intro .eb { font-family: var(--mono); font-size: 12px; color: var(--fg-subtle); text-transform: uppercase; letter-spacing: 0.06em; }
+  .intro h1 { font-size: clamp(26px, 4vw, 34px); font-weight: 800; letter-spacing: -0.02em; margin-top: 12px; }
+  .intro h1 span { color: var(--pink); }
+  .intro p { color: var(--fg-muted); margin-top: 10px; max-width: 62ch; font-size: 15px; }
+
+  .stage { margin-top: 36px; }
+  .stage-label { font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--fg-subtle); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .stage-label i { width: 9px; height: 9px; background: var(--pink); display: inline-block; }
+
+  /* hero shell */
+  .hero { position: relative; border: 1px solid var(--border); border-radius: 20px; overflow: hidden; min-height: 560px; display: flex; background: var(--bg); }
+
+  .ht { position: relative; z-index: 2; padding: 62px 48px; width: 58%; display: flex; flex-direction: column; justify-content: center; }
+
+  /* eyebrow: refined mono + pixel-square tick + slow caret (pixel signature #1) */
+  .eyebrow { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-muted); }
+  .eyebrow .sq { width: 8px; height: 8px; background: var(--pink); display: inline-block; }
+  .eyebrow .caret { width: 8px; height: 15px; background: var(--pink); display: inline-block; margin-left: 2px; }
+  @media (prefers-reduced-motion: no-preference) { .eyebrow .caret { animation: blink 1.3s steps(1) infinite; } }
+  @keyframes blink { 0%, 55% { opacity: 1; } 56%, 100% { opacity: 0; } }
+
+  /* headline: clean heavy sans + pixel-square period (pixel signature #2) */
+  .title { margin-top: 24px; font-weight: 900; font-size: clamp(42px, 6.4vw, 66px); line-height: 1.0; letter-spacing: -0.035em; }
+  .title .pk { color: var(--pink); }
+  .title .pxdot { display: inline-block; width: 0.34em; height: 0.34em; background: var(--pink); vertical-align: baseline; margin-left: 0.04em;
+    box-shadow: 0.34em 0 0 transparent; }
+  .sub { margin-top: 16px; font-weight: 800; font-size: clamp(20px, 2.6vw, 27px); line-height: 1.15; letter-spacing: -0.02em; }
+  .body { margin-top: 22px; color: var(--fg-muted); font-size: 16px; line-height: 1.72; max-width: 42ch; }
+  .body b { color: var(--fg); font-weight: 700; }
+
+  /* chips: outline + tiny pixel square */
+  .chips { margin-top: 24px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11.5px; font-weight: 700; letter-spacing: 0.02em; color: var(--fg-muted); border: 1px solid var(--border-strong); border-radius: 8px; padding: 8px 13px; text-transform: uppercase; }
+  .chip .sq { width: 7px; height: 7px; background: var(--pink); display: inline-block; }
+
+  .cta { margin-top: 30px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 9px; font-weight: 700; font-size: 15px; border-radius: 999px; padding: 14px 26px; text-decoration: none; border: 1px solid transparent; cursor: pointer; transition: transform .12s ease, background .15s ease; letter-spacing: -0.01em; }
+  .btn:active { transform: scale(0.98); }
+  .btn-pink { background: var(--pink); color: #fff; }
+  .btn-pink:hover { background: var(--pink-press); }
+  .btn-pink .sq { width: 7px; height: 7px; background: #fff; display: inline-block; }
+  .btn-ghost { border-color: var(--border-strong); color: var(--fg); }
+  .btn-ghost:hover { border-color: var(--fg-muted); background: rgba(255,255,255,0.04); }
+  .fine { margin-top: 16px; font-family: var(--mono); font-size: 12px; color: var(--fg-subtle); letter-spacing: 0.02em; }
+
+  /* photo zone: pixel corner markers + faint pixel grid (pixel signature #3) */
+  .photo { position: relative; width: 42%; border-left: 1px solid var(--border); background: #0c0c12; overflow: hidden; }
+  .photo .grid { position: absolute; inset: 0; opacity: 0.55;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='7'%3E%3Crect width='1' height='1' fill='%23ffffff' fill-opacity='0.14'/%3E%3C/svg%3E");
+    background-size: 7px 7px; }
+  .photo .sil { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; }
+  .photo .sil svg { width: 78%; height: 86%; opacity: 0.20; }
+  .photo .ph-label { position: absolute; top: 14px; left: 14px; z-index: 3; font-family: var(--mono); font-size: 10px; color: var(--fg-subtle); text-transform: uppercase; letter-spacing: 0.08em; border: 1px solid var(--border); padding: 4px 8px; background: rgba(0,0,0,0.45); }
+  .photo .pm { position: absolute; width: 9px; height: 9px; background: var(--pink); z-index: 3; }
+  .photo .pm.tl { top: 16px; left: 16px; } .photo .pm.tr { top: 16px; right: 16px; }
+  .photo .pm.bl { bottom: 16px; left: 16px; } .photo .pm.br { bottom: 16px; right: 16px; }
+
+  @media (max-width: 760px) {
+    .hero { flex-direction: column-reverse; }
+    .ht, .photo { width: 100%; }
+    .photo { height: 240px; border-left: 0; border-bottom: 1px solid var(--border); }
+    .ht { padding: 40px 26px; }
+  }
+
+  .note { margin-top: 44px; border-top: 1px solid var(--border); padding-top: 30px; }
+  .note h3 { font-size: 18px; font-weight: 800; letter-spacing: -0.01em; }
+  .note .lead { color: var(--fg-muted); font-size: 15px; margin-top: 8px; max-width: 62ch; }
+  .note ul { list-style: none; margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 680px) { .note ul { grid-template-columns: 1fr; } }
+  .note li { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; color: var(--fg-muted); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+  .note li .pxi { flex: 0 0 auto; width: 10px; height: 10px; background: var(--pink); margin-top: 4px; }
+  .note li b { color: var(--fg); font-weight: 700; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="page">
+
+  <header class="intro">
+    <div class="eb">Fan to Pro / Cohort 2 / Pixel-premium</div>
+    <h1>픽셀을 <span>니치하게</span></h1>
+    <p>비트맵 폰트로 전부 도배하는 대신, 픽셀은 시그니처 두세 군데에만. 헤드라인은 클린 헤비 산세리프로 프리미엄을 잡고, 픽셀은 모노 eyebrow / 마침표 / 사진 프레임에만 정제해서 얹었어요. 카피는 동일.</p>
+  </header>
+
+  <div class="stage">
+    <div class="stage-label"><i></i> Pixel-premium hero</div>
+    <div class="hero">
+      <div class="ht">
+        <span class="eyebrow"><span class="sq"></span> Cohort_02 / K-entertainment <span class="caret"></span></span>
+        <div class="title">Fan to <span class="pk">Pro</span></div>
+        <div class="sub">A career behind the stage</div>
+        <p class="body">Learn directly from an A&amp;R director who has shaped Korea's largest idol audition programs. It doesn't end in the classroom. You join a <b>real live production project</b> and walk away with portfolio-worthy experience.</p>
+        <div class="chips">
+          <span class="chip"><span class="sq"></span> Seoul offline</span>
+          <span class="chip"><span class="sq"></span> Students in Korea</span>
+        </div>
+        <div class="cta">
+          <a href="#" class="btn btn-pink"><span class="sq"></span> Apply now</a>
+          <a href="#" class="btn btn-ghost">Meet the instructors</a>
+        </div>
+        <p class="fine">Seoul offline / 4 weeks / real concert project</p>
+      </div>
+      <div class="photo">
+        <span class="ph-label">Real stage photo</span>
+        <div class="grid"></div>
+        <div class="sil">
+          <svg viewBox="0 0 200 240" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+            <g fill="#e5e7eb">
+              <circle cx="100" cy="58" r="30"/>
+              <path d="M62 92 q38 -18 76 0 q14 8 16 30 l6 118 h-120 l6 -118 q2 -22 16 -30z"/>
+              <path d="M150 96 q26 6 30 46 l-18 6 q-6 -30 -20 -38z"/>
+            </g>
+            <g fill="none" stroke="#e5e7eb" stroke-width="7">
+              <path d="M74 56 a26 26 0 0 1 52 0"/>
+            </g>
+            <rect x="66" y="52" width="12" height="20" rx="5" fill="#e5e7eb"/>
+            <rect x="122" y="52" width="12" height="20" rx="5" fill="#e5e7eb"/>
+          </svg>
+        </div>
+        <span class="pm tl"></span><span class="pm tr"></span><span class="pm bl"></span><span class="pm br"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <h3>픽셀이 사는 곳 (절제)</h3>
+    <p class="lead">핵심은 "덜 쓰기". 픽셀이 전면에 나서지 않고 시그니처로만 반짝여서, 클린한 프리미엄 위에 K-엔터 특유의 디지털 무드를 얹어요.</p>
+    <ul>
+      <li><span class="pxi"></span><span><b>모노 eyebrow + 픽셀 캐럿</b> - "Cohort_02" 언더스코어 + 깜빡이는 픽셀 커서 (터미널 무드, 스팸 없이)</span></li>
+      <li><span class="pxi"></span><span><b>타이틀엔 마침표 없음</b> - 짧은 문구 끝 마침표 금지(§6.5). 픽셀은 eyebrow / 프레임 / 칩에만</span></li>
+      <li><span class="pxi"></span><span><b>사진 프레임 = 픽셀 코너 마커 + 미세 픽셀 그리드</b> - 스캔라인 대신 은은한 도트 그리드</span></li>
+      <li><span class="pxi"></span><span><b>칩 / CTA = 작은 픽셀 스퀘어 불릿</b> - 라운드 도트 대신 각진 픽셀 하나</span></li>
+      <li><span class="pxi"></span><span><b>나머지 전부 클린</b> - 헤드라인 / 본문 / 여백은 프리미엄 산세리프. 픽셀은 악센트일 뿐</span></li>
+      <li><span class="pxi"></span><span><b>모노는 Space Mono</b> - 블록 비트맵 폰트 대신 정제된 모노 = 테크 프리미엄 톤</span></li>
+    </ul>
+  </div>
+
+</div>

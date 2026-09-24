@@ -5,7 +5,51 @@
 
 ---
 
-## 📅 Last updated: 2026-08-23 (분석 이벤트 트래킹 GA4+자체DB + 유입 진단)
+## 📅 Last updated: 2026-09-24 (Factor 분리 + 2기 프리뷰 영문판 마감 + git 정리)
+
+> 🧬 **Factor 분리 (ADR 0020)**: SaaS 파생 작업 전체를 형제 폴더 `~/factor` (레포 `unknownstarter/factor`) 로 이관. 그로스커리어는 1기 수료증 검증 + 2기 신청 데이터가 걸린 라이브 운영 사이트라 실험 코드를 섞지 않는다. 여기 남는 것 = `docs/decisions/0020-saas-spinoff-to-factor.md` + 9/24 리서치 4건 원본. **정본은 Factor 쪽이고 이후 갱신은 Factor 에서만.** SaaS 논의 이어갈 땐 `cd ~/factor` 로 세션 시작.
+>
+> 🖤 **2기 리디자인 프리뷰 마감**: `docs/design/2gi-fullpage-glass.built.html` = 영문 전면 + 2기 실제가 (550,000 / 550,000 / 990,000) + 유리 히어로 인라인. 부호 검사 PASS. 캡처 = `docs/design/captures/2gi-fullpage-en.png` / `2gi-mobile-en.png` / `2gi-pricing-en.png`. ⚠️ **프리뷰 전용, 프로덕션 미반영.** 실제 2기 페이지 반영은 §7.4 대로 노아 승인 + Mira + 카피 검사 후.
+>
+> 🧹 **git 정리**: 9/21~9/24 문서 (레슨 2건, ADR 0020, 디자인 프리뷰 + 기법, 리서치 4건, B0084 spec) 전부 커밋. .gitignore 추가 = 디자인 캡처 21MB / 1기 현장 원본 사진 영상 78MB (수강생 얼굴 PII) / 설문 CSV (응답자 PII) / 외부 교육자료 PDF / 카드뉴스 렌더 소스 / 설치형 스킬 본문.
+>
+> 📌 **다음 후보**: (1) 2기 프리뷰를 실제 페이지에 반영할지 결정 (2) Factor 에서 니치 후보 1 (배달 3사 정산 대사) vs 3 (세무사 증빙 수취) 선택 (3) 아래 기존 대기 항목 (#6 코워크 cutoff, GC 루트 승격, sitemap 인사이트 추가).
+
+---
+
+## 📅 (이전) 2026-09-24 (1인 SaaS 니치 리서치 복원 + 프리뷰 영문 전환 결정)
+
+> 🔁 **유실 복구**: 9/23 세션에서 완료됐던 Echo 리서치 (1인 바이브코딩 SaaS build to exit 사례 + 비IT 니치 기회) 가 대화에만 있어서 유실됐던 것을 이전 세션 로그에서 복원 → `docs/research/2026-09-24-solo-saas-niche-opportunities.md` 박제. 사고 레슨 + CLAUDE.md §1 / §7.5 룰 역반영 완료 (`docs/lessons/2026-09-24-research-output-lost-in-chat.md`).
+>
+> **리서치 핵심**: 위노트 = 로컬 저장형 학교/심리상담 관리 프로그램 (민상기, 인디펍 공동창업자). **매각 기록은 확인 불가, 유튜브 숫자는 소문 취급**. 1인 exit 은 순이익 3배 내외 소액이 흔하고, 스타들 대부분은 매각 대신 운영. 권고 = 디자인 퀄리티가 해자인 각도 (로컬 사장용 고퀄 랜딩+예약 / 미용 리텐션) + distribution first + 인수창업 병행 검토.
+>
+> **템플릿 자산 인벤토리**: `src/shared/ui` 7종 + `src/shared/navigation` 8종 + Supabase/RLS + 에러 taxonomy + 분석 트래킹 + 메시지 템플릿 + 어드민 패턴 + tools 83개. 부족한 것 = 결제, 멀티테넌시, 셀프 가입, 사용량 과금.
+>
+> **결정 대기**: 니치 후보 8개 중 무엇부터 검증할지. 세무 인접 아이디어는 세무사법 규제선 확인 선행 필요.
+>
+> **프리뷰 마감 (진행 중)**: 2기 리디자인 프리뷰를 영문 전면 + 2기 실제가 (55만/55만/99만) 로 통일하기로 결정. 부호 검사 PASS. 편집 미완.
+
+---
+
+## 📅 (이전) 2026-09-21 (2기 리디자인 방향 + 유리 히어로 기법 - 전부 프리뷰/문서, 배포 X)
+
+> 🎨 **디자인 방향 세션 (구현 X, 프로덕션 무변경 확인됨)**. 산출물은 전부 `docs/design/` 프리뷰 + Artifact.
+>
+> **결정된 방향**:
+> - **2기 페이지 리디자인**: 1기가 성공한 "클린 볼드 + 진짜 사진"으로. 2기 픽셀/터미널 컨셉이 프리미엄·가독성 깎았던 게 원인(1기 vs 2기 히어로 비교로 확인). 픽셀은 **시그니처로만 절제**(eyebrow 틱/코너 마커/칩 불릿, 타이틀 마침표 X). 다크 유지. 1기 페이지는 **동결(건드리지 마)**.
+> - **새 팬투프로 프로젝트**: 별 repo 안 팜. **같은 repo + 같은 Supabase(이미 fantopro) 브랜드 승격 + 옛 도메인 경로 301 보존**(1기 수료증 연속성). RIM→BlackBerry/Sun→Oracle 사례 근거. → **보류**, 2기부터 자리잡기로.
+> - **원데이 DJ(관광객)**: 라이트+실사 사진 카테고리(클룩/에어비앤비), 부킹+파트너 시스템. 나중.
+> - **큰 대화 진행 중**: 정직한 약속 프레임 합의(취업보장 빼고 경험+증명 중심). 히어로 thesis(A/B) + 증명 배치 미정.
+>
+> **유리 히어로 기법 습득** (원티드식 liquid glass 재현): Three.js transmission 유리 + 텍스트 평면 + 환경맵 + 색분산 포스트 → Playwright 헤드리스로 정적 PNG 베이킹. **원티드는 라이브 아니라 정적 PNG였음**(검사로 확인). 기법: `docs/design/webgl-glass-hero-technique.md`, 렌더 소스: `docs/design/glass-hero-render.html`, 산출: `docs/design/captures/fantopro-glass-hero.png`. 레슨: `docs/lessons/2026-09-21-replicate-reference-inspect-first.md`.
+>
+> **주요 프리뷰 Artifact**: 디자인 시스템(원티드 기반 토큰), 2기 전체 리디자인(픽셀 프리미엄), liquid glass 효과. 파일 `docs/design/*.html`.
+>
+> **다음**: 히어로에 유리 이미지 통합 or 큰 대화(증명 배치) 이어가기. 실제 2기 페이지 반영은 §7.4 대로 노아 승인 + Mira/카피검사 후.
+
+---
+
+## 📅 (이전) 2026-08-23 (분석 이벤트 트래킹 GA4+자체DB + 유입 진단)
 
 > 🔎 **8/23 추가**: 모집 페이지에 view/scroll/click/start_apply/completed_apply 이벤트를 GA4+자체DB(`analytics_events`) 양쪽 적재. `tools/analytics-summary.mjs`(자체) + `tools/ga4-report.mjs`(GA4 Data API, property 538220690, `.env.local` GA4_KEY_FILE/GA4_PROPERTY_ID) 로 퍼널 집계. Sage GO(Origin체크·meta정규화·referrer절단).
 >
