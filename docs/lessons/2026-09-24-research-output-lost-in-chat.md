@@ -11,7 +11,7 @@
 - Echo 를 백그라운드로 디스패치했고 **결과는 정상적으로 돌아왔다** (사례 6건, 위노트 정체 확정, 페인포인트 7건, 니치 후보 8개, 출처 14건)
 - 그런데 같은 시점에 진행 중이던 2기 증명 섹션 작업을 먼저 끝내기로 하고 **"증명 섹션 끝내고 따로 제대로 정리해줄게요"** 라고만 답한 채 세션 종료
 - 다음 세션 (2026-09-24) 에서 노아가 "그 조사 어디갔어" 라고 물었을 때 메인 컨텍스트에 없어서 **없는 작업처럼 응답**. 노아가 "이걸 까먹냐" 고 지적
-- 이전 세션 jsonl 로그의 task-notification 에서 원문을 복구해 `docs/research/2026-09-24-solo-saas-niche-opportunities.md` 로 박제하면서 복원 완료
+- 이전 세션 jsonl 로그의 task-notification 에서 원문을 복구해 파일로 박제하면서 복원 완료 (정본은 이후 Factor 로 이관, ADR 0020)
 
 ## 왜 일어났나
 
@@ -31,4 +31,4 @@
 
 - CLAUDE.md §1 토큰 효율 원칙: 리서치 산출물 파일 저장 룰 추가
 - CLAUDE.md §7.5: 미완결 약속 기록 트리거 추가
-- 복원된 산출물: `docs/research/2026-09-24-solo-saas-niche-opportunities.md`
+- 복원된 산출물: `~/factor/docs/research/2026-09-24-solo-saas-niche-opportunities.md` (ADR 0020 으로 이관)

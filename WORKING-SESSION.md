@@ -11,7 +11,7 @@
 >
 > 🖤 **2기 리디자인 프리뷰 마감**: `docs/design/2gi-fullpage-glass.built.html` = 영문 전면 + 2기 실제가 (550,000 / 550,000 / 990,000) + 유리 히어로 인라인. 부호 검사 PASS. 캡처 = `docs/design/captures/2gi-fullpage-en.png` / `2gi-mobile-en.png` / `2gi-pricing-en.png`. ⚠️ **프리뷰 전용, 프로덕션 미반영.** 실제 2기 페이지 반영은 §7.4 대로 노아 승인 + Mira + 카피 검사 후.
 >
-> 🧹 **git 정리**: 9/21~9/24 문서 (레슨 2건, ADR 0020, 디자인 프리뷰 + 기법, 리서치 4건, B0084 spec) 전부 커밋. .gitignore 추가 = 디자인 캡처 21MB / 1기 현장 원본 사진 영상 78MB (수강생 얼굴 PII) / 설문 CSV (응답자 PII) / 외부 교육자료 PDF / 카드뉴스 렌더 소스 / 설치형 스킬 본문.
+> 🧹 **git 정리**: 9/21~9/24 문서 (레슨 2건, ADR 0020, 디자인 프리뷰 + 기법) 커밋. SaaS 리서치 4건과 스타터 spec 은 `~/factor` 로 완전 이관하고 여기서는 삭제 (ADR 0020 참조). .gitignore 추가 = 디자인 캡처 21MB / 1기 현장 원본 사진 영상 78MB (수강생 얼굴 PII) / 설문 CSV (응답자 PII) / 외부 교육자료 PDF / 카드뉴스 렌더 소스 / 설치형 스킬 본문.
 >
 > 📌 **다음 후보**: (1) 2기 프리뷰를 실제 페이지에 반영할지 결정 (2) Factor 에서 니치 후보 1 (배달 3사 정산 대사) vs 3 (세무사 증빙 수취) 선택 (3) 아래 기존 대기 항목 (#6 코워크 cutoff, GC 루트 승격, sitemap 인사이트 추가).
 
@@ -19,7 +19,7 @@
 
 ## 📅 (이전) 2026-09-24 (1인 SaaS 니치 리서치 복원 + 프리뷰 영문 전환 결정)
 
-> 🔁 **유실 복구**: 9/23 세션에서 완료됐던 Echo 리서치 (1인 바이브코딩 SaaS build to exit 사례 + 비IT 니치 기회) 가 대화에만 있어서 유실됐던 것을 이전 세션 로그에서 복원 → `docs/research/2026-09-24-solo-saas-niche-opportunities.md` 박제. 사고 레슨 + CLAUDE.md §1 / §7.5 룰 역반영 완료 (`docs/lessons/2026-09-24-research-output-lost-in-chat.md`).
+> 🔁 **유실 복구**: 9/23 세션에서 완료됐던 Echo 리서치 (1인 바이브코딩 SaaS build to exit 사례 + 비IT 니치 기회) 가 대화에만 있어서 유실됐던 것을 이전 세션 로그에서 복원 → 박제 (현재 정본은 `~/factor/docs/research/2026-09-24-solo-saas-niche-opportunities.md`). 사고 레슨 + CLAUDE.md §1 / §7.5 룰 역반영 완료 (`docs/lessons/2026-09-24-research-output-lost-in-chat.md`).
 >
 > **리서치 핵심**: 위노트 = 로컬 저장형 학교/심리상담 관리 프로그램 (민상기, 인디펍 공동창업자). **매각 기록은 확인 불가, 유튜브 숫자는 소문 취급**. 1인 exit 은 순이익 3배 내외 소액이 흔하고, 스타들 대부분은 매각 대신 운영. 권고 = 디자인 퀄리티가 해자인 각도 (로컬 사장용 고퀄 랜딩+예약 / 미용 리텐션) + distribution first + 인수창업 병행 검토.
 >

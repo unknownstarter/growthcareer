@@ -29,7 +29,23 @@
 
 ## 남는 것
 
-그로스커리어에는 이 ADR 만 남는다. `docs/research/2026-09-24-*.md` 와 `2026-09-25-*.md`, `docs/specs/B0084-*.md` 는 원본을 그대로 두되 **정본은 Factor 쪽**이다. 이후 갱신은 Factor 에서만 한다.
+그로스커리어에는 이 ADR 만 남는다. 2026-09-25 에 사본까지 정리해 **완전 분리**를 마쳤다.
+
+여기서 삭제한 것 (전부 `~/factor` 에 정본 있음):
+
+| 삭제한 경로 | Factor 정본 |
+|---|---|
+| `docs/research/2026-09-24-solo-saas-niche-opportunities.md` | `~/factor/docs/research/2026-09-24-solo-saas-niche-opportunities.md` |
+| `docs/research/2026-09-24-ai-gap-niches.md` | `~/factor/docs/research/2026-09-24-ai-gap-niches.md` |
+| `docs/research/2026-09-24-payment-rails-korea.md` | `~/factor/docs/research/2026-09-24-payment-rails-korea.md` |
+| `docs/research/2026-09-25-finance-ops-and-smb-workflow.md` | `~/factor/docs/research/2026-09-25-finance-ops-and-smb-workflow.md` |
+| `docs/specs/B0084-product-factory-starter.md` | `~/factor/docs/specs/B0084-product-factory-starter.md` |
+
+남겨둔 것: `.claude/agents/juno.md` (수익성 심판) 와 `cora.md` (고객 페르소나 검수). 둘 다 그로스커리어의 가격 결정과 랜딩 검수에도 쓰이는 역할이라 로스터에 유지한다.
+
+⚠️ **B0084 번호 충돌 주의**: 그로스커리어 백로그의 B0084 는 Outcomes 페이지 (ADR 0015 / 0016, `docs/specs/B0083-platform-evolution-*.md` 참조) 다. Factor 로 간 스타터 spec 이 같은 번호를 쓰고 있으니, Factor 쪽에서 자체 번호 체계로 다시 매기는 게 맞다. 그로스커리어에서 B0084 는 Outcomes 페이지 하나만 가리킨다.
+
+SaaS 관련 작업이 다시 필요하면 `cd ~/factor` 로 세션을 시작한다. 여기서는 만들지도, 갱신하지도 않는다.
 
 ## 되돌리기
 
